@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Driver extends Model
+{
+    
+    use HasFactory;
+    protected $fillable = [
+        'vehicle_id', 'name', 'phone', 'vehicle_image', 'driver_image',
+        'city', 'vehicle_type', 'plate_number', 'whatsapp_number',
+        'device_token', 'latitude', 'longitude', 'is_active'
+    ];
+
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
+    public function requests()
+    {
+        return $this->hasMany(Request::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+}
