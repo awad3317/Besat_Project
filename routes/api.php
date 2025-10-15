@@ -14,6 +14,6 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
 });
 
 // Routes For Drivers only
-Route::middleware(['auth:sanctum', 'driver'])->group(function () {
+Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
   
 });
