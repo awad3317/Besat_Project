@@ -13,7 +13,7 @@ class Driver extends Model
     protected $fillable = [
         'vehicle_id', 'name', 'phone', 'vehicle_image', 'driver_image',
         'city', 'vehicle_type', 'plate_number', 'whatsapp_number',
-        'device_token', 'latitude', 'longitude', 'is_active'
+        'device_token', 'latitude', 'longitude', 'is_active', 'is_online'
     ];
 
     public function vehicle()

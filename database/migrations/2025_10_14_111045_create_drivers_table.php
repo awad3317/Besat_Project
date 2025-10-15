@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('device_token')->nullable();
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 10, 8);
+            $table->boolean('is_online')->default(false);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
