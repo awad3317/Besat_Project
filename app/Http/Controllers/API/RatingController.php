@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
-use App\Models\Service;
+use App\Models\Rating;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
-class ServiceController extends Controller
+class RatingController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class ServiceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Service $service)
+    public function show(Rating $rating)
     {
         //
     }
@@ -34,7 +35,7 @@ class ServiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Service $service)
+    public function update(Request $request, Rating $rating)
     {
         //
     }
@@ -42,7 +43,7 @@ class ServiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Service $service)
+    public function destroy(Rating $rating)
     {
         //
     }

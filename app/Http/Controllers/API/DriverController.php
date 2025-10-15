@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
-use App\Models\Vehicle;
+use App\Models\Driver;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
-class VehicleController extends Controller
+class DriverController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class VehicleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Vehicle $vehicle)
+    public function show(Driver $driver)
     {
         //
     }
@@ -34,7 +35,7 @@ class VehicleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Vehicle $vehicle)
+    public function update(Request $request, Driver $driver)
     {
         //
     }
@@ -42,7 +43,7 @@ class VehicleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Vehicle $vehicle)
+    public function destroy(Driver $driver)
     {
         //
     }

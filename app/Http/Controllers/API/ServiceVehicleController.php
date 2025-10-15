@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
-use App\Models\ServiceVehicle;
 use Illuminate\Http\Request;
+use App\Models\ServiceVehicle;
+use App\Http\Controllers\Controller;
 
 class ServiceVehicleController extends Controller
 {

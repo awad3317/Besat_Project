@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
-use App\Models\UserDevice;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Request as ModelsRequest;
 
-class UserDeviceController extends Controller
+class RequestController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -26,7 +27,7 @@ class UserDeviceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(UserDevice $userDevice)
+    public function show(Request $request)
     {
         //
     }
@@ -34,7 +35,7 @@ class UserDeviceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, UserDevice $userDevice)
+    public function update(Request $request, ModelsRequest $modelsRequest)
     {
         //
     }
@@ -42,7 +43,7 @@ class UserDeviceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserDevice $userDevice)
+    public function destroy(Request $request)
     {
         //
     }
