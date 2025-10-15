@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -15,7 +16,7 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-         if ($request->user() && $request->user() instanceof \App\Models\User) {
+        if ($request->user() && $request->user() instanceof User) {
             return $next($request);
         }
 
