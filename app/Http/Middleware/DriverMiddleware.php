@@ -16,7 +16,8 @@ class DriverMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user() instanceof Driver) {
+        $Driver = auth('sanctum')->user();
+        if ($Driver && $Driver instanceof Driver) {
             return $next($request);
         }
 
