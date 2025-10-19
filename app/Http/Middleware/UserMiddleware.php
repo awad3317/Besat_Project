@@ -16,7 +16,7 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user() instanceof User) {
+        if ($request->user() && get_class($request->user()) === 'App\Models\User') {
             return $next($request);
         }
 
