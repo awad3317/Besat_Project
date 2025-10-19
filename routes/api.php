@@ -21,7 +21,7 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
 
 // Routes For Drivers only
 Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
-  Route::post('/user/logout',[DriverAuthController::class,'logout']);
+  Route::post('/driver/logout',[DriverAuthController::class,'logout']);
 });
         //           Auth Route For User          //
 Route::post('/user/register',[UserAuthController::class,'register']);
