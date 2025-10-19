@@ -16,7 +16,8 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && get_class($request->user()) === 'App\Models\User') {
+        $user = auth('sanctum')->user();
+        if ($user && $user instanceof User) {
             return $next($request);
         }
 
