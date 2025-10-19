@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('driver_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('discount_code_id')->references('id')->on('discount_codes')->onDelete('set null');
             $table->foreignId('service_id')->constrained()->onDelete('cascade');
-            $table->string('discount_code_id', 50)->nullable();
             $table->decimal('start_latitude', 10, 8);
             $table->decimal('start_longitude', 10, 8);
             $table->string('start_address');
