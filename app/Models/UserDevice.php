@@ -9,7 +9,7 @@ class UserDevice extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id', 'device_token', 'device_type', 'is_active'
+        'user_id', 'device_token', 'device_type','token_id'
     ];
 
     public function user()

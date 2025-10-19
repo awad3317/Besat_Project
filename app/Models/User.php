@@ -22,7 +22,10 @@ class User extends Authenticatable
         'name',
         // 'email',
         'password',
-        'phone', 'whatsapp_number', 'role'
+        'phone', 
+        'whatsapp_number', 
+        'type',
+        'is_banned',
     ];
 
     /**
@@ -48,7 +51,7 @@ class User extends Authenticatable
         ];
     }
 
-     public function devices()
+    public function devices()
     {
         return $this->hasMany(UserDevice::class);
     }
