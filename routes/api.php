@@ -16,27 +16,27 @@ use App\Http\Controllers\API\Auth\Driver\DriverForgetPasswordController;
 
 // Routes For Users only
 Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
-   Route::post('/logout',[UserAuthController::class,'logout']);
+   Route::post('/user/logout',[UserAuthController::class,'logout']);
 });
 
 // Routes For Drivers only
 Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
-  Route::post('/logout',[DriverAuthController::class,'logout']);
+  Route::post('/user/logout',[DriverAuthController::class,'logout']);
 });
         //           Auth Route For User          //
-Route::post('user/register',[UserAuthController::class,'register']);
-Route::post('user/login',[UserAuthController::class,'login']);
-Route::post('user/verifyOtpAndLogin',[UserOtpController::class,'verifyOtpAndLogin']);
-Route::post('user/resendOTP',[UserOtpController::class,'resendOTP']);
+Route::post('/user/register',[UserAuthController::class,'register']);
+Route::post('/user/login',[UserAuthController::class,'login']);
+Route::post('/user/verifyOtpAndLogin',[UserOtpController::class,'verifyOtpAndLogin']);
+Route::post('/user/resendOTP',[UserOtpController::class,'resendOTP']);
         //           Auth Route For Driver         //
-Route::post('driver/register',[DriverAuthController::class,'register']);
-Route::post('driver/login',[DriverAuthController::class,'login']);
-Route::post('driver/verifyOtpAndLogin',[DriverOtpController::class,'verifyOtpAndLogin']);
-Route::post('driver/resendOTP',[DriverOtpController::class,'resendOTP']);
+Route::post('/driver/register',[DriverAuthController::class,'register']);
+Route::post('/driver/login',[DriverAuthController::class,'login']);
+Route::post('/driver/verifyOtpAndLogin',[DriverOtpController::class,'verifyOtpAndLogin']);
+Route::post('/driver/resendOTP',[DriverOtpController::class,'resendOTP']);
         //       Forget Password Route For User       //
-Route::post('/forgetPassword', [UserForgetPasswordController::class,'forgetPassword']);
-Route::post('/resetPassword', [UserForgetPasswordController::class,'resetPassword']);
+Route::post('/user/forgetPassword', [UserForgetPasswordController::class,'forgetPassword']);
+Route::post('/user/resetPassword', [UserForgetPasswordController::class,'resetPassword']);
         //       Forget Password Route For Driver       //
-Route::post('/forgetPassword', [DriverForgetPasswordController::class,'forgetPassword']);
-Route::post('/resetPassword', [DriverForgetPasswordController::class,'resetPassword']);
+Route::post('/driver/forgetPassword', [DriverForgetPasswordController::class,'forgetPassword']);
+Route::post('/driver/resetPassword', [DriverForgetPasswordController::class,'resetPassword']);
 
