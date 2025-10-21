@@ -15,7 +15,7 @@ use App\Http\Controllers\API\Auth\Driver\DriverForgetPasswordController;
 // })->middleware('auth:sanctum');
 
 Route::middleware(['auth.sanctum.api'])->group(function () {
-    Route::apiResource('vehicles', VehicleController::class)->only(['index', 'store', 'update']);
+    Route::apiResource('vehicles', VehicleController::class)->only(['index']);
 });
 
 // Routes For Users only
