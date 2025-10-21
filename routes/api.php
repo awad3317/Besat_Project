@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\Auth\User\UserOtpController;
 use App\Http\Controllers\API\Auth\User\UserAuthController;
 use App\Http\Controllers\API\Auth\Driver\DriverOtpController;
@@ -13,6 +14,9 @@ use App\Http\Controllers\API\Auth\Driver\DriverForgetPasswordController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
+Route::middleware(['auth.sanctum.api'])->group(function () {
+    Route::apiResource('vehicles', VehicleController::class)->only(['index', 'store', 'update']);
+});
 
 // Routes For Users only
 Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
