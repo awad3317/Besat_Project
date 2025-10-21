@@ -17,16 +17,16 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone');
             $table->string('vehicle_image')->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
             $table->string('driver_image')->nullable();
             $table->string('city')->nullable();
-            $table->string('vehicle_type');
             $table->string('plate_number');
             $table->string('whatsapp_number')->nullable();
             $table->string('device_token')->nullable();
-            $table->decimal('latitude', 10, 8);
-            $table->decimal('longitude', 10, 8);
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 10, 8)->nullable();
             $table->boolean('is_online')->default(false);
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
         });
     }
