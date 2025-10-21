@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('type');
             $table->text('description')->nullable();
             $table->integer('max_passengers');
-            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

@@ -10,7 +10,7 @@ class Vehicle extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'type', 'description', 'max_passengers', 'is_active'
+        'name', 'type', 'description', 'max_passengers'
     ];
     public function drivers()
     {
