@@ -3,7 +3,8 @@
 namespace App\Repositories;
 
 use App\Interfaces\RepositoriesInterface;
-use App\Models\vehicle;
+use App\Models\Vehicle;
+use Twilio\Rest\Conversations\V1;
 
 class VehicleRepository implements RepositoriesInterface
 {
@@ -16,33 +17,33 @@ class VehicleRepository implements RepositoriesInterface
     }
     public function index(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        return vehicle::paginate(10);
+        return Vehicle::paginate(10);
     }
 
-    public function getById($id): vehicle
+    public function getById($id): Vehicle
     {
-        return vehicle::findOrFail($id);
+        return Vehicle::findOrFail($id);
     }
 
-    public function store(array $data): vehicle
+    public function store(array $data): Vehicle
     {
-        return vehicle::create($data);
+        return Vehicle::create($data);
     }
 
-    public function update(array $data, $id): vehicle
+    public function update(array $data, $id): Vehicle
     {
-        $vehicle = vehicle::findOrFail($id);
+        $vehicle = Vehicle::findOrFail($id);
         $vehicle->update($data);
         return $vehicle;
     }
     public function delete($id): bool
     {
-        return vehicle::where('id', $id)->delete() > 0;
+        return Vehicle::where('id', $id)->delete() > 0;
     }
 
     public function findByPhone($phone)
     {
-        return vehicle::where('phone', $phone)->first();
+        return Vehicle::where('phone', $phone)->first();
     }
 
 }
