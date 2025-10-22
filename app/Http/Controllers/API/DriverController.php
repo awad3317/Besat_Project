@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\Driver;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
+use App\Repositories\DriverRepository;
 
 class DriverController extends Controller
 {
+    public function __construct(private DriverRepository $driverRepository)
+    {
+        //
+    }
     /**
      * Display a listing of the resource.
      */
@@ -46,5 +54,20 @@ class DriverController extends Controller
     public function destroy(Driver $driver)
     {
         //
+    }
+
+    public function updateDeviceToken(Request $request)
+    {
+        $fields=$request->validate([
+            'device_token' => 'required',
+        ]);
+        try {
+            $driver_id=auth('sanctum')->id();
+            $driver=$this->driverRepository->update($fields,$driver_id);
+            return ApiResponseClass::sendResponse($driver,'Device token updated successfully.');
+        } catch (Exception $e) {
+            return ApiResponseClass::sendError('Error updated token.'.$e->getMessage());
+        }
+        
     }
 }

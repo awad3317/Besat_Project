@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\Auth\User\UserOtpController;
 use App\Http\Controllers\API\Auth\User\UserAuthController;
@@ -15,17 +16,18 @@ use App\Http\Controllers\API\Auth\Driver\DriverForgetPasswordController;
 // })->middleware('auth:sanctum');
 
 Route::middleware(['auth.sanctum.api'])->group(function () {
-    Route::apiResource('vehicles', VehicleController::class)->only(['index']);
+        Route::apiResource('vehicles', VehicleController::class)->only(['index']);
 });
 
 // Routes For Users only
 Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
-   Route::post('/user/logout',[UserAuthController::class,'logout']);
+        Route::post('/user/logout',[UserAuthController::class,'logout']);
 });
 
 // Routes For Drivers only
 Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
-  Route::post('/driver/logout',[DriverAuthController::class,'logout']);
+        Route::post('/driver/logout',[DriverAuthController::class,'logout']);
+        Route::post('/driver/updateDeviceToken',[DriverController::class,'updateDeviceToken']);
 });
         //           Auth Route For User          //
 Route::post('/user/register',[UserAuthController::class,'register']);
