@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
             'name' => 'عوض لشرم',
             'phone' => '967780236551',
             'whatsapp_number' => '966500000001',
+            'phone_verified_at'=> now(),
             'password' => '12121212',
             'type' => 'user',
             'is_banned' => false,
