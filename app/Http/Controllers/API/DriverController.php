@@ -70,4 +70,19 @@ class DriverController extends Controller
         }
         
     }
+
+    public function updateLocation(Request $request)
+    {
+        $fields=$request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+        try {
+            $driver_id=auth('sanctum')->id();
+            $driver=$this->driverRepository->update($fields,$driver_id);
+            return ApiResponseClass::sendResponse($driver,'Location updated successfully.');
+        } catch (Exception $e) {
+            return ApiResponseClass::sendError('Error updated location.'.$e->getMessage());
+        }
+    }
 }
