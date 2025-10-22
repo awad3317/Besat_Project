@@ -15,8 +15,8 @@ class UserSeeder extends Seeder
     {
         User::create([
             'name' => 'عوض لشرم',
-            'phone' => '+967780236551',
-            'whatsapp_number' => '+966500000001',
+            'phone' => '967780236551',
+            'whatsapp_number' => '966500000001',
             'password' => '12121212',
             'type' => 'user',
             'is_banned' => false,
