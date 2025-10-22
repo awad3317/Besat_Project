@@ -19,7 +19,6 @@ class UserSeeder extends Seeder
             'whatsapp_number' => '+966500000001',
             'password' => '12121212',
             'type' => 'user',
-            'is_active' => true,
             'is_banned' => false,
         ]);
     }
