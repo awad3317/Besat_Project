@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\RatingController;
+use App\Http\Controllers\API\RequestController;
 use App\Http\Controllers\API\VehicleController;
 use App\Http\Controllers\API\Auth\User\UserOtpController;
 use App\Http\Controllers\API\Auth\User\UserAuthController;
@@ -24,6 +25,7 @@ Route::middleware(['auth.sanctum.api'])->group(function () {
 Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::post('/user/logout',[UserAuthController::class,'logout']);
         Route::post('/user/upsertRating',[RatingController::class,'upsertRating']);
+        Route::post('/user/calculatePrice',[RequestController::class,'calculatePrice']);
 });
 
 // Routes For Drivers only

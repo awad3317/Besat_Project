@@ -2,12 +2,23 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
-use App\Models\Request as ModelsRequest;
+use App\Repositories\RequestRepository;
+use App\Repositories\ServiceRepository;
+use App\Services\PriceCalculationService;
+use Google\Cloud\Storage\Connection\Rest;
+use App\Repositories\DiscountCodeRepository;
 
 class RequestController extends Controller
 {
+    public function __construct(private RequestRepository $requestRepository, private ServiceRepository $serviceRepository,private PriceCalculationService $priceCalculationService,private DiscountCodeRepository $discountCodeRepository)
+    {
+        //
+    }
     /**
      * Display a listing of the resource.
      */
@@ -21,13 +32,63 @@ class RequestController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'service_id' => ['required', Rule::exists('services', 'id')],
+            'discount_code' => ['nullable', Rule::exists('discount_codes', 'code')],
+            'start_latitude' => 'required|numeric',
+            'start_longitude' => 'required|numeric',
+            'start_address' => 'required|string|max:255',
+            'end_latitude' => 'required|numeric',
+            'end_longitude' => 'required|numeric',
+            'end_address' => 'required|string|max:255',
+            'distance_km' => 'required|numeric|min:0',
+            'payment_method'=>['required',Rule::in(['cash','deposit'])],
+            'notes' => 'nullable|string|max:500'
+        ]);
+
+        try {
+            $validated['user_id'] = auth('sanctum')->id();
+            if(isset($validated['discount_code'])){
+                if($coupon=$this->discountCodeRepository->getDiscountCodeByCode($validated['discount_code'])){
+                    if(!$this->discountCodeRepository->isCouponActive($coupon)){
+                        return ApiResponseClass::sendError('كود الخصم غير نشط.');
+                    }
+                    if(!$this->discountCodeRepository->hasUsageLimitAvailable($coupon)){
+                        return ApiResponseClass::sendError('تم الوصول إلى الحد الأقصى لاستخدام كود الخصم.');
+                    }
+                    $result=$this->priceCalculationService->calculatePriceWithDiscount($validated['service_id'], $validated['distance_km'],$coupon);
+                }
+                else{
+                    return ApiResponseClass::sendError('كود الخصم غير صالح.');
+                }
+            }
+            else{
+                $result=$this->priceCalculationService->calculateBasePrice($validated['service_id'], $validated['distance_km']);
+            }
+            $validated['original_price']=$result['original_price'];
+            $validated['final_price']=$result['final_price'];
+            if($result['discount_applied'] && isset($validated['discount_code'])){
+                $coupon = $this->discountCodeRepository->getDiscountCodeByCode($validated['discount_code']);
+                $validated['discount_code_id'] = $coupon->id;
+                $validated['discount_amount'] = $result['discount_amount'];
+                
+                $this->discountCodeRepository->incrementUsage($coupon);
+            }
+            else{
+                $validated['discount_amount']=0;
+            }
+            unset($validated['discount_code']);
+            $requestModel = $this->requestRepository->store($validated);
+            return ApiResponseClass::sendResponse($requestModel, 'Request created successfully.');
+        } catch (Exception $e) {
+            return apiResponseClass::sendError('Failed to create request.'.$e->getMessage());
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Request $request)
+    public function show($id)
     {
         //
     }
@@ -35,7 +96,7 @@ class RequestController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ModelsRequest $modelsRequest)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -43,8 +104,40 @@ class RequestController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
         //
+    }
+
+    public function calculatePrice(Request $request)
+    {
+        $validated = $request->validate([
+            'service_id' => ['required', Rule::exists('services', 'id')],
+            'distance_km' =>['required','numeric','min:0'],
+            'code'=>['nullable','string']
+        ]);
+        try {
+            if(isset($validated['code'])){
+                if($coupon=$this->discountCodeRepository->getDiscountCodeByCode($validated['code'])){
+                    if(!$this->discountCodeRepository->isCouponActive($coupon)){
+                        return ApiResponseClass::sendError('كود الخصم غير نشط.');
+                    }
+                    if(!$this->discountCodeRepository->hasUsageLimitAvailable($coupon)){
+                        return ApiResponseClass::sendError('تم الوصول إلى الحد الأقصى لاستخدام كود الخصم.');
+                    }
+                    $result=$this->priceCalculationService->calculatePriceWithDiscount($validated['service_id'], $validated['distance_km'],$coupon);
+                }
+                else{
+                    return ApiResponseClass::sendError('كود الخصم غير صالح.');
+                }
+            }
+            else{
+                $result=$this->priceCalculationService->calculateBasePrice($validated['service_id'], $validated['distance_km']);
+            }
+            return ApiResponseClass::sendResponse($result, 'تم حساب السعر بنجاح.');
+        } catch (Exception $e) {
+            return ApiResponseClass::sendError('خطأ في حساب السعر.'.$e->getMessage());
+        }
+        
     }
 }

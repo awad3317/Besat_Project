@@ -14,7 +14,7 @@ class Request extends Model
         'start_latitude', 'start_longitude', 'start_address',
         'end_latitude', 'end_longitude', 'end_address', 'status',
         'original_price', 'discount_amount', 'final_price',
-        'distance_km', 'notes'
+        'distance_km', 'notes', 'payment_method'
     ];
 
     public function user()
