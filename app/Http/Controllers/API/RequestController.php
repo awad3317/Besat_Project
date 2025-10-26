@@ -9,13 +9,19 @@ use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
 use App\Repositories\RequestRepository;
 use App\Repositories\ServiceRepository;
+use App\Services\DriverLocationService;
 use App\Services\PriceCalculationService;
 use Google\Cloud\Storage\Connection\Rest;
 use App\Repositories\DiscountCodeRepository;
 
 class RequestController extends Controller
 {
-    public function __construct(private RequestRepository $requestRepository, private ServiceRepository $serviceRepository,private PriceCalculationService $priceCalculationService,private DiscountCodeRepository $discountCodeRepository)
+    public function __construct(
+        private RequestRepository $requestRepository, 
+        private ServiceRepository $serviceRepository,
+        private PriceCalculationService $priceCalculationService,
+        private DiscountCodeRepository $discountCodeRepository,
+        private DriverLocationService $driverLocationService)
     {
         //
     }
@@ -47,7 +53,9 @@ class RequestController extends Controller
         ]);
 
         try {
+            // إضافة معرف المستخدم المصادق عليه
             $validated['user_id'] = auth('sanctum')->id();
+            // حساب السعر الأصلي والنهائي مع تطبيق الخصم إذا وجد
             if(isset($validated['discount_code'])){
                 if($coupon=$this->discountCodeRepository->getDiscountCodeByCode($validated['discount_code'])){
                     if(!$this->discountCodeRepository->isCouponActive($coupon)){
@@ -68,17 +76,23 @@ class RequestController extends Controller
             $validated['original_price']=$result['original_price'];
             $validated['final_price']=$result['final_price'];
             if($result['discount_applied'] && isset($validated['discount_code'])){
+                
                 $coupon = $this->discountCodeRepository->getDiscountCodeByCode($validated['discount_code']);
                 $validated['discount_code_id'] = $coupon->id;
                 $validated['discount_amount'] = $result['discount_amount'];
-                
+                // زيادة عدد الاستخدامات لكود الخصم
                 $this->discountCodeRepository->incrementUsage($coupon);
             }
             else{
                 $validated['discount_amount']=0;
             }
             unset($validated['discount_code']);
+
+            // تخزين الطلب
             $requestModel = $this->requestRepository->store($validated);
+
+            // جلب أقرب السائقين الاقرب للزبون
+            $NearestDrivers =$this->driverLocationService->getNearestDrivers($validated['start_latitude'], $validated['start_longitude'], 8,20);
             return ApiResponseClass::sendResponse($requestModel, 'Request created successfully.');
         } catch (Exception $e) {
             return apiResponseClass::sendError('Failed to create request.'.$e->getMessage());
