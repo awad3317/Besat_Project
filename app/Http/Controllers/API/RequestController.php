@@ -13,6 +13,7 @@ use App\Services\DriverLocationService;
 use App\Services\PriceCalculationService;
 use Google\Cloud\Storage\Connection\Rest;
 use App\Repositories\DiscountCodeRepository;
+use App\Services\CommissionCalculationService;
 
 class RequestController extends Controller
 {
@@ -21,7 +22,8 @@ class RequestController extends Controller
         private ServiceRepository $serviceRepository,
         private PriceCalculationService $priceCalculationService,
         private DiscountCodeRepository $discountCodeRepository,
-        private DriverLocationService $driverLocationService)
+        private DriverLocationService $driverLocationService,
+        private CommissionCalculationService $commissionCalculationService)
     {
         //
     }
@@ -87,12 +89,21 @@ class RequestController extends Controller
                 $validated['discount_amount']=0;
             }
             unset($validated['discount_code']);
+            // حساب عمولة التطبيق
+            $appCommissionAmount = $this->commissionCalculationService->calculateCommission($validated['final_price']);
+            $validated['app_commission_amount'] = $appCommissionAmount;
 
             // تخزين الطلب
             $requestModel = $this->requestRepository->store($validated);
 
-            // جلب أقرب السائقين الاقرب للزبون
-            $NearestDrivers =$this->driverLocationService->getNearestDrivers($validated['start_latitude'], $validated['start_longitude'], 8,20);
+            // جلب أقرب السائقين الاقرب للزبون            
+            $nearestDrivers =$this->driverLocationService->getNearestDrivers($validated['start_latitude'], $validated['start_longitude'], 8,20);
+            if ($nearestDrivers === null) {
+                // لا يوجد سائقين متاحين في المنطقة
+            }
+            // إرسال إشعارات إلى السائقين الأقرب (لم يتم تنفيذه هنا)
+            //
+            //
             return ApiResponseClass::sendResponse($requestModel, 'Request created successfully.');
         } catch (Exception $e) {
             return apiResponseClass::sendError('Failed to create request.'.$e->getMessage());

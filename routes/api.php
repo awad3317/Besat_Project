@@ -33,6 +33,7 @@ Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
         Route::post('/driver/logout',[DriverAuthController::class,'logout']);
         Route::post('/driver/updateDeviceToken',[DriverController::class,'updateDeviceToken']);
         Route::post('/driver/updateLocation',[DriverController::class,'updateLocation']);
+        Route::post('/driver/updateOnlineStatus',[DriverController::class,'updateOnlineStatus']);
 });
         //           Auth Route For User          //
 Route::post('/user/register',[UserAuthController::class,'register']);

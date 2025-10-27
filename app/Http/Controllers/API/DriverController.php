@@ -85,4 +85,20 @@ class DriverController extends Controller
             return ApiResponseClass::sendError('Error updated location.'.$e->getMessage());
         }
     }
+
+     public function updateOnlineStatus(Request $request)
+    {
+        try {
+            $fields = $request->validate([
+                'is_online' => 'required|boolean'
+            ]);
+            $driver_id = auth('sanctum')->id();
+            $this->driverRepository->update($fields, $driver_id);
+            $status = $fields['is_online'] ? 'متصل' : 'غير متصل';
+            return ApiResponseClass::sendResponse([], "تم التحديث إلى: {$status}");
+
+        } catch (Exception $e) {
+            return ApiResponseClass::sendError('فشل في تحديث الحالة: ' . $e->getMessage());
+        }
+    }
 }

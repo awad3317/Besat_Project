@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('status');
             $table->decimal('original_price', 10, 2);
             $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->decimal('app_commission_amount', 10, 2);
             $table->decimal('final_price', 10, 2);
             $table->enum('payment_method', ['cash', 'deposit'])->default('cash');
             $table->decimal('distance_km', 5, 2);
