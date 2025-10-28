@@ -12,6 +12,7 @@ use App\Repositories\ServiceRepository;
 use App\Services\DriverLocationService;
 use App\Services\PriceCalculationService;
 use Google\Cloud\Storage\Connection\Rest;
+use App\Repositories\AppSettingRepository;
 use App\Repositories\DiscountCodeRepository;
 use App\Services\CommissionCalculationService;
 
@@ -23,7 +24,8 @@ class RequestController extends Controller
         private PriceCalculationService $priceCalculationService,
         private DiscountCodeRepository $discountCodeRepository,
         private DriverLocationService $driverLocationService,
-        private CommissionCalculationService $commissionCalculationService)
+        private AppSettingRepository $appSettingRepository
+)
     {
         //
     }
@@ -90,20 +92,26 @@ class RequestController extends Controller
             }
             unset($validated['discount_code']);
             // حساب عمولة التطبيق
-            $appCommissionAmount = $this->commissionCalculationService->calculateCommission($validated['final_price']);
+            $appCommissionAmount = $this->priceCalculationService->calculateCommission($validated['final_price']);
             $validated['app_commission_amount'] = $appCommissionAmount;
 
             // تخزين الطلب
             $requestModel = $this->requestRepository->store($validated);
 
-            // جلب أقرب السائقين الاقرب للزبون            
-            $nearestDrivers =$this->driverLocationService->getNearestDrivers($validated['start_latitude'], $validated['start_longitude'], 8,20);
-            if ($nearestDrivers === null) {
-                // لا يوجد سائقين متاحين في المنطقة
+            $appSettings = $this->appSettingRepository->getSetting();
+            if ($appSettings && $appSettings->auto_assign_to_drivers) {
+                // جلب أقرب السائقين الاقرب للزبون            
+                $nearestDrivers =$this->driverLocationService->getNearestDrivers($validated['start_latitude'], $validated['start_longitude'], 8,20);
+                if ($nearestDrivers === null) {
+                    // لا يوجد سائقين متاحين في المنطقة
+                }
+                // إرسال إشعارات إلى السائقين الأقرب (لم يتم تنفيذه هنا)
+                //
+                //
+            }else {
+                // النظام اليدوي - إرسال الطلب للداشبورد
             }
-            // إرسال إشعارات إلى السائقين الأقرب (لم يتم تنفيذه هنا)
-            //
-            //
+            
             return ApiResponseClass::sendResponse($requestModel, 'Request created successfully.');
         } catch (Exception $e) {
             return apiResponseClass::sendError('Failed to create request.'.$e->getMessage());

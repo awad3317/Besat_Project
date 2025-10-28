@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('app_settings', function (Blueprint $table) {
             $table->id();
             $table->integer('commission_rate')->nullable();
+            $table->boolean('auto_assign_to_drivers')->default(false);
             $table->timestamps();
         });
     }

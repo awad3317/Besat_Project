@@ -3,10 +3,13 @@
 namespace App\Services;
 
 use App\Repositories\ServiceRepository;
+use App\Repositories\AppSettingRepository;
 
 class PriceCalculationService{
-
-    public function __construct(private ServiceRepository $serviceRepository)
+/**
+     * Create a new class instance.
+     */
+    public function __construct(private ServiceRepository $serviceRepository, private AppSettingRepository $appSettingRepository    )
     {
         //
     }
@@ -58,6 +61,14 @@ class PriceCalculationService{
     {
         return ($originalPrice * $coupon->discount_rate) / 100;
     }
+    public function calculateCommission($finalPrice){
+        $setting = $this->appSettingRepository->getSetting();
+
+        $commissionRate = $setting ? $setting->commission_rate : 10;
+
+        $commission = ($finalPrice * $commissionRate) / 100;
+        return $commission;
+     }
 
 
 }

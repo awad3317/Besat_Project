@@ -14,11 +14,10 @@ class AppSettingsSeeder extends Seeder
     public function run(): void
     {
         DB::table('app_settings')->delete();
-
-        // إضافة الإعدادات الأساسية
         DB::table('app_settings')->insert([
             [
-                'commission_rate' => 10, // نسبة العمولة 10%
+                'commission_rate' => 10, 
+                'auto_assign_to_drivers' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]
