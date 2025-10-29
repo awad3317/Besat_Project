@@ -1178,7 +1178,7 @@
         <!-- Dropdown Start -->
         <div
           x-show="dropdownOpen"
-          class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800"
+          class="shadow-theme-lg dark:bg-gray-dark absolute {{ (app()->getLocale() == 'ar') ? 'left-0' : 'right-0' }} mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800"
         >
           <div>
             <span
