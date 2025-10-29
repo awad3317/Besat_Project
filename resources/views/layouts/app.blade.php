@@ -900,8 +900,8 @@
       </button>
       <!-- Hamburger Toggle BTN -->
 
-      <a href="index.html" class="lg:hidden">
-        <img class="dark:hidden w-12 h-12" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+      <a href="index.html" class="lg:hidden w-12 h-12">
+        <img class="dark:hidden " src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
         <img
           class="hidden dark:block w-12 h-12"
           src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
@@ -1049,7 +1049,7 @@
           </button>
 
           <!-- Dropdown Start -->
-          <div
+            <div
             x-show="dropdownOpen"
             class="shadow-theme-lg dark:bg-gray-dark absolute {{ (app()->getLocale() == 'ar') ? '-right-[240px] lg:left-0' : '-left-[240px] lg:right-0' }} mt-[17px] flex h-[480px] w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-3 sm:w-[361px]  dark:border-gray-800"
           >
@@ -1059,7 +1059,7 @@
               <h5
                 class="text-lg font-semibold text-gray-800 dark:text-white/90"
               >
-                Notification
+                الإشعارات
               </h5>
 
               <button
@@ -1094,12 +1094,12 @@
                     class="relative z-1 block h-10 w-full max-w-10 rounded-full"
                   >
                     <img
-                      src="src/images/user/user-02.jpg"
-                      alt="User"
+                      src="{{ asset('tailadmin/build/src/images/user/user-02.jpg') }}"
+                      alt="المستخدم"
                       class="overflow-hidden rounded-full"
                     />
                     <span
-                      class="bg-success-500 absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"
+                      class="bg-success-500 absolute left-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"
                     ></span>
                   </span>
 
@@ -1108,20 +1108,20 @@
                       class="text-theme-sm mb-1.5 block text-gray-500 dark:text-gray-400"
                     >
                       <span class="font-medium text-gray-800 dark:text-white/90"
-                        >Terry Franci</span
+                        >تيري فرانسي</span
                       >
-                      requests permission to change
+                      يطلب الإذن لتغيير
                       <span class="font-medium text-gray-800 dark:text-white/90"
-                        >Project - Nganter App</span
+                        >المشروع - تطبيق نغانتر</span
                       >
                     </span>
 
                     <span
                       class="text-theme-xs flex items-center gap-2 text-gray-500 dark:text-gray-400"
                     >
-                      <span>Project</span>
+                      <span>المشروع</span>
                       <span class="h-1 w-1 rounded-full bg-gray-400"></span>
-                      <span>5 min ago</span>
+                      <span>منذ 5 دقائق</span>
                     </span>
                   </span>
                 </a>
@@ -1132,9 +1132,9 @@
               href="#"
               class="text-theme-sm shadow-theme-xs mt-3 flex justify-center rounded-lg border border-gray-300 bg-white p-3 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
             >
-              View All Notification
+              عرض جميع الإشعارات
             </a>
-          </div>
+            </div>
           <!-- Dropdown End -->
         </div>
         <!-- Notification Menu Area -->
