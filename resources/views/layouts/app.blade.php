@@ -45,8 +45,8 @@
     class="flex items-center gap-2 pt-8 sidebar-header pb-7"
   >
     <a href="index.html">
-      <span class="logo w-12 h-12" :class="sidebarToggle ? 'hidden' : ''">
-        <img class="dark:hidden" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+      <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
+        <img class="dark:hidden w-12 h-12" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
         {{-- Dark logo --}}
         <img
           class="hidden dark:block w-12 h-12"
