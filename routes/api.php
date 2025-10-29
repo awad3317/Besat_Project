@@ -6,6 +6,8 @@ use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
 use App\Http\Controllers\API\VehicleController;
+use App\Http\Controllers\API\AppSettingController;
+use App\Http\Controllers\API\SpecialOrderController;
 use App\Http\Controllers\API\Auth\User\UserOtpController;
 use App\Http\Controllers\API\Auth\User\UserAuthController;
 use App\Http\Controllers\API\Auth\Driver\DriverOtpController;
@@ -26,6 +28,7 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::post('/user/logout',[UserAuthController::class,'logout']);
         Route::post('/user/upsertRating',[RatingController::class,'upsertRating']);
         Route::post('/user/calculatePrice',[RequestController::class,'calculatePrice']);
+        Route::post('/user/specialOrder',[SpecialOrderController::class,'store']);
 });
 
 // Routes For Drivers only
@@ -51,4 +54,5 @@ Route::post('/user/resetPassword', [UserForgetPasswordController::class,'resetPa
         //       Forget Password Route For Driver       //
 Route::post('/driver/forgetPassword', [DriverForgetPasswordController::class,'forgetPassword']);
 Route::post('/driver/resetPassword', [DriverForgetPasswordController::class,'resetPassword']);
-
+        //       App Settings Route    //  
+Route::get('/appSettings', [AppSettingController::class, 'index']); 

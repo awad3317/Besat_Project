@@ -6,12 +6,12 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Classes\ApiResponseClass;
+use App\Services\FirebaseService;
 use App\Http\Controllers\Controller;
 use App\Repositories\RequestRepository;
 use App\Repositories\ServiceRepository;
 use App\Services\DriverLocationService;
 use App\Services\PriceCalculationService;
-use Google\Cloud\Storage\Connection\Rest;
 use App\Repositories\AppSettingRepository;
 use App\Repositories\DiscountCodeRepository;
 use App\Services\CommissionCalculationService;
@@ -24,7 +24,8 @@ class RequestController extends Controller
         private PriceCalculationService $priceCalculationService,
         private DiscountCodeRepository $discountCodeRepository,
         private DriverLocationService $driverLocationService,
-        private AppSettingRepository $appSettingRepository
+        private AppSettingRepository $appSettingRepository,
+        private FirebaseService $firebaseService
 )
     {
         //
@@ -105,13 +106,26 @@ class RequestController extends Controller
                 if ($nearestDrivers === null) {
                     // لا يوجد سائقين متاحين في المنطقة
                 }
-                // إرسال إشعارات إلى السائقين الأقرب (لم يتم تنفيذه هنا)
-                //
-                //
+                $title = 'طلب جديد';
+                $body = 'يوجد طلب جديد في منطقتك، اضغط لقبول الطلب';
+                $data = [
+                    'start_latitude' => $validated['start_latitude'],
+                    'start_longitude' => $validated['start_longitude'],
+                    'start_address' => $validated['start_address'],
+                ];
+                foreach ($nearestDrivers as $driver) {
+                    if (isset($driver['device_token']) && !empty($driver['device_token'])) {
+                        $this->firebaseService->sendNotification(
+                            $driver['device_token'],
+                            $title,
+                            $body,
+                            $data
+                        );
+                    }
+                }
             }else {
                 // النظام اليدوي - إرسال الطلب للداشبورد
             }
-            
             return ApiResponseClass::sendResponse($requestModel, 'Request created successfully.');
         } catch (Exception $e) {
             return apiResponseClass::sendError('Failed to create request.'.$e->getMessage());
