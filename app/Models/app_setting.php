@@ -12,7 +12,9 @@ class app_setting extends Model
 
     protected $fillable = [
         'commission_rate',
-        'auto_assign_to_drivers'
+        'auto_assign_to_drivers',
+        'version',
+        'update_url',
     ];
     protected $casts = [
         'auto_assign_to_drivers' => 'boolean',
