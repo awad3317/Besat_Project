@@ -42,7 +42,7 @@
   <!-- SIDEBAR HEADER -->
   <div
     :class="sidebarToggle ? 'justify-center' : 'justify-between'"
-    class="flex items-center gap-2 pt-8 sidebar-header pb-7"
+    class="flex items-center gap-2 pt-8 sidebar-header pb-3"
   >
     <a href="index.html">
       <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
