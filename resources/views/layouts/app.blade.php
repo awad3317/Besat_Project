@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html  lang="{{ app()->getLocale() }}" dir="{{ (app()->getLocale() == 'ar') ? 'rtl' : 'ltr' }}">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -1050,7 +1050,7 @@
           <!-- Dropdown Start -->
           <div
             x-show="dropdownOpen"
-            class="shadow-theme-lg dark:bg-gray-dark absolute -right-[240px] mt-[17px] flex h-[480px] w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-3 sm:w-[361px] lg:right-0 dark:border-gray-800"
+            class="shadow-theme-lg dark:bg-gray-dark absolute {{ (app()->getLocale() == 'ar') ? '-right-[240px] lg:left-0' : '-left-[240px] lg:right-0' }} mt-[17px] flex h-[480px] w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-3 sm:w-[361px] lg:right-0 dark:border-gray-800"
           >
             <div
               class="mb-3 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
