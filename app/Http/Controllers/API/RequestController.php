@@ -109,6 +109,7 @@ class RequestController extends Controller
                 $title = 'طلب جديد';
                 $body = 'يوجد طلب جديد في منطقتك، اضغط لقبول الطلب';
                 $data = [
+                    'request_id' => $requestModel->id,
                     'start_latitude' => $validated['start_latitude'],
                     'start_longitude' => $validated['start_longitude'],
                     'start_address' => $validated['start_address'],
