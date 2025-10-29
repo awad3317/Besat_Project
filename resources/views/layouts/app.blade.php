@@ -11,7 +11,7 @@
       eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template
     </title>
   <link rel="icon" href="{{ asset('tailadmin/build/favicon.ico') }}">
-  <link href="style.css" rel="{{ asset('tailadmin/build/stylesheet') }}"></head>
+  <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet"></head>
   <body
     x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
     x-init="
