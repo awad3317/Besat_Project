@@ -901,9 +901,9 @@
       <!-- Hamburger Toggle BTN -->
 
       <a href="index.html" class="lg:hidden">
-        <img class="dark:hidden" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+        <img class="dark:hidden w-12 h-12" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
         <img
-          class="hidden dark:block"
+          class="hidden dark:block w-12 h-12"
           src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
           alt="Logo"
         />
