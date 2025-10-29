@@ -46,10 +46,11 @@
   >
     <a href="index.html">
       <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-        <img class="dark:hidden" src="src/images/logo/logo.svg" alt="Logo" />
+        <img class="dark:hidden" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+        {{-- Dark logo --}}
         <img
           class="hidden dark:block"
-          src="src/images/logo/logo-dark.svg"
+          src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
           alt="Logo"
         />
       </span>
@@ -57,7 +58,7 @@
       <img
         class="logo-icon"
         :class="sidebarToggle ? 'lg:block' : 'hidden'"
-        src="src/images/logo/logo-icon.svg"
+        src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
         alt="Logo"
       />
     </a>
@@ -1151,7 +1152,7 @@
           @click.prevent="dropdownOpen = ! dropdownOpen"
         >
           <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
-            <img src="src/images/user/owner.jpg" alt="User" />
+            <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="User" />
           </span>
 
           <span class="text-theme-sm mr-1 block font-medium">{{ Auth::user()->name }}</span>
