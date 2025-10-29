@@ -653,7 +653,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     line-height: var(--tw-leading, var(--text-xs--line-height));
     --tw-font-weight: var(--font-weight-medium);
     font-weight: var(--font-weight-medium);
-    color: var(--color-brand-500);
+    color: var(--color-warning-500);
     text-transform: uppercase;
     &:is(.dark *) {
       color: var(--color-brand-400);
@@ -1031,7 +1031,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   }
   .menu-item-arrow-active {
     rotate: 180deg;
-    stroke: var(--color-brand-500);
+    stroke: var(--color-warning-500);
     &:is(.dark *) {
       stroke: var(--color-brand-400);
     }
@@ -1311,7 +1311,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     border-color: var(--color-blue-light-500);
   }
   .border-brand-500 {
-    border-color: var(--color-brand-500);
+    border-color: var(--color-warning-500);
   }
   .border-error-300 {
     border-color: var(--color-error-300);
@@ -1380,10 +1380,10 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     }
   }
   .menu-dropdown-item-active {
-    background-color: var(--color-brand-50);
-    color: var(--color-brand-500);
+    background-color: var(--color-warning-50);
+    color: var(--color-warning-500);
     &:is(.dark *) {
-      background-color: color-mix(in oklab, var(--color-brand-500) 12%, transparent);
+      background-color: color-mix(in oklab, var(--color-warning-500) 12%, transparent);
     }
     &:is(.dark *) {
       color: var(--color-brand-400);
@@ -1408,29 +1408,29 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     }
   }
   .menu-item-active {
-    background-color: var(--color-brand-50);
-    color: var(--color-brand-500);
+    background-color: var(--color-warning-50);
+    color: var(--color-warning-500);
     &:is(.dark *) {
-      background-color: color-mix(in oklab, var(--color-brand-500) 12%, transparent);
+      background-color: color-mix(in oklab, var(--color-warning-500) 12%, transparent);
     }
     &:is(.dark *) {
       color: var(--color-brand-400);
     }
   }
   .menu-dropdown-badge-inactive {
-    background-color: var(--color-brand-50);
+    background-color: var(--color-warning-50);
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
         background-color: var(--color-brand-100);
       }
     }
     &:is(.dark *) {
-      background-color: color-mix(in oklab, var(--color-brand-500) 15%, transparent);
+      background-color: color-mix(in oklab, var(--color-warning-500) 15%, transparent);
     }
     &:is(.dark *) {
       &:is(:where(.group):hover *) {
         @media (hover: hover) {
-          background-color: color-mix(in oklab, var(--color-brand-500) 20%, transparent);
+          background-color: color-mix(in oklab, var(--color-warning-500) 20%, transparent);
         }
       }
     }
@@ -1438,7 +1438,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   .menu-dropdown-badge-active {
     background-color: var(--color-brand-100);
     &:is(.dark *) {
-      background-color: color-mix(in oklab, var(--color-brand-500) 20%, transparent);
+      background-color: color-mix(in oklab, var(--color-warning-500) 20%, transparent);
     }
   }
   .bg-blue-500\/\[0\.08\] {
@@ -1451,10 +1451,10 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     background-color: var(--color-blue-light-500);
   }
   .bg-brand-50 {
-    background-color: var(--color-brand-50);
+    background-color: var(--color-warning-50);
   }
   .bg-brand-500 {
-    background-color: var(--color-brand-500);
+    background-color: var(--color-warning-500);
   }
   .bg-brand-950 {
     background-color: var(--color-brand-950);
@@ -1556,7 +1556,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     }
   }
   .menu-item-icon-active {
-    fill: var(--color-brand-500);
+    fill: var(--color-warning-500);
     &:is(.dark *) {
       fill: var(--color-brand-400);
     }
@@ -1900,7 +1900,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     color: var(--color-blue-light-500);
   }
   .text-brand-500 {
-    color: var(--color-brand-500);
+    color: var(--color-warning-500);
   }
   .text-error-500 {
     color: var(--color-error-500);
@@ -2249,14 +2249,14 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   .hover\:border-brand-500 {
     &:hover {
       @media (hover: hover) {
-        border-color: var(--color-brand-500);
+        border-color: var(--color-warning-500);
       }
     }
   }
   .hover\:border-brand-500\! {
     &:hover {
       @media (hover: hover) {
-        border-color: var(--color-brand-500) !important;
+        border-color: var(--color-warning-500) !important;
       }
     }
   }
@@ -2386,7 +2386,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   }
   .focus\:ring-brand-500\/10 {
     &:focus {
-      --tw-ring-color: color-mix(in oklab, var(--color-brand-500) 10%, transparent);
+      --tw-ring-color: color-mix(in oklab, var(--color-warning-500) 10%, transparent);
     }
   }
   .focus\:ring-error-500\/10 {
@@ -3072,7 +3072,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   }
   .dark\:border-brand-500 {
     &:is(.dark *) {
-      border-color: var(--color-brand-500);
+      border-color: var(--color-warning-500);
     }
   }
   .dark\:border-error-500\/30 {
@@ -3137,12 +3137,12 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   }
   .dark\:bg-brand-500 {
     &:is(.dark *) {
-      background-color: var(--color-brand-500);
+      background-color: var(--color-warning-500);
     }
   }
   .dark\:bg-brand-500\/15 {
     &:is(.dark *) {
-      background-color: color-mix(in oklab, var(--color-brand-500) 15%, transparent);
+      background-color: color-mix(in oklab, var(--color-warning-500) 15%, transparent);
     }
   }
   .dark\:bg-error-500\/15 {
@@ -3410,7 +3410,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     &:is(.dark *) {
       &:hover {
         @media (hover: hover) {
-          border-color: var(--color-brand-500);
+          border-color: var(--color-warning-500);
         }
       }
     }
@@ -3419,7 +3419,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     &:is(.dark *) {
       &:hover {
         @media (hover: hover) {
-          border-color: var(--color-brand-500) !important;
+          border-color: var(--color-warning-500) !important;
         }
       }
     }
@@ -3663,8 +3663,8 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   opacity: 100%;
 }
 .tableCheckbox:checked ~ span {
-  border-color: var(--color-brand-500);
-  background-color: var(--color-brand-500);
+  border-color: var(--color-warning-500);
+  background-color: var(--color-warning-500);
 }
 .apexcharts-legend-text {
   color: var(--color-gray-700) !important;
@@ -3769,7 +3769,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   fill: var(--color-gray-300) !important;
   &:hover {
     @media (hover: hover) {
-      fill: var(--color-brand-500) !important;
+      fill: var(--color-warning-500) !important;
     }
   }
   &:is(.dark *) {
@@ -3778,7 +3778,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   &:is(.dark *) {
     &:hover {
       @media (hover: hover) {
-        fill: var(--color-brand-500) !important;
+        fill: var(--color-warning-500) !important;
       }
     }
   }
@@ -3862,7 +3862,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
 }
 .flatpickr-months .flatpickr-prev-month:hover svg,
 .flatpickr-months .flatpickr-next-month:hover svg {
-  stroke: var(--color-brand-500);
+  stroke: var(--color-warning-500);
 }
 .flatpickr-calendar.arrowTop:before,
 .flatpickr-calendar.arrowTop:after {
@@ -4025,16 +4025,16 @@ span.flatpickr-weekday,
 .flatpickr-day.startRange.nextMonthDay,
 .flatpickr-day.endRange.nextMonthDay {
   background: #465fff;
-  border-color: var(--color-brand-500) !important;
-  background-color: var(--color-brand-500) !important;
+  border-color: var(--color-warning-500) !important;
+  background-color: var(--color-warning-500) !important;
   &:hover {
     @media (hover: hover) {
-      border-color: var(--color-brand-500) !important;
+      border-color: var(--color-warning-500) !important;
     }
   }
   &:hover {
     @media (hover: hover) {
-      background-color: var(--color-brand-500) !important;
+      background-color: var(--color-warning-500) !important;
     }
   }
 }
@@ -4193,7 +4193,7 @@ span.flatpickr-weekday,
   border-radius: var(--radius-lg) !important;
   border-style: var(--tw-border-style) !important;
   border-width: 0px !important;
-  background-color: var(--color-brand-500) !important;
+  background-color: var(--color-warning-500) !important;
   padding-inline: calc(var(--spacing) * 4) !important;
   padding-block: calc(var(--spacing) * 2.5) !important;
   font-size: var(--text-sm) !important;
@@ -4382,8 +4382,8 @@ span.flatpickr-weekday,
   background-color: var(--color-error-50);
 }
 .event-fc-color.fc-bg-primary {
-  border-color: var(--color-brand-50);
-  background-color: var(--color-brand-50);
+  border-color: var(--color-warning-50);
+  background-color: var(--color-warning-50);
 }
 .event-fc-color.fc-bg-warning {
   border-color: var(--color-orange-50);
@@ -4396,7 +4396,7 @@ span.flatpickr-weekday,
   background-color: var(--color-error-500);
 }
 .event-fc-color.fc-bg-primary .fc-daygrid-event-dot {
-  background-color: var(--color-brand-500);
+  background-color: var(--color-warning-500);
 }
 .event-fc-color.fc-bg-warning .fc-daygrid-event-dot {
   background-color: var(--color-orange-500);
@@ -4534,9 +4534,9 @@ span.flatpickr-weekday,
 .form-check-input:checked ~ span {
   border-style: var(--tw-border-style);
   border-width: 6px;
-  border-color: var(--color-brand-500);
+  border-color: var(--color-warning-500);
   &:is(.dark *) {
-    border-color: var(--color-brand-500);
+    border-color: var(--color-warning-500);
   }
 }
 .taskCheckbox:checked ~ .box span {
@@ -4547,10 +4547,10 @@ span.flatpickr-weekday,
   text-decoration-line: line-through;
 }
 .taskCheckbox:checked ~ .box {
-  border-color: var(--color-brand-500);
-  background-color: var(--color-brand-500);
+  border-color: var(--color-warning-500);
+  background-color: var(--color-warning-500);
   &:is(.dark *) {
-    border-color: var(--color-brand-500);
+    border-color: var(--color-warning-500);
   }
 }
 .task {
