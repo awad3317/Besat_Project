@@ -656,7 +656,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     color: var(--color-warning-500);
     text-transform: uppercase;
     &:is(.dark *) {
-      color: var(--color-brand-400);
+      color: var(--color-warning-400);
     }
   }
   .no-scrollbar {
@@ -1033,7 +1033,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     rotate: 180deg;
     stroke: var(--color-warning-500);
     &:is(.dark *) {
-      stroke: var(--color-brand-400);
+      stroke: var(--color-warning-400);
     }
   }
   .rotate-180 {
@@ -1386,7 +1386,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
       background-color: color-mix(in oklab, var(--color-warning-500) 12%, transparent);
     }
     &:is(.dark *) {
-      color: var(--color-brand-400);
+      color: var(--color-warning-400);
     }
   }
   .menu-dropdown-item-inactive {
@@ -1414,7 +1414,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
       background-color: color-mix(in oklab, var(--color-warning-500) 12%, transparent);
     }
     &:is(.dark *) {
-      color: var(--color-brand-400);
+      color: var(--color-warning-400);
     }
   }
   .menu-dropdown-badge-inactive {
@@ -1558,7 +1558,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   .menu-item-icon-active {
     fill: var(--color-warning-500);
     &:is(.dark *) {
-      fill: var(--color-brand-400);
+      fill: var(--color-warning-400);
     }
   }
   .fill-current {
@@ -3247,7 +3247,7 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
   }
   .dark\:text-brand-400 {
     &:is(.dark *) {
-      color: var(--color-brand-400);
+      color: var(--color-warning-400);
     }
   }
   .dark\:text-error-500 {
