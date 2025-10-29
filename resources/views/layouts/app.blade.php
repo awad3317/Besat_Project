@@ -45,18 +45,18 @@
     class="flex items-center gap-2 pt-8 sidebar-header pb-7"
   >
     <a href="index.html">
-      <span class="logo w-12 h-12 object-contain" :class="sidebarToggle ? 'hidden' : ''">
+      <span class="logo w-12 h-12" :class="sidebarToggle ? 'hidden' : ''">
         <img class="dark:hidden" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
         {{-- Dark logo --}}
         <img
-          class="hidden dark:block w-12 h-12 object-contain"
+          class="hidden dark:block w-12 h-12"
           src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
           alt="Logo"
         />
       </span>
 
       <img
-        class="logo-icon w-12 h-12 object-contain"
+        class="logo-icon w-12 h-12"
         :class="sidebarToggle ? 'lg:block' : 'hidden'"
         src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
         alt="Logo"
@@ -901,10 +901,10 @@
       <!-- Hamburger Toggle BTN -->
 
       <a href="index.html" class="lg:hidden">
-        <img class="dark:hidden" src="src/images/logo/logo.svg" alt="Logo" />
+        <img class="dark:hidden" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
         <img
           class="hidden dark:block"
-          src="src/images/logo/logo-dark.svg"
+          src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
           alt="Logo"
         />
       </a>
