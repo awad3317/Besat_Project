@@ -46,17 +46,17 @@
   >
     <a href="index.html">
       <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-        <img class="dark:hidden w-16 h-16" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+        <img class="dark:hidden w-12 h-12" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
         {{-- Dark logo --}}
         <img
-          class="hidden dark:block w-16 h-16"
+          class="hidden dark:block w-12 h-12"
           src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
           alt="Logo"
         />
       </span>
 
       <img
-        class="logo-icon w-16 h-16"
+        class="logo-icon w-12 h-12"
         :class="sidebarToggle ? 'lg:block' : 'hidden'"
         src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
         alt="Logo"
@@ -900,10 +900,10 @@
       </button>
       <!-- Hamburger Toggle BTN -->
 
-      <a href="index.html" class="lg:hidden w-16 h-16">
+      <a href="index.html" class="lg:hidden w-12 h-12">
         <img class="dark:hidden " src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
         <img
-          class="hidden dark:block w-16 h-16"
+          class="hidden dark:block w-12 h-12"
           src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
           alt="Logo"
         />
