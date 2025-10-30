@@ -78,7 +78,7 @@
             class="menu-group-title"
             :class="sidebarToggle ? 'lg:hidden' : ''"
           >
-            MENU
+            القائمة الرئيسية
           </span>
 
           <svg
@@ -128,30 +128,12 @@
                 class="menu-item-text"
                 :class="sidebarToggle ? 'lg:hidden' : ''"
               >
-                Dashboard
+                الصفحة الرئيسية
               </span>
-
-              <svg
-                class="menu-item-arrow"
-                :class="[(selected === 'Dashboard') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585"
-                  stroke=""
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
             </a>
 
             <!-- Dropdown Menu Start -->
-            <div
+            {{-- <div
               class="overflow-hidden transform translate"
               :class="(selected === 'Dashboard') ? 'block' :'hidden'"
             >
@@ -169,13 +151,13 @@
                   </a>
                 </li>
               </ul>
-            </div>
+            </div> --}}
             <!-- Dropdown Menu End -->
           </li>
           <!-- Menu Item Dashboard -->
 
           <!-- Menu Item Calendar -->
-          <li>
+          {{-- <li>
             <a
               href="calendar.html"
               @click="selected = (selected === 'Calendar' ? '':'Calendar')"
@@ -205,11 +187,11 @@
                 Calendar
               </span>
             </a>
-          </li>
+          </li> --}}
           <!-- Menu Item Calendar -->
 
           <!-- Menu Item Profile -->
-          <li>
+          {{-- <li>
             <a
               href="profile.html"
               @click="selected = (selected === 'Profile' ? '':'Profile')"
@@ -239,11 +221,11 @@
                 User Profile
               </span>
             </a>
-          </li>
+          </li> --}}
           <!-- Menu Item Profile -->
 
           <!-- Menu Item Forms -->
-          <li>
+          {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Forms' ? '':'Forms')"
@@ -313,11 +295,11 @@
               </ul>
             </div>
             <!-- Dropdown Menu End -->
-          </li>
+          </li> --}}
           <!-- Menu Item Forms -->
 
           <!-- Menu Item Tables -->
-          <li>
+          {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Tables' ? '':'Tables')"
@@ -387,11 +369,11 @@
               </ul>
             </div>
             <!-- Dropdown Menu End -->
-          </li>
+          </li> --}}
           <!-- Menu Item Tables -->
 
           <!-- Menu Item Pages -->
-          <li>
+          {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Pages' ? '':'Pages')"
@@ -470,13 +452,13 @@
               </ul>
             </div>
             <!-- Dropdown Menu End -->
-          </li>
+          </li> --}}
           <!-- Menu Item Pages -->
         </ul>
       </div>
 
       <!-- Others Group -->
-      <div>
+      {{-- <div>
         <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
           <span
             class="menu-group-title"
@@ -789,31 +771,9 @@
           </li>
           <!-- Menu Item Authentication -->
         </ul>
-      </div>
+      </div> --}}
     </nav>
     <!-- Sidebar Menu -->
-
-    <!-- Promo Box -->
-    <div
-      :class="sidebarToggle ? 'lg:hidden' : ''"
-      class="mx-auto mb-10 w-full max-w-60 rounded-2xl bg-gray-50 px-4 py-5 text-center dark:bg-white/[0.03]"
-    >
-      <h3 class="mb-2 font-semibold text-gray-900 dark:text-white">
-        #1 Tailwind CSS Dashboard
-      </h3>
-      <p class="mb-4 text-gray-500 text-theme-sm dark:text-gray-400">
-        Leading Tailwind CSS Admin Template with 400+ UI Component and Pages.
-      </p>
-      <a
-        href="https://tailadmin.com/pricing"
-        target="_blank"
-        rel="nofollow"
-        class="flex items-center justify-center p-3 font-medium text-white rounded-lg bg-brand-500 text-theme-sm hover:bg-brand-600"
-      >
-        Purchase Plan
-      </a>
-    </div>
-    <!-- Promo Box -->
   </div>
 </aside>
 
@@ -933,44 +893,6 @@
         </svg>
       </button>
       <!-- Application nav menu button -->
-
-      {{-- <div class="hidden lg:block">
-        <form>
-          <div class="relative">
-            <span class="absolute top-1/2 left-4 -translate-y-1/2">
-              <svg
-                class="fill-gray-500 dark:fill-gray-400"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z"
-                  fill=""
-                />
-              </svg>
-            </span>
-            <input
-              type="text"
-              placeholder="Search or type command..."
-              id="search-input"
-              class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30"
-            />
-
-            <button
-              id="search-button"
-              class="absolute top-1/2 right-2.5 inline-flex -translate-y-1/2 items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px] text-xs -tracking-[0.2px] text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400"
-            >
-              <span> ⌘ </span>
-              <span> K </span>
-            </button>
-          </div>
-        </form>
-      </div> --}}
     </div>
 
     <div
@@ -1067,7 +989,7 @@
                 @click="dropdownOpen = false"
                 class="text-gray-500 dark:text-gray-400"
               >
-                <svg
+                {{-- <svg
                   class="fill-current"
                   width="24"
                   height="24"
@@ -1081,7 +1003,7 @@
                     d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
                     fill=""
                   />
-                </svg>
+                </svg> --}}
               </button>
             </div>
 
@@ -1091,36 +1013,19 @@
                   class="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
                   href="#"
                 >
-                  <span
-                    class="relative z-1 block h-10 w-full max-w-10 rounded-full"
-                  >
-                    <img
-                      src="{{ asset('tailadmin/build/src/images/user/user-02.jpg') }}"
-                      alt="المستخدم"
-                      class="overflow-hidden rounded-full"
-                    />
-                    <span
-                      class="bg-success-500 absolute left-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"
-                    ></span>
-                  </span>
-
                   <span class="block">
                     <span
                       class="text-theme-sm mb-1.5 block text-gray-500 dark:text-gray-400"
                     >
-                      <span class="font-medium text-gray-800 dark:text-white/90"
-                        >تيري فرانسي</span
-                      >
-                      يطلب الإذن لتغيير
-                      <span class="font-medium text-gray-800 dark:text-white/90"
-                        >المشروع - تطبيق نغانتر</span
-                      >
+                      <span class="font-medium text-gray-800 dark:text-white/90">
+                        طلب توصيل الى الكيكه باي مبلغ كان كل يوم خميس اساعه 10 مساء
+                        </span>
                     </span>
 
                     <span
                       class="text-theme-xs flex items-center gap-2 text-gray-500 dark:text-gray-400"
                     >
-                      <span>المشروع</span>
+                      <span>توصيل</span>
                       <span class="h-1 w-1 rounded-full bg-gray-400"></span>
                       <span>منذ 5 دقائق</span>
                     </span>
@@ -1198,7 +1103,7 @@
           <ul
             class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800"
           >
-            <li>
+            {{-- <li>
               <a
                 href="profile.html"
                 class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -1220,8 +1125,8 @@
                 </svg>
                 Edit profile
               </a>
-            </li>
-            <li>
+            </li> --}}
+            {{-- <li>
               <a
                 href="messages.html"
                 class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -1243,8 +1148,8 @@
                 </svg>
                 Account settings
               </a>
-            </li>
-            <li>
+            </li> --}}
+            {{-- <li>
               <a
                 href="settings.html"
                 class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -1266,9 +1171,11 @@
                 </svg>
                 Support
               </a>
-            </li>
+            </li> --}}
           </ul>
-          <button
+          <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button
             class="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
           >
             <svg
@@ -1289,6 +1196,10 @@
 
             Sign out
           </button>
+          </form>
+        
+          
+          
         </div>
         <!-- Dropdown End -->
       </div>
@@ -1304,10 +1215,10 @@
             <div class="grid grid-cols-12 gap-4 md:gap-6">
               <div class="col-span-12 space-y-6 xl:col-span-7">
                 <!-- Metric Group One -->
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
-  <!-- Metric Item Start -->
+                <div class="flex flex-row gap-4 md:gap-6">
+  <!-- Metric Item 1 - المستخدمين -->
   <div
-    class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
+    class="flex-1 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
   >
     <div
       class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800"
@@ -1331,42 +1242,57 @@
 
     <div class="mt-5 flex items-end justify-between">
       <div>
-        <span class="text-sm text-gray-500 dark:text-gray-400">Customers</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">المستخدمين</span>
         <h4
           class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90"
         >
-          3,782
+          100
         </h4>
       </div>
-
-      <span
-        class="flex items-center gap-1 rounded-full bg-success-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500"
-      >
-        <svg
-          class="fill-current"
-          width="12"
-          height="12"
-          viewBox="0 0 12 12"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M5.56462 1.62393C5.70193 1.47072 5.90135 1.37432 6.12329 1.37432C6.1236 1.37432 6.12391 1.37432 6.12422 1.37432C6.31631 1.37415 6.50845 1.44731 6.65505 1.59381L9.65514 4.5918C9.94814 4.88459 9.94831 5.35947 9.65552 5.65246C9.36273 5.94546 8.88785 5.94562 8.59486 5.65283L6.87329 3.93247L6.87329 10.125C6.87329 10.5392 6.53751 10.875 6.12329 10.875C5.70908 10.875 5.37329 10.5392 5.37329 10.125L5.37329 3.93578L3.65516 5.65282C3.36218 5.94562 2.8873 5.94547 2.5945 5.65248C2.3017 5.35949 2.30185 4.88462 2.59484 4.59182L5.56462 1.62393Z"
-            fill=""
-          />
-        </svg>
-
-        11.01%
-      </span>
     </div>
   </div>
-  <!-- Metric Item End -->
+  <!-- Metric Item 1 End -->
 
-  <!-- Metric Item Start -->
+  <!-- Metric Item 2 - السائقين -->
   <div
-    class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
+    class="flex-1 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
+  >
+    <div
+      class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800"
+    >
+      <svg
+        class="fill-gray-800 dark:fill-white/90"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M15 4.5C15 3.67157 15.6716 3 16.5 3H18.5C19.3284 3 20 3.67157 20 4.5C20 5.32843 19.3284 6 18.5 6H16.5C15.6716 6 15 5.32843 15 4.5ZM12 4.5C12 3.67157 11.3284 3 10.5 3H8.5C7.67157 3 7 3.67157 7 4.5C7 5.32843 7.67157 6 8.5 6H10.5C11.3284 6 12 5.32843 12 4.5ZM4 12C4 9.79086 5.79086 8 8 8H16C18.2091 8 20 9.79086 20 12V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V12ZM8 10C6.89543 10 6 10.8954 6 12V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V12C18 10.8954 17.1046 10 16 10H8Z"
+          fill=""
+        />
+      </svg>
+    </div>
+
+    <div class="mt-5 flex items-end justify-between">
+      <div>
+        <span class="text-sm text-gray-500 dark:text-gray-400">السائقين</span>
+        <h4
+          class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90"
+        >
+          50
+        </h4>
+      </div>
+    </div>
+  </div>
+  <!-- Metric Item 2 End -->
+
+  <!-- Metric Item 3 - الطلبات -->
+  <div
+    class="flex-1 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
   >
     <div
       class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800"
@@ -1390,475 +1316,73 @@
 
     <div class="mt-5 flex items-end justify-between">
       <div>
-        <span class="text-sm text-gray-500 dark:text-gray-400">Orders</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">الطلبات</span>
         <h4
           class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90"
         >
-          5,359
+          1,250
         </h4>
       </div>
-
-      <span
-        class="flex items-center gap-1 rounded-full bg-error-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500"
-      >
-        <svg
-          class="fill-current"
-          width="12"
-          height="12"
-          viewBox="0 0 12 12"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M5.31462 10.3761C5.45194 10.5293 5.65136 10.6257 5.87329 10.6257C5.8736 10.6257 5.8739 10.6257 5.87421 10.6257C6.0663 10.6259 6.25845 10.5527 6.40505 10.4062L9.40514 7.4082C9.69814 7.11541 9.69831 6.64054 9.40552 6.34754C9.11273 6.05454 8.63785 6.05438 8.34486 6.34717L6.62329 8.06753L6.62329 1.875C6.62329 1.46079 6.28751 1.125 5.87329 1.125C5.45908 1.125 5.12329 1.46079 5.12329 1.875L5.12329 8.06422L3.40516 6.34719C3.11218 6.05439 2.6373 6.05454 2.3445 6.34752C2.0517 6.64051 2.05185 7.11538 2.34484 7.40818L5.31462 10.3761Z"
-            fill=""
-          />
-        </svg>
-
-        9.05%
-      </span>
     </div>
   </div>
-  <!-- Metric Item End -->
-</div>
+  <!-- Metric Item 3 End -->
+
+  <!-- Metric Item 4 - -->
+  <div
+    class="flex-1 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
+  >
+    <div
+      class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800"
+    >
+      <svg
+        class="fill-gray-800 dark:fill-white/90"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M12 2.25C12.4142 2.25 12.75 2.58579 12.75 3V3.75H18C18.4142 3.75 18.75 4.08579 18.75 4.5C18.75 4.91421 18.4142 5.25 18 5.25H12.75V6C12.75 6.41421 12.4142 6.75 12 6.75C11.5858 6.75 11.25 6.41421 11.25 6V5.25H6C5.58579 5.25 5.25 4.91421 5.25 4.5C5.25 4.08579 5.58579 3.75 6 3.75H11.25V3C11.25 2.58579 11.5858 2.25 12 2.25ZM3 9.75C3 9.33579 3.33579 9 3.75 9H20.25C20.6642 9 21 9.33579 21 9.75C21 10.1642 20.6642 10.5 20.25 10.5H3.75C3.33579 10.5 3 10.1642 3 9.75ZM4.5 14.25C4.5 13.8358 4.83579 13.5 5.25 13.5H18.75C19.1642 13.5 19.5 13.8358 19.5 14.25C19.5 14.6642 19.1642 15 18.75 15H5.25C4.83579 15 4.5 14.6642 4.5 14.25ZM6 18C5.58579 18 5.25 18.3358 5.25 18.75C5.25 19.1642 5.58579 19.5 6 19.5H18C18.4142 19.5 18.75 19.1642 18.75 18.75C18.75 18.3358 18.4142 18 18 18H6Z"
+          fill=""
+        />
+      </svg>
+    </div>
+
+    <div class="mt-5 flex items-end justify-between">
+      <div>
+        <span class="text-sm text-gray-500 dark:text-gray-400">الطلبات الحالية</span>
+        <h4
+          class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90"
+        >
+          45
+        </h4>
+      </div>
+    </div>
+  </div>
+  <!-- Metric Item 4 End -->
+                </div>
 <!-- Metric Group One -->
 
-                <!-- ====== Chart One Start -->
-                <div
-  class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6"
->
-  <div class="flex items-center justify-between">
-    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-      Monthly Sales
-    </h3>
-
-    <div x-data="{openDropDown: false}" class="relative h-fit">
-      <button
-        @click="openDropDown = !openDropDown"
-        :class="openDropDown ? 'text-gray-700 dark:text-white' : 'text-gray-400 hover:text-gray-700 dark:hover:text-white'"
-      >
-        <svg
-          class="fill-current"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-            fill=""
-          />
-        </svg>
-      </button>
-      <div
-        x-show="openDropDown"
-        @click.outside="openDropDown = false"
-        class="absolute right-0 z-40 w-40 p-2 space-y-1 bg-white border border-gray-200 top-full rounded-2xl shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
-      >
-        <button
-          class="flex w-full px-3 py-2 font-medium text-left text-gray-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-        >
-          View More
-        </button>
-        <button
-          class="flex w-full px-3 py-2 font-medium text-left text-gray-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="max-w-full overflow-x-auto custom-scrollbar">
-    <div class="-ml-5 min-w-[650px] pl-2 xl:min-w-full">
-      <div
-        id="chartOne"
-        class="-ml-5 h-full min-w-[650px] pl-2 xl:min-w-full"
-      ></div>
-    </div>
-  </div>
-</div>
-<!-- ====== Chart One End -->
+               
               </div>
               <div class="col-span-12 xl:col-span-5">
-                <!-- ====== Chart Two Start -->
-                <div
-  class="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03]"
->
-  <div
-    class="shadow-default rounded-2xl bg-white px-5 pb-11 pt-5 dark:bg-gray-900 sm:px-6 sm:pt-6"
-  >
-    <div class="flex justify-between">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Monthly Target
-        </h3>
-        <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">
-          Target you’ve set for each month
-        </p>
-      </div>
-      <div x-data="{openDropDown: false}" class="relative h-fit">
-        <button
-          @click="openDropDown = !openDropDown"
-          :class="openDropDown ? 'text-gray-700 dark:text-white' : 'text-gray-400 hover:text-gray-700 dark:hover:text-white'"
-        >
-          <svg
-            class="fill-current"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-              fill=""
-            />
-          </svg>
-        </button>
-        <div
-          x-show="openDropDown"
-          @click.outside="openDropDown = false"
-          class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-2xl border border-gray-200 bg-white p-2 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
-        >
-          <button
-            class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-          >
-            View More
-          </button>
-          <button
-            class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="relative max-h-[195px]">
-      <div id="chartTwo" class="h-full"></div>
-      <span
-        class="absolute left-1/2 top-[85%] -translate-x-1/2 -translate-y-[85%] rounded-full bg-success-50 px-3 py-1 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500"
-        >+10%</span
-      >
-    </div>
-    <p
-      class="mx-auto mt-1.5 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base"
-    >
-      You earn $3287 today, it's higher than last month. Keep up your good work!
-    </p>
-  </div>
-
-  <div
-    class="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5"
-  >
-    <div>
-      <p
-        class="mb-1 text-center text-theme-xs text-gray-500 dark:text-gray-400 sm:text-sm"
-      >
-        Target
-      </p>
-      <p
-        class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg"
-      >
-        $20K
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M7.26816 13.6632C7.4056 13.8192 7.60686 13.9176 7.8311 13.9176C7.83148 13.9176 7.83187 13.9176 7.83226 13.9176C8.02445 13.9178 8.21671 13.8447 8.36339 13.6981L12.3635 9.70076C12.6565 9.40797 12.6567 8.9331 12.3639 8.6401C12.0711 8.34711 11.5962 8.34694 11.3032 8.63973L8.5811 11.36L8.5811 2.5C8.5811 2.08579 8.24531 1.75 7.8311 1.75C7.41688 1.75 7.0811 2.08579 7.0811 2.5L7.0811 11.3556L4.36354 8.63975C4.07055 8.34695 3.59568 8.3471 3.30288 8.64009C3.01008 8.93307 3.01023 9.40794 3.30321 9.70075L7.26816 13.6632Z"
-            fill="#D92D20"
-          />
-        </svg>
-      </p>
-    </div>
-
-    <div class="h-7 w-px bg-gray-200 dark:bg-gray-800"></div>
-
-    <div>
-      <p
-        class="mb-1 text-center text-theme-xs text-gray-500 dark:text-gray-400 sm:text-sm"
-      >
-        Revenue
-      </p>
-      <p
-        class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg"
-      >
-        $20K
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-            fill="#039855"
-          />
-        </svg>
-      </p>
-    </div>
-
-    <div class="h-7 w-px bg-gray-200 dark:bg-gray-800"></div>
-
-    <div>
-      <p
-        class="mb-1 text-center text-theme-xs text-gray-500 dark:text-gray-400 sm:text-sm"
-      >
-        Today
-      </p>
-      <p
-        class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg"
-      >
-        $20K
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-            fill="#039855"
-          />
-        </svg>
-      </p>
-    </div>
-  </div>
-</div>
-<!-- ====== Chart Two End -->
+    
               </div>
 
               <div class="col-span-12">
-                <!-- ====== Chart Three Start -->
-                <div
-  class="rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6"
->
-  <div class="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
-    <div class="w-full">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-        Statistics
-      </h3>
-      <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-        Target you’ve set for each month
-      </p>
-    </div>
-
-    <div class="flex items-start w-full gap-3 sm:justify-end">
-      <div
-        x-data="{selected: 'overview'}"
-        class="inline-flex w-fit items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 dark:bg-gray-900"
-      >
-        <button
-          @click="selected = 'overview'"
-          :class="selected === 'overview' ? 'shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800' : 'text-gray-500 dark:text-gray-400'"
-          class="px-3 py-2 font-medium rounded-md text-theme-sm hover:text-gray-900 dark:hover:text-white"
-        >
-          Overview
-        </button>
-        <button
-          @click="selected = 'sales'"
-          :class="selected === 'sales' ? 'shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800' : 'text-gray-500 dark:text-gray-400'"
-          class="px-3 py-2 font-medium rounded-md text-theme-sm hover:text-gray-900 dark:hover:text-white"
-        >
-          Sales
-        </button>
-        <button
-          @click="selected = 'revenue'"
-          :class="selected === 'revenue' ? 'shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800' : 'text-gray-500 dark:text-gray-400'"
-          class="px-3 py-2 font-medium rounded-md text-theme-sm hover:text-gray-900 dark:hover:text-white"
-        >
-          Revenue
-        </button>
-      </div>
-
-      <div class="relative w-fit">
-        <input
-          class="datepicker h-10 w-full max-w-11 rounded-lg border border-gray-200 bg-white py-2.5 pl-[34px] pr-4 text-theme-sm font-medium text-gray-700 shadow-theme-xs focus:outline-hidden focus:ring-0 focus-visible:outline-hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 xl:max-w-fit xl:pl-11"
-          placeholder="Select dates"
-          data-class="flatpickr-right"
-          readonly="readonly"
-        />
-        <div
-          class="absolute inset-0 right-auto flex items-center pointer-events-none left-4"
-        >
-          <svg
-            class="fill-gray-700 dark:fill-gray-400"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M6.66683 1.54199C7.08104 1.54199 7.41683 1.87778 7.41683 2.29199V3.00033H12.5835V2.29199C12.5835 1.87778 12.9193 1.54199 13.3335 1.54199C13.7477 1.54199 14.0835 1.87778 14.0835 2.29199V3.00033L15.4168 3.00033C16.5214 3.00033 17.4168 3.89576 17.4168 5.00033V7.50033V15.8337C17.4168 16.9382 16.5214 17.8337 15.4168 17.8337H4.5835C3.47893 17.8337 2.5835 16.9382 2.5835 15.8337V7.50033V5.00033C2.5835 3.89576 3.47893 3.00033 4.5835 3.00033L5.91683 3.00033V2.29199C5.91683 1.87778 6.25262 1.54199 6.66683 1.54199ZM6.66683 4.50033H4.5835C4.30735 4.50033 4.0835 4.72418 4.0835 5.00033V6.75033H15.9168V5.00033C15.9168 4.72418 15.693 4.50033 15.4168 4.50033H13.3335H6.66683ZM15.9168 8.25033H4.0835V15.8337C4.0835 16.1098 4.30735 16.3337 4.5835 16.3337H15.4168C15.693 16.3337 15.9168 16.1098 15.9168 15.8337V8.25033Z"
-              fill=""
-            />
-          </svg>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="max-w-full overflow-x-auto custom-scrollbar">
-    <div id="chartThree" class="-ml-4 min-w-[700px] pl-2"></div>
-  </div>
-</div>
-<!-- ====== Chart Three End -->
+               
               </div>
 
               <div class="col-span-12 xl:col-span-5">
-                <!-- ====== Map One Start -->
-                <div
-  class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6"
->
-  <div class="flex justify-between">
-    <div>
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-        Customers Demographic
-      </h3>
-      <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">
-        Number of customer based on country
-      </p>
-    </div>
-
-    <div x-data="{openDropDown: false}" class="relative h-fit">
-      <button
-        @click="openDropDown = !openDropDown"
-        :class="openDropDown ? 'text-gray-700 dark:text-white' : 'text-gray-400 hover:text-gray-700 dark:hover:text-white'"
-      >
-        <svg
-          class="fill-current"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-            fill=""
-          />
-        </svg>
-      </button>
-      <div
-        x-show="openDropDown"
-        @click.outside="openDropDown = false"
-        class="absolute right-0 top-full z-40 w-40 space-y-1 rounded-2xl border border-gray-200 bg-white p-2 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
-      >
-        <button
-          class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-        >
-          View More
-        </button>
-        <button
-          class="flex w-full rounded-lg px-3 py-2 text-left text-theme-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-  <div
-    class="border-gary-200 my-6 overflow-hidden rounded-2xl border bg-gray-50 px-4 py-6 dark:border-gray-800 dark:bg-gray-900 sm:px-6"
-  >
-    <div
-      id="mapOne"
-      class="mapOne map-btn -mx-4 -my-6 h-[212px] w-[252px] 2xsm:w-[307px] xsm:w-[358px] sm:-mx-6 md:w-[668px] lg:w-[634px] xl:w-[393px] 2xl:w-[554px]"
-    ></div>
-  </div>
-
-  <div class="space-y-5">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-full max-w-8 items-center rounded-full">
-          <img src="src/images/country/country-01.svg" alt="usa" />
-        </div>
-        <div>
-          <p
-            class="text-theme-sm font-semibold text-gray-800 dark:text-white/90"
-          >
-            USA
-          </p>
-          <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
-            2,379 Customers
-          </span>
-        </div>
-      </div>
-
-      <div class="flex w-full max-w-[140px] items-center gap-3">
-        <div
-          class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800"
-        >
-          <div
-            class="absolute left-0 top-0 flex h-full w-[79%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
-          ></div>
-        </div>
-        <p class="text-theme-sm font-medium text-gray-800 dark:text-white/90">
-          79%
-        </p>
-      </div>
-    </div>
-
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-full max-w-8 items-center rounded-full">
-          <img src="src/images/country/country-02.svg" alt="france" />
-        </div>
-        <div>
-          <p
-            class="text-theme-sm font-semibold text-gray-800 dark:text-white/90"
-          >
-            France
-          </p>
-          <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
-            589 Customers
-          </span>
-        </div>
-      </div>
-
-      <div class="flex w-full max-w-[140px] items-center gap-3">
-        <div
-          class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800"
-        >
-          <div
-            class="absolute left-0 top-0 flex h-full w-[23%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
-          ></div>
-        </div>
-        <p class="text-theme-sm font-medium text-gray-800 dark:text-white/90">
-          23%
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- ====== Map One End -->
+               
               </div>
 
               <div class="col-span-12 xl:col-span-7">
                 <!-- ====== Table One Start -->
-                <div
+                {{-- <div
   class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6"
 >
   <div
@@ -2198,7 +1722,7 @@
       </tbody>
     </table>
   </div>
-</div>
+</div> --}}
 <!-- ====== Table One End -->
               </div>
             </div>
