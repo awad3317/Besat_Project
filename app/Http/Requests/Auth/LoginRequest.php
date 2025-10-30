@@ -45,7 +45,15 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'phone' => trans('auth.failed'),
+                'phone' => 'البيانات المدخلة غير صحيحة',
+            ]);
+        }
+        if(Auth::user()->type == 'user'){
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([ 
+                'phone' => 'ليس لديك صلاحية الدخول من خلال هذا الحساب',
             ]);
         }
 
