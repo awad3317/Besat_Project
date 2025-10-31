@@ -1,139 +1,98 @@
 <!doctype html>
-<html  lang="{{ app()->getLocale() }}" dir="{{ (app()->getLocale() == 'ar') ? 'rtl' : 'ltr' }}">
-  <head>
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+
+<head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-    />
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>
-      eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template
+        eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template
     </title>
-  <link rel="icon" href="{{ asset('tailadmin/build/favicon.ico') }}">
-  <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet"></head>
-  <body
-    x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
-    x-init="
-         darkMode = JSON.parse(localStorage.getItem('darkMode'));
-         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
-    :class="{'dark bg-gray-900': darkMode === true}"
-  >
+    <link rel="icon" href="{{ asset('tailadmin/build/favicon.ico') }}">
+    <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet">
+</head>
+
+<body x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="darkMode = JSON.parse(localStorage.getItem('darkMode'));
+$watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))" :class="{ 'dark bg-gray-900': darkMode === true }">
     <!-- ===== Preloader Start ===== -->
-    <div
-  x-show="loaded"
-  x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})"
-  class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black"
->
-  <div
-    class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"
-  ></div>
-</div>
+    <div x-show="loaded" x-init="window.addEventListener('DOMContentLoaded', () => { setTimeout(() => loaded = false, 500) })"
+        class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+        </div>
+    </div>
 
     <!-- ===== Preloader End ===== -->
 
     <!-- ===== Page Wrapper Start ===== -->
     <div class="flex h-screen overflow-hidden">
-      <!-- ===== Sidebar Start ===== -->
-<aside 
-  :class="sidebarToggle ? 'translate-x-0 lg:w-[90px]' : 'translate-x-full'"
-  class="sidebar fixed right-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-l border-gray-200 bg-white px-5 dark:border-gray-800 dark:bg-black duration-300 ease-in-out transition-transform lg:static lg:translate-x-0"
->
+        <!-- ===== Sidebar Start ===== -->
+        <aside :class="sidebarToggle ? 'translate-x-0 lg:w-[90px]' : 'translate-x-full'"
+            class="sidebar fixed right-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-l border-gray-200 bg-white px-5 dark:border-gray-800 dark:bg-black duration-300 ease-in-out transition-transform lg:static lg:translate-x-0">
 
-  <!-- SIDEBAR HEADER -->
-  <div
-    :class="sidebarToggle ? 'justify-center' : 'justify-between'"
-    class="flex items-center gap-2 pt-8 sidebar-header pb-3"
-  >
-    <a href="index.html">
-      <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
-        <img class="dark:hidden w-12 h-12" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
-        {{-- Dark logo --}}
-        <img
-          class="hidden dark:block w-12 h-12"
-          src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
-          alt="Logo"
-        />
-      </span>
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'"
+                class="flex items-center gap-2 pt-8 sidebar-header pb-3">
+                <a href="index.html">
+                    <span class="logo" :class="sidebarToggle ? 'hidden' : ''">
+                        <img class="dark:hidden w-12 h-12"
+                            src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+                        {{-- Dark logo --}}
+                        <img class="hidden dark:block w-12 h-12"
+                            src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+                    </span>
 
-      <img
-        class="logo-icon w-12 h-12"
-        :class="sidebarToggle ? 'lg:block' : 'hidden'"
-        src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
-        alt="Logo"
-      />
-    </a>
-  </div>
-  <!-- SIDEBAR HEADER -->
+                    <img class="logo-icon w-12 h-12" :class="sidebarToggle ? 'lg:block' : 'hidden'"
+                        src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+                </a>
+            </div>
+            <!-- SIDEBAR HEADER -->
 
-  <div
-    class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar"
-  >
-    <!-- Sidebar Menu -->
-    <nav x-data="{selected: $persist('Dashboard')}">
-      <!-- Menu Group -->
-      <div>
-        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
-          <span
-            class="menu-group-title"
-            :class="sidebarToggle ? 'lg:hidden' : ''"
-          >
-            القائمة الرئيسية
-          </span>
+            <div class="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+                <!-- Sidebar Menu -->
+                <nav x-data="{ selected: $persist('Dashboard') }">
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+                            <span class="menu-group-title" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                القائمة الرئيسية
+                            </span>
 
-          <svg
-            :class="sidebarToggle ? 'lg:block hidden' : 'hidden'"
-            class="mx-auto fill-current menu-group-icon"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
-              fill=""
-            />
-          </svg>
-        </h3>
+                            <svg :class="sidebarToggle ? 'lg:block hidden' : 'hidden'"
+                                class="mx-auto fill-current menu-group-icon" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
+                                    fill="" />
+                            </svg>
+                        </h3>
 
-        <ul class="flex flex-col gap-4 mb-6">
-          <!-- Menu Item Dashboard -->
-          <li>
-            <a
-              href="#"
-              @click.prevent="selected = (selected === 'Dashboard' ? '':'Dashboard')"
-              class="menu-item group"
-              :class=" (selected === 'Dashboard') || (page === 'ecommerce' || page === 'analytics' || page === 'marketing' || page === 'crm' || page === 'stocks') ? 'menu-item-active' : 'menu-item-inactive'"
-            >
-              <svg
-                :class="(selected === 'Dashboard') || (page === 'ecommerce' || page === 'analytics' || page === 'marketing' || page === 'crm' || page === 'stocks') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V8.99998C3.25 10.2426 4.25736 11.25 5.5 11.25H9C10.2426 11.25 11.25 10.2426 11.25 8.99998V5.5C11.25 4.25736 10.2426 3.25 9 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H9C9.41421 4.75 9.75 5.08579 9.75 5.5V8.99998C9.75 9.41419 9.41421 9.74998 9 9.74998H5.5C5.08579 9.74998 4.75 9.41419 4.75 8.99998V5.5ZM5.5 12.75C4.25736 12.75 3.25 13.7574 3.25 15V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H9C10.2426 20.75 11.25 19.7427 11.25 18.5V15C11.25 13.7574 10.2426 12.75 9 12.75H5.5ZM4.75 15C4.75 14.5858 5.08579 14.25 5.5 14.25H9C9.41421 14.25 9.75 14.5858 9.75 15V18.5C9.75 18.9142 9.41421 19.25 9 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V15ZM12.75 5.5C12.75 4.25736 13.7574 3.25 15 3.25H18.5C19.7426 3.25 20.75 4.25736 20.75 5.5V8.99998C20.75 10.2426 19.7426 11.25 18.5 11.25H15C13.7574 11.25 12.75 10.2426 12.75 8.99998V5.5ZM15 4.75C14.5858 4.75 14.25 5.08579 14.25 5.5V8.99998C14.25 9.41419 14.5858 9.74998 15 9.74998H18.5C18.9142 9.74998 19.25 9.41419 19.25 8.99998V5.5C19.25 5.08579 18.9142 4.75 18.5 4.75H15ZM15 12.75C13.7574 12.75 12.75 13.7574 12.75 15V18.5C12.75 19.7426 13.7574 20.75 15 20.75H18.5C19.7426 20.75 20.75 19.7427 20.75 18.5V15C20.75 13.7574 19.7426 12.75 18.5 12.75H15ZM14.25 15C14.25 14.5858 14.5858 14.25 15 14.25H18.5C18.9142 14.25 19.25 14.5858 19.25 15V18.5C19.25 18.9142 18.9142 19.25 18.5 19.25H15C14.5858 19.25 14.25 18.9142 14.25 18.5V15Z"
-                  fill=""
-                />
-              </svg>
+                        <ul class="flex flex-col gap-4 mb-6">
+                            <!-- Menu Item Dashboard -->
+                            <li>
+                                <a href="#"
+                                    @click.prevent="selected = (selected === 'Dashboard' ? '':'Dashboard')"
+                                    class="menu-item group"
+                                    :class="(selected === 'Dashboard') || (page === 'ecommerce' || page === 'analytics' ||
+                                        page === 'marketing' || page === 'crm' || page === 'stocks') ?
+                                    'menu-item-active' : 'menu-item-inactive'">
+                                    <svg :class="(selected === 'Dashboard') || (page === 'ecommerce' || page === 'analytics' ||
+                                        page === 'marketing' || page === 'crm' || page === 'stocks') ?
+                                    'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                                        width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V8.99998C3.25 10.2426 4.25736 11.25 5.5 11.25H9C10.2426 11.25 11.25 10.2426 11.25 8.99998V5.5C11.25 4.25736 10.2426 3.25 9 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H9C9.41421 4.75 9.75 5.08579 9.75 5.5V8.99998C9.75 9.41419 9.41421 9.74998 9 9.74998H5.5C5.08579 9.74998 4.75 9.41419 4.75 8.99998V5.5ZM5.5 12.75C4.25736 12.75 3.25 13.7574 3.25 15V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H9C10.2426 20.75 11.25 19.7427 11.25 18.5V15C11.25 13.7574 10.2426 12.75 9 12.75H5.5ZM4.75 15C4.75 14.5858 5.08579 14.25 5.5 14.25H9C9.41421 14.25 9.75 14.5858 9.75 15V18.5C9.75 18.9142 9.41421 19.25 9 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V15ZM12.75 5.5C12.75 4.25736 13.7574 3.25 15 3.25H18.5C19.7426 3.25 20.75 4.25736 20.75 5.5V8.99998C20.75 10.2426 19.7426 11.25 18.5 11.25H15C13.7574 11.25 12.75 10.2426 12.75 8.99998V5.5ZM15 4.75C14.5858 4.75 14.25 5.08579 14.25 5.5V8.99998C14.25 9.41419 14.5858 9.74998 15 9.74998H18.5C18.9142 9.74998 19.25 9.41419 19.25 8.99998V5.5C19.25 5.08579 18.9142 4.75 18.5 4.75H15ZM15 12.75C13.7574 12.75 12.75 13.7574 12.75 15V18.5C12.75 19.7426 13.7574 20.75 15 20.75H18.5C19.7426 20.75 20.75 19.7427 20.75 18.5V15C20.75 13.7574 19.7426 12.75 18.5 12.75H15ZM14.25 15C14.25 14.5858 14.5858 14.25 15 14.25H18.5C18.9142 14.25 19.25 14.5858 19.25 15V18.5C19.25 18.9142 18.9142 19.25 18.5 19.25H15C14.5858 19.25 14.25 18.9142 14.25 18.5V15Z"
+                                            fill="" />
+                                    </svg>
 
-              <span
-                class="menu-item-text"
-                :class="sidebarToggle ? 'lg:hidden' : ''"
-              >
-                الصفحة الرئيسية
-              </span>
-            </a>
+                                    <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                        الصفحة الرئيسية
+                                    </span>
+                                </a>
 
-            <!-- Dropdown Menu Start -->
-            {{-- <div
+                                <!-- Dropdown Menu Start -->
+                                {{-- <div
               class="overflow-hidden transform translate"
               :class="(selected === 'Dashboard') ? 'block' :'hidden'"
             >
@@ -152,12 +111,12 @@
                 </li>
               </ul>
             </div> --}}
-            <!-- Dropdown Menu End -->
-          </li>
-          <!-- Menu Item Dashboard -->
+                                <!-- Dropdown Menu End -->
+                            </li>
+                            <!-- Menu Item Dashboard -->
 
-          <!-- Menu Item Calendar -->
-          {{-- <li>
+                            <!-- Menu Item Calendar -->
+                            {{-- <li>
             <a
               href="calendar.html"
               @click="selected = (selected === 'Calendar' ? '':'Calendar')"
@@ -188,10 +147,10 @@
               </span>
             </a>
           </li> --}}
-          <!-- Menu Item Calendar -->
+                            <!-- Menu Item Calendar -->
 
-          <!-- Menu Item Profile -->
-          {{-- <li>
+                            <!-- Menu Item Profile -->
+                            {{-- <li>
             <a
               href="profile.html"
               @click="selected = (selected === 'Profile' ? '':'Profile')"
@@ -222,10 +181,10 @@
               </span>
             </a>
           </li> --}}
-          <!-- Menu Item Profile -->
+                            <!-- Menu Item Profile -->
 
-          <!-- Menu Item Forms -->
-          {{-- <li>
+                            <!-- Menu Item Forms -->
+                            {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Forms' ? '':'Forms')"
@@ -296,10 +255,10 @@
             </div>
             <!-- Dropdown Menu End -->
           </li> --}}
-          <!-- Menu Item Forms -->
+                            <!-- Menu Item Forms -->
 
-          <!-- Menu Item Tables -->
-          {{-- <li>
+                            <!-- Menu Item Tables -->
+                            {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Tables' ? '':'Tables')"
@@ -370,10 +329,10 @@
             </div>
             <!-- Dropdown Menu End -->
           </li> --}}
-          <!-- Menu Item Tables -->
+                            <!-- Menu Item Tables -->
 
-          <!-- Menu Item Pages -->
-          {{-- <li>
+                            <!-- Menu Item Pages -->
+                            {{-- <li>
             <a
               href="#"
               @click.prevent="selected = (selected === 'Pages' ? '':'Pages')"
@@ -453,12 +412,12 @@
             </div>
             <!-- Dropdown Menu End -->
           </li> --}}
-          <!-- Menu Item Pages -->
-        </ul>
-      </div>
+                            <!-- Menu Item Pages -->
+                        </ul>
+                    </div>
 
-      <!-- Others Group -->
-      {{-- <div>
+                    <!-- Others Group -->
+                    {{-- <div>
         <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
           <span
             class="menu-group-title"
@@ -772,224 +731,131 @@
           <!-- Menu Item Authentication -->
         </ul>
       </div> --}}
-    </nav>
-    <!-- Sidebar Menu -->
-  </div>
-</aside>
+                </nav>
+                <!-- Sidebar Menu -->
+            </div>
+        </aside>
 
-      <!-- ===== Sidebar End ===== -->
+        <!-- ===== Sidebar End ===== -->
 
-      <!-- ===== Content Area Start ===== -->
-      <div
-        class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto"
-      >
-        <!-- Small Device Overlay Start -->
-        <div
-  @click="sidebarToggle = false"
-  :class="sidebarToggle ? 'block lg:hidden' : 'hidden'"
-  class="fixed w-full h-screen z-9 bg-gray-900/50"
-></div>
-<!-- Small Device Overlay End -->
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
+            <!-- Small Device Overlay Start -->
+            <div @click="sidebarToggle = false" :class="sidebarToggle ? 'block lg:hidden' : 'hidden'"
+                class="fixed w-full h-screen z-9 bg-gray-900/50"></div>
+            <!-- Small Device Overlay End -->
 
-        <!-- ===== Header Start ===== -->
-        <header
-  x-data="{menuToggle: false}"
-  class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white lg:border-b dark:border-gray-800 dark:bg-gray-900"
->
-  <div
-    class="flex grow flex-col items-center justify-between lg:flex-row lg:px-6"
-  >
-    <div
-      class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4 dark:border-gray-800"
-    >
-      <!-- Hamburger Toggle BTN -->
-      <button
-        :class="sidebarToggle ? 'lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-gray-800' : ''"
-        class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 lg:h-11 lg:w-11 lg:border dark:border-gray-800 dark:text-gray-400"
-        @click.stop="sidebarToggle = !sidebarToggle"
-      >
-        <svg
-          class="hidden fill-current lg:block"
-          width="16"
-          height="12"
-          viewBox="0 0 16 12"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z"
-            fill=""
-          />
-        </svg>
+            <!-- ===== Header Start ===== -->
+            <header x-data="{ menuToggle: false }"
+                class="sticky top-0 z-40 flex w-full border-gray-200 bg-white lg:border-b dark:border-gray-800 dark:bg-gray-900">
+                <div class="flex grow flex-col items-center justify-between lg:flex-row lg:px-6">
+                    <div
+                        class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4 dark:border-gray-800">
+                        <!-- Hamburger Toggle BTN -->
+                        <button
+                            :class="sidebarToggle ? 'lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-gray-800' : ''"
+                            class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 lg:h-11 lg:w-11 lg:border dark:border-gray-800 dark:text-gray-400"
+                            @click.stop="sidebarToggle = !sidebarToggle">
+                            <svg class="hidden fill-current lg:block" width="16" height="12" viewBox="0 0 16 12"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z"
+                                    fill="" />
+                            </svg>
 
-        <svg
-          :class="sidebarToggle ? 'hidden' : 'block lg:hidden'"
-          class="fill-current lg:hidden"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z"
-            fill=""
-          />
-        </svg>
+                            <svg :class="sidebarToggle ? 'hidden' : 'block lg:hidden'" class="fill-current lg:hidden"
+                                width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z"
+                                    fill="" />
+                            </svg>
 
-        <!-- cross icon -->
-        <svg
-          :class="sidebarToggle ? 'block lg:hidden' : 'hidden'"
-          class="fill-current"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
-            fill=""
-          />
-        </svg>
-      </button>
-      <!-- Hamburger Toggle BTN -->
+                            <!-- cross icon -->
+                            <svg :class="sidebarToggle ? 'block lg:hidden' : 'hidden'" class="fill-current"
+                                width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
+                                    fill="" />
+                            </svg>
+                        </button>
+                        <!-- Hamburger Toggle BTN -->
 
-      <a href="index.html" class="lg:hidden w-12 h-12">
-        <img class="dark:hidden " src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
-        <img
-          class="hidden dark:block w-12 h-12"
-          src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
-          alt="Logo"
-        />
-      </a>
+                        <a href="index.html" class="lg:hidden w-12 h-12">
+                            <img class="dark:hidden " src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
+                                alt="Logo" />
+                            <img class="hidden dark:block w-12 h-12"
+                                src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+                        </a>
 
-      <!-- Application nav menu button -->
-      <button
-        class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 lg:hidden dark:text-gray-400 dark:hover:bg-gray-800"
-        :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800' : ''"
-        @click.stop="menuToggle = !menuToggle"
-      >
-        <svg
-          class="fill-current"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z"
-            fill=""
-          />
-        </svg>
-      </button>
-      <!-- Application nav menu button -->
-    </div>
+                        <!-- Application nav menu button -->
+                        <button
+                            class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 lg:hidden dark:text-gray-400 dark:hover:bg-gray-800"
+                            :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800' : ''"
+                            @click.stop="menuToggle = !menuToggle">
+                            <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z"
+                                    fill="" />
+                            </svg>
+                        </button>
+                        <!-- Application nav menu button -->
+                    </div>
 
-    <div
-      :class="menuToggle ? 'flex' : 'hidden'"
-      class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 lg:flex lg:justify-end lg:px-0 lg:shadow-none"
-    >
-      <div class="2xsm:gap-3 flex items-center gap-2">
-        <!-- Dark Mode Toggler -->
-        <button
-          class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
-          @click.prevent="darkMode = !darkMode"
-        >
-          <svg
-            class="hidden dark:block"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z"
-              fill="currentColor"
-            />
-          </svg>
-          <svg
-            class="dark:hidden"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V13.0035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0003C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0003H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z"
-              fill="currentColor"
-            />
-          </svg>
-        </button>
-        <!-- Dark Mode Toggler -->
+                    <div :class="menuToggle ? 'flex' : 'hidden'"
+                        class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 lg:flex lg:justify-end lg:px-0 lg:shadow-none">
+                        <div class="2xsm:gap-3 flex items-center gap-2">
+                            <!-- Dark Mode Toggler -->
+                            <button
+                                class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+                                @click.prevent="darkMode = !darkMode">
+                                <svg class="hidden dark:block" width="20" height="20" viewBox="0 0 20 20"
+                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z"
+                                        fill="currentColor" />
+                                </svg>
+                                <svg class="dark:hidden" width="20" height="20" viewBox="0 0 20 20"
+                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V13.0035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0003C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0003H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z"
+                                        fill="currentColor" />
+                                </svg>
+                            </button>
+                            <!-- Dark Mode Toggler -->
 
-        <!-- Notification Menu Area -->
-        <div
-          class="relative"
-          x-data="{ dropdownOpen: false, notifying: true }"
-          @click.outside="dropdownOpen = false"
-        >
-          <button
-            class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
-            @click.prevent="dropdownOpen = ! dropdownOpen; notifying = false"
-          >
-            <span
-              :class="!notifying ? 'hidden' : 'flex'"
-              class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400"
-            >
-              <span
-                class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"
-              ></span>
-            </span>
-            <svg
-              class="fill-current"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M10.75 2.29248C10.75 1.87827 10.4143 1.54248 10 1.54248C9.58583 1.54248 9.25004 1.87827 9.25004 2.29248V2.83613C6.08266 3.20733 3.62504 5.9004 3.62504 9.16748V14.4591H3.33337C2.91916 14.4591 2.58337 14.7949 2.58337 15.2091C2.58337 15.6234 2.91916 15.9591 3.33337 15.9591H4.37504H15.625H16.6667C17.0809 15.9591 17.4167 15.6234 17.4167 15.2091C17.4167 14.7949 17.0809 14.4591 16.6667 14.4591H16.375V9.16748C16.375 5.9004 13.9174 3.20733 10.75 2.83613V2.29248ZM14.875 14.4591V9.16748C14.875 6.47509 12.6924 4.29248 10 4.29248C7.30765 4.29248 5.12504 6.47509 5.12504 9.16748V14.4591H14.875ZM8.00004 17.7085C8.00004 18.1228 8.33583 18.4585 8.75004 18.4585H11.25C11.6643 18.4585 12 18.1228 12 17.7085C12 17.2943 11.6643 16.9585 11.25 16.9585H8.75004C8.33583 16.9585 8.00004 17.2943 8.00004 17.7085Z"
-                fill=""
-              />
-            </svg>
-          </button>
+                            <!-- Notification Menu Area -->
+                            <div class="relative" x-data="{ dropdownOpen: false, notifying: true }" @click.outside="dropdownOpen = false">
+                                <button
+                                    class="hover:text-dark-900 relative flex h-11 w-11  items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+                                    @click.prevent="dropdownOpen = ! dropdownOpen; notifying = false">
+                                    <span :class="!notifying ? 'hidden' : 'flex'"
+                                        class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400">
+                                        <span
+                                            class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
+                                    </span>
+                                    <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20"
+                                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M10.75 2.29248C10.75 1.87827 10.4143 1.54248 10 1.54248C9.58583 1.54248 9.25004 1.87827 9.25004 2.29248V2.83613C6.08266 3.20733 3.62504 5.9004 3.62504 9.16748V14.4591H3.33337C2.91916 14.4591 2.58337 14.7949 2.58337 15.2091C2.58337 15.6234 2.91916 15.9591 3.33337 15.9591H4.37504H15.625H16.6667C17.0809 15.9591 17.4167 15.6234 17.4167 15.2091C17.4167 14.7949 17.0809 14.4591 16.6667 14.4591H16.375V9.16748C16.375 5.9004 13.9174 3.20733 10.75 2.83613V2.29248ZM14.875 14.4591V9.16748C14.875 6.47509 12.6924 4.29248 10 4.29248C7.30765 4.29248 5.12504 6.47509 5.12504 9.16748V14.4591H14.875ZM8.00004 17.7085C8.00004 18.1228 8.33583 18.4585 8.75004 18.4585H11.25C11.6643 18.4585 12 18.1228 12 17.7085C12 17.2943 11.6643 16.9585 11.25 16.9585H8.75004C8.33583 16.9585 8.00004 17.2943 8.00004 17.7085Z"
+                                            fill="" />
+                                    </svg>
+                                </button>
 
-          <!-- Dropdown Start -->
-            <div
-            x-show="dropdownOpen"
-            class="shadow-theme-lg dark:bg-gray-dark absolute {{ (app()->getLocale() == 'ar') ? '-right-[240px] lg:left-0' : '-left-[240px] lg:right-0' }} mt-[17px] flex h-[480px] w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-3 sm:w-[361px]  dark:border-gray-800"
-          >
-            <div
-              class="mb-3 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800"
-            >
-              <h5
-                class="text-lg font-semibold text-gray-800 dark:text-white/90"
-              >
-                الإشعارات
-              </h5>
+                                <!-- Dropdown Start -->
+                                <div x-show="dropdownOpen"
+                                    class="shadow-theme-lg dark:bg-gray-dark absolute {{ app()->getLocale() == 'ar' ? '-right-[240px] lg:left-0' : '-left-[240px] lg:right-0' }} mt-[17px] flex h-[180px] w-[150px] flex-col rounded-2xl border border-gray-200 bg-white p-3 sm:w-[361px]  dark:border-gray-800">
+                                    <div
+                                        class="mb-3 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
+                                        <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                            الإشعارات
+                                        </h5>
 
-              <button
-                @click="dropdownOpen = false"
-                class="text-gray-500 dark:text-gray-400"
-              >
-                {{-- <svg
+                                        <button @click="dropdownOpen = false"
+                                            class="text-gray-500 dark:text-gray-400">
+                                            <svg
                   class="fill-current"
                   width="24"
                   height="24"
@@ -1003,107 +869,77 @@
                     d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
                     fill=""
                   />
-                </svg> --}}
-              </button>
-            </div>
+                </svg>
+                                        </button>
+                                    </div>
 
-            <ul class="custom-scrollbar flex h-auto flex-col overflow-y-auto">
-              <li>
-                <a
-                  class="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
-                  href="#"
-                >
-                  <span class="block">
-                    <span
-                      class="text-theme-sm mb-1.5 block text-gray-500 dark:text-gray-400"
-                    >
-                      <span class="font-medium text-gray-800 dark:text-white/90">
-                        طلب توصيل الى الكيكه باي مبلغ كان كل يوم خميس اساعه 10 مساء
-                        </span>
-                    </span>
+                                    <ul class="custom-scrollbar flex h-auto flex-col overflow-y-auto">
+                                        <li>
+                                            <a class="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
+                                                href="#">
+                                                <span class="block">
+                                                    <span
+                                                        class="text-theme-sm mb-1.5 block text-gray-500 dark:text-gray-400">
+                                                        <span class="font-medium text-gray-800 dark:text-white/90">
+                                                            طلب توصيل الى الكيكه باي مبلغ كان كل يوم خميس اساعه 10 مساء
+                                                        </span>
+                                                    </span>
 
-                    <span
-                      class="text-theme-xs flex items-center gap-2 text-gray-500 dark:text-gray-400"
-                    >
-                      <span>توصيل</span>
-                      <span class="h-1 w-1 rounded-full bg-gray-400"></span>
-                      <span>منذ 5 دقائق</span>
-                    </span>
-                  </span>
-                </a>
-              </li>
-            </ul>
+                                                    <span
+                                                        class="text-theme-xs flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                                                        <span>توصيل</span>
+                                                        <span class="h-1 w-1 rounded-full bg-gray-400"></span>
+                                                        <span>منذ 5 دقائق</span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
 
-            <a
-              href="#"
-              class="text-theme-sm shadow-theme-xs mt-3 flex justify-center rounded-lg border border-gray-300 bg-white p-3 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
-            >
-              عرض جميع الإشعارات
-            </a>
-          </div>
-          <!-- Dropdown End -->
-        </div>
-        <!-- Notification Menu Area -->
-      </div>
+                                    <a href="#"
+                                        class="text-theme-sm shadow-theme-xs mt-3 flex justify-center rounded-lg border border-gray-300 bg-white p-3 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+                                        عرض جميع الإشعارات
+                                    </a>
+                                </div>
+                                <!-- Dropdown End -->
+                            </div>
+                            <!-- Notification Menu Area -->
+                        </div>
 
-      <!-- User Area -->
-      <div
-        class="relative"
-        x-data="{ dropdownOpen: false }"
-        @click.outside="dropdownOpen = false"
-      >
-        <a
-          class="flex items-center text-gray-700 dark:text-gray-400"
-          href="#"
-          @click.prevent="dropdownOpen = ! dropdownOpen"
-        >
-          <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
-            <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="User" />
-          </span>
+                        <!-- User Area -->
+                        <div class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
+                            <a class="flex items-center text-gray-700 dark:text-gray-400" href="#"
+                                @click.prevent="dropdownOpen = ! dropdownOpen">
+                                <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
+                                    <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}"
+                                        alt="User" />
+                                </span>
 
-          <span class="text-theme-sm mr-1 block font-medium">{{ Auth::user()->name }}</span>
+                                <span class="text-theme-sm mr-1 block font-medium">{{ Auth::user()->name }}</span>
 
-          <svg
-            :class="dropdownOpen && 'rotate-180'"
-            class="stroke-gray-500 dark:stroke-gray-400"
-            width="18"
-            height="20"
-            viewBox="0 0 18 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M4.3125 8.65625L9 13.3437L13.6875 8.65625"
-              stroke=""
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </a>
+                                <svg :class="dropdownOpen && 'rotate-180'"
+                                    class="stroke-gray-500 dark:stroke-gray-400" width="18" height="20"
+                                    viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke=""
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
 
-        <!-- Dropdown Start -->
-        <div
-          x-show="dropdownOpen"
-          class="shadow-theme-lg dark:bg-gray-dark absolute {{ (app()->getLocale() == 'ar') ? 'left-0' : 'right-0' }} mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800"
-        >
-          <div>
-            <span
-              class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400"
-            >
-              {{ Auth::user()->name }}
-            </span>
-            <span
-              class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400"
-            >
-              {{ Auth::user()->phone }}
-            </span>
-          </div>
+                            <!-- Dropdown Start -->
+                            <div x-show="dropdownOpen"
+                                class="shadow-theme-lg dark:bg-gray-dark absolute {{ app()->getLocale() == 'ar' ? 'left-0' : 'right-0' }} mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800">
+                                <div>
+                                    <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">
+                                        {{ Auth::user()->name }}
+                                    </span>
+                                    <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">
+                                        {{ Auth::user()->phone }}
+                                    </span>
+                                </div>
 
-          <ul
-            class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800"
-          >
-            {{-- <li>
+                                <ul
+                                    class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+                                    {{-- <li>
               <a
                 href="profile.html"
                 class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -1126,7 +962,7 @@
                 Edit profile
               </a>
             </li> --}}
-            {{-- <li>
+                                    {{-- <li>
               <a
                 href="messages.html"
                 class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -1149,7 +985,7 @@
                 Account settings
               </a>
             </li> --}}
-            {{-- <li>
+                                    {{-- <li>
               <a
                 href="settings.html"
                 class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -1172,566 +1008,113 @@
                 Support
               </a>
             </li> --}}
-          </ul>
-          <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button
-            class="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-          >
-            <svg
-              class="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M15.1007 19.247C14.6865 19.247 14.3507 18.9112 14.3507 18.497L14.3507 14.245H12.8507V18.497C12.8507 19.7396 13.8581 20.747 15.1007 20.747H18.5007C19.7434 20.747 20.7507 19.7396 20.7507 18.497L20.7507 5.49609C20.7507 4.25345 19.7433 3.24609 18.5007 3.24609H15.1007C13.8581 3.24609 12.8507 4.25345 12.8507 5.49609V9.74501L14.3507 9.74501V5.49609C14.3507 5.08188 14.6865 4.74609 15.1007 4.74609L18.5007 4.74609C18.9149 4.74609 19.2507 5.08188 19.2507 5.49609L19.2507 18.497C19.2507 18.9112 18.9149 19.247 18.5007 19.247H15.1007ZM3.25073 11.9984C3.25073 12.2144 3.34204 12.4091 3.48817 12.546L8.09483 17.1556C8.38763 17.4485 8.86251 17.4487 9.15549 17.1559C9.44848 16.8631 9.44863 16.3882 9.15583 16.0952L5.81116 12.7484L16.0007 12.7484C16.4149 12.7484 16.7507 12.4127 16.7507 11.9984C16.7507 11.5842 16.4149 11.2484 16.0007 11.2484L5.81528 11.2484L9.15585 7.90554C9.44864 7.61255 9.44847 7.13767 9.15547 6.84488C8.86248 6.55209 8.3876 6.55226 8.09481 6.84525L3.52309 11.4202C3.35673 11.5577 3.25073 11.7657 3.25073 11.9984Z"
-                fill=""
-              />
-            </svg>
+                                </ul>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button
+                                        class="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                        <svg class="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300"
+                                            width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                d="M15.1007 19.247C14.6865 19.247 14.3507 18.9112 14.3507 18.497L14.3507 14.245H12.8507V18.497C12.8507 19.7396 13.8581 20.747 15.1007 20.747H18.5007C19.7434 20.747 20.7507 19.7396 20.7507 18.497L20.7507 5.49609C20.7507 4.25345 19.7433 3.24609 18.5007 3.24609H15.1007C13.8581 3.24609 12.8507 4.25345 12.8507 5.49609V9.74501L14.3507 9.74501V5.49609C14.3507 5.08188 14.6865 4.74609 15.1007 4.74609L18.5007 4.74609C18.9149 4.74609 19.2507 5.08188 19.2507 5.49609L19.2507 18.497C19.2507 18.9112 18.9149 19.247 18.5007 19.247H15.1007ZM3.25073 11.9984C3.25073 12.2144 3.34204 12.4091 3.48817 12.546L8.09483 17.1556C8.38763 17.4485 8.86251 17.4487 9.15549 17.1559C9.44848 16.8631 9.44863 16.3882 9.15583 16.0952L5.81116 12.7484L16.0007 12.7484C16.4149 12.7484 16.7507 12.4127 16.7507 11.9984C16.7507 11.5842 16.4149 11.2484 16.0007 11.2484L5.81528 11.2484L9.15585 7.90554C9.44864 7.61255 9.44847 7.13767 9.15547 6.84488C8.86248 6.55209 8.3876 6.55226 8.09481 6.84525L3.52309 11.4202C3.35673 11.5577 3.25073 11.7657 3.25073 11.9984Z"
+                                                fill="" />
+                                        </svg>
 
-            Sign out
-          </button>
-          </form>
-        
-          
-          
+                                        Sign out
+                                    </button>
+                                </form>
+
+
+
+                            </div>
+                            <!-- Dropdown End -->
+                        </div>
+                        <!-- User Area -->
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+
+            <!-- ===== Main Content Start ===== -->
+            <main class="p-4 md:p-6">
+                <div class="max-w-screen-2xl mx-auto">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+
+                        <div
+                            class="flex flex-col items-start justify-between rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-lg">
+                            <div
+                                class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
+                                <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24"
+                                    viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M8.8 5.6C7.6 5.6 6.6 6.6 6.6 7.8C6.6 9 7.6 10 8.8 10C10 10 11 9 11 7.8C11 6.6 10 5.6 8.8 5.6Z" />
+                                </svg>
+                            </div>
+                            <div class="mt-5 w-full">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">المستخدمين</span>
+                                <h4 class="mt-2 text-xl font-bold text-gray-800 dark:text-white/90">100</h4>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex flex-col items-start justify-between rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-lg">
+                            <div
+                                class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
+                                <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24"
+                                    viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M15 4.5C15 3.7 15.7 3 16.5 3H18.5C19.3 3 20 3.7 20 4.5C20 5.3 19.3 6 18.5 6H16.5C15.7 6 15 5.3 15 4.5Z" />
+                                </svg>
+                            </div>
+                            <div class="mt-5 w-full">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">السائقين</span>
+                                <h4 class="mt-2 text-xl font-bold text-gray-800 dark:text-white/90">50</h4>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex flex-col items-start justify-between rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-lg">
+                            <div
+                                class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
+                                <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24"
+                                    viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M11.7 3.75L18.8 7L11.7 10.25L4.6 7L11.7 3.75Z" />
+                                </svg>
+                            </div>
+                            <div class="mt-5 w-full">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">الطلبات</span>
+                                <h4 class="mt-2 text-xl font-bold text-gray-800 dark:text-white/90">1,250</h4>
+                            </div>
+                        </div>
+
+                        <div
+                            class="flex flex-col items-start justify-between rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-lg">
+                            <div
+                                class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
+                                <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24"
+                                    viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M3 9.75C3 9.34 3.34 9 3.75 9H20.25C20.66 9 21 9.34 21 9.75C21 10.16 20.66 10.5 20.25 10.5H3.75C3.34 10.5 3 10.16 3 9.75Z" />
+                                </svg>
+                            </div>
+                            <div class="mt-5 w-full">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">الطلبات الحالية</span>
+                                <h4 class="mt-2 text-xl font-bold text-gray-800 dark:text-white/90">45</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+
+            <!-- ===== Main Content End ===== -->
         </div>
-        <!-- Dropdown End -->
-      </div>
-      <!-- User Area -->
-    </div>
-  </div>
-</header>
-<!-- ===== Header End ===== -->
-
-        <!-- ===== Main Content Start ===== -->
-        <main>
-          <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-            <div class="grid grid-cols-12 gap-4 md:gap-6">
-              <div class="col-span-12 space-y-6 xl:col-span-7">
-                <!-- Metric Group One -->
-                <div class="flex flex-row gap-4 md:gap-2 ">
-  <!-- Metric Item 1 - المستخدمين -->
-  <div
-    class="flex-1 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
-  >
-    <div
-      class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800"
-    >
-      <svg
-        class="fill-gray-800 dark:fill-white/90"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M8.80443 5.60156C7.59109 5.60156 6.60749 6.58517 6.60749 7.79851C6.60749 9.01185 7.59109 9.99545 8.80443 9.99545C10.0178 9.99545 11.0014 9.01185 11.0014 7.79851C11.0014 6.58517 10.0178 5.60156 8.80443 5.60156ZM5.10749 7.79851C5.10749 5.75674 6.76267 4.10156 8.80443 4.10156C10.8462 4.10156 12.5014 5.75674 12.5014 7.79851C12.5014 9.84027 10.8462 11.4955 8.80443 11.4955C6.76267 11.4955 5.10749 9.84027 5.10749 7.79851ZM4.86252 15.3208C4.08769 16.0881 3.70377 17.0608 3.51705 17.8611C3.48384 18.0034 3.5211 18.1175 3.60712 18.2112C3.70161 18.3141 3.86659 18.3987 4.07591 18.3987H13.4249C13.6343 18.3987 13.7992 18.3141 13.8937 18.2112C13.9797 18.1175 14.017 18.0034 13.9838 17.8611C13.7971 17.0608 13.4132 16.0881 12.6383 15.3208C11.8821 14.572 10.6899 13.955 8.75042 13.955C6.81096 13.955 5.61877 14.572 4.86252 15.3208ZM3.8071 14.2549C4.87163 13.2009 6.45602 12.455 8.75042 12.455C11.0448 12.455 12.6292 13.2009 13.6937 14.2549C14.7397 15.2906 15.2207 16.5607 15.4446 17.5202C15.7658 18.8971 14.6071 19.8987 13.4249 19.8987H4.07591C2.89369 19.8987 1.73504 18.8971 2.05628 17.5202C2.28015 16.5607 2.76117 15.2906 3.8071 14.2549ZM15.3042 11.4955C14.4702 11.4955 13.7006 11.2193 13.0821 10.7533C13.3742 10.3314 13.6054 9.86419 13.7632 9.36432C14.1597 9.75463 14.7039 9.99545 15.3042 9.99545C16.5176 9.99545 17.5012 9.01185 17.5012 7.79851C17.5012 6.58517 16.5176 5.60156 15.3042 5.60156C14.7039 5.60156 14.1597 5.84239 13.7632 6.23271C13.6054 5.73284 13.3741 5.26561 13.082 4.84371C13.7006 4.37777 14.4702 4.10156 15.3042 4.10156C17.346 4.10156 19.0012 5.75674 19.0012 7.79851C19.0012 9.84027 17.346 11.4955 15.3042 11.4955ZM19.9248 19.8987H16.3901C16.7014 19.4736 16.9159 18.969 16.9827 18.3987H19.9248C20.1341 18.3987 20.2991 18.3141 20.3936 18.2112C20.4796 18.1175 20.5169 18.0034 20.4837 17.861C20.2969 17.0607 19.913 16.088 19.1382 15.3208C18.4047 14.5945 17.261 13.9921 15.4231 13.9566C15.2232 13.6945 14.9995 13.437 14.7491 13.1891C14.5144 12.9566 14.262 12.7384 13.9916 12.5362C14.3853 12.4831 14.8044 12.4549 15.2503 12.4549C17.5447 12.4549 19.1291 13.2008 20.1936 14.2549C21.2395 15.2906 21.7206 16.5607 21.9444 17.5202C22.2657 18.8971 21.107 19.8987 19.9248 19.8987Z"
-          fill=""
-        />
-      </svg>
-    </div>
-
-    <div class="mt-5 flex items-end justify-between">
-      <div>
-        <span class="text-sm text-gray-500 dark:text-gray-400">المستخدمين</span>
-        <h4
-          class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90"
-        >
-          100
-        </h4>
-      </div>
-    </div>
-  </div>
-  <!-- Metric Item 1 End -->
-
-  <!-- Metric Item 2 - السائقين -->
-  <div
-    class="flex-1 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
-  >
-    <div
-      class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800"
-    >
-      <svg
-        class="fill-gray-800 dark:fill-white/90"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M15 4.5C15 3.67157 15.6716 3 16.5 3H18.5C19.3284 3 20 3.67157 20 4.5C20 5.32843 19.3284 6 18.5 6H16.5C15.6716 6 15 5.32843 15 4.5ZM12 4.5C12 3.67157 11.3284 3 10.5 3H8.5C7.67157 3 7 3.67157 7 4.5C7 5.32843 7.67157 6 8.5 6H10.5C11.3284 6 12 5.32843 12 4.5ZM4 12C4 9.79086 5.79086 8 8 8H16C18.2091 8 20 9.79086 20 12V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V12ZM8 10C6.89543 10 6 10.8954 6 12V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V12C18 10.8954 17.1046 10 16 10H8Z"
-          fill=""
-        />
-      </svg>
-    </div>
-
-    <div class="mt-5 flex items-end justify-between">
-      <div>
-        <span class="text-sm text-gray-500 dark:text-gray-400">السائقين</span>
-        <h4
-          class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90"
-        >
-          50
-        </h4>
-      </div>
-    </div>
-  </div>
-  <!-- Metric Item 2 End -->
-
-  <!-- Metric Item 3 - الطلبات -->
-  <div
-    class="flex-1 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
-  >
-    <div
-      class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800"
-    >
-      <svg
-        class="fill-gray-800 dark:fill-white/90"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M11.665 3.75621C11.8762 3.65064 12.1247 3.65064 12.3358 3.75621L18.7807 6.97856L12.3358 10.2009C12.1247 10.3065 11.8762 10.3065 11.665 10.2009L5.22014 6.97856L11.665 3.75621ZM4.29297 8.19203V16.0946C4.29297 16.3787 4.45347 16.6384 4.70757 16.7654L11.25 20.0366V11.6513C11.1631 11.6205 11.0777 11.5843 10.9942 11.5426L4.29297 8.19203ZM12.75 20.037L19.2933 16.7654C19.5474 16.6384 19.7079 16.3787 19.7079 16.0946V8.19202L13.0066 11.5426C12.9229 11.5844 12.8372 11.6208 12.75 11.6516V20.037ZM13.0066 2.41456C12.3732 2.09786 11.6277 2.09786 10.9942 2.41456L4.03676 5.89319C3.27449 6.27432 2.79297 7.05342 2.79297 7.90566V16.0946C2.79297 16.9469 3.27448 17.726 4.03676 18.1071L10.9942 21.5857L11.3296 20.9149L10.9942 21.5857C11.6277 21.9024 12.3732 21.9024 13.0066 21.5857L19.9641 18.1071C20.7264 17.726 21.2079 16.9469 21.2079 16.0946V7.90566C21.2079 7.05342 20.7264 6.27432 19.9641 5.89319L13.0066 2.41456Z"
-          fill=""
-        />
-      </svg>
-    </div>
-
-    <div class="mt-5 flex items-end justify-between">
-      <div>
-        <span class="text-sm text-gray-500 dark:text-gray-400">الطلبات</span>
-        <h4
-          class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90"
-        >
-          1,250
-        </h4>
-      </div>
-    </div>
-  </div>
-  <!-- Metric Item 3 End -->
-
-  <!-- Metric Item 4 - -->
-  <div
-    class="flex-1 rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
-  >
-    <div
-      class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800"
-    >
-      <svg
-        class="fill-gray-800 dark:fill-white/90"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
-          d="M12 2.25C12.4142 2.25 12.75 2.58579 12.75 3V3.75H18C18.4142 3.75 18.75 4.08579 18.75 4.5C18.75 4.91421 18.4142 5.25 18 5.25H12.75V6C12.75 6.41421 12.4142 6.75 12 6.75C11.5858 6.75 11.25 6.41421 11.25 6V5.25H6C5.58579 5.25 5.25 4.91421 5.25 4.5C5.25 4.08579 5.58579 3.75 6 3.75H11.25V3C11.25 2.58579 11.5858 2.25 12 2.25ZM3 9.75C3 9.33579 3.33579 9 3.75 9H20.25C20.6642 9 21 9.33579 21 9.75C21 10.1642 20.6642 10.5 20.25 10.5H3.75C3.33579 10.5 3 10.1642 3 9.75ZM4.5 14.25C4.5 13.8358 4.83579 13.5 5.25 13.5H18.75C19.1642 13.5 19.5 13.8358 19.5 14.25C19.5 14.6642 19.1642 15 18.75 15H5.25C4.83579 15 4.5 14.6642 4.5 14.25ZM6 18C5.58579 18 5.25 18.3358 5.25 18.75C5.25 19.1642 5.58579 19.5 6 19.5H18C18.4142 19.5 18.75 19.1642 18.75 18.75C18.75 18.3358 18.4142 18 18 18H6Z"
-          fill=""
-        />
-      </svg>
-    </div>
-
-    <div class="mt-5 flex items-end justify-between">
-      <div>
-        <span class="text-sm text-gray-500 dark:text-gray-400">الطلبات الحالية</span>
-        <h4
-          class="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90"
-        >
-          45
-        </h4>
-      </div>
-    </div>
-  </div>
-  <!-- Metric Item 4 End -->
-                </div>
-<!-- Metric Group One -->
-
-               
-              </div>
-              <div class="col-span-12 xl:col-span-5">
-    
-              </div>
-
-              <div class="col-span-12">
-               
-              </div>
-
-              <div class="col-span-12 xl:col-span-5">
-               
-              </div>
-
-              <div class="col-span-12 xl:col-span-7">
-                <!-- ====== Table One Start -->
-                {{-- <div
-  class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6"
->
-  <div
-    class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between"
-  >
-    <div>
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-        Recent Orders
-      </h3>
-    </div>
-
-    <div class="flex items-center gap-3">
-      <button
-        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
-      >
-        <svg
-          class="stroke-current fill-white dark:fill-gray-800"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M2.29004 5.90393H17.7067"
-            stroke=""
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M17.7075 14.0961H2.29085"
-            stroke=""
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M12.0826 3.33331C13.5024 3.33331 14.6534 4.48431 14.6534 5.90414C14.6534 7.32398 13.5024 8.47498 12.0826 8.47498C10.6627 8.47498 9.51172 7.32398 9.51172 5.90415C9.51172 4.48432 10.6627 3.33331 12.0826 3.33331Z"
-            fill=""
-            stroke=""
-            stroke-width="1.5"
-          />
-          <path
-            d="M7.91745 11.525C6.49762 11.525 5.34662 12.676 5.34662 14.0959C5.34661 15.5157 6.49762 16.6667 7.91745 16.6667C9.33728 16.6667 10.4883 15.5157 10.4883 14.0959C10.4883 12.676 9.33728 11.525 7.91745 11.525Z"
-            fill=""
-            stroke=""
-            stroke-width="1.5"
-          />
-        </svg>
-
-        Filter
-      </button>
-
-      <button
-        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
-      >
-        See all
-      </button>
-    </div>
-  </div>
-
-  <div class="w-full overflow-x-auto">
-    <table class="min-w-full">
-      <!-- table header start -->
-      <thead>
-        <tr class="border-gray-100 border-y dark:border-gray-800">
-          <th class="py-3">
-            <div class="flex items-center">
-              <p
-                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
-              >
-                Products
-              </p>
-            </div>
-          </th>
-          <th class="py-3">
-            <div class="flex items-center">
-              <p
-                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
-              >
-                Category
-              </p>
-            </div>
-          </th class="py-3">
-          <th class="py-3">
-            <div class="flex items-center">
-              <p
-                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
-              >
-                Price
-              </p>
-            </div>
-          </th>
-          <th class="py-3">
-            <div class="flex items-center col-span-2">
-              <p
-                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
-              >
-                Status
-              </p>
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <!-- table header end -->
-
-      <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-        <tr>
-          <td class="py-3">
-            <div class="flex items-center">
-              <div class="flex items-center gap-3">
-                <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                  <img src="src/images/product/product-01.jpg" alt="Product" />
-                </div>
-                <div>
-                  <p
-                    class="font-medium text-gray-800 text-theme-sm dark:text-white/90"
-                  >
-                    Macbook pro 13”
-                  </p>
-                  <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                    2 Variants
-                  </span>
-                </div>
-              </div>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                Laptop
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                $2399.00
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p
-                class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500"
-              >
-                Delivered
-              </p>
-            </div>
-          </td>
-        </tr>
-        <!-- table item -->
-        <tr>
-          <td class="py-3">
-            <div class="flex items-center">
-              <div class="flex items-center gap-3">
-                <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                  <img src="src/images/product/product-02.jpg" alt="Product" />
-                </div>
-                <div>
-                  <p
-                    class="font-medium text-gray-800 text-theme-sm dark:text-white/90"
-                  >
-                    Apple Watch Ultra
-                  </p>
-                  <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                    1 Variants
-                  </span>
-                </div>
-              </div>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                Watch
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                $879.00
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p
-                class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400"
-              >
-                Pending
-              </p>
-            </div>
-          </td>
-        </tr>
-
-        <!-- table item -->
-        <tr>
-          <td class="py-3">
-            <div class="flex items-center">
-              <div class="flex items-center gap-3">
-                <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                  <img src="src/images/product/product-03.jpg" alt="Product" />
-                </div>
-                <div>
-                  <p
-                    class="font-medium text-gray-800 text-theme-sm dark:text-white/90"
-                  >
-                    iPhone 15 Pro Max
-                  </p>
-                  <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                    2 Variants
-                  </span>
-                </div>
-              </div>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                SmartPhone
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                $1869.00
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p
-                class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500"
-              >
-                Delivered
-              </p>
-            </div>
-          </td>
-        </tr>
-
-        <!-- table item -->
-        <tr>
-          <td class="py-3">
-            <div class="flex items-center">
-              <div class="flex items-center gap-3">
-                <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                  <img src="src/images/product/product-04.jpg" alt="Product" />
-                </div>
-                <div>
-                  <p
-                    class="font-medium text-gray-800 text-theme-sm dark:text-white/90"
-                  >
-                    iPad Pro 3rd Gen
-                  </p>
-                  <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                    2 Variants
-                  </span>
-                </div>
-              </div>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                Electronics
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                $1699.00
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p
-                class="rounded-full bg-error-50 px-2 py-0.5 text-theme-xs font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500"
-              >
-                Canceled
-              </p>
-            </div>
-          </td>
-        </tr>
-
-        <!-- table item -->
-        <tr>
-          <td class="py-3">
-            <div class="flex items-center">
-              <div class="flex items-center gap-3">
-                <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                  <img src="src/images/product/product-05.jpg" alt="Product" />
-                </div>
-                <div>
-                  <p
-                    class="font-medium text-gray-800 text-theme-sm dark:text-white/90"
-                  >
-                    Airpods Pro 2nd Gen
-                  </p>
-                  <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                    1 Variants
-                  </span>
-                </div>
-              </div>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                Accessories
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                $240.00
-              </p>
-            </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p
-                class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-500"
-              >
-                Delivered
-              </p>
-            </div>
-          </td>
-        </tr>
-        <!-- table body end -->
-      </tbody>
-    </table>
-  </div>
-</div> --}}
-<!-- ====== Table One End -->
-              </div>
-            </div>
-          </div>
-        </main>
-        <!-- ===== Main Content End ===== -->
-      </div>
-      <!-- ===== Content Area End ===== -->
+        <!-- ===== Content Area End ===== -->
     </div>
     <!-- ===== Page Wrapper End ===== -->
-  <script defer src="{{ asset('tailadmin/build/bundle.js') }}"></script></body>
+    <script defer src="{{ asset('tailadmin/build/bundle.js') }}"></script>
+</body>
+
 </html>
