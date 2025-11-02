@@ -1000,9 +1000,6 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
         </div>
       </label>
     </div>
-
-    <!-- Status Message -->
-    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400" x-text="autoAssignEnabled ? '✅ الطلبات ترسل تلقائياً لأقرب سائق' : '⏸️ الطلبات تظهر في الداشبورد فقط'"></div>
 </div>
 </div>
 <!-- Auto Assign Toggle -->
