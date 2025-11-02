@@ -262,6 +262,10 @@ svg{-ms-touch-action:none;touch-action:none}image,text,.jvm-zoomin,.jvm-zoomout{
     background-color: transparent;
     opacity: 1;
   }
+  .dark .dark\:text-orange-warning {
+    color: #f79009;
+  }
+
   button, input, select, optgroup, textarea, ::file-selector-button {
     font: inherit;
     -webkit-font-feature-settings: inherit;

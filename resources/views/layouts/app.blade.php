@@ -825,6 +825,124 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
                                 </svg>
                             </button>
                             <!-- Dark Mode Toggler -->
+                            
+    <!-- Auto Assign Toggle -->
+<div class="relative" x-data="{ dropdownOpen: false, autoAssignEnabled: {{ $appSettings->auto_assign_to_drivers ?? 'false' }} }">
+    <button
+        class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+        @click.prevent="dropdownOpen = !dropdownOpen"
+        :class="autoAssignEnabled ? 'text-orange-500 border-orange-300' : ''">
+        
+        <!-- أيقونة التوصيل التلقائي -->
+        <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.25 7.5H13.75V5C13.75 3.75 12.5 2.5 11.25 2.5H8.75C7.5 2.5 6.25 3.75 6.25 5V7.5H3.75C2.5 7.5 1.25 8.75 1.25 10V15C1.25 16.25 2.5 17.5 3.75 17.5H16.25C17.5 17.5 18.75 16.25 18.75 15V10C18.75 8.75 17.5 7.5 16.25 7.5ZM8.75 5H11.25V7.5H8.75V5ZM16.25 15H3.75V10H16.25V15Z" fill="currentColor"/>
+        </svg>
+
+        <!-- نقطة برتقالية عندما يكون التوصيل التلقائي مفعل -->
+        <span x-show="autoAssignEnabled" class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400">
+            <span class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
+        </span>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div x-show="dropdownOpen" 
+     class="shadow-theme-lg dark:bg-gray-dark absolute top-full left-1/2 transform -translate-x-1/2 mt-2 flex h-[200px] w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-4 sm:w-[400px] dark:border-gray-800 lg:left-0 lg:transform-none"
+     @click.outside="dropdownOpen = false">
+    
+    <div class="mb-3 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
+        <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+            إعدادات نظام الطلبات
+        </h5>
+        <button @click="dropdownOpen = false" class="text-gray-500 dark:text-gray-400">
+            {{-- <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z" fill=""/>
+            </svg> --}}
+        </button>
+    </div>
+
+    <!-- Toggle Switch -->
+    <div class="flex items-center justify-between py-2">
+      <label class="relative inline-flex items-center cursor-pointer gap-3">
+        <input 
+            type="checkbox" 
+            x-model="autoAssignEnabled" 
+            @change="updateAutoAssignSetting($event.target.checked)"
+            class="sr-only peer" 
+        />
+        
+        <!-- Circular Button with Animation -->
+        <div 
+            class="
+                relative flex items-center justify-center
+                w-11 h-11 rounded-full border-2
+                transition-all duration-500 ease-in-out
+                transform hover:scale-110
+                group
+            "
+            :class="
+                autoAssignEnabled 
+                ? 'border-orange-300 bg-orange-50 text-orange-500 shadow-lg shadow-orange-200 dark:shadow-orange-900/30' 
+                : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
+            "
+        >
+            <!-- Animated Icon -->
+            <div class="transition-all duration-500 transform" 
+                 :class="autoAssignEnabled ? 'rotate-180 scale-110' : 'rotate-0 scale-100'">
+                <svg 
+                    class="w-5 h-5 transition-colors duration-300" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                >
+                    <path 
+                        x-show="!autoAssignEnabled" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        stroke-width="2" 
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" 
+                    />
+                    <path 
+                        x-show="autoAssignEnabled" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        stroke-width="2" 
+                        d="M13 10V3L4 14h7v7l9-11h-7z" 
+                    />
+                </svg>
+            </div>
+
+            <!-- Pulse Animation when Active -->
+            <span 
+                class="
+                    absolute inset-0 rounded-full 
+                    bg-orange-500 opacity-0 
+                    transition-all duration-1000
+                    group-hover:animate-ping
+                "
+                :class="autoAssignEnabled ? 'opacity-20' : ''"
+            ></span>
+        </div>
+
+        <!-- Status Text -->
+        <div class="transition-all duration-300" 
+             :class="autoAssignEnabled ? 'text-orange-600' : 'text-gray-600'">
+            <span class="text-sm font-semibold block">
+                <span x-show="!autoAssignEnabled" class="dark:text-orange-warning">النظام اليدوي</span>
+                <span x-show="autoAssignEnabled" class="dark:text-orange-warning">النظام التلقائي</span>
+            </span>
+            <span class="text-xs text-gray- dark:text-white/90 block mt-1">
+                <span x-show="!autoAssignEnabled">الطلبات في الداشبورد</span>
+                <span x-show="autoAssignEnabled">إرسال تلقائي للسائقين</span>
+            </span>
+        </div>
+      </label>
+    </div>
+
+    <!-- Status Message -->
+    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400" x-text="autoAssignEnabled ? '✅ الطلبات ترسل تلقائياً لأقرب سائق' : '⏸️ الطلبات تظهر في الداشبورد فقط'"></div>
+</div>
+</div>
+<!-- Auto Assign Toggle -->
 
                             <!-- Notification Menu Area -->
                             <div class="relative" x-data="{ dropdownOpen: false, notifying: true }" @click.outside="dropdownOpen = false">
