@@ -7,14 +7,14 @@
 
         <!-- Phone Address -->
         <div>
-            <x-input-label for="phone" :value="__('Phone')" />
+            <x-input-label for="phone" :value="__('رقم الجوال')" />
             <x-text-input id="phone" class="block mt-1 w-full active" type="text" name="phone" :value="old('phone')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('phone')" class="mt-2" />
         </div>
 
         <!-- Password -->
         <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" :value="__('كلمة المرور')" />
 
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
@@ -27,8 +27,8 @@
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                <input id="remember_me" type="checkbox" class="rounded border-orange-400 text-orange-600 shadow-sm orange-focus orange-checkbox" name="remember">
+                <span class="ms-2 text-sm text-gray-600">{{ __('تذكرني') }}</span>
             </label>
         </div>
 
@@ -40,7 +40,7 @@
             @endif --}}
 
             <x-primary-button class="ms-3">
-                {{ __('Log in') }}
+                {{ __('تسجيل الدخول') }} 
             </x-primary-button>
         </div>
     </form>
