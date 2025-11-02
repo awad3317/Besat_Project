@@ -905,7 +905,7 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
 
     <!-- Dropdown Menu -->
     <div x-show="dropdownOpen" 
-      style="width: 200px"
+      style="width: 250px"
      class="shadow-theme-lg dark:bg-gray-dark absolute top-full mt-2 flex h-[200px] w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800 sm:w-[400px] lg:start-1/2 lg:end-1/2 lg:-translate-x-1/2"
      @click.outside="dropdownOpen = false">
     
