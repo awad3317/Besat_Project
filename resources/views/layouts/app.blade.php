@@ -7,7 +7,7 @@
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>
-        eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template
+        بساط | لوحة تحكم 
     </title>
     <link rel="icon" href="{{ asset('tailadmin/build/favicon.ico') }}">
     <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet">
@@ -809,21 +809,24 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
                         <div class="2xsm:gap-3 flex items-center gap-2">
                            <!-- Notification Menu Area -->
                             <div class="relative" x-data="{ dropdownOpen: false, notifying: true }" @click.outside="dropdownOpen = false">
-                                <button
-                                    class="hover:text-dark-900 relative flex h-11 w-11  items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
-                                    @click.prevent="dropdownOpen = ! dropdownOpen; notifying = false">
-                                    <span :class="!notifying ? 'hidden' : 'flex'"
-                                        class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400">
-                                        <span
-                                            class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
-                                    </span>
-                                    <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20"
-                                        fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M10.75 2.29248C10.75 1.87827 10.4143 1.54248 10 1.54248C9.58583 1.54248 9.25004 1.87827 9.25004 2.29248V2.83613C6.08266 3.20733 3.62504 5.9004 3.62504 9.16748V14.4591H3.33337C2.91916 14.4591 2.58337 14.7949 2.58337 15.2091C2.58337 15.6234 2.91916 15.9591 3.33337 15.9591H4.37504H15.625H16.6667C17.0809 15.9591 17.4167 15.6234 17.4167 15.2091C17.4167 14.7949 17.0809 14.4591 16.6667 14.4591H16.375V9.16748C16.375 5.9004 13.9174 3.20733 10.75 2.83613V2.29248ZM14.875 14.4591V9.16748C14.875 6.47509 12.6924 4.29248 10 4.29248C7.30765 4.29248 5.12504 6.47509 5.12504 9.16748V14.4591H14.875ZM8.00004 17.7085C8.00004 18.1228 8.33583 18.4585 8.75004 18.4585H11.25C11.6643 18.4585 12 18.1228 12 17.7085C12 17.2943 11.6643 16.9585 11.25 16.9585H8.75004C8.33583 16.9585 8.00004 17.2943 8.00004 17.7085Z"
-                                            fill="" />
-                                    </svg>
-                                </button>
+    <button
+        class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+        @click.prevent="dropdownOpen = ! dropdownOpen; notifying = false"
+        :class="notifying ? 'text-orange-500 border-orange-300' : ''">
+        
+        <span :class="!notifying ? 'hidden' : 'flex'"
+            class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400">
+            <span
+                class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
+        </span>
+        
+        <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M10.75 2.29248C10.75 1.87827 10.4143 1.54248 10 1.54248C9.58583 1.54248 9.25004 1.87827 9.25004 2.29248V2.83613C6.08266 3.20733 3.62504 5.9004 3.62504 9.16748V14.4591H3.33337C2.91916 14.4591 2.58337 14.7949 2.58337 15.2091C2.58337 15.6234 2.91916 15.9591 3.33337 15.9591H4.37504H15.625H16.6667C17.0809 15.9591 17.4167 15.6234 17.4167 15.2091C17.4167 14.7949 17.0809 14.4591 16.6667 14.4591H16.375V9.16748C16.375 5.9004 13.9174 3.20733 10.75 2.83613V2.29248ZM14.875 14.4591V9.16748C14.875 6.47509 12.6924 4.29248 10 4.29248C7.30765 4.29248 5.12504 6.47509 5.12504 9.16748V14.4591H14.875ZM8.00004 17.7085C8.00004 18.1228 8.33583 18.4585 8.75004 18.4585H11.25C11.6643 18.4585 12 18.1228 12 17.7085C12 17.2943 11.6643 16.9585 11.25 16.9585H8.75004C8.33583 16.9585 8.00004 17.2943 8.00004 17.7085Z"
+                fill="" />
+        </svg>
+    </button>
 
                                 <!-- Dropdown Start -->
                                 <div x-show="dropdownOpen"
@@ -1003,7 +1006,7 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
 </div>
 </div>
 <!-- Auto Assign Toggle -->
-<!-- Dark Mode Toggler -->
+                            <!-- Dark Mode Toggler -->
                             <button
                                 class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
                                 @click.prevent="darkMode = !darkMode">
@@ -1164,10 +1167,9 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
                             class="flex flex-col items-start justify-between rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-lg">
                             <div
                                 class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
-                                <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24"
-                                    viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M8.8 5.6C7.6 5.6 6.6 6.6 6.6 7.8C6.6 9 7.6 10 8.8 10C10 10 11 9 11 7.8C11 6.6 10 5.6 8.8 5.6Z" />
+                                
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="User / Users"> <path id="Vector" d="M21 19.9999C21 18.2583 19.3304 16.7767 17 16.2275M15 20C15 17.7909 12.3137 16 9 16C5.68629 16 3 17.7909 3 20M15 13C17.2091 13 19 11.2091 19 9C19 6.79086 17.2091 5 15 5M9 13C6.79086 13 5 11.2091 5 9C5 6.79086 6.79086 5 9 5C11.2091 5 13 6.79086 13 9C13 11.2091 11.2091 13 9 13Z" stroke="#dc6803" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  </path> </g> </g>
                                 </svg>
                             </div>
                             <div class="mt-5 w-full">
@@ -1180,11 +1182,8 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
                             class="flex flex-col items-start justify-between rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-lg">
                             <div
                                 class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
-                                <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24"
-                                    viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M15 4.5C15 3.7 15.7 3 16.5 3H18.5C19.3 3 20 3.7 20 4.5C20 5.3 19.3 6 18.5 6H16.5C15.7 6 15 5.3 15 4.5Z" />
-                                </svg>
+                                <svg fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.cls-1{fill:none;}</style></defs><title>bus</title><rect x="27" y="11" width="2" height="4"></rect><rect x="3" y="11" width="2" height="4"></rect><rect x="20" y="20" width="2" height="2"></rect><rect x="10" y="20" width="2" height="2"></rect><path d="M21,4H11A5.0059,5.0059,0,0,0,6,9V23a2.0023,2.0023,0,0,0,2,2v3h2V25H22v3h2V25a2.0027,2.0027,0,0,0,2-2V9A5.0059,5.0059,0,0,0,21,4Zm3,6,.0009,6H8V10ZM11,6H21a2.995,2.995,0,0,1,2.8157,2H8.1843A2.995,2.995,0,0,1,11,6ZM8,23V18H24.0012l.0008,5Z" transform="translate(0 0)"></path><rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32">
+                                  </rect></g></svg>
                             </div>
                             <div class="mt-5 w-full">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">السائقين</span>
@@ -1196,11 +1195,8 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
                             class="flex flex-col items-start justify-between rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-lg">
                             <div
                                 class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
-                                <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24"
-                                    viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M11.7 3.75L18.8 7L11.7 10.25L4.6 7L11.7 3.75Z" />
-                                </svg>
+                                <svg fill="#dc6803" width="24" height="24" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.cls-1{fill:none;}</style></defs><title>ordinal</title><path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path><rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32">
+                                  </rect></g></svg>
                             </div>
                             <div class="mt-5 w-full">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">الطلبات</span>
@@ -1212,11 +1208,8 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
                             class="flex flex-col items-start justify-between rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-lg">
                             <div
                                 class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
-                                <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24"
-                                    viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                        d="M3 9.75C3 9.34 3.34 9 3.75 9H20.25C20.66 9 21 9.34 21 9.75C21 10.16 20.66 10.5 20.25 10.5H3.75C3.34 10.5 3 10.16 3 9.75Z" />
-                                </svg>
+                                <svg fill="#dc6803" width="24" height="24" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <defs> <style> .cls-1 { fill: none; } </style> </defs> <polygon points="23.586 13 21 10.414 21 6 23 6 23 9.586 25 11.586 23.586 13"></polygon> <path d="M22,18a8,8,0,1,1,8-8A8.0092,8.0092,0,0,1,22,18ZM22,4a6,6,0,1,0,6,6A6.0066,6.0066,0,0,0,22,4Z"></path> <path d="M8.63,18l7,6H30V22H16.37l-7-6H4V2H2V28a2.0025,2.0025,0,0,0,2,2H30V28H4V18Z"></path> <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32">
+                                  </rect> </g></svg>
                             </div>
                             <div class="mt-5 w-full">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">الطلبات الحالية</span>
