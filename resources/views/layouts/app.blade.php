@@ -991,8 +991,8 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
                 <span x-show="autoAssignEnabled" class="dark:text-orange-warning">النظام التلقائي</span>
             </span>
             <span class="text-xs text-gray- dark:text-white/90 block mt-1">
-                <span x-show="!autoAssignEnabled">الطلبات في الداشبورد</span>
-                <span x-show="autoAssignEnabled">إرسال تلقائي للسائقين</span>
+                <span x-show="!autoAssignEnabled">إرسال الطلبات في الداشبورد</span>
+                <span x-show="autoAssignEnabled">إرسال الطلبات تلقائي للسائقين</span>
             </span>
         </div>
       </label>
