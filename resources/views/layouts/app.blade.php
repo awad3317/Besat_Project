@@ -41,9 +41,14 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
             <!-- ===== Header Start ===== -->
           @include('layouts.header')
             <!-- ===== Header End ===== -->
+            
+
 
             <!-- ===== Main Content Start ===== -->
             <main class="p-4 md:p-6">
+                <!-- ===== Breadcrumb Start -->
+                    @include('layouts.Breadcrumb')
+                <!-- ===== Breadcrumb End -->
                @yield('content')
             </main>
 

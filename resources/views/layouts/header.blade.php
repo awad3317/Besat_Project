@@ -62,14 +62,14 @@
                            <!-- Notification Menu Area -->
                             <div class="relative" x-data="{ dropdownOpen: false, notifying: true }" @click.outside="dropdownOpen = false">
     <button
-        class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+        class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200  text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-900 dark:border-gray-800  dark:hover:bg-gray-800 dark:hover:text-white"
         @click.prevent="dropdownOpen = ! dropdownOpen; notifying = false"
-        :class="notifying ? 'text-orange-500 border-orange-300' : ''">
+        :class="notifying ? 'text-orange-500 border-orange-300 dark:text-orange-500 dark:border-orange-300' : ''">
         
         <span :class="!notifying ? 'hidden' : 'flex'"
-            class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400">
+            class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400 dark:bg-orange-500">
             <span
-                class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
+                class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 dark:bg-orange-500 opacity-75"></span>
         </span>
         
         <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20"
@@ -143,20 +143,23 @@
                             <!-- Notification Menu Area -->
                             <!-- Auto Assign Toggle -->
                             <div class="relative" x-data="{ dropdownOpen: false, autoAssignEnabled: {{ $appSettings->auto_assign_to_drivers ?? 'false' }} }">
-                              <button
-                                class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
-                                @click.prevent="dropdownOpen = !dropdownOpen"
-                                :class="autoAssignEnabled ? 'text-orange-500 border-orange-300' : ''">
+    <button
+        class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+        @click.prevent="dropdownOpen = !dropdownOpen"
+        :class="autoAssignEnabled ? 'text-orange-500 border-orange-300 dark:text-orange-400 dark:border-orange-500' : ''">
         
-                                    
-                                    <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M16.25 7.5H13.75V5C13.75 3.75 12.5 2.5 11.25 2.5H8.75C7.5 2.5 6.25 3.75 6.25 5V7.5H3.75C2.5 7.5 1.25 8.75 1.25 10V15C1.25 16.25 2.5 17.5 3.75 17.5H16.25C17.5 17.5 18.75 16.25 18.75 15V10C18.75 8.75 17.5 7.5 16.25 7.5ZM8.75 5H11.25V7.5H8.75V5ZM16.25 15H3.75V10H16.25V15Z" fill="currentColor"/>
-                                    </svg>
-                                
-                                    <span x-show="autoAssignEnabled" class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400">
-                                        <span class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
-                                    </span>
-                                  </button>
+        <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path 
+        d="M16.25 7.5H13.75V5C13.75 3.75 12.5 2.5 11.25 2.5H8.75C7.5 2.5 6.25 3.75 6.25 5V7.5H3.75C2.5 7.5 1.25 8.75 1.25 10V15C1.25 16.25 2.5 17.5 3.75 17.5H16.25C17.5 17.5 18.75 16.25 18.75 15V10C18.75 8.75 17.5 7.5 16.25 7.5ZM8.75 5H11.25V7.5H8.75V5ZM16.25 15H3.75V10H16.25V15Z" 
+        stroke="currentColor" 
+        stroke-width="1"
+        />
+</svg>
+        
+        <span x-show="autoAssignEnabled" class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400">
+            <span class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
+        </span>
+    </button>
 
     <!-- Dropdown Menu -->
     <div x-show="dropdownOpen" 
@@ -254,7 +257,6 @@
     </div>
 
     <!-- Status Message -->
-    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400" x-text="autoAssignEnabled ? '✅ الطلبات ترسل تلقائياً لأقرب سائق' : '⏸️ الطلبات تظهر في الداشبورد فقط'"></div>
 </div>
 </div>
 <!-- Auto Assign Toggle -->

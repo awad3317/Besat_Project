@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('title', 'لوحة التحكم')
+@section('Breadcrumb', 'الصفحة الرئيسية')
 @section('content')
     <div class="max-w-screen-2xl mx-auto">
         <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
