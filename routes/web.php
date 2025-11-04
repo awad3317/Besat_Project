@@ -5,6 +5,7 @@ use App\Http\Controllers\usercontroller;
 use App\Http\Controllers\drivercontroller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\requestcontroller;
 
 // Route::get('/', function () {
 //     return view('dashboard');
@@ -22,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::resource('users', usercontroller::class);
     Route::resource('drivers', drivercontroller::class);
+    Route::resource('request',requestcontroller::class);
 });
 
 require __DIR__.'/auth.php';

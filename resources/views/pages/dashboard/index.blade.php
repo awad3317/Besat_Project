@@ -107,7 +107,7 @@
                 السائق
               </p>
             </div>
-          </th class="py-3">
+          </th>
           <th class="py-3">
             <div class="flex items-center">
               <p
@@ -136,20 +136,29 @@
             </div>
           </th>
           <th class="py-3">
-            <div class="flex items-center col-span-2">
-              <p
-                class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
-              >
-                من
-              </p>
+            <div class="flex items-center justify-center space-x-4">
+                <div class="flex items-center">
+                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400 ml-1">
+                          من
+                    </p>
+                </div>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                <div class="flex items-center">
+                    <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400 ml-1">
+                        الى
+                    </p>
+                </div>
             </div>
           </th>
+          <!-- عمود تفاصيل الطلب -->
           <th class="py-3">
-            <div class="flex items-center col-span-2">
+            <div class="flex items-center justify-center">
               <p
                 class="font-medium text-gray-500 text-theme-xs dark:text-gray-400"
               >
-                إالى
+                الإجراءات
               </p>
             </div>
           </th>
@@ -158,6 +167,7 @@
       <!-- table header end -->
 
       <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+        <!-- 1 -->
         <tr>
             <td class="py-3">
                 <div class="flex items-center">
@@ -203,7 +213,7 @@
           <td class="py-3">
             <div class="flex items-center">
               <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                8500
+                9700
               </p>
             </div>
           </td>
@@ -217,17 +227,26 @@
             </div>
           </td>
           <td class="py-3">
-            <div class="flex items-center">
-              <p class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
-                المنصورة
-              </p>
+            <div class="flex items-center justify-center space-x-2">
+                <p class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
+            المنصورة
+                </p>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                <p class="rounded-full bg-blue-light-50 px-2 py-0.5 text-theme-xs font-medium text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
+            التواهي
+                </p>
             </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="rounded-full bg-blue-light-50 px-2 py-0.5 text-theme-xs font-medium text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
-                كريتر
-              </p>
+        </td>
+        <td class="py-3">
+            <div class="flex items-center justify-center">
+              <button class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                تفاصيل
+              </button>
             </div>
           </td>
         </tr>
@@ -291,18 +310,27 @@
               </p>
             </div>
           </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
-                المعلا
-              </p>
+         <td class="py-3">
+            <div class="flex items-center justify-center space-x-2">
+                <p class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
+            خورمكسر
+                </p>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                <p class="rounded-full bg-blue-light-50 px-2 py-0.5 text-theme-xs font-medium text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
+            المعلا
+                </p>
             </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="rounded-full bg-blue-light-50 px-2 py-0.5 text-theme-xs font-medium text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
-                عدن
-              </p>
+        </td>
+        <td class="py-3">
+            <div class="flex items-center justify-center">
+              <button class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                تفاصيل
+              </button>
             </div>
           </td>
         </tr>
@@ -353,7 +381,7 @@
           <td class="py-3">
             <div class="flex items-center">
               <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                8500
+                10000
               </p>
             </div>
           </td>
@@ -367,17 +395,26 @@
             </div>
           </td>
           <td class="py-3">
-            <div class="flex items-center">
-              <p class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
-                خورمكسر
-              </p>
+            <div class="flex items-center justify-center space-x-2">
+                <p class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
+            المنصورة
+                </p>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                <p class="rounded-full bg-blue-light-50 px-2 py-0.5 text-theme-xs font-medium text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
+            عدن
+                </p>
             </div>
-          </td>
-          <td class="py-3">
-            <div class="flex items-center">
-              <p class="rounded-full bg-blue-light-50 px-2 py-0.5 text-theme-xs font-medium text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
-                المنصورة
-              </p>
+        </td>
+        <td class="py-3">
+            <div class="flex items-center justify-center">
+              <button class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                تفاصيل
+              </button>
             </div>
           </td>
         </tr>

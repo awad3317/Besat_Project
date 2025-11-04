@@ -167,77 +167,50 @@
                         <!-- Menu Item Profile -->
 
                         <!-- Menu Item Forms -->
-                        {{-- <li>
+                                                <li>
             <a
-              href="#"
-              @click.prevent="selected = (selected === 'Forms' ? '':'Forms')"
+              href="{{ route('request.index') }}"
+              @click="selected = (selected === 'Profile' ? '':'Profile')"
               class="menu-item group"
-              :class=" (selected === 'Forms') || (page === 'formElements' || page === 'formLayout' || page === 'proFormElements' || page === 'proFormLayout') ? 'menu-item-active' : 'menu-item-inactive'"
+              :class="window.location.href.includes('{{ route('request.index') }}') ? 'menu-item-active' : 'menu-item-inactive'"
             >
-              <svg
-                :class="(selected === 'Forms') || (page === 'formElements' || page === 'formLayout' || page === 'proFormElements' || page === 'proFormLayout') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H18.5001C19.7427 20.75 20.7501 19.7426 20.7501 18.5V5.5C20.7501 4.25736 19.7427 3.25 18.5001 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H18.5001C18.9143 4.75 19.2501 5.08579 19.2501 5.5V18.5C19.2501 18.9142 18.9143 19.25 18.5001 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V5.5ZM6.25005 9.7143C6.25005 9.30008 6.58583 8.9643 7.00005 8.9643L17 8.96429C17.4143 8.96429 17.75 9.30008 17.75 9.71429C17.75 10.1285 17.4143 10.4643 17 10.4643L7.00005 10.4643C6.58583 10.4643 6.25005 10.1285 6.25005 9.7143ZM6.25005 14.2857C6.25005 13.8715 6.58583 13.5357 7.00005 13.5357H17C17.4143 13.5357 17.75 13.8715 17.75 14.2857C17.75 14.6999 17.4143 15.0357 17 15.0357H7.00005C6.58583 15.0357 6.25005 14.6999 6.25005 14.2857Z"
-                  fill=""
-                />
-              </svg>
+              {{-- <svg :class="window.location.href.includes('{{ route('request.index') }}') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'" fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" id="icon"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <defs>
+                                <style>
+                                    .cls-1 {
+                                        fill: none;
+                                    }
+                                </style>
+                            </defs>
+                            <title>bus</title>
+                            <rect x="27" y="11" width="2" height="4"></rect>
+                            <rect x="3" y="11" width="2" height="4"></rect>
+                            <rect x="20" y="20" width="2" height="2"></rect>
+                            <rect x="10" y="20" width="2" height="2"></rect>
+                            <path
+                                d="M21,4H11A5.0059,5.0059,0,0,0,6,9V23a2.0023,2.0023,0,0,0,2,2v3h2V25H22v3h2V25a2.0027,2.0027,0,0,0,2-2V9A5.0059,5.0059,0,0,0,21,4Zm3,6,.0009,6H8V10ZM11,6H21a2.995,2.995,0,0,1,2.8157,2H8.1843A2.995,2.995,0,0,1,11,6ZM8,23V18H24.0012l.0008,5Z"
+                                transform="translate(0 0)"></path>
+                            <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1"
+                                width="32" height="32">
+                            </rect>
+                        </g>
+                    </svg> --}}
+
+                    <svg  :class="window.location.href.includes('{{ route('request.index') }}') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'" fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.cls-1{fill:none;}</style></defs><title>request-quote</title><path d="M22,22v6H6V4H16V2H6A2,2,0,0,0,4,4V28a2,2,0,0,0,2,2H22a2,2,0,0,0,2-2V22Z" transform="translate(0)"></path><path d="M29.54,5.76l-3.3-3.3a1.6,1.6,0,0,0-2.24,0l-14,14V22h5.53l14-14a1.6,1.6,0,0,0,0-2.24ZM14.7,20H12V17.3l9.44-9.45,2.71,2.71ZM25.56,9.15,22.85,6.44l2.27-2.27,2.71,2.71Z" transform="translate(0)"></path><rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"></rect></g></svg>
+                    
 
               <span
                 class="menu-item-text"
                 :class="sidebarToggle ? 'lg:hidden' : ''"
               >
-                Forms
+                إدارة الطلبات
               </span>
-
-              <svg
-                class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current"
-                :class="[(selected === 'Forms') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585"
-                  stroke=""
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
             </a>
-
-            <!-- Dropdown Menu Start -->
-            <div
-              class="overflow-hidden transform translate"
-              :class="(selected === 'Forms') ? 'block' :'hidden'"
-            >
-              <ul
-                :class="sidebarToggle ? 'lg:hidden' : 'flex'"
-                class="flex flex-col gap-1 mt-2 menu-dropdown pl-9"
-              >
-                <li>
-                  <a
-                    href="form-elements.html"
-                    class="menu-dropdown-item group"
-                    :class="page === 'formElements' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'"
-                  >
-                    Form Elements
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <!-- Dropdown Menu End -->
-          </li> --}}
+          </li>
                         <!-- Menu Item Forms -->
 
                         <!-- Menu Item Tables -->
