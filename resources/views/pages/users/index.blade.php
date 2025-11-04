@@ -3,12 +3,42 @@
 @section('Breadcrumb', 'إدارة المستخدمين')
 @section('content')
 <div class="space-y-5 sm:space-y-6">
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="px-5 py-4 sm:px-6 sm:py-5">
-            <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-                السائقين
-            </h3>
+
+            <div class="flex flex-col sm:flex-row gap-4 items-end">
+
+                <!-- حقل البحث -->
+                <div class="flex-1 min-w-[250px]">
+                    <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300 text-right">
+                        البحث
+                    </label>
+                    <input type="text"
+                        class="shadow-theme-xs h-10 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 text-right"
+                        placeholder="أدخل نص البحث..." />
+                </div>
+
+                <!-- خيار المتصلين فقط / الكل -->
+                <div class="min-w-[180px]">
+                    <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300 text-right">
+                        الحالة
+                    </label>
+                    <select class="shadow-theme-xs h-10 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 text-right">
+                        <option value="all">الكل</option>
+                        <option value="connected">المتصلين فقط</option>
+                    </select>
+                </div>
+
+                <!-- زر التطبيق -->
+                <button
+                    class="bg-brand-500 hover:bg-brand-600 h-10 rounded-lg px-6 py-2 text-sm font-medium text-white min-w-[100px]">
+                    تطبيق
+                </button>
+
+            </div>
+
         </div>
+        
         <div class="p-5 border-t border-gray-100 dark:border-gray-800 sm:p-6">
             <!-- ====== Table Six Start -->
             <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -150,6 +180,6 @@
             <!-- ====== Table Six End -->
         </div>
     </div>
-</div>
+    </div>
     
 @endsection
