@@ -71,7 +71,7 @@
                                 <th class="px-5 py-3 sm:px-6">
                                     <div class="flex items-center">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                            حالته
+                                            الحظر
                                         </p>
                                     </div>
                                 </th>
@@ -79,6 +79,13 @@
                                     <div class="flex items-center">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                             الطلبات
+                                        </p>
+                                    </div>
+                                </th>
+                                <th class="py-3">
+                                    <div class="flex items-center justify-center">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            الإجراءات
                                         </p>
                                     </div>
                                 </th>
@@ -93,10 +100,10 @@
                                         <div class="flex items-center gap-3">
                                             <div>
                                                 <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                                    احمد شرجبي
+                                                    عوض لشرم 
                                                 </span>
                                                 <span class="block text-gray-500 text-theme-xs dark:text-gray-400">
-                                                    +967780236552
+                                                    +967780236551
                                                 </span>
                                             </div>
                                         </div>
@@ -117,15 +124,41 @@
                                     </div>
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
-                                    <div class="flex items-center">
-                                        <p class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-500">
-                                            نشط
-                                        </p>
-                                    </div>
+                                    <div x-data="{ switcherToggle: true }">
+                                        <label for="toggle2" class="flex cursor-pointer items-center gap-3 text-sm font-medium text-gray-700 select-none dark:text-gray-400"
+>
+                          <div class="relative">
+                            <input
+                              type="checkbox"
+                              id="toggle2"
+                              class="sr-only"
+                              @change="switcherToggle = !switcherToggle"
+                            />
+                            <div
+                              class="block h-6 w-11 rounded-full"
+                              :class="switcherToggle ? 'bg-success-500 ' : 'bg-error-500'"
+                            ></div>
+                            <div
+                              :class="switcherToggle ? 'translate-x-full': 'translate-x-0'"
+                              class="shadow-theme-sm absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white duration-300 ease-linear"
+                            ></div>
+                          </div>
+                        </label>
+                      </div>
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center">
                                         <p class="text-gray-500 text-theme-sm dark:text-gray-400">30</p>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4 sm:px-6">
+                                    <div class="flex items-center justify-center">
+                                       <button onclick="window.location.href='{{ route('users.show', 1) }}'" class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            تفاصيل
+                                        </button>
                                     </div>
                                 </td>
                             </tr>

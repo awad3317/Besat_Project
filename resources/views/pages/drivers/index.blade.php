@@ -51,6 +51,13 @@
                                 <th class="px-5 py-3 sm:px-6">
                                     <div class="flex items-center">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            رقم السائق
+                                        </p>
+                                    </div>
+                                </th>
+                                <th class="px-5 py-3 sm:px-6">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                             الأسم
                                         </p>
                                     </div>
@@ -65,7 +72,7 @@
                                 <th class="px-5 py-3 sm:px-6">
                                     <div class="flex items-center">
                                         <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                                            نوعه
+                                            السيارة 
                                         </p>
                                     </div>
                                 </th>
@@ -83,6 +90,13 @@
                                         </p>
                                     </div>
                                 </th>
+                                <th class="py-3">
+                                    <div class="flex items-center justify-center">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            الإجراءات
+                                        </p>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <!-- table header end -->
@@ -91,19 +105,28 @@
                             <tr>
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center">
-                                        <div class="flex items-center gap-3">
-                                            <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                                              <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="Product" />
-                                            </div>
+                                        <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                            1
+                                        </p>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4 sm:px-6">
+                                    <div class="flex items-center">
+                                        <div class="flex items-center gap-3" x-data="{ driverStatus: true }">
+                                            <div class="relative h-10 w-10 flex-shrink-0">
+                                                <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="User" class="h-full w-full rounded-full object-cover"/>
+                                                <span class="bg-success-500 absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900">
+                                                    
+                                                </span>
+                                            </div></div>
                                             <div>
                                                 <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                                    احمد شرجبي
+                                                      احمد شرجبي
                                                 </span>
                                                 <span class="block text-gray-500 text-theme-xs dark:text-gray-400">
                                                     +967780236552
                                                 </span>
                                             </div>
-                                        </div>
                                     </div>
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
@@ -115,21 +138,48 @@
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center">
-                                        <p class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-500">
-                                            سائق
+                                        <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                            نوها
                                         </p>
                                     </div>
+
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
-                                    <div class="flex items-center">
-                                        <p class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-700 dark:bg-success-500/15 dark:text-success-500">
-                                            نشط
-                                        </p>
-                                    </div>
+                                    <div x-data="{ switcherToggle: true }">
+                                        <label for="toggle2" class="flex cursor-pointer items-center gap-3 text-sm font-medium text-gray-700 select-none dark:text-gray-400"
+>
+                          <div class="relative">
+                            <input
+                              type="checkbox"
+                              id="toggle2"
+                              class="sr-only"
+                              @change="switcherToggle = !switcherToggle"
+                            />
+                            <div
+                              class="block h-6 w-11 rounded-full"
+                              :class="switcherToggle ? 'bg-success-500 ' : 'bg-error-500'"
+                            ></div>
+                            <div
+                              :class="switcherToggle ? 'translate-x-full': 'translate-x-0'"
+                              class="shadow-theme-sm absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white duration-300 ease-linear"
+                            ></div>
+                          </div>
+                        </label>
+                      </div>
                                 </td>
                                 <td class="px-5 py-4 sm:px-6">
                                     <div class="flex items-center">
                                         <p class="text-gray-500 text-theme-sm dark:text-gray-400">30</p>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4 sm:px-6">
+                                    <div class="flex items-center justify-center">
+                                       <button onclick="window.location.href='{{ route('drivers.show', 1) }}'" class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            تفاصيل
+                                        </button>
                                     </div>
                                 </td>
                             </tr>

@@ -33,9 +33,9 @@ class drivercontroller extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        return view('pages.drivers.show');
     }
 
     /**
