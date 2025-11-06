@@ -66,6 +66,168 @@
     </div>
 </div>
 
+<!-- ====== Chart One Start -->
+
+  <div class="flex flex-col lg:flex-row gap-4 mb-4">
+  <!-- الرسمة الأولى - 50% -->
+  <div class="" style="width: 75%">
+    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 h-full">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+          الطلبات خلال <span class="text-warning-500 dark:text-warning/90"> سنة</span>
+        </h3>
+      </div>
+
+      <div class="mt-4">
+        <div
+          id="chartOne"
+          class="w-full h-64"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- الرسمة الثانية - 50% -->
+  <div class="" style="width: 35%">
+    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-5 sm:pt-5 h-full">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                أعلى تقييمات 
+            </h3>
+        </div>
+
+        <div class="mt-4 space-y-3">
+            <!-- المستخدم 1 -->
+            <div class="flex gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div class="relative w-12 h-12 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 flex-shrink-0">
+                    <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="user" class="object-cover w-full h-full" />
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 truncate">
+                        أحمد شرجبي (<span class="text-warning-500 dark:text-warning/90">نوها</span>)
+                    </h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            +967780236552
+                        </p>
+                        <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            عدن
+                        </p>
+                    </div>
+                    <!-- التقييم -->
+                    <div class="flex items-center gap-1 mt-1">
+                        <div class="flex">
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#e5e7eb" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-gray-800 dark:text-white/90">(4.8)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المستخدم 2 -->
+            <div class="flex gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div class="relative w-12 h-12 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 flex-shrink-0">
+                    <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="user" class="object-cover w-full h-full" />
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 truncate">
+                        محمد العبد (<span class="text-warning-500 dark:text-warning/90">مطعم الحكمة</span>)
+                    </h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            +967712345678
+                        </p>
+                        <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            صنعاء
+                        </p>
+                    </div>
+                    <!-- التقييم -->
+                    <div class="flex items-center gap-1 mt-1">
+                        <div class="flex">
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#e5e7eb" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-gray-800 dark:text-white/90">(4.6)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المستخدم 3 -->
+            <div class="flex gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div class="relative w-12 h-12 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 flex-shrink-0">
+                    <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="user" class="object-cover w-full h-full" />
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 truncate">
+                        فاطمة قاسم (<span class="text-warning-500 dark:text-warning/90">مخبز الأصالة</span>)
+                    </h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            +967798765432
+                        </p>
+                        <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            تعز
+                        </p>
+                    </div>
+                    <!-- التقييم -->
+                    <div class="flex items-center gap-1 mt-1">
+                        <div class="flex">
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#e5e7eb" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="w-3 h-3" fill="#e5e7eb" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-gray-800 dark:text-white/90">(4.2)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+<!-- ====== Chart One End -->
+
 <div
   class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6"
 >
@@ -421,4 +583,62 @@
     </table>
   </div>
 </div>
+
+@endsection
+
+@section('script')
+      
+    <script>
+window.laravelChartData = {
+    sales: [
+        @json($monthlySales['january'] ?? 0),
+        @json($monthlySales['february'] ?? 0),
+        @json($monthlySales['march'] ?? 0),
+        @json($monthlySales['april'] ?? 0),
+        @json($monthlySales['may'] ?? 0),
+        @json($monthlySales['june'] ?? 0),
+        @json($monthlySales['july'] ?? 0),
+        @json($monthlySales['august'] ?? 0),
+        @json($monthlySales['september'] ?? 0),
+        @json($monthlySales['october'] ?? 0),
+        @json($monthlySales['november'] ?? 0),
+        @json($monthlySales['december'] ?? 0)
+    ],
+    months: [
+        'يناير', 'فبراير', 'مارس', 'أبريل',
+        'مايو', 'يونيو', 'يوليو', 'أغسطس',
+        'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+    ],
+    lastUpdated: @json(now()->format('Y-m-d H:i:s')),
+    yAxis: {
+        min: 0,
+        max: 500, 
+        tickAmount: 6,
+    }
+  
+    colors: ["#dc6803"], 
+    seriesName: " ",
+    chartHeight: 180,
+    chartType: "bar",
+    columnWidth: "35%",
+    borderRadius: 5,
+    strokeWidth: 2,
+    fontSize: '12px',
+    tooltipSuffix: " ",
+    showToolbar: false,
+    showDataLabels: false,
+    showStroke: true,
+    showXAxisBorder: false,
+    showXAxisTicks: false,
+    showLegend: true,
+    legendPosition: "top",
+    legendHorizontalAlign: "left",
+    showGridLines: true,
+    fillOpacity: 1,
+    showTooltipX: false,
+    fontFamily: "Outfit, sans-serif",
+    labelRotation: 0,
+};
+</script>
+
 @endsection
