@@ -69,7 +69,6 @@
 <!-- ====== Chart One Start -->
 
   <div class="flex flex-col lg:flex-row gap-4 mb-4">
-  <!-- الرسمة الأولى - 50% -->
   <div class="" style="width: 75%">
     <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 h-full">
       <div class="flex items-center justify-between">
@@ -87,7 +86,7 @@
     </div>
   </div>
 
-  <!-- الرسمة الثانية - 50% -->
+  
   <div class="" style="width: 35%">
     <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-5 sm:pt-5 h-full">
         <div class="flex items-center justify-between">
@@ -146,7 +145,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 truncate">
-                        محمد العبد (<span class="text-warning-500 dark:text-warning/90">مطعم الحكمة</span>)
+                        محمد العبد (<span class="text-warning-500 dark:text-warning/90">فوكسي</span>)
                     </h4>
                     <div class="flex items-center gap-2 mt-1">
                         <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -188,7 +187,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 truncate">
-                        فاطمة قاسم (<span class="text-warning-500 dark:text-warning/90">مخبز الأصالة</span>)
+                        فاطمة قاسم (<span class="text-warning-500 dark:text-warning/90">باص</span>)
                     </h4>
                     <div class="flex items-center gap-2 mt-1">
                         <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
