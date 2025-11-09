@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\usercontroller;
+use App\Http\Controllers\couponcontroller;
 use App\Http\Controllers\drivercontroller;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\requestcontroller;
+use App\Http\Controllers\DashboardController;
 
 // Route::get('/', function () {
 //     return view('dashboard');
@@ -24,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', usercontroller::class);
     Route::resource('drivers', drivercontroller::class);
     Route::resource('request',requestcontroller::class);
+    Route::resource('Coupon',couponcontroller::class);
 });
 
 require __DIR__.'/auth.php';
