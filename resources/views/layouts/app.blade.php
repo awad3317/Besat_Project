@@ -11,6 +11,7 @@
     </title>
     <link rel="icon" href="{{ asset('tailadmin/build/favicon.ico') }}">
     <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet">
+    @yield('style')
 
 </head>
 

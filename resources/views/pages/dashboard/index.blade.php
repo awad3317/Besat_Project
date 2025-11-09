@@ -2,6 +2,51 @@
 @section('title', 'لوحة التحكم')
 @section('Breadcrumb', 'الصفحة الرئيسية')
 @section('content')
+@section('style')
+<style>
+  /* ===== Responsive Layout ===== */
+.chart-container {
+    width: 100%;
+}
+
+.ratings-container {
+    width: 100%;
+}
+
+
+@media (max-width: 767px) {
+    .chart-container {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .ratings-container {
+        width: 100%;
+    }
+}
+
+
+@media (min-width: 768px) and (max-width: 1279px) {
+    .chart-container {
+        width: 65%;
+    }
+    
+    .ratings-container {
+        width: 35%;
+    }
+}
+
+@media (min-width: 1280px) {
+    .chart-container {
+        width: 75%;
+    }
+    
+    .ratings-container {
+        width: 25%;
+    }
+}
+</style>
+@endsection
 <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
     
     <!-- الكارد الأول -->
@@ -69,7 +114,7 @@
 <!-- ====== Chart One Start -->
 
   <div class="flex flex-col lg:flex-row gap-4 mb-4">
-  <div class="" style="width: 75%">
+  <div class="chart-container">
     <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 h-full">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -87,7 +132,7 @@
   </div>
 
   
-  <div class="" style="width: 35%">
+  <div class="ratings-container">
     <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-5 sm:pt-5 h-full">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -114,7 +159,7 @@
                             عدن
                         </p>
                     </div>
-                    <!-- التقييم -->
+                    
                     <div class="flex items-center gap-1 mt-1">
                         <div class="flex">
                             <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
