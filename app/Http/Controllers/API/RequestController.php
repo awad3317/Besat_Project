@@ -35,7 +35,7 @@ class RequestController extends Controller
      */
     public function index(Request $request)
     {
-        $ip = $request->header('CF-Connecting-IP') ?? $request->ip();
+        $ip = $request->header('CF-Connecting-IP');
         return $ip;
     }
 
