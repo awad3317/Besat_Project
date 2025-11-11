@@ -56,3 +56,5 @@ Route::post('/driver/forgetPassword', [DriverForgetPasswordController::class,'fo
 Route::post('/driver/resetPassword', [DriverForgetPasswordController::class,'resetPassword']);
         //       App Settings Route    //  
 Route::get('/appSettings', [AppSettingController::class, 'index']); 
+
+Route::get('/ip',[RequestController::class,'index']);
