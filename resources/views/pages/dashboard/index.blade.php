@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('title', 'لوحة التحكم')
 @section('Breadcrumb', 'الصفحة الرئيسية')
-@section('content')
 @section('style')
 <style>
   /* ===== Responsive Layout ===== */
@@ -47,6 +46,8 @@
 }
 </style>
 @endsection
+@section('content')
+
 <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
     
     <!-- الكارد الأول -->

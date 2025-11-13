@@ -173,98 +173,41 @@
 
           <!-- Menu Item Tables -->
           <li>
-            <a href="#" @click.prevent="selected = (selected === 'Tables' ? '':'Tables')" class="menu-item group"
+            <a href="{{ route('Coupon.index') }}" @click="selected = (selected === 'Profile' ? '':'Profile')"
+              class="menu-item group"
               :class="window.location.href.includes('{{ route('Coupon.index') }}') ? 'menu-item-active' : 'menu-item-inactive'">
-              <svg
-                :class="window.location.href.includes('{{ route('Coupon.index') }}') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
-                fill="#dc6803" width="30" height="30" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                <g>
-                  <path
-                    d="M495.432,111.165H384.267c-4.427,0-8.017,3.589-8.017,8.017v8.551c0,5.01-4.076,9.086-9.086,9.086 c-5.01,0-9.086-4.076-9.086-9.086v-8.551c0-4.427-3.589-8.017-8.017-8.017H16.568C7.432,111.165,0,118.597,0,127.733v256.534 c0,9.136,7.432,16.568,16.568,16.568h333.495c4.427,0,8.017-3.589,8.017-8.017v-8.551c0-5.01,4.076-9.086,9.086-9.086 c5.01,0,9.086,4.076,9.086,9.086v8.551c0,4.427,3.589,8.017,8.017,8.017h111.165c9.136,0,16.568-7.432,16.568-16.568V127.733 C512,118.597,504.568,111.165,495.432,111.165z M495.967,384.267c0,0.295-0.239,0.534-0.534,0.534H392.284v-0.534 c0-11.048-7.172-20.446-17.102-23.8v-10.405c0-4.427-3.589-8.017-8.017-8.017c-4.427,0-8.017,3.589-8.017,8.017v10.405 c-9.93,3.354-17.102,12.752-17.102,23.8v0.534H16.568c-0.295,0-0.534-0.239-0.534-0.534V127.733c0-0.295,0.239-0.534,0.534-0.534 h325.478v0.534c0,11.048,7.172,20.446,17.102,23.8v10.405c0,4.427,3.589,8.017,8.017,8.017c4.427,0,8.017-3.589,8.017-8.017 v-10.405c9.93-3.354,17.102-12.752,17.102-23.8v-0.534h103.148c0.295,0,0.534,0.239,0.534,0.534V384.267z" />
-                  <path
-                    d="M367.165,188.125c-4.427,0-8.017,3.589-8.017,8.017v17.102c0,4.427,3.589,8.017,8.017,8.017 c4.427,0,8.017-3.589,8.017-8.017v-17.102C375.182,191.715,371.592,188.125,367.165,188.125z" />
-                  <path
-                    d="M367.165,239.432c-4.427,0-8.017,3.589-8.017,8.017v17.102c0,4.427,3.589,8.017,8.017,8.017 c4.427,0,8.017-3.589,8.017-8.017v-17.102C375.182,243.021,371.592,239.432,367.165,239.432z" />
-                  <path
-                    d="M367.165,290.739c-4.427,0-8.017,3.589-8.017,8.017v17.102c0,4.427,3.589,8.017,8.017,8.017 c4.427,0,8.017-3.589,8.017-8.017v-17.102C375.182,294.328,371.592,290.739,367.165,290.739z" />
-                  <path
-                    d="M261.668,173.371c-3.131-3.131-8.207-3.131-11.337,0L96.411,327.292c-3.131,3.131-3.131,8.207,0,11.337 c1.565,1.566,3.617,2.348,5.668,2.348s4.103-0.782,5.668-2.348l153.921-153.921C264.799,181.578,264.799,176.501,261.668,173.371z " />
-                  <path
-                    d="M127.733,162.472c-23.281,0-42.221,18.941-42.221,42.221s18.941,42.221,42.221,42.221s42.221-18.941,42.221-42.221 S151.013,162.472,127.733,162.472z M127.733,230.881c-14.44,0-26.188-11.748-26.188-26.188s11.748-26.188,26.188-26.188 s26.188,11.748,26.188,26.188S142.172,230.881,127.733,230.881z" />
-                  <path
-                    d="M230.347,265.086c-23.281,0-42.221,18.941-42.221,42.221s18.941,42.221,42.221,42.221s42.221-18.941,42.221-42.221 S253.627,265.086,230.347,265.086z M230.347,333.495c-14.44,0-26.188-11.748-26.188-26.188s11.748-26.188,26.188-26.188 s26.188,11.748,26.188,26.188S244.786,333.495,230.347,333.495z" />
-                </g>
+
+              <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M20 6H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 10H5c-.55 0-1-.45-1-1V9c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v6c0 .55-.45 1-1 1z" />
+                <circle cx="8.5" cy="11.5" r="1.5" />
+                <circle cx="15.5" cy="11.5" r="1.5" />
+                <path d="M8 15h8v1.5c0 .83-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5V15z" />
               </svg>
+
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                 كوبونات الخصم
               </span>
-
-              {{-- <svg class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current"
-                :class="[(selected === 'Tables') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
-                width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
-                  stroke-linecap="round" stroke-linejoin="round" />
-              </svg> --}}
             </a>
-
-            <!-- Dropdown Menu Start -->
-            {{-- <div class="overflow-hidden transform translate" :class="(selected === 'Tables') ? 'block' :'hidden'">
-              <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
-                <li>
-                  <a href="basic-tables.html" class="menu-dropdown-item group"
-                    :class="page === 'basicTables' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                    Basic Tables
-                  </a>
-                </li>
-              </ul>
-            </div> --}}
-            <!-- Dropdown Menu End -->
           </li>
           <!-- Menu Item Tables -->
 
           <!-- Menu Item Pages -->
-          {{-- <li>
-            <a href="#" @click.prevent="selected = (selected === 'Pages' ? '':'Pages')" class="menu-item group"
-              :class="(selected === 'Pages') || (page === 'fileManager' || page === 'pricingTables' || page === 'blank' || page === 'page404' || page === 'page500' || page === 'page503' || page === 'success' || page === 'faq' || page === 'comingSoon' || page === 'maintenance') ? 'menu-item-active' : 'menu-item-inactive'">
-              <svg
-                :class="(selected === 'Pages') || (page === 'fileManager' || page === 'pricingTables' || page === 'blank' || page === 'page404' || page === 'page500' || page === 'page503' || page === 'success' || page === 'faq' || page === 'comingSoon' || page === 'maintenance') ? 'menu-item-icon-active'  :'menu-item-icon-inactive'"
-                width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd"
-                  d="M8.50391 4.25C8.50391 3.83579 8.83969 3.5 9.25391 3.5H15.2777C15.4766 3.5 15.6674 3.57902 15.8081 3.71967L18.2807 6.19234C18.4214 6.333 18.5004 6.52376 18.5004 6.72268V16.75C18.5004 17.1642 18.1646 17.5 17.7504 17.5H16.248V17.4993H14.748V17.5H9.25391C8.83969 17.5 8.50391 17.1642 8.50391 16.75V4.25ZM14.748 19H9.25391C8.01126 19 7.00391 17.9926 7.00391 16.75V6.49854H6.24805C5.83383 6.49854 5.49805 6.83432 5.49805 7.24854V19.75C5.49805 20.1642 5.83383 20.5 6.24805 20.5H13.998C14.4123 20.5 14.748 20.1642 14.748 19.75L14.748 19ZM7.00391 4.99854V4.25C7.00391 3.00736 8.01127 2 9.25391 2H15.2777C15.8745 2 16.4468 2.23705 16.8687 2.659L19.3414 5.13168C19.7634 5.55364 20.0004 6.12594 20.0004 6.72268V16.75C20.0004 17.9926 18.9931 19 17.7504 19H16.248L16.248 19.75C16.248 20.9926 15.2407 22 13.998 22H6.24805C5.00541 22 3.99805 20.9926 3.99805 19.75V7.24854C3.99805 6.00589 5.00541 4.99854 6.24805 4.99854H7.00391Z"
-                  fill="" />
+          <li>
+            <a href="@" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group"
+              :class="window.location.href.includes('@') ? 'menu-item-active' : 'menu-item-inactive'">
+
+              <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"
+                  fill="currentColor" style="stroke-width: 0.3;" />
               </svg>
 
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                Pages
+                اعدادات النظام
               </span>
-
-              <svg class="menu-item-arrow absolute right-2.5 top-1/2 -translate-y-1/2 stroke-current"
-                :class="[(selected === 'Pages') ? 'menu-item-arrow-active' : 'menu-item-arrow-inactive', sidebarToggle ? 'lg:hidden' : '' ]"
-                width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="" stroke-width="1.5"
-                  stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
             </a>
-
-            <!-- Dropdown Menu Start -->
-            <div class="overflow-hidden transform translate" :class="(selected === 'Pages') ? 'block' :'hidden'">
-              <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
-                <li>
-                  <a href="blank.html" class="menu-dropdown-item group"
-                    :class="page === 'blank' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                    Blank Page
-                  </a>
-                </li>
-                <li>
-                  <a href="404.html" class="menu-dropdown-item group"
-                    :class="page === 'page404' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                    404 Error
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <!-- Dropdown Menu End -->
-          </li> --}}
+          </li>
           <!-- Menu Item Pages -->
         </ul>
       </div>

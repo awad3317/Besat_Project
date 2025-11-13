@@ -15,10 +15,14 @@
 
 </head>
 
-<body x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="darkMode = JSON.parse(localStorage.getItem('darkMode'));
-$watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))" :class="{ 'dark bg-gray-900': darkMode === true }">
+<body
+    x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-init="darkMode = JSON.parse(localStorage.getItem('darkMode'));
+$watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+    :class="{ 'dark bg-gray-900': darkMode === true }">
     <!-- ===== Preloader Start ===== -->
-    <div x-show="loaded" x-init="window.addEventListener('DOMContentLoaded', () => { setTimeout(() => loaded = false, 500) })"
+    <div x-show="loaded"
+        x-init="window.addEventListener('DOMContentLoaded', () => { setTimeout(() => loaded = false, 500) })"
         class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black">
         <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
         </div>
@@ -41,17 +45,17 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
             <!-- Small Device Overlay End -->
 
             <!-- ===== Header Start ===== -->
-          @include('layouts.header')
+            @include('layouts.header')
             <!-- ===== Header End ===== -->
-            
+
 
 
             <!-- ===== Main Content Start ===== -->
             <main class="p-4 md:p-6">
                 <!-- ===== Breadcrumb Start -->
-                    @include('layouts.Breadcrumb')
+                @include('layouts.Breadcrumb')
                 <!-- ===== Breadcrumb End -->
-               @yield('content')
+                @yield('content')
             </main>
 
             <!-- ===== Main Content End ===== -->
@@ -61,85 +65,85 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
     <!-- ===== Page Wrapper End ===== -->
     @yield('script')
     <script defer src="{{ asset('tailadmin/build/bundle.js') }}"></script>
-    <script >
+    <script>
         function autoAssignSystem() {
-    return {
-        autoAssignEnabled: false,
-        message: '',
-        messageType: 'success',
-        
-        async init() {
-            // جلب الإعدادات الحالية من السيرفر
-            await this.loadCurrentSettings();
-        },
-        
-        async loadCurrentSettings() {
-            try {
-                const response = await fetch('{{ route("system-settings.auto-assign.get") }}', {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            return {
+                autoAssignEnabled: false,
+                message: '',
+                messageType: 'success',
+
+                async init() {
+                    // جلب الإعدادات الحالية من السيرفر
+                    await this.loadCurrentSettings();
+                },
+
+                async loadCurrentSettings() {
+                    try {
+                        const response = await fetch('{{ route("system-settings.auto-assign.get") }}', {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        });
+
+                        const data = await response.json();
+                        this.autoAssignEnabled = data.auto_assign_enabled;
+
+                    } catch (error) {
+                        console.error('Error loading settings:', error);
+                        this.showMessage('خطأ في تحميل الإعدادات', 'error');
                     }
-                });
-                
-                const data = await response.json();
-                this.autoAssignEnabled = data.auto_assign_enabled;
-                
-            } catch (error) {
-                console.error('Error loading settings:', error);
-                this.showMessage('خطأ في تحميل الإعدادات', 'error');
-            }
-        },
-        
-        async updateAutoAssignSetting(enabled) {
-            try {
-                const response = await fetch('{{ route("system-settings.auto-assign.update") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        enabled: enabled
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    this.autoAssignEnabled = enabled;
-                    this.showMessage(data.message, 'success');
-                    
-                    // إعادة تحميل الصفحة بعد التحديث إذا لزم الأمر
+                },
+
+                async updateAutoAssignSetting(enabled) {
+                    try {
+                        const response = await fetch('{{ route("system-settings.auto-assign.update") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                enabled: enabled
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            this.autoAssignEnabled = enabled;
+                            this.showMessage(data.message, 'success');
+
+                            // إعادة تحميل الصفحة بعد التحديث إذا لزم الأمر
+                            setTimeout(() => {
+                                // window.location.reload();
+                            }, 1500);
+                        } else {
+                            this.showMessage(data.message, 'error');
+                            // التراجع عن التغيير في حالة الخطأ
+                            this.autoAssignEnabled = !enabled;
+                        }
+
+                    } catch (error) {
+                        console.error('Error updating setting:', error);
+                        this.showMessage('حدث خطأ أثناء حفظ الإعدادات', 'error');
+                        this.autoAssignEnabled = !enabled;
+                    }
+                },
+
+                showMessage(text, type = 'success') {
+                    this.message = text;
+                    this.messageType = type;
+
                     setTimeout(() => {
-                        // window.location.reload();
-                    }, 1500);
-                } else {
-                    this.showMessage(data.message, 'error');
-                    // التراجع عن التغيير في حالة الخطأ
-                    this.autoAssignEnabled = !enabled;
+                        this.message = '';
+                    }, 3000);
                 }
-                
-            } catch (error) {
-                console.error('Error updating setting:', error);
-                this.showMessage('حدث خطأ أثناء حفظ الإعدادات', 'error');
-                this.autoAssignEnabled = !enabled;
             }
-        },
-        
-        showMessage(text, type = 'success') {
-            this.message = text;
-            this.messageType = type;
-            
-            setTimeout(() => {
-                this.message = '';
-            }, 3000);
         }
-    }
-}
-        
-     </script>
+
+    </script>
 </body>
 
 </html>
