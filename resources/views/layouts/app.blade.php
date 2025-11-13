@@ -124,7 +124,6 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
             } catch (error) {
                 console.error('Error updating setting:', error);
                 this.showMessage('حدث خطأ أثناء حفظ الإعدادات', 'error');
-                // التراجع عن التغيير في حالة الخطأ
                 this.autoAssignEnabled = !enabled;
             }
         },
