@@ -7,6 +7,7 @@ use App\Http\Controllers\drivercontroller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\requestcontroller;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SystemSettingsController;
 
 // Route::get('/', function () {
 //     return view('dashboard');
@@ -26,6 +27,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('drivers', drivercontroller::class);
     Route::resource('request',requestcontroller::class);
     Route::resource('Coupon',couponcontroller::class);
+       Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
+        ->name('system-settings.auto-assign.update');
+        
+    Route::get('/system-settings/auto-assign', [SystemSettingsController::class, 'getAutoAssignSetting'])
+        ->name('system-settings.auto-assign.get');
 });
 
 require __DIR__.'/auth.php';
