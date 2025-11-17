@@ -16,9 +16,9 @@ class Vehicle extends Model
     {
         return $this->hasMany(Driver::class);
     }
-
-    public function services()
+    public function pricing()
     {
-        return $this->belongsToMany(Service::class, 'service_vehicles');
+        return $this->hasMany(vehicle_pricing::class);
     }
+
 }

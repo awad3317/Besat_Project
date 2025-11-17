@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('type');
+            $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->integer('max_passengers');
             $table->timestamps();

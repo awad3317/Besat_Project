@@ -11,13 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('service_vehicles', function (Blueprint $table) {
+        Schema::create('vehicle_pricings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('service_id')->constrained()->onDelete('cascade');
             $table->foreignId('vehicle_id')->constrained()->onDelete('cascade');
+            $table->decimal('base_price', 10, 2);
+            $table->decimal('min_distance_km', 5, 2)->default(0);
+            $table->decimal('max_distance_km', 5, 2)->default(999.99);
             $table->timestamps();
 
-            $table->unique(['service_id', 'vehicle_id']);
+            $table->unique(['vehicle_id', 'min_distance_km', 'max_distance_km']);
+            $table->index(['vehicle_id']);
+            $table->index(['min_distance_km', 'max_distance_km']);
         });
     }
 
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('service_vehicles');
+        Schema::dropIfExists('vehicle_pricings');
     }
 };
