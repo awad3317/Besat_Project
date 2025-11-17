@@ -19,9 +19,9 @@ return new class extends Migration
             $table->decimal('max_distance_km', 5, 2)->default(999.99);
             $table->timestamps();
 
-            $table->unique(['vehicle_id', 'min_distance_km', 'max_distance_km']);
-            $table->index(['vehicle_id']);
-            $table->index(['min_distance_km', 'max_distance_km']);
+            $table->unique(['vehicle_id', 'min_distance_km', 'max_distance_km'], 'vp_vehicle_distance_unique');
+            $table->index(['vehicle_id'], 'vp_vehicle_id_index');
+            $table->index(['min_distance_km', 'max_distance_km'], 'vp_distance_range_index');
         });
     }
 
