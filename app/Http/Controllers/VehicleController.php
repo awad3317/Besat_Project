@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
 class VehicleController extends Controller
@@ -11,7 +12,8 @@ class VehicleController extends Controller
      */
     public function index()
     {
-        return view('pages.Vehicles.index');
+        $vehicles = Vehicle::all();
+        return view('pages.Vehicles.index', compact('vehicles'));
     }
 
     /**
@@ -33,9 +35,10 @@ class VehicleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $vehicle = Vehicle::findOrFail($id);
+        return view('pages.Vehicles.show', compact('vehicle'));
     }
 
     /**

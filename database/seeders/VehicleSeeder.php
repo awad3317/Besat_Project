@@ -16,7 +16,7 @@ class VehicleSeeder extends Seeder
         $vehicles = [
             [
                 'name' => 'دباب',
-                'description' =>'',
+                'description' =>'دباب مريح وسهل الركوب',
                 'max_passengers' => 2
             ],
             [
