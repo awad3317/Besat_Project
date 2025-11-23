@@ -44,11 +44,12 @@ class VehicleController extends Controller
     ]);
 
     if ($validator->fails()) {
+        $firstError = $validator->errors()->first();
         return redirect()->back()
                     ->withErrors($validator)
                     ->with('error', true)
                     ->with('error_title', 'حدث خطأ!')
-                    ->with('error_message', 'يرجى التحقق من البيانات المدخلة.')
+                    ->with('error_message', $firstError)
                     ->with('error_buttonText', 'حسناً');
     }
     $image_path=$this->imageService->saveImage($request->file('image'),'vehicles');
