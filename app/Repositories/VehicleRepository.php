@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Interfaces\RepositoriesInterface;
 use App\Models\Vehicle;
-use Twilio\Rest\Conversations\V1;
 
 class VehicleRepository implements RepositoriesInterface
 {
@@ -15,9 +14,9 @@ class VehicleRepository implements RepositoriesInterface
     {
         //
     }
-    public function index(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function index()
     {
-        return Vehicle::paginate(10);
+        return Vehicle::all();
     }
 
     public function getById($id): Vehicle

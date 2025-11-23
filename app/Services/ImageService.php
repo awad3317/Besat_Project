@@ -23,7 +23,7 @@ class ImageService
 
         $image->storeAs($folder, $filename, 'public');
        
-        return $filePath;
+        return 'storage'. '/' . $filePath;
     }
 
 
