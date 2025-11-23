@@ -2,7 +2,7 @@
 @section('title', 'لوحة التحكم')
 @section('Breadcrumb', 'إدارة المركبات')
 @section('addButton')
-  @include('pages.vehicles.create-vehicle-modal')
+  @include('pages.Vehicles.create-vehicle-modal')
   <x-modals.success-modal />
   <x-modals.error-modal />
 
