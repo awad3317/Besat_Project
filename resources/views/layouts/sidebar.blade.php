@@ -41,8 +41,7 @@
         <ul class="flex flex-col gap-4 mb-6">
           <!-- Menu Item Dashboard -->
           <li>
-            <a href="{{ route('dashboard.index') }}" {{-- "@click.prevent=" selected=(selected==='Dashboard' ? ''
-              :'Dashboard') --}} class="menu-item group" :class="window.location.href.includes('{{ route('dashboard.index') }}') ?
+            <a href="{{ route('dashboard.index') }}" class="menu-item group" :class="window.location.href.includes('{{ route('dashboard.index') }}') ?
                                 'menu-item-active' : 'menu-item-inactive'">
               <svg :class="window.location.href.includes('{{ route('dashboard.index') }}') ?
                                 'menu-item-icon-active' : 'menu-item-icon-inactive'" width="24" height="24"
@@ -70,8 +69,8 @@
               </ul>
             </div> --}}
             <!-- Dropdown Menu End -->
-            
-          </li> 
+
+          </li>
           <!-- Menu Item Dashboard -->
 
           <!-- Menu Item Calendar -->
