@@ -3,6 +3,7 @@
 @section('Breadcrumb', 'إدارة المركبات')
 @section('addButton')
   @include('pages.Vehicles.create-vehicle-modal')
+  @include('pages.vehicles.edit-vehicle-modal')
   <x-modals.success-modal />
   <x-modals.error-modal />
 
@@ -90,7 +91,9 @@
                 <div class="flex items-center">
                   <div class="flex items-center gap-3">
                     <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                      <img src="{{ url($vehicle->image) }}" alt="imge" />
+                      @if($vehicle->image)
+                        <img src="{{ url($vehicle->image) }}" alt="imge" />
+                      @endif
                     </div>
                   </div>
                 </div>
