@@ -3,7 +3,7 @@
 @section('Breadcrumb', 'إدارة المركبات')
 @section('addButton')
   @include('pages.Vehicles.create-vehicle-modal')
-  @include('pages.vehicles.edit-vehicle-modal')
+  @include('pages.Vehicles.edit-vehicle-modal')
   <x-modals.success-modal />
   <x-modals.error-modal />
 
