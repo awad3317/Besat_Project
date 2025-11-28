@@ -225,12 +225,12 @@
 
           <!-- Menu Item Pages -->
           <li>
-            <a href="{{ route('Vehicle.index') }}" @click="selected = (selected === 'Profile' ? '':'Profile')"
+            <a href="{{ route('systems.index') }}" @click="selected = (selected === 'Profile' ? '':'Profile')"
               class="menu-item group"
-              :class="window.location.href.includes('{{ route('Vehicle.index') }}') ? 'menu-item-active' : 'menu-item-inactive'">
+              :class="window.location.href.includes('{{ route('systems.index') }}') ? 'menu-item-active' : 'menu-item-inactive'">
 
               <svg
-                :class="window.location.href.includes('{{ route('Vehicle.index') }}') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                :class="window.location.href.includes('{{ route('systems.index') }}') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
                 width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC"

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'لوحة التحكم')
+@section('title', 'إدارة المركبات')
 @section('Breadcrumb', 'إدارة المركبات')
 @section('addButton')
   @include('pages.Vehicles.create-vehicle-modal')

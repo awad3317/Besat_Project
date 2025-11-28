@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'لوحة التحكم')
+@section('title', 'كوبونات الخصم')
 @section('Breadcrumb', 'كوبونات الخصم')
 @section('style')
 

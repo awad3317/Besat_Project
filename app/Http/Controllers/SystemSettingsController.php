@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 class SystemSettingsController extends Controller
 {
+    public function index(){
+        return view('pages.systems.index');
+    }
     public function updateAutoAssignSetting(Request $request): JsonResponse
     {
         $request->validate([

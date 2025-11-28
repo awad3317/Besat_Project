@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'لوحة التحكم')
+@section('title', 'إدارة المستخدمين')
 @section('Breadcrumb', 'إدارة المستخدمين')
 @section('content')
 <div class="space-y-5 sm:space-y-6">

@@ -29,8 +29,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('request',requestcontroller::class);
     Route::resource('Coupon',couponcontroller::class);
     Route::resource('Vehicle',VehicleController::class);
-       Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
+    Route::resource('systems',SystemSettingsController::class);
+    Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');
+
         
     Route::get('/system-settings/auto-assign', [SystemSettingsController::class, 'getAutoAssignSetting'])
         ->name('system-settings.auto-assign.get');
