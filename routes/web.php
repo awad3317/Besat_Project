@@ -6,9 +6,10 @@ use App\Http\Controllers\couponcontroller;
 use App\Http\Controllers\drivercontroller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\requestcontroller;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SystemSettingsController;
+use App\Http\Controllers\vehiclePricingController;
 
 // Route::get('/', function () {
 //     return view('dashboard');
@@ -29,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('request',requestcontroller::class);
     Route::resource('Coupon',couponcontroller::class);
     Route::resource('Vehicle',VehicleController::class);
+    Route::resource('vehiclePricing',vehiclePricingController::class);
+    
     Route::resource('systems',SystemSettingsController::class);
     Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');

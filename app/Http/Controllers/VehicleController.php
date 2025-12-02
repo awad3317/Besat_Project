@@ -83,7 +83,7 @@ class VehicleController extends Controller
      */
     public function show($id)
     {
-        $vehicle = Vehicle::findOrFail($id);
+        $vehicle = $this->vehicleRepository->getById($id);
         return view('pages.Vehicles.show', compact('vehicle'));
     }
 

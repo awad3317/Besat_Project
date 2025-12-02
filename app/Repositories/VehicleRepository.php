@@ -21,7 +21,7 @@ class VehicleRepository implements RepositoriesInterface
 
     public function getById($id): Vehicle
     {
-        return Vehicle::findOrFail($id);
+        return Vehicle::with(['drivers','pricing'])->findOrFail($id);
     }
 
     public function store(array $data): Vehicle
@@ -38,11 +38,6 @@ class VehicleRepository implements RepositoriesInterface
     public function delete($id): bool
     {
         return Vehicle::where('id', $id)->delete() > 0;
-    }
-
-    public function findByPhone($phone)
-    {
-        return Vehicle::where('phone', $phone)->first();
     }
 
 }
