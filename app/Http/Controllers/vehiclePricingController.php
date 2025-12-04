@@ -143,7 +143,7 @@ class vehiclePricingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'base_price'=>['required'],
-            // 'min_distance_km'=>['required','numeric','min:0'],
+            'min_distance_km'=>['required','numeric','min:0'],
             'max_distance_km'=>['required','numeric','max:999','gt:min_distance_km']
         ]);
         if ($validator->fails()) {
@@ -159,7 +159,7 @@ class vehiclePricingController extends Controller
             $VehiclePricing=$this->VehiclePricingRepository->getById($id);
             $data = [
                 'base_price' => $request->base_price,
-                // 'min_distance_km' => $request->min_distance_km,
+                'min_distance_km' => $request->min_distance_km,
                 'max_distance_km' => $request->max_distance_km,
             ];
             $this->VehiclePricingRepository->update($data,$id);
