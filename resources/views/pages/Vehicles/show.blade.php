@@ -33,8 +33,17 @@
       </div>
 
       <div
-        class=" flex  m:hidden flex-col items-start justify-between rounded-xl p-4  transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-
+        class="flex flex-col items-start justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+          <svg fill="#dc6803" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+          </svg>
+        </div>
+        <div class="mt-3 w-full">
+          <span class="text-xs text-gray-500 dark:text-gray-400">أقل سعر للمركبة</span>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">2500</h4>
+        </div>
       </div>
 
       <div
@@ -48,7 +57,8 @@
       </div>
     </div>
   </div>
-  <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 mb-4">
+  <div
+    class="overflow-hidden rounded-2xl border border-gray-200 bg-white pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 mb-4">
     <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -183,7 +193,7 @@
               السائقين
             </h3>
           </div>
-        </div>  
+        </div>
       </div>
 
       <div class="p-5 border-t border-gray-100 dark:border-gray-800 sm:p-6">
@@ -197,7 +207,7 @@
                   <th class="px-5 py-3 sm:px-6">
                     <div class="flex items-center">
                       <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                        رقم 
+                        رقم
                       </p>
                     </div>
                   </th>
@@ -215,8 +225,8 @@
                       </p>
                     </div>
                   </th>
-                  
-                  
+
+
                   <th class="px-5 py-3 sm:px-6">
                     <div class="flex items-center">
                       <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">

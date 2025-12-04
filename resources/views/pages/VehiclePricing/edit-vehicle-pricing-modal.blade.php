@@ -5,11 +5,9 @@
     <div x-show="isModalEditOpen" class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-99999"
         style="display: none;">
 
-        <!-- الخلفية مع حدث النقر -->
         <div class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]" @click="isModalEditOpen = false">
         </div>
 
-        <!-- المودال بدون @click.outside -->
         <div class="relative w-full max-w-[630px] rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-10">
             @php
                 $VehiclePricing = session('VehiclePricing');
