@@ -25,11 +25,13 @@
                     <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
                         <div class="col-span-1">
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                المسافة من (كم) *
+                                المسافة من (كم)
                             </label>
-                            <input type="number" step="0.01" min="0" name="min_distance_km" required placeholder="مثال: 0"
-                                value="{{ old('min_distance_km', $VehiclePricing->min_distance_km) }}"
-                                class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+                            <div
+                                class="h-11 w-full rounded-lg border border-gray-300 bg-yellow-50 px-4 py-2.5 text-sm text-gray-800 flex items-center dark:border-gray-600 dark:bg-yellow-900/20 dark:text-white">
+                                {{ $VehiclePricing->min_distance_km }} كم
+                                <span class="text-warning-500 dark:text-warning/90">(غير قابل للتعديل)</span>
+                            </div>
                         </div>
 
                         <div class="col-span-1">

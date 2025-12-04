@@ -38,8 +38,8 @@ class vehiclePricingController extends Controller
         $validator = Validator::make($request->all(), [
             'vehicle_id'=>['required',Rule::exists('vehicles','id')],
             'base_price'=>['required'],
-            'min_distance_km'=>['required','min:0'],
-            'max_distance_km'=>['required','max:999']
+            'min_distance_km'=>['required','numeric','min:0'],
+            'max_distance_km'=>['required','numeric','max:999','gt:min_distance_km']
         ]);
         if ($validator->fails()) {
             $firstError = $validator->errors()->first();
@@ -51,6 +51,39 @@ class vehiclePricingController extends Controller
                 ->with('error_buttonText', 'حسناً');
         }
         try {
+            $existingPricings = $this->VehiclePricingRepository->getByVehicleId($request->vehicle_id);
+            foreach ($existingPricings as $pricing) {
+                if (
+                    ($request->min_distance_km >= $pricing->min_distance_km && $request->min_distance_km < $pricing->max_distance_km) ||
+                    ($request->max_distance_km > $pricing->min_distance_km && $request->max_distance_km <= $pricing->max_distance_km) ||
+                    ($request->min_distance_km <= $pricing->min_distance_km && $request->max_distance_km >= $pricing->max_distance_km)
+                ){
+                    return redirect()->back()
+                    ->with('error', true)
+                    ->with('error_title', 'حدث تداخل!')
+                    ->with('error_message', 'هذا النطاق يتداخل مع نطاق موجود بالفعل.')
+                    ->with('error_buttonText', 'حسناً');
+                }
+            }
+            if ($existingPricings->isNotEmpty())
+            {
+                $hasConnection = false;
+                foreach ($existingPricings as $pricing) {
+                    if ($request->min_distance_km == $pricing->max_distance_km || 
+                        $request->max_distance_km == $pricing->min_distance_km) {
+                        $hasConnection = true;
+                        break;
+                    }
+                }
+                if (!$hasConnection && $existingPricings->count() > 0){
+                    return redirect()->back()
+                        ->with('error', true)
+                        ->with('error_title', 'فراغ في النطاق!')
+                        ->with('error_message', 'يجب أن يتصل النطاق الجديد بالنطاقات الحالية دون فراغات.')
+                        ->with('error_buttonText', 'حسناً');
+                    }
+            }
+
             $VehiclePricing = $this->VehiclePricingRepository->store($request->all());
             return redirect()->back()
             ->with('success', true)
@@ -103,8 +136,8 @@ class vehiclePricingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'base_price'=>['required'],
-            'min_distance_km'=>['required','min:0'],
-            'max_distance_km'=>['required','max:999']
+            // 'min_distance_km'=>['required','numeric','min:0'],
+            'max_distance_km'=>['required','numeric','max:999','gt:min_distance_km']
         ]);
         if ($validator->fails()) {
             $firstError = $validator->errors()->first();
@@ -119,7 +152,7 @@ class vehiclePricingController extends Controller
             $VehiclePricing=$this->VehiclePricingRepository->getById($id);
             $data = [
                 'base_price' => $request->base_price,
-                'min_distance_km' => $request->min_distance_km,
+                // 'min_distance_km' => $request->min_distance_km,
                 'max_distance_km' => $request->max_distance_km,
             ];
             $this->VehiclePricingRepository->update($data,$id);

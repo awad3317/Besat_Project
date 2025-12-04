@@ -40,4 +40,9 @@ class VehiclePricingRepository implements RepositoriesInterface
         return vehicle_pricing::where('id', $id)->delete() > 0;
     }
 
+    public function getByVehicleId($vehicleId)
+    {
+        return vehicle_pricing::where('vehicle_id', $vehicleId)->orderBy('min_distance_km', 'asc')->get();
+    }
+
 }
