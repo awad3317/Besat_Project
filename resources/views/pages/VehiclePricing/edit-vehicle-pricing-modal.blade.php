@@ -30,6 +30,7 @@
                                 {{ $VehiclePricing->min_distance_km }} كم
                                 <span class="text-warning-500 dark:text-warning/90">(غير قابل للتعديل)</span>
                             </div>
+                            <input type="hidden" name="min_distance_km" value="{{ $VehiclePricing->min_distance_km }}">
                         </div>
 
                         <div class="col-span-1">
