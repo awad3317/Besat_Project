@@ -159,18 +159,20 @@
                       </svg>
                     </button>
 
-                    <form action="{{ route('vehiclePricing.destroy', $price->id) }}" method="POST" class="inline"
-                      onsubmit="return confirm('هل أنت متأكد من حذف هذا السعر؟')">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit"
-                        class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </form>
+                    @if($loop->last)
+                      <form action="{{ route('vehiclePricing.destroy', $price->id) }}" method="POST" class="inline"
+                        onsubmit="return confirm('هل أنت متأكد من حذف هذا السعر؟')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                          class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </form>
+                    @endif
                   </div>
                 </div>
               </td>
