@@ -52,6 +52,13 @@ class vehiclePricingController extends Controller
         }
         try {
             $existingPricings = $this->VehiclePricingRepository->getByVehicleId($request->vehicle_id);
+            if ($existingPricings->isEmpty() && $request->min_distance_km != 0) {
+                return redirect()->back()
+                    ->with('error', true)
+                    ->with('error_title', 'خطأ في القيمة!')
+                    ->with('error_message', 'يجب أن تكون المسافة الأولى من 0 كم.')
+                    ->with('error_buttonText', 'حسناً');
+            }
             foreach ($existingPricings as $pricing) {
                 if (
                     ($request->min_distance_km >= $pricing->min_distance_km && $request->min_distance_km < $pricing->max_distance_km) ||
