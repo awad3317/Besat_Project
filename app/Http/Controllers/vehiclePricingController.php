@@ -143,8 +143,7 @@ class vehiclePricingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'base_price'=>['required'],
-            'min_distance_km'=>['required','numeric','min:0'],
-            'max_distance_km'=>['required','numeric','max:999','gt:min_distance_km']
+            'max_distance_km'=>['required','numeric','max:999']
         ]);
         if ($validator->fails()) {
             $firstError = $validator->errors()->first();
@@ -157,9 +156,15 @@ class vehiclePricingController extends Controller
         }
         try {
             $VehiclePricing=$this->VehiclePricingRepository->getById($id);
+            if($VehiclePricing->min_distance_km > $request->max_distance_km){
+                return redirect()->back()
+                ->with('error', true)
+                ->with('error_title', 'حدث خطأ!')
+                ->with('error_message', 'يجب أن يكون المسافه اكبر')
+                ->with('error_buttonText', 'حسناً');
+            }
             $data = [
                 'base_price' => $request->base_price,
-                'min_distance_km' => $request->min_distance_km,
                 'max_distance_km' => $request->max_distance_km,
             ];
             $this->VehiclePricingRepository->update($data,$id);
