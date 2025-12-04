@@ -43,6 +43,7 @@ class VehicleController extends Controller
         'type' => ['required', 'string', 'max:100',Rule::unique('vehicles','type')],
         'description' => ['nullable', 'string', 'max:1000'],
         'max_passengers' => ['required', 'integer', 'min:1'],
+        'min_price'=>['required','min:0'],
         'image' => ['nullable', 'image', 'max:2048']
     ]);
 
@@ -116,6 +117,7 @@ class VehicleController extends Controller
             'type' => ['required', 'string', 'max:100',Rule::unique('vehicles','type')->ignore($id)],
             'description' => ['nullable', 'string', 'max:1000'],
             'max_passengers' => ['required', 'integer', 'min:1'],
+            'min_price'=>['required','min:0'],
             'image' => ['nullable', 'image', 'max:2048']
         ]);
         if ($validator->fails()) {
@@ -133,6 +135,7 @@ class VehicleController extends Controller
                 'type' => $request->type,
                 'description' => $request->description,
                 'max_passengers' => $request->max_passengers,
+                'min_price'=>$request->min_price,
             ];
             if ($request->hasFile('image')) {
                 if ($vehicle->image) {

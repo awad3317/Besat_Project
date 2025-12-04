@@ -132,12 +132,10 @@
 
           <!-- Menu Item Forms -->
           <li>
-            <a href="{{ route('request.index') }}" @click="selected = (selected === 'Profile' ? '':'Profile')"
-              class="menu-item group"
-              :class="window.location.href.includes('{{ route('request.index') }}') ? 'menu-item-active' : 'menu-item-inactive'">
-
+            <a href="#" @click.prevent="selected = (selected === 'Requests' ? '' : 'Requests')" class="menu-item group"
+              :class="(selected === 'Requests') || window.location.href.includes('{{ route('request.index') }}') || window.location.href.includes('{{ route('specialOrder.index') }}') ? 'menu-item-active' : 'menu-item-inactive'">
               <svg
-                :class="window.location.href.includes('{{ route('request.index') }}') ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
+                :class="(selected === 'Requests') || window.location.href.includes('{{ route('request.index') }}' || window.location.href.includes('{{ route('specialOrder.index') }}')) ? 'menu-item-icon-active' : 'menu-item-icon-inactive'"
                 fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -160,10 +158,31 @@
                   </rect>
                 </g>
               </svg>
-              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+
+              <span class="menu-item-text ml-2" :class="sidebarToggle ? 'lg:hidden' : ''">
                 إدارة الطلبات
               </span>
             </a>
+
+            <!-- Dropdown Menu Start -->
+            <div class="overflow-hidden transform translate" :class="(selected === 'Requests') ? 'block' : 'hidden'">
+              <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                <li>
+                  <a href="{{ route('request.index') }}" class="menu-dropdown-item group"
+                    :class="window.location.href.includes('{{ route('request.index') }}') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                    طلبات عامة
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ route('specialOrder.index') }}" class="menu-dropdown-item group"
+                    :class="window.location.href.includes('{{ route('specialOrder.index') }}') ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                    طلبات خاصة
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+            <!-- Dropdown Menu End -->
           </li>
           <!-- Menu Item Forms -->
 

@@ -42,7 +42,7 @@
         </div>
         <div class="mt-3 w-full">
           <span class="text-xs text-gray-500 dark:text-gray-400">أقل سعر للمركبة</span>
-          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">2500</h4>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{$vehicle->min_price}} {{ config('app.currency_symbol', 'ر.ي') }}</h4>
         </div>
       </div>
 

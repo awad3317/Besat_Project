@@ -66,6 +66,12 @@
                   عدد الاشخاص
                 </p>
             </th>
+            <th>
+              <div class="flex items-center">
+                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                  أقل سعر
+                </p>
+            </th>
             <th class="py-3">
               <div class="flex items-center justify-center">
                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
@@ -117,6 +123,13 @@
                 <div class="flex items-center">
                   <p class="text-gray-500 text-theme-sm dark:text-gray-400">
                     {{ $vehicle->max_passengers }}
+                  </p>
+                </div>
+              </td>
+              <td class="py-3">
+                <div class="flex items-center">
+                  <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                    {{ $vehicle->min_price }} {{ config('app.currency_symbol', 'ر.ي') }}
                   </p>
                 </div>
               </td>

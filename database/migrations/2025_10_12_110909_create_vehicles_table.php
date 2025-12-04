@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->integer('max_passengers');
+            $table->decimal('min_price', 10, 2)->nullable();
             $table->timestamps();
         });
     }

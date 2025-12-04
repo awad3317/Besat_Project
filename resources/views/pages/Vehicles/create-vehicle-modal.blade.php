@@ -1,45 +1,57 @@
 <div x-data="{ isModalOpen: false}">
-    <button @click="isModalOpen = true"
-      class="bg-brand-500 hover:bg-brand-600 h-10 rounded-lg px-6 py-2 text-sm font-medium text-white min-w-[100px]">
-      إضافة مركبه
-    </button>
-    <div x-show="isModalOpen" class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto modal z-99999"
-      style="display: none;">
+  <button @click="isModalOpen = true"
+    class="bg-brand-500 hover:bg-brand-600 h-10 rounded-lg px-6 py-2 text-sm font-medium text-white min-w-[100px]">
+    إضافة مركبه
+  </button>
+  <div x-show="isModalOpen" class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto modal z-99999"
+    style="display: none;">
 
-      <div class="modal-close-btn fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]">
-      </div>
+    <div class="modal-close-btn fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]">
+    </div>
 
-      <div @click.outside="isModalOpen = false"
-        class="relative w-full max-w-[630px] rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-10">
-        <form method="POST" action="{{ route('Vehicle.store') }}" enctype="multipart/form-data">
-          @csrf
-          <h4 class="mb-6 text-lg font-medium text-gray-800 dark:text-white/90">
-            إضافة مركبه جديدة
-          </h4>
-          <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
-            <div class="col-span-1">
-              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                النوع</label>
-              <input type="text" placeholder="مثال: فوكسي" name="type" required
-                class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
-            </div>
+    <div @click.outside="isModalOpen = false"
+      class="relative w-full max-w-[630px] rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-10">
+      <form method="POST" action="{{ route('Vehicle.store') }}" enctype="multipart/form-data">
+        @csrf
+        <h4 class="mb-6 text-lg font-medium text-gray-800 dark:text-white/90">
+          إضافة مركبه جديدة
+        </h4>
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
+          <div class="col-span-1">
+            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              النوع</label>
+            <input type="text" placeholder="مثال: فوكسي" name="type" required
+              class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+          </div>
 
-            <div class="col-span-1">
-              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                عدد الأشخاص
-              </label>
-              <input type="number" placeholder="مثال: 4" min="1" max="100" name="max_passengers" required
-                class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
-            </div>
+          <div class="col-span-1">
+            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              عدد الأشخاص
+            </label>
+            <input type="number" placeholder="مثال: 4" min="1" max="100" name="max_passengers" required
+              class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+          </div>
 
-            <div class="col-span-1">
-              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                الوصف
-              </label>
-              <textarea placeholder="وصف المركبه" rows="4" name="description"
-                class="hover:border-brand-500 dark:bg-dark-900 h-auto w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs resize-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white"></textarea>
-            </div>
+          <div class="col-span-1">
+            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              أقل سعر للمركبة ({{ config('app.currency_symbol', 'ر.ي') }})
+            </label>
+            <input type="number" step="0.01" min="0" placeholder="مثال: 25.00" name="min_price"
+              class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+            <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
+              السعر الأساسي للمركبة
+            </p>
+          </div>
 
+          <div class="col-span-1 sm:col-span-2">
+            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              الوصف
+            </label>
+            <textarea placeholder="وصف المركبه" rows="4" name="description"
+              class="hover:border-brand-500 dark:bg-dark-900 h-auto w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs resize-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white"></textarea>
+          </div>
+
+          <div class="col-span-1 sm:col-span-2">
             <div class="space-y-3">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">
                 صورة المركبه
@@ -82,18 +94,19 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="flex items-center justify-end w-full gap-3 mt-6">
-            <button @click="isModalOpen = false" type="button"
-              class="hover:border-brand-500 flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 sm:w-auto">
-              إغلاق
-            </button>
-            <button type="submit"
-              class="flex justify-center hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500">
-              إضافة المركبه
-            </button>
-          </div>
-        </form>
-      </div>
+        <div class="flex items-center justify-end w-full gap-3 mt-6">
+          <button @click="isModalOpen = false" type="button"
+            class="hover:border-brand-500 flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 sm:w-auto">
+            إغلاق
+          </button>
+          <button type="submit"
+            class="flex justify-center hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500">
+            إضافة المركبه
+          </button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
