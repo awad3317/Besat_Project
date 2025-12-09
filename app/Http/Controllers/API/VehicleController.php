@@ -8,7 +8,6 @@ use Illuminate\Validation\Rule;
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
 use App\Repositories\VehicleRepository;
-
 class VehicleController extends Controller
 {
     public function __construct(private VehicleRepository $vehicleRepository)
@@ -68,6 +67,7 @@ class VehicleController extends Controller
                 'max_passengers'=>['sometimes','required','integer','min:1'],
             ]);
             $updatedVehicle=$this->vehicleRepository->update($fields,$vehicle);
+          
             return ApiResponseClass::sendResponse($updatedVehicle, 'Vehicle updated successfully.');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('Failed to update vehicle. ' . $e->getMessage());

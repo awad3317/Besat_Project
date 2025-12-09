@@ -56,7 +56,7 @@ class UserAuthController extends Controller
     'This is your Laravel Firebase push notification.',
     ['fQUwe-n8kNrBiYOXXxfLuY:APA91bH3JiErhVJLTFq5cbRv3ER5UAs51BCnf7v2qCGlee9Hf8QE09YtylVCfWKrRhC8rfmtH_MBVW1KePkcqH2Rh35LyG27ZhIcrI7MyniQFhGpgPZbXXE'],
     ['customKey' => 'customValue']
-);
+        );
 
         if ($user && $user->type == 'admin') {
             return ApiResponseClass::sendError('لا يمكن للمشرفين تسجيل الدخول من خلال هذا التطبيق', null, 403);

@@ -147,6 +147,7 @@ class VehicleController extends Controller
                 $data['image'] = $image_path;
             }
             $this->vehicleRepository->update($data,$id);
+              
             return redirect()->back()
                     ->with('success', true)
                     ->with('success_title', 'تم التحديث!')
