@@ -31,7 +31,7 @@
         window.validateRoute = "{{ route('firebase.validate-token') }}";
     </script>
 
-    <script type="module">
+    <script>
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
 
