@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\FirebaseCors;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\DriverMiddleware;
@@ -21,9 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
             "driver" => DriverMiddleware::class,
             "auth.sanctum.api" => SanctumApiAuthMiddleware::class,
             "verify.app.access" => VerifyAppAccessMiddleware::class,
+            // "awad" => FirebaseCors::class,
         ]);
         $middleware->appendToGroup('api', [
-            'verify.app.access', 
+            'verify.app.access',
+            
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -147,7 +147,12 @@ class VehicleController extends Controller
                 $data['image'] = $image_path;
             }
             $this->vehicleRepository->update($data,$id);
-              
+              FireBase::send(
+    'Hello User!',
+    'This is your Laravel Firebase push notification.',
+    ['fQUwe-n8kNrBiYOXXxfLuY:APA91bH3JiErhVJLTFq5cbRv3ER5UAs51BCnf7v2qCGlee9Hf8QE09YtylVCfWKrRhC8rfmtH_MBVW1KePkcqH2Rh35LyG27ZhIcrI7MyniQFhGpgPZbXXE'],
+    ['customKey' => 'customValue']
+        );
             return redirect()->back()
                     ->with('success', true)
                     ->with('success_title', 'تم التحديث!')

@@ -13,12 +13,15 @@
     <link rel="icon" href="{{ asset('tailadmin/build/favicon.ico') }}">
     <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet">
     @yield('style')
-    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
-
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js"></script>
+    
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- كود Firebase يعمل على السيرفر -->
+    <script>
+        // ========== إعدادات Firebase ==========
         const firebaseConfig = {
             apiKey: "{{ config('services.firebase.api_key', '') }}",
             authDomain: "{{ config('services.firebase.auth_domain', '') }}",
@@ -28,76 +31,144 @@
             appId: "{{ config('services.firebase.app_id', '') }}",
             measurementId: "{{ config('services.firebase.measurement_id', '') }}"
         };
-
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
-        const vapidKey = "{{ env('FIREBASE_VAPID_KEY') }}";
-
-        // مفتاح التخزين المحلي
+        
+        const vapidKey = "{{ env('FIREBASE_VAPID_KEY', '') }}";
         const TOKEN_STORAGE_KEY = 'fcm_token_stored';
-
-        // التحقق من التوكن المخزن
-        async function checkAndUpdateToken() {
+        
+        // ========== متغيرات عامة ==========
+        let firebaseApp = null;
+        let firebaseMessaging = null;
+        
+        // ========== دالة التحقق من Firebase SDK ==========
+        function checkFirebaseSDK() {
+            console.log('🔥 التحقق من Firebase SDK:', {
+                firebase: typeof firebase,
+                firebaseApp: typeof firebase !== 'undefined' ? typeof firebase.app : 'غير محمل',
+                firebaseMessaging: typeof firebase !== 'undefined' ? typeof firebase.messaging : 'غير محمل'
+            });
+            
+            return typeof firebase !== 'undefined' && 
+                   typeof firebase.initializeApp !== 'undefined' &&
+                   typeof firebase.messaging !== 'undefined';
+        }
+        
+        // ========== تهيئة Firebase ==========
+        function initializeFirebase() {
+            if (!checkFirebaseSDK()) {
+                console.error('❌ Firebase SDK غير محمل بشكل صحيح');
+                return false;
+            }
+            
             try {
-                // 1. التحقق من دعم Firebase
-                const isFcmSupported = await isSupported();
-                if (!isFcmSupported) return;
-
-                // 2. التحقق من الإذن
-                if (Notification.permission !== 'granted') {
-                    const permission = await Notification.requestPermission();
-                    if (permission !== 'granted') return;
+                // التحقق إذا كان Firebase مهيأ مسبقاً
+                if (firebase.apps.length === 0) {
+                    firebaseApp = firebase.initializeApp(firebaseConfig);
+                    console.log('✅ Firebase تم تهيئته للمرة الأولى');
+                } else {
+                    firebaseApp = firebase.app();
+                    console.log('✅ Firebase موجود مسبقاً');
                 }
-
-                // 3. التحقق إذا كان التوكن مخزناً مسبقاً
-                const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
-
-                if (storedToken) {
-                    console.log('✅ التوكن مخزن مسبقاً:', storedToken.substring(0, 20) + '...');
-
-                    // التحقق مع السيرفر إذا كان التوكن صالحاً
-                    const isValid = await validateTokenWithServer(storedToken);
-                    if (isValid) {
-                        console.log('✅ التوكن صالح، لا حاجة لتجديده');
-                        return;
-                    } else {
-                        console.log('🔄 التوكن غير صالح، جاري التجديد...');
-                        localStorage.removeItem(TOKEN_STORAGE_KEY);
-                    }
-                }
-
-                // 4. الحصول على توكن جديد
-                await getNewToken();
-
+                
+                firebaseMessaging = firebase.messaging();
+                console.log('✅ Firebase Messaging جاهز');
+                return true;
+                
             } catch (error) {
-                console.error('❌ خطأ:', error);
+                console.error('❌ خطأ في تهيئة Firebase:', error);
+                return false;
             }
         }
-
-        // الحصول على توكن جديد
-        async function getNewToken() {
+        
+        // ========== تسجيل Service Worker ==========
+        async function registerServiceWorker() {
+            if (!('serviceWorker' in navigator)) {
+                console.error('❌ Service Worker غير مدعوم في هذا المتصفح');
+                return null;
+            }
+            
             try {
-                const token = await getToken(messaging, { vapidKey: vapidKey });
-
-                if (token) {
-                    console.log('✅ تم الحصول على توكن جديد:', token.substring(0, 20) + '...');
-
-                    // تخزين التوكن محلياً
-                    localStorage.setItem(TOKEN_STORAGE_KEY, token);
-
-                    // إرسال التوكن للسيرفر
-                    await sendTokenToServer(token);
+                console.log('🔄 جاري تسجيل Service Worker...');
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                console.log('✅ Service Worker مسجل بنجاح:', registration.scope);
+                
+                // الانتظار حتى يصبح Service Worker نشطاً
+                await navigator.serviceWorker.ready;
+                console.log('✅ Service Worker نشط وجاهز');
+                
+                return registration;
+                
+            } catch (error) {
+                console.error('❌ فشل تسجيل Service Worker:', error);
+                return null;
+            }
+        }
+        
+        // ========== التحقق من التوكن المخزن ==========
+        async function checkStoredToken() {
+            const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+            
+            if (!storedToken) {
+                console.log('ℹ️ لا يوجد توكن مخزن');
+                return null;
+            }
+            
+            console.log('✅ التوكن مخزن مسبقاً:', storedToken.substring(0, 20) + '...');
+            
+            // التحقق من صحة التوكن مع السيرفر
+            const isValid = await validateToken(storedToken);
+            if (isValid) {
+                console.log('✅ التوكن صالح');
+                return storedToken;
+            } else {
+                console.log('🔄 التوكن غير صالح، سيتم حذفه');
+                localStorage.removeItem(TOKEN_STORAGE_KEY);
+                return null;
+            }
+        }
+        
+        // ========== الحصول على توكن جديد ==========
+        async function getNewToken(serviceWorkerRegistration) {
+            try {
+                console.log('🔄 جاري طلب توكن جديد من Firebase...');
+                
+                const token = await firebaseMessaging.getToken({
+                    vapidKey: vapidKey,
+                    serviceWorkerRegistration: serviceWorkerRegistration
+                });
+                
+                if (!token) {
+                    console.log('⚠️ Firebase لم يعطينا توكن');
+                    return null;
                 }
+                
+                console.log('✅ تم الحصول على توكن جديد:', token.substring(0, 20) + '...');
+                
+                // حفظ التوكن محلياً
+                localStorage.setItem(TOKEN_STORAGE_KEY, token);
+                
+                // إرسال التوكن للسيرفر
+                await sendTokenToServer(token);
+                
+                return token;
+                
             } catch (error) {
                 console.error('❌ خطأ في الحصول على التوكن:', error);
+                console.error('رمز الخطأ:', error.code);
+                console.error('رسالة الخطأ:', error.message);
+                return null;
             }
         }
-
-        // التحقق من صحة التوكن مع السيرفر
-        async function validateTokenWithServer(token) {
+        
+        // ========== التحقق من صحة التوكن مع السيرفر ==========
+        async function validateToken(token) {
             try {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-
+                
+                if (!csrfToken) {
+                    console.error('❌ CSRF Token غير موجود');
+                    return false;
+                }
+                
                 const response = await fetch("{{ route('firebase.validate-token') }}", {
                     method: 'POST',
                     headers: {
@@ -106,20 +177,31 @@
                     },
                     body: JSON.stringify({ token: token })
                 });
-
+                
+                if (!response.ok) {
+                    console.error('❌ استجابة غير صالحة من السيرفر:', response.status);
+                    return false;
+                }
+                
                 const data = await response.json();
                 return data.valid === true;
+                
             } catch (error) {
-                console.error('❌ خطأ في التحقق:', error);
+                console.error('❌ خطأ في التحقق من التوكن:', error);
                 return false;
             }
         }
-
-        // إرسال التوكن للسيرفر
+        
+        // ========== إرسال التوكن للسيرفر ==========
         async function sendTokenToServer(token) {
             try {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-
+                
+                if (!csrfToken) {
+                    console.error('❌ CSRF Token غير موجود');
+                    return false;
+                }
+                
                 const response = await fetch("{{ route('firebase.token') }}", {
                     method: 'POST',
                     headers: {
@@ -131,41 +213,139 @@
                         _method: "PATCH"
                     })
                 });
-
+                
                 if (response.ok) {
-                    console.log('✅ تم إرسال التوكن للسيرفر');
+                    console.log('✅ تم إرسال التوكن للسيرفر بنجاح');
+                    return true;
+                } else {
+                    console.error('❌ فشل إرسال التوكن:', response.status);
+                    return false;
                 }
+                
             } catch (error) {
-                console.error('❌ خطأ في الإرسال:', error);
+                console.error('❌ خطأ في إرسال التوكن:', error);
+                return false;
             }
         }
-
-        // استقبال الإشعارات
-        onMessage(messaging, (payload) => {
-            console.log('📨 إشعار مباشر:', payload);
-
-            if (payload.notification) {
-                const title = payload.notification.title || 'إشعار جديد';
-                const body = payload.notification.body || 'لديك إشعار';
-
-                // عرض إشعار بسيط
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: title,
-                        text: body,
-                        icon: 'info',
-                        timer: 3000
-                    });
-                } else {
-                    alert(`${title}\n${body}`);
-                }
+        
+        // ========== التحقق من إذن الإشعارات ==========
+        async function checkNotificationPermission() {
+            if (!("Notification" in window)) {
+                console.error('❌ هذا المتصفح لا يدعم الإشعارات');
+                return false;
             }
+            
+            console.log('🔔 حالة إذن الإشعارات الحالية:', Notification.permission);
+            
+            if (Notification.permission === 'granted') {
+                console.log('✅ الإذن ممنوح بالفعل');
+                return true;
+            }
+            
+            if (Notification.permission === 'denied') {
+                console.error('❌ الإذن مرفوض من قبل المستخدم');
+                return false;
+            }
+            
+            // إذن الإشعارات هو 'default'
+            console.log('🔔 طلب إذن الإشعارات من المستخدم...');
+            const permission = await Notification.requestPermission();
+            
+            if (permission === 'granted') {
+                console.log('✅ تم منح الإذن');
+                return true;
+            } else {
+                console.error('❌ المستخدم رفض الإذن');
+                return false;
+            }
+        }
+        
+        // ========== إعداد استقبال الإشعارات في الواجهة الأمامية ==========
+        function setupMessageListener() {
+            firebaseMessaging.onMessage(function(payload) {
+                console.log('📨 إشعار مباشر في الواجهة الأمامية:', payload);
+                
+                if (payload.notification) {
+                    showNotification(
+                        payload.notification.title || 'إشعار جديد',
+                        payload.notification.body || 'لديك إشعار'
+                    );
+                }
+            });
+            
+            console.log('✅ تم إعداد مستمع الإشعارات في الواجهة الأمامية');
+        }
+        
+        // ========== عرض الإشعار ==========
+        function showNotification(title, body) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: title,
+                    text: body,
+                    icon: 'info',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    position: 'top-end',
+                    toast: true,
+                    background: '#10B981',
+                    color: 'white'
+                });
+            } else {
+                alert(title + '\n' + body);
+            }
+        }
+        
+        // ========== الدالة الرئيسية لتشغيل كل شيء ==========
+        async function initializeFirebaseMessaging() {
+            console.log('🚀 بدء إعداد Firebase Messaging...');
+            
+            // 1. تهيئة Firebase
+            if (!initializeFirebase()) {
+                console.error('❌ فشل تهيئة Firebase');
+                return;
+            }
+            
+            // 2. تسجيل Service Worker
+            const serviceWorkerRegistration = await registerServiceWorker();
+            if (!serviceWorkerRegistration) {
+                console.error('❌ فشل تسجيل Service Worker');
+                return;
+            }
+            
+            // 3. التحقق من إذن الإشعارات
+            if (!await checkNotificationPermission()) {
+                console.error('❌ لا يوجد إذن للإشعارات');
+                return;
+            }
+            
+            // 4. التحقق من التوكن المخزن
+            let token = await checkStoredToken();
+            
+            // 5. إذا لم يكن هناك توكن صالح، احصل على واحد جديد
+            if (!token) {
+                token = await getNewToken(serviceWorkerRegistration);
+            }
+            
+            // 6. إذا حصلنا على توكن، أعد استقبال الإشعارات
+            if (token) {
+                setupMessageListener();
+                console.log('🎉 Firebase Messaging جاهز للعمل!');
+            } else {
+                console.error('❌ لم نتمكن من الحصول على توكن صالح');
+            }
+        }
+        
+        // ========== بدء العملية عند تحميل الصفحة ==========
+        window.addEventListener('load', function() {
+            console.log('📱 الصفحة تم تحميلها، جاري بدء إعداد Firebase...');
+            
+            // الانتظار قليلاً قبل البدء
+            setTimeout(function() {
+                initializeFirebaseMessaging();
+            }, 1000);
         });
-
-        // البدء بعد تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(checkAndUpdateToken, 1000);
-        });
+        
     </script>
 
 </head>

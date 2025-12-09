@@ -25,6 +25,24 @@ class FireBase
                 'title' => $heading,
                 'body' => $message,
             ],
+            // أضف webpush لتعمل مع متصفحات الويب
+            'webpush' => [
+                'notification' => [
+                    'title' => $heading,
+                    'body' => $message,
+                    'icon' => url('/logo.png'),
+                    'badge' => url('/logo.png'),
+                    'actions' => [
+                        [
+                            'action' => 'open',
+                            'title' => 'فتح'
+                        ]
+                    ]
+                ],
+                'fcm_options' => [
+                    'link' => url('/dashboard')
+                ]
+            ],
             'android' => [
                 'priority' => 'high',
                 'notification' => [
@@ -44,22 +62,36 @@ class FireBase
             $messagePayload['data'] = $data;
         }
 
-        $messagePayload += count($deviceIds) > 1
-            ? ['tokens' => $deviceIds]
-            : ['token' => $deviceIds[0]];
+        // إرسال لكل device
+        $responses = [];
+        foreach ($deviceIds as $deviceToken) {
+            $messagePayload['token'] = $deviceToken;
+            $payload = ['message' => $messagePayload];
+            $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
 
-        $payload = ['message' => $messagePayload];
-        $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
+            $client = new Client();
+            
+            try {
+                $response = $client->request('POST', $url, [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $accessToken,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => $payload,
+                    'timeout' => 10
+                ]);
+                
+                $responses[$deviceToken] = json_decode($response->getBody(), true);
+                
+            } catch (\Exception $e) {
+                \Log::error('Firebase sending error for token: ' . $deviceToken, [
+                    'error' => $e->getMessage()
+                ]);
+                $responses[$deviceToken] = ['error' => $e->getMessage()];
+            }
+        }
 
-        $client = new Client();
-
-        return $client->request('POST', $url, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $accessToken,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ],
-            'json' => $payload,
-        ]);
+        return $responses;
     }
 }
