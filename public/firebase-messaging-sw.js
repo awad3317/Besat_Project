@@ -1,5 +1,5 @@
-importScripts('https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js');
 
 // إعدادات Firebase
 const firebaseConfig = {
