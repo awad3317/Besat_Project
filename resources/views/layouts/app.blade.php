@@ -9,9 +9,164 @@
     <title>
         @yield('title', 'لوحة التحكم')
     </title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('tailadmin/build/favicon.ico') }}">
     <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet">
     @yield('style')
+    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
+
+        const firebaseConfig = {
+            apiKey: "{{ config('services.firebase.api_key', '') }}",
+            authDomain: "{{ config('services.firebase.auth_domain', '') }}",
+            projectId: "{{ config('services.firebase.project_id', '') }}",
+            storageBucket: "{{ config('services.firebase.storage_bucket', '') }}",
+            messagingSenderId: "{{ config('services.firebase.messaging_sender_id', '') }}",
+            appId: "{{ config('services.firebase.app_id', '') }}",
+            measurementId: "{{ config('services.firebase.measurement_id', '') }}"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
+        const vapidKey = "{{ env('FIREBASE_VAPID_KEY') }}";
+
+        // مفتاح التخزين المحلي
+        const TOKEN_STORAGE_KEY = 'fcm_token_stored';
+
+        // التحقق من التوكن المخزن
+        async function checkAndUpdateToken() {
+            try {
+                // 1. التحقق من دعم Firebase
+                const isFcmSupported = await isSupported();
+                if (!isFcmSupported) return;
+
+                // 2. التحقق من الإذن
+                if (Notification.permission !== 'granted') {
+                    const permission = await Notification.requestPermission();
+                    if (permission !== 'granted') return;
+                }
+
+                // 3. التحقق إذا كان التوكن مخزناً مسبقاً
+                const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+
+                if (storedToken) {
+                    console.log('✅ التوكن مخزن مسبقاً:', storedToken.substring(0, 20) + '...');
+
+                    // التحقق مع السيرفر إذا كان التوكن صالحاً
+                    const isValid = await validateTokenWithServer(storedToken);
+                    if (isValid) {
+                        console.log('✅ التوكن صالح، لا حاجة لتجديده');
+                        return;
+                    } else {
+                        console.log('🔄 التوكن غير صالح، جاري التجديد...');
+                        localStorage.removeItem(TOKEN_STORAGE_KEY);
+                    }
+                }
+
+                // 4. الحصول على توكن جديد
+                await getNewToken();
+
+            } catch (error) {
+                console.error('❌ خطأ:', error);
+            }
+        }
+
+        // الحصول على توكن جديد
+        async function getNewToken() {
+            try {
+                const token = await getToken(messaging, { vapidKey: vapidKey });
+
+                if (token) {
+                    console.log('✅ تم الحصول على توكن جديد:', token.substring(0, 20) + '...');
+
+                    // تخزين التوكن محلياً
+                    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+
+                    // إرسال التوكن للسيرفر
+                    await sendTokenToServer(token);
+                }
+            } catch (error) {
+                console.error('❌ خطأ في الحصول على التوكن:', error);
+            }
+        }
+
+        // التحقق من صحة التوكن مع السيرفر
+        async function validateTokenWithServer(token) {
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+                const response = await fetch("{{ route('firebase.validate-token') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({ token: token })
+                });
+
+                const data = await response.json();
+                return data.valid === true;
+            } catch (error) {
+                console.error('❌ خطأ في التحقق:', error);
+                return false;
+            }
+        }
+
+        // إرسال التوكن للسيرفر
+        async function sendTokenToServer(token) {
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+                const response = await fetch("{{ route('firebase.token') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        fcm_token: token,
+                        _method: "PATCH"
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('✅ تم إرسال التوكن للسيرفر');
+                }
+            } catch (error) {
+                console.error('❌ خطأ في الإرسال:', error);
+            }
+        }
+
+        // استقبال الإشعارات
+        onMessage(messaging, (payload) => {
+            console.log('📨 إشعار مباشر:', payload);
+
+            if (payload.notification) {
+                const title = payload.notification.title || 'إشعار جديد';
+                const body = payload.notification.body || 'لديك إشعار';
+
+                // عرض إشعار بسيط
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: title,
+                        text: body,
+                        icon: 'info',
+                        timer: 3000
+                    });
+                } else {
+                    alert(`${title}\n${body}`);
+                }
+            }
+        });
+
+        // البدء بعد تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkAndUpdateToken, 1000);
+        });
+    </script>
 
 </head>
 

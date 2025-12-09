@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Services\ImageService;
 use Illuminate\Validation\Rule;
 use App\Repositories\VehicleRepository;
+use App\Services\Notifications\FireBase;
+use GPBMetadata\Google\Api\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class VehicleController extends Controller
@@ -155,7 +157,7 @@ class VehicleController extends Controller
             return redirect()->back()
                     ->with('error', true)
                     ->with('error_title', 'حدث خطأ!')
-                    ->with('error_message', 'فشل في تحديث بيانات المركبة')
+                    ->with('error_message', $e->getMessage())
                     ->with('error_buttonText', 'حسناً')
                     ->withInput();
         }

@@ -25,6 +25,7 @@ class User extends Authenticatable
         'phone', 
         'whatsapp_number', 
         'type',
+        'fcm_token',
         'is_banned',
     ];
 

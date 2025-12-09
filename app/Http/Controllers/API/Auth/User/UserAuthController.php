@@ -10,6 +10,7 @@ use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
+use App\Services\Notifications\FireBase;
 use App\Repositories\UserDeviceRepository;
 
 class UserAuthController extends Controller
@@ -50,6 +51,12 @@ class UserAuthController extends Controller
             'password.string'   => 'يجب أن تكون كلمة المرور نصًا صالحًا.',
         ]);
         $user=$this->UserRepository->findByPhone($fields['phone']);
+        FireBase::send(
+    'Hello User!',
+    'This is your Laravel Firebase push notification.',
+    ['fQUwe-n8kNrBiYOXXxfLuY:APA91bH3JiErhVJLTFq5cbRv3ER5UAs51BCnf7v2qCGlee9Hf8QE09YtylVCfWKrRhC8rfmtH_MBVW1KePkcqH2Rh35LyG27ZhIcrI7MyniQFhGpgPZbXXE'],
+    ['customKey' => 'customValue']
+);
 
         if ($user && $user->type == 'admin') {
             return ApiResponseClass::sendError('لا يمكن للمشرفين تسجيل الدخول من خلال هذا التطبيق', null, 403);

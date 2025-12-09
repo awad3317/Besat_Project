@@ -7,10 +7,12 @@ use App\Http\Controllers\drivercontroller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\requestcontroller;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\FirebaseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SpecialOrderController;
 use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\vehiclePricingController;
+
 
 // Route::get('/', function () {
 //     return view('dashboard');
@@ -41,6 +43,9 @@ Route::middleware('auth')->group(function () {
         
     Route::get('/system-settings/auto-assign', [SystemSettingsController::class, 'getAutoAssignSetting'])
         ->name('system-settings.auto-assign.get');
+    Route::patch('/firebase/token', [FirebaseController::class, 'updateToken'])->name('firebase.token');
+    Route::post('/firebase/validate-token', [FirebaseController::class, 'validateToken'])->name('firebase.validate-token');
+
 });
 
 require __DIR__.'/auth.php';

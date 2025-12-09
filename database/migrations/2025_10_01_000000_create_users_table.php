@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone');
             $table->timestamp('phone_verified_at')->nullable();
+             $table->text('fcm_token')->nullable();
             // $table->string('email')->unique();
             $table->string('whatsapp_number')->nullable();
             $table->string('type')->default('user');
