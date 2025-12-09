@@ -14,9 +14,12 @@
     <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet">
     @yield('style')
     {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
-     <script>
-        // تمرير البيانات من Laravel
-        window.firebaseConfig = {
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
+
+        const firebaseConfig = {
             apiKey: "{{ config('services.firebase.api_key', '') }}",
             authDomain: "{{ config('services.firebase.auth_domain', '') }}",
             projectId: "{{ config('services.firebase.project_id', '') }}",
@@ -25,17 +28,6 @@
             appId: "{{ config('services.firebase.app_id', '') }}",
             measurementId: "{{ config('services.firebase.measurement_id', '') }}"
         };
-        
-        window.vapidKey = "{{ env('FIREBASE_VAPID_KEY') }}";
-        window.tokenRoute = "{{ route('firebase.token') }}";
-        window.validateRoute = "{{ route('firebase.validate-token') }}";
-    </script>
-
-    <script>
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
-
-        const firebaseConfig = window.firebaseConfig;
 
         const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
