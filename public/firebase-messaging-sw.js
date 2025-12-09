@@ -1,8 +1,11 @@
 // public/firebase-messaging-sw.js
 
-// هذا Service Worker سيعمل على السيرفر
-(function() {
-    'use strict';
+// إصدار Firebase المتوافق مع Service Worker
+try {
+    importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');
+    importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js');
+    
+    console.log('✅ Firebase SDK تم تحميله في Service Worker');
     
     // إعدادات Firebase
     const firebaseConfig = {
@@ -15,107 +18,69 @@
         measurementId: "G-PEE4VVH75H"
     };
     
-    // محاولة تحميل Firebase
-    try {
-        importScripts('https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js');
-        importScripts('https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js');
+    // تهيئة Firebase
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+    
+    console.log('✅ Firebase مهيأ في Service Worker');
+    
+    // معالجة الإشعارات في الخلفية
+    messaging.onBackgroundMessage(function(payload) {
+        console.log('📨 إشعار خلفية:', payload);
         
-        console.log('✅ Firebase SDK تم تحميله في Service Worker');
-        
-        // تهيئة Firebase
-        firebase.initializeApp(firebaseConfig);
-        const messaging = firebase.messaging();
-        
-        console.log('✅ Firebase مهيأ في Service Worker');
-        
-        // معالجة الإشعارات في الخلفية
-        messaging.onBackgroundMessage(function(payload) {
-            console.log('📨 إشعار خلفية:', payload);
-            
-            const notificationTitle = payload.notification?.title || 'إشعار بسات';
-            const notificationOptions = {
-                body: payload.notification?.body || 'لديك إشعار جديد',
-                icon: payload.notification?.icon || '/logo.png',
-                badge: '/logo.png',
-                data: payload.data || {},
-                actions: [
-                    {
-                        action: 'open',
-                        title: 'فتح'
-                    }
-                ]
-            };
+        const notificationTitle = payload.notification?.title || 'إشعار بسات';
+        const notificationOptions = {
+            body: payload.notification?.body || 'لديك إشعار جديد',
+            icon: payload.notification?.icon || '/logo.png',
+            badge: '/logo.png',
+            data: payload.data || {},
+            actions: [
+                {
+                    action: 'open',
+                    title: 'فتح'
+                }
+            ]
+        };
 
-            self.registration.showNotification(notificationTitle, notificationOptions);
-        });
-        
-    } catch (error) {
-        console.error('❌ خطأ في تحميل Firebase SDK:', error);
-        
-        // Fallback: استخدام Push API مباشرة
-        self.addEventListener('push', function(event) {
-            console.log('📨 Push event received (Fallback)');
-            
-            let payload;
-            try {
-                payload = event.data ? event.data.json() : {};
-            } catch (e) {
-                payload = {
-                    notification: {
-                        title: 'إشعار بسات',
-                        body: 'لديك إشعار جديد'
-                    }
-                };
+        self.registration.showNotification(notificationTitle, notificationOptions);
+    });
+    
+} catch (error) {
+    console.error('❌ خطأ في Service Worker:', error);
+}
+
+// معالجة نقر الإشعار
+self.addEventListener('notificationclick', function(event) {
+    console.log('👆 تم النقر على الإشعار:', event.notification);
+    
+    event.notification.close();
+    
+    const urlToOpen = event.notification.data?.url || '/';
+    
+    event.waitUntil(
+        clients.matchAll({ 
+            type: 'window', 
+            includeUncontrolled: true 
+        }).then(function(clientList) {
+            for (const client of clientList) {
+                if (client.url.includes('/') && 'focus' in client) {
+                    return client.focus();
+                }
             }
-            
-            const notificationTitle = payload.notification?.title || 'إشعار بسات';
-            const notificationOptions = {
-                body: payload.notification?.body || 'لديك إشعار جديد',
-                icon: '/logo.png',
-                badge: '/logo.png',
-                data: payload.data || {}
-            };
+            if (clients.openWindow) {
+                return clients.openWindow(urlToOpen);
+            }
+        })
+    );
+});
 
-            event.waitUntil(
-                self.registration.showNotification(notificationTitle, notificationOptions)
-            );
-        });
-    }
-    
-    // معالجة نقر الإشعار
-    self.addEventListener('notificationclick', function(event) {
-        console.log('👆 تم النقر على الإشعار:', event.notification);
-        
-        event.notification.close();
-        
-        const urlToOpen = event.notification.data?.url || '/dashboard';
-        
-        event.waitUntil(
-            clients.matchAll({ 
-                type: 'window', 
-                includeUncontrolled: true 
-            }).then(function(clientList) {
-                for (const client of clientList) {
-                    if (client.url.includes('/dashboard') && 'focus' in client) {
-                        return client.focus();
-                    }
-                }
-                if (clients.openWindow) {
-                    return clients.openWindow(urlToOpen);
-                }
-            })
-        );
-    });
-    
-    // تهيئة Service Worker
-    self.addEventListener('install', function(event) {
-        console.log('⚙️ Service Worker installing...');
-        self.skipWaiting();
-    });
-    
-    self.addEventListener('activate', function(event) {
-        console.log('✅ Service Worker activated');
-        event.waitUntil(clients.claim());
-    });
-    
-})();
+// تهيئة Service Worker
+self.addEventListener('install', function(event) {
+    console.log('⚙️ Service Worker installing...');
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', function(event) {
+    console.log('✅ Service Worker activated');
+    event.waitUntil(clients.claim());
+});
