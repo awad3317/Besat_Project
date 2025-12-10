@@ -664,7 +664,7 @@
         min: 0,
         max: 500,
         tickAmount: 6,
-      }
+      },
 
       colors: ["#dc6803"],
       seriesName: " ",
