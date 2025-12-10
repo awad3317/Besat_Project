@@ -15,9 +15,8 @@
     @yield('style')
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
-    
-    <!-- SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     
     <!-- كود Firebase المبسط (يعمل على السيرفر) -->
     <script>
@@ -290,23 +289,36 @@
         }
         
         // ========== عرض الإشعار ==========
-        function showNotification(title, body) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: title,
-                    text: body,
-                    icon: 'info',
-                    timer: 3000,
-                    timerProgressBar: true,
-                    showConfirmButton: false,
-                    position: 'top-end',
-                    toast: true
-                });
-            } else {
-                alert(title + '\n' + body);
-            }
-        }
-        
+        // ========== عرض الإشعار ==========
+function showNotification(title, body, type = 'info') {
+    // تحديد لون الخلفية حسب النوع
+    let backgroundColor = '';
+    switch(type) {
+        case 'success':
+            backgroundColor = '#10b981';
+            break;
+        case 'error':
+            backgroundColor = '#ef4444';
+            break;
+        case 'warning':
+            backgroundColor = '#f59e0b';
+            break;
+        default:
+            backgroundColor = '#3b82f6';
+    }
+    
+    Toastify({
+        text: `<strong>${title}</strong><br>${body}`,
+        duration: 5000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: backgroundColor,
+        escapeMarkup: false,
+        close: true,
+        stopOnFocus: true,
+        onClick: function(){}
+    }).showToast();
+}
         // ========== بدء العملية ==========
         window.addEventListener('load', function() {
             console.log('📱 الصفحة تم تحميلها');

@@ -98,7 +98,9 @@
                   <div class="flex items-center gap-3">
                     <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
                       @if($vehicle->image)
-                        <img src="{{ url($vehicle->image) }}" alt="imge" />
+                        <img src="{{ url($vehicle->image) }}" alt="Vehicle Image" class="h-full w-full object-cover" />
+                      @else
+                        <img src="{{ asset('assets/img/Car_img.png') }}" alt="Vehicle Image" class="h-full w-full object-cover" />
                       @endif
                     </div>
                   </div>
@@ -141,7 +143,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                   
+
                   </button>
                   <button onclick="window.location.href='{{ route('Vehicle.edit', $vehicle->id) }}'"
                     class="flex mx-2 items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
