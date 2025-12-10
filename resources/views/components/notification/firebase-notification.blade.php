@@ -1,4 +1,4 @@
-<div x-data="{
+<div class="mt-4" x-data="{
     show: false,
     title: '',
     message: '',
