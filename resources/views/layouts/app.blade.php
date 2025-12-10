@@ -280,39 +280,36 @@
 
             messaging.onMessage(function (payload) {
                 console.log('📨 إشعار مباشر:', payload);
-
                 const data = payload.notification || payload.data || {};
 
-                // حل سريع: استخدم كلا النوعين من الإشعارات
-                if (document.hidden && "Notification" in window && Notification.permission === "granted") {
-                    // إشعار متصفح للخلفية
-                    new Notification(data.title || 'إشعار جديد', {
-                        body: data.body || data.message || 'لديك إشعار',
-                        icon: '/icon.png'
-                    });
-                }
-
-                // إشعار Alpine.js للأمامية
+                // تأخير بسيط لضمان تحميل Alpine.js
                 setTimeout(() => {
-                    try {
-                        const event = new CustomEvent('show-firebase-notification', {
-                            detail: {
-                                title: data.title || 'إشعار جديد',
-                                message: data.body || data.message || 'لديك إشعار',
-                                showButtons: data.showButtons === 'true' || false
-                            }
-                        });
-                        window.dispatchEvent(event);
-                    } catch (e) {
-                        console.log('⚠️ لم ينجح إرسال الحدث');
+                    let data = {};
+
+                    if (payload.notification) {
+                        data = {
+                            title: payload.notification.title || 'إشعار جديد',
+                            message: payload.notification.body || 'لديك إشعار',
+                            showButtons: payload.data?.showButtons === 'true' || false
+                        };
+                    } else if (payload.data) {
+                        data = {
+                            title: payload.data.title || 'إشعار جديد',
+                            message: payload.data.body || 'لديك إشعار',
+                            showButtons: payload.data.showButtons === 'true' || false
+                        };
                     }
+
+                    // الحل السحري: إرسال الحدث 3 مرات بفواصل مختلفة
+                    sendEventWithRetry(data);
+
                 }, 300);
             });
 
             messageListenerSetup = true;
             console.log('✅ تم إعداد مستمع الإشعارات');
         }
-        function sendEventWithRetry(data) {
+        function sendEventWithRetry(data) { 
             console.log('🚀 محاولة إرسال الإشعار:', data.title);
 
             // محاولة 1: فورية
