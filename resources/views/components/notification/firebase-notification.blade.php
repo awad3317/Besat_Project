@@ -4,7 +4,6 @@
     message: '',
     showButtons: false,
     init() {
-        // الاستماع لحدث عرض إشعار Firebase
         window.addEventListener('show-firebase-notification', (event) => {
             this.showNotification(event.detail);
         });
@@ -31,11 +30,12 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 transform translate-y-0"
          x-transition:leave-end="opacity-0 transform translate-y-[-20px]"
-         class="fixed top-4 right-4 z-99999 w-full max-w-md">
+         class="fixed top-4 right-4 z-99999 w-full max-w-md rtl">
         
         <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800">
             <div class="flex items-start gap-3">
-                <div>
+                <!-- الأيقونة على اليسار -->
+                <div class="flex-shrink-0">
                     <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M12.814 4.75L4.78516 16.0352H11.1859L11.1859 23.25L19.2148 11.9648L12.814 11.9648V4.75Z"
@@ -47,9 +47,11 @@
                     </svg>
                 </div>
 
-                <div class="flex flex-1 flex-col items-start gap-3 sm:flex-row sm:items-center">
-                    <div class="flex-1">
-                        <h5 class="mb-1 text-base font-medium text-gray-800 dark:text-white/90"
+                <!-- المحتوى النصي والأزرار -->
+                <div class="flex-1">
+                    <!-- العنوان والرسالة -->
+                    <div class="mb-3">
+                        <h5 class="text-base font-medium text-gray-800 dark:text-white/90 mb-1"
                             x-text="title">
                         </h5>
                         <p class="text-sm text-gray-500 dark:text-gray-400"
@@ -57,25 +59,27 @@
                         </p>
                     </div>
                     
+                    <!-- حالة مع أزرار -->
                     <template x-if="showButtons">
-                        <div class="flex w-full items-center gap-3 sm:w-auto">
-                            <button
-                                type="button"
-                                @click="closeNotification()"
-                                class="flex justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-                                لاحقاً
-                            </button>
+                        <div class="flex items-center justify-end gap-3">
                             <button
                                 type="button"
                                 @click="handleAction()"
-                                class="flex justify-center rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600">
+                                class="flex justify-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600">
                                 متابعة
+                            </button>
+                            <button
+                                type="button"
+                                @click="closeNotification()"
+                                class="flex justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+                                لاحقاً
                             </button>
                         </div>
                     </template>
                     
+                    <!-- حالة بدون أزرار -->
                     <template x-if="!showButtons">
-                        <div class="flex w-full items-center justify-between">
+                        <div class="flex items-center justify-between">
                             <span class="text-xs text-gray-400 dark:text-gray-500">
                                 الآن
                             </span>
