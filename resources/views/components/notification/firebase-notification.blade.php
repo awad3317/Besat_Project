@@ -14,13 +14,6 @@
         this.title = data.title || 'إشعار جديد';
         this.message = data.message || 'لديك إشعار';
         this.showButtons = data.showButtons || false;
-        
-        // إغلاق تلقائي بعد 5 ثواني (اختياري)
-        setTimeout(() => {
-            if (this.show) {
-                this.closeNotification();
-            }
-        }, 5000);
     },
     closeNotification() {
         this.show = false;
@@ -66,25 +59,7 @@
                            x-text="message">
                         </p>
                     </div>
-                    
-                    <!-- حالة مع أزرار -->
-                    <template x-if="showButtons">
-                        <div class="flex items-center justify-end gap-3">
-                            <button
-                                type="button"
-                                @click="handleAction()"
-                                class="flex justify-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600">
-                                متابعة
-                            </button>
-                            <button
-                                type="button"
-                                @click="closeNotification()"
-                                class="flex justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-                                لاحقاً
-                            </button>
-                        </div>
-                    </template>
-                    
+                
                     <!-- حالة بدون أزرار -->
                     <template x-if="!showButtons">
                         <div class="flex items-center justify-between">
