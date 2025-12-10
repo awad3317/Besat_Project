@@ -31,16 +31,15 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 transform translate-y-0"
          x-transition:leave-end="opacity-0 transform translate-y-[-20px]"
-         class="fixed top-16 left-1/2 transform -translate-x-1/2 z-99999 w-full max-w-md rtl"> <!-- التغيير: top-16 بدل top-4 -->
+         class="fixed top-16 left-1/2 transform -translate-x-1/2 z-99999 w-full max-w-md rtl">
         
         <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800">
             <div class="flex items-start gap-3">
                 <!-- الأيقونة على اليسار -->
-                <div class="flex-shrink-0">
+                <div class="flex-shrink-0 text-orange-600">
                     <svg width="24" height="26" viewBox="0 0 24 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M12.814 4.75L4.78516 16.0352H11.1859L11.1859 23.25L19.2148 11.9648L12.814 11.9648V4.75Z"
-                            stroke="#465FFF"
                             stroke-width="1.5"
                             stroke-linecap="round"
                             stroke-linejoin="round"
