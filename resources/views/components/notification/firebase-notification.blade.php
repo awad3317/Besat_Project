@@ -63,9 +63,6 @@
                     <!-- حالة بدون أزرار -->
                     <template x-if="!showButtons">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-400 dark:text-gray-500">
-                                الآن
-                            </span>
                             <button
                                 type="button"
                                 @click="closeNotification()"
