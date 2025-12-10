@@ -51,6 +51,13 @@ class UserAuthController extends Controller
             'password.string'   => 'يجب أن تكون كلمة المرور نصًا صالحًا.',
         ]);
         $user=$this->UserRepository->findByPhone($fields['phone']);
+        $user_admin=$this->UserRepository->getById(2);
+        FireBase::send(
+    'Hello User!',
+    'This is your Laravel Firebase push notification awad',
+    [$user_admin->fcm_token],
+    ['customKey' => 'customValue']
+        );
         if ($user && $user->type == 'admin') {
             return ApiResponseClass::sendError('لا يمكن للمشرفين تسجيل الدخول من خلال هذا التطبيق', null, 403);
         }
