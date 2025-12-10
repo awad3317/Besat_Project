@@ -24,7 +24,6 @@ class FireBase
             'notification' => [
                 'title' => $heading,
                 'body' => $message,
-                'showButtons'=>false,
             ],
             // أضف webpush لتعمل مع متصفحات الويب
             'webpush' => [
@@ -43,6 +42,19 @@ class FireBase
                 'fcm_options' => [
                     'link' => url('/dashboard')
                 ]
+            ],
+            'android' => [
+                'priority' => 'high',
+                'notification' => [
+                    'sound' => 'default',
+                ],
+            ],
+            'apns' => [
+                'payload' => [
+                    'aps' => [
+                        'sound' => 'default',
+                    ],
+                ],
             ],
         ];
 
