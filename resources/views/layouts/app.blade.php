@@ -338,12 +338,8 @@
         }
     }" :class="{ 'dark bg-gray-900': darkMode === true }">
     <!-- ===== Preloader Start ===== -->
-    {{-- @include('components.notification.firebase-notification') --}}
+    @include('components.notification.firebase-notification')
 
-
-    <!-- ===== إشعار Firebase ===== -->
-    
-    <!-- ===== إشعار Firebase End ===== -->
 
     <!-- ===== Page Wrapper Start ===== -->
     <div class="flex h-screen overflow-hidden">
