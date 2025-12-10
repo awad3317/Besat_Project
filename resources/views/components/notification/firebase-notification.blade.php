@@ -14,6 +14,13 @@
         this.title = data.title || 'إشعار جديد';
         this.message = data.message || 'لديك إشعار';
         this.showButtons = data.showButtons || false;
+        
+        // إغلاق تلقائي بعد 5 ثواني (اختياري)
+        setTimeout(() => {
+            if (this.show) {
+                this.closeNotification();
+            }
+        }, 5000);
     },
     closeNotification() {
         this.show = false;
@@ -31,7 +38,7 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 transform translate-y-0"
          x-transition:leave-end="opacity-0 transform translate-y-[-20px]"
-         class="fixed top-4 left-1/2 transform -translate-x-1/2 z-99999 w-full max-w-md rtl"> <!-- التغيير هنا -->
+         class="fixed top-16 left-1/2 transform -translate-x-1/2 z-99999 w-full max-w-md rtl"> <!-- التغيير: top-16 بدل top-4 -->
         
         <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800">
             <div class="flex items-start gap-3">
