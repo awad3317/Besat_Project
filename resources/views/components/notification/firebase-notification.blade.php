@@ -1,4 +1,3 @@
-<!-- resources/views/components/firebase-notification.blade.php -->
 <div x-data="{
     show: false,
     title: '',
