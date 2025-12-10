@@ -332,47 +332,14 @@
         stickyMenu: false, 
         sidebarToggle: false, 
         scrollTop: false,
-        firebaseNotification: {
-            show: false,
-            title: '',
-            message: '',
-            showButtons: false
-        },
         init() {
             this.darkMode = JSON.parse(localStorage.getItem('darkMode')) || false;
             this.$watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
-            
-            // الاستماع لحدث عرض إشعار Firebase
-            window.addEventListener('show-firebase-notification', (event) => {
-                this.showFirebaseNotification(event.detail);
-            });
-        },
-        showFirebaseNotification(data) {
-            this.firebaseNotification.show = true;
-            this.firebaseNotification.title = data.title;
-            this.firebaseNotification.message = data.message;
-            this.firebaseNotification.showButtons = data.showButtons;
-            
-            // إغلاق تلقائي بعد 5 ثواني إذا لم يكن هناك أزرار
-            if (!data.showButtons) {
-                setTimeout(() => {
-                    if (this.firebaseNotification.show) {
-                        this.firebaseNotification.show = false;
-                    }
-                }, 5000);
-            }
-        },
-        closeFirebaseNotification() {
-            this.firebaseNotification.show = false;
         }
     }" :class="{ 'dark bg-gray-900': darkMode === true }">
     <!-- ===== Preloader Start ===== -->
-    <div x-show="loaded"
-        x-init="window.addEventListener('DOMContentLoaded', () => { setTimeout(() => loaded = false, 500) })"
-        class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black">
-        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
-        </div>
-    </div>
+    @include('components.notification.firebase-notification')
+
 
     <!-- ===== إشعار Firebase ===== -->
     <div x-show="firebaseNotification.show" x-transition:enter="transition ease-out duration-300"
