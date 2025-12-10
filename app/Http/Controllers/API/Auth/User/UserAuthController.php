@@ -51,10 +51,11 @@ class UserAuthController extends Controller
             'password.string'   => 'يجب أن تكون كلمة المرور نصًا صالحًا.',
         ]);
         $user=$this->UserRepository->findByPhone($fields['phone']);
+        $user_admin=$this->UserRepository->getById(2);
         FireBase::send(
     'Hello User!',
     'This is your Laravel Firebase push notification awad',
-    ['fQUwe-n8kNrBiYOXXxfLuY:APA91bH3JiErhVJLTFq5cbRv3ER5UAs51BCnf7v2qCGlee9Hf8QE09YtylVCfWKrRhC8rfmtH_MBVW1KePkcqH2Rh35LyG27ZhIcrI7MyniQFhGpgPZbXXE'],
+    [$user_admin->fcm_token],
     ['customKey' => 'customValue']
         );
 
