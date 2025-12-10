@@ -271,42 +271,7 @@
         }
 
         // ========== إعداد استقبال الإشعارات ==========
-        let messageListenerSetup = false;
-        function setupMessageListener(messaging) {
-            if (messageListenerSetup) {
-                console.log('ℹ️ مستمع الإشعارات مضبوط مسبقاً');
-                return;
-            }
-
-            messaging.onMessage(function (payload) {
-                console.log('📨 إشعار مباشر:', payload);
-
-                if (payload.notification) {
-                    // إرسال حدث لعرض الإشعار
-                    const event = new CustomEvent('show-firebase-notification', {
-                        detail: {
-                            title: payload.notification.title || 'إشعار جديد',
-                            message: payload.notification.body || 'لديك إشعار',
-                            showButtons: payload.data?.showButtons === 'true' || false
-                        }
-                    });
-                    window.dispatchEvent(event);
-                } else if (payload.data) {
-                    const event = new CustomEvent('show-firebase-notification', {
-                        detail: {
-                            title: payload.data.title || 'إشعار جديد',
-                            message: payload.data.body || 'لديك إشعار',
-                            showButtons: payload.data.showButtons === 'true' || false
-                        }
-                    });
-                    window.dispatchEvent(event);
-                }
-            });
-
-            messageListenerSetup = true;
-            console.log('✅ تم إعداد مستمع الإشعارات');
-        }
-        // ========== عرض الإشعار ==========// ========== إعداد استقبال الإشعارات ==========
+       //========== إعداد استقبال الإشعارات ==========
         let messageListenerSetup = false;
         function setupMessageListener(messaging) {
             if (messageListenerSetup) {
