@@ -30,7 +30,7 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 transform translate-y-0"
          x-transition:leave-end="opacity-0 transform translate-y-[-20px]"
-         class="fixed top-4 right-4 z-99999 w-full max-w-md rtl">
+         class="fixed top-4 right-4 z-99999 w-full max-w-md rtl mt-12"> <!-- أضفت mt-12 هنا -->
         
         <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800">
             <div class="flex items-start gap-3">
