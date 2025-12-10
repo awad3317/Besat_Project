@@ -333,11 +333,9 @@
         sidebarToggle: false, 
         scrollTop: false,
         'loaded': true
-        init() {
-            this.darkMode = JSON.parse(localStorage.getItem('darkMode')) || false;
-            this.$watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
-        }
-    }" :class="{ 'dark bg-gray-900': darkMode === true }">
+    }"x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))":class="{ 'dark bg-gray-900': darkMode === true }">
     <!-- ===== Preloader Start ===== -->
     @include('components.notification.firebase-notification')
 
