@@ -62,11 +62,11 @@
                 
                     <!-- حالة بدون أزرار -->
                     <template x-if="!showButtons">
-                        <div class="flex items-center justify-between bg-white p-6 dark:bg-gray-900">
+                        <div class="flex items-center justify-between">
                             <button
                                 type="button"
                                 @click="closeNotification()"
-                                class="text-sm font-medium hover:text-gray-800 dark:text-gray-400 text-gray-800 dark:text-white/90">
+                                class="text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300">
                                 فتح
                             </button>
                         </div>
