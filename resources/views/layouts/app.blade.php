@@ -15,7 +15,6 @@
     @yield('style')
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
-    <script defer src="{{ asset('tailadmin/build/bundle.js') }}"></script>
 
     <!-- كود Firebase المبسط (يعمل على السيرفر) -->
     <script>
@@ -333,6 +332,7 @@
         stickyMenu: false, 
         sidebarToggle: false, 
         scrollTop: false,
+        'loaded': true
         init() {
             this.darkMode = JSON.parse(localStorage.getItem('darkMode')) || false;
             this.$watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
@@ -376,7 +376,7 @@
     </div>
     <!-- ===== Page Wrapper End ===== -->
     @yield('script')
-    
+    <script defer src="{{ asset('tailadmin/build/bundle.js') }}"></script>
     <script>
         function autoAssignSystem() {
             return {
