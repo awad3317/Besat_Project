@@ -5,6 +5,7 @@
     message: '',
     showButtons: false,
     init() {
+        window.firebaseNotificationReady = true;
         window.addEventListener('show-firebase-notification', (event) => {
             this.showNotification(event.detail);
         });

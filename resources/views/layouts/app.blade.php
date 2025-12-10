@@ -306,7 +306,71 @@
             messageListenerSetup = true;
             console.log('✅ تم إعداد مستمع الإشعارات');
         }
-        // ========== عرض الإشعار ==========
+        // ========== عرض الإشعار ==========// ========== إعداد استقبال الإشعارات ==========
+        let messageListenerSetup = false;
+        function setupMessageListener(messaging) {
+            if (messageListenerSetup) {
+                console.log('ℹ️ مستمع الإشعارات مضبوط مسبقاً');
+                return;
+            }
+
+            messaging.onMessage(function (payload) {
+                console.log('📨 إشعار مباشر:', payload);
+
+                // تأخير بسيط لضمان تحميل Alpine.js
+                setTimeout(() => {
+                    let data = {};
+
+                    if (payload.notification) {
+                        data = {
+                            title: payload.notification.title || 'إشعار جديد',
+                            message: payload.notification.body || 'لديك إشعار',
+                            showButtons: payload.data?.showButtons === 'true' || false
+                        };
+                    } else if (payload.data) {
+                        data = {
+                            title: payload.data.title || 'إشعار جديد',
+                            message: payload.data.body || 'لديك إشعار',
+                            showButtons: payload.data.showButtons === 'true' || false
+                        };
+                    }
+
+                    // الحل السحري: إرسال الحدث 3 مرات بفواصل مختلفة
+                    sendEventWithRetry(data);
+
+                }, 300);
+            });
+
+            messageListenerSetup = true;
+            console.log('✅ تم إعداد مستمع الإشعارات');
+        }
+
+        function sendEventWithRetry(data) {
+            console.log('🚀 محاولة إرسال الإشعار:', data.title);
+
+            // محاولة 1: فورية
+            setTimeout(() => triggerEvent(data), 0);
+
+            // محاولة 2: بعد 200ms
+            setTimeout(() => triggerEvent(data), 200);
+
+            // محاولة 3: بعد 500ms
+            setTimeout(() => triggerEvent(data), 500);
+
+            // محاولة 4: بعد 1000ms
+            setTimeout(() => triggerEvent(data), 1000);
+        }
+        function triggerEvent(data) {
+            try {
+                const event = new CustomEvent('show-firebase-notification', {
+                    detail: data
+                });
+                window.dispatchEvent(event);
+                console.log('✅ حدث الإشعار أُرسل');
+            } catch (e) {
+                console.log('⚠️ لم ينجح إرسال الحدث هذه المرة');
+            }
+        }
         function showNotification(title, body) {
             alert(title + '\n' + body);
         }
@@ -325,22 +389,19 @@
 
 </head>
 
-<body x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+<body
+    x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
     x-init="
          darkMode = JSON.parse(localStorage.getItem('darkMode'));
          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
-    :class="{'dark bg-gray-900': darkMode === true}"
-  >
+    :class="{'dark bg-gray-900': darkMode === true}">
     <!-- ===== Preloader Start ===== -->
-    <div
-  x-show="loaded"
-  x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})"
-  class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black"
->
-  <div
-    class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"
-  ></div>
-</div>
+    <div x-show="loaded"
+        x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})"
+        class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+        </div>
+    </div>
     @include('components.notification.firebase-notification')
 
 
