@@ -151,8 +151,9 @@
                                     <p class="text-gray-500 text-theme-sm dark:text-gray-400">
                                         @if ($admin->whatsapp_number)
                                             {{ $admin->whatsapp_number  }}
+                                        @else
+                                            __
                                         @endif
-                                        __
                                     </p>
                                 </div>
                             </td>
