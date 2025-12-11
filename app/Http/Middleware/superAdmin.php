@@ -19,6 +19,6 @@ class superAdmin
         if(Auth::user()->type == 'superAdmin'){
             return $next($request);
         }
-        abort(403);
+        return response()->view('pages.errors.404', [], 403);
     }
 }
