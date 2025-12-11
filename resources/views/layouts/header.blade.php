@@ -251,7 +251,11 @@
                 <a class="flex items-center text-gray-700 dark:text-gray-400" href="#"
                     @click.prevent="dropdownOpen = ! dropdownOpen">
                     <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
-                        <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="User" />
+                        @if (Auth::user()->image)
+                            <img src="{{ url(Auth::user()->image) }}" alt="User Image" class="h-full w-full object-cover" />
+                        @else
+                            <img src="{{ asset('assets/img/User_img.png') }}" alt="User Image" class="h-full w-full object-cover" />
+                        @endif
                     </span>
 
                     <span class="text-theme-sm mr-1 block font-medium">{{ Auth::user()->name }}</span>

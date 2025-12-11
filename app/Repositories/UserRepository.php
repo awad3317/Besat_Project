@@ -45,4 +45,9 @@ class UserRepository implements RepositoriesInterface
         return User::where('phone', $phone)->first();
     }
 
+    public function getAdmins()
+    {
+        return User::where('type','admin')->get();
+    }
+
 }

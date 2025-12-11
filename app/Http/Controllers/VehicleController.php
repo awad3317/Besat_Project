@@ -8,9 +8,10 @@ use Mockery\Expectation;
 use Illuminate\Http\Request;
 use App\Services\ImageService;
 use Illuminate\Validation\Rule;
+use GPBMetadata\Google\Api\Auth;
+use App\Classes\WebResponseClass;
 use App\Repositories\VehicleRepository;
 use App\Services\Notifications\FireBase;
-use GPBMetadata\Google\Api\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class VehicleController extends Controller
@@ -50,13 +51,7 @@ class VehicleController extends Controller
     ]);
 
     if ($validator->fails()) {
-        $firstError = $validator->errors()->first();
-        return redirect()->back()
-                    ->withErrors($validator)
-                    ->with('error', true)
-                    ->with('error_title', 'حدث خطأ!')
-                    ->with('error_message', $firstError)
-                    ->with('error_buttonText', 'حسناً');
+        return WebResponseClass::sendValidationError($validator);
     }
     try {
         $validatData = $validator->validated();
@@ -65,18 +60,10 @@ class VehicleController extends Controller
             $validatData['image'] = $image_path;
         }        
         $vehicleData = $this->vehicleRepository->store($validatData);
-        return redirect()->back()
-            ->with('success', true)
-            ->with('success_title', 'تم الإضافة!')
-            ->with('success_message', 'تم إضافة المركبة بنجاح.')
-            ->with('success_buttonText', 'حسناً');
+        return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة المركبة بنجاح');
         }
     catch (Exception $e) {
-        return redirect()->back()
-            ->with('error', true)
-            ->with('error_title', 'حدث خطأ!')
-            ->with('error_message', $e->getMessage())
-            ->with('error_buttonText', 'حسناً');
+        return WebResponseClass::sendError($e);
     }
 }
     
@@ -123,13 +110,7 @@ class VehicleController extends Controller
             'image' => ['nullable', 'image', 'max:2048']
         ]);
         if ($validator->fails()) {
-            $firstError = $validator->errors()->first();
-            return redirect()->back()
-                    ->withErrors($validator)
-                    ->with('error', true)
-                    ->with('error_title', 'حدث خطأ!')
-                    ->with('error_message', $firstError)
-                    ->with('error_buttonText', 'حسناً');
+            return WebResponseClass::sendValidationError($validator);
         }
         try {
             $vehicle = $this->vehicleRepository->getById($id);

@@ -26,7 +26,7 @@
         <nav x-data="{ selected: $persist('Dashboard') }">
             <!-- Menu Group -->
             <div>
-                <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+                {{-- <h3 class="mb-4 text-xs uppercase leading-[20px] text-gray-400">
                     <span class="menu-group-title" :class="sidebarToggle ? 'lg:hidden' : ''">
                         القائمة الرئيسية
                     </span>
@@ -38,8 +38,7 @@
                             d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z"
                             fill="" />
                     </svg>
-                </h3>
-
+                </h3> --}}
                 <ul class="flex flex-col gap-4 mb-6">
                     <!-- Menu Item Dashboard -->
                     <li>
@@ -75,9 +74,8 @@
                         <!-- Dropdown Menu End -->
 
                     </li>
-                    <!-- Menu Item Dashboard -->
 
-                    <!-- Menu Item Calendar -->
+                    <!-- Menu Item users -->
                     <li>
                         <a href="{{ route('users.index') }}" @click="selected = (selected === 'users' ? '':'users')"
                             class="menu-item group"
@@ -96,9 +94,8 @@
                             </span>
                         </a>
                     </li>
-                    <!-- Menu Item Calendar -->
 
-                    <!-- Menu Item Profile -->
+                    <!-- Menu Item drivers -->
                     <li>
                         <a href="{{ route('drivers.index') }}"
                             @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group"
@@ -136,9 +133,8 @@
                             </span>
                         </a>
                     </li>
-                    <!-- Menu Item Profile -->
 
-                    <!-- Menu Item Forms -->
+                    <!-- Menu Item Requests -->
                     <li>
                         <a href="#" @click.prevent="selected = (selected === 'Requests' ? '' : 'Requests')"
                             class="menu-item group flex items-center relative"
@@ -212,9 +208,8 @@
                         </div>
                         <!-- Dropdown Menu End -->
                     </li>
-                    <!-- Menu Item Forms -->
 
-                    <!-- Menu Item Tables -->
+                    <!-- Menu Item Coupon -->
                     <li>
                         <a href="{{ route('Coupon.index') }}"
                             @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group"
@@ -235,7 +230,8 @@
                             </span>
                         </a>
                     </li>
-                    <!-- Menu Item Tables -->
+
+                    <!-- Menu Item Vehicle -->
                     <li>
                         <a href="{{ route('Vehicle.index') }}"
                             @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group"
@@ -278,15 +274,29 @@
                         </a>
                     </li>
 
-                    <!-- Menu Item Pages -->
+                    <!-- Menu Item setting -->
+                    
                     <li>
-                        <a href="{{ route('systems.index') }}"
-                            @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group"
-                            :class="window.location.href.includes('{{ route('systems.index') }}') ? 'menu-item-active' :
-                                'menu-item-inactive'">
+                      <a href="#" @click.prevent="selected = (selected === 'setting' ? '' : 'setting')"
+                            class="menu-item group flex items-center relative"
+                            :class="(selected === 'setting') || window.location.href.includes(
+                                '{{ route('systems.index') }}') || window.location.href.includes('{{ route('notifications.index') }}')
+                                || window.location.href.includes('{{ route('admins.index') }}') ? 'menu-item-active' : 'menu-item-inactive'">
 
-                            <svg :class="window.location.href.includes('{{ route('systems.index') }}') ? 'menu-item-icon-active' :
-                                'menu-item-icon-inactive'"
+                            <!-- السهم المطلق في أقصى اليسار -->
+                            <svg class="absolute left-4 transition-transform duration-300"
+                                :class="(selected === 'setting') ? 'rotate-180' : ''" width="20" height="20"
+                                viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+
+                            <!-- الأيقونة مع هامش لترك مساحة للسهم -->
+                            <svg :class="
+                                window.location.href.includes('{{ route('systems.index') }}')
+                             || window.location.href.includes('{{ route('systems.index') }}') 
+                             || window.location.href.includes('{{ route('admins.index') }}')
+                             ?  'menu-item-icon-active' :'menu-item-icon-inactive'"
                                 width="24" height="24" viewBox="0 0 20 20" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -298,12 +308,42 @@
                                         fill="currentColor" />
                                 </g>
                             </svg>
-
-                            <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                                اعدادات النظام
+                            <!-- النص -->
+                            <span class="menu-item-text ml-2 flex-1" :class="sidebarToggle ? 'lg:hidden' : ''">
+                                الأعدادات 
                             </span>
-                        </a>
+                      </a>
+                      <div class="overflow-hidden transform translate"
+                            :class="(selected === 'setting') ? 'block' : 'hidden'">
+                            <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'"
+                                class="flex flex-col gap-1 mt-2 menu-dropdown pl-9">
+                                <li>
+                                    <a href="{{ route('systems.index') }}" class="menu-dropdown-item group"
+                                        :class="window.location.href.includes('{{ route('systems.index') }}') ?
+                                            'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                         النظام
+                                    </a>
+                                </li>
+                                @if (Auth::user()->type == 'superAdmin')
+                                <li>
+                                    <a href="{{ route('admins.index') }}" class="menu-dropdown-item group"
+                                        :class="window.location.href.includes('{{ route('admins.index') }}') ?
+                                            'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                         المستخدمين 
+                                    </a>
+                                </li>
+                                @endif
+                                <li>
+                                    <a href="{{ route('notifications.index') }}" class="menu-dropdown-item group"
+                                        :class="window.location.href.includes('{{ route('notifications.index') }}') ?
+                                            'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                         الاشعارات
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
+                    
                     
                     <!-- Menu Item Pages -->
                 </ul>

@@ -1,14 +1,16 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\usercontroller;
-use App\Http\Controllers\couponcontroller;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\drivercontroller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\requestcontroller;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\FirebaseController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SpecialOrderController;
 use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\vehiclePricingController;
@@ -28,15 +30,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-    Route::resource('users', usercontroller::class);
+    Route::resource('users', UserController::class);
     Route::resource('drivers', drivercontroller::class);
     Route::resource('request',requestcontroller::class);
-    Route::resource('Coupon',couponcontroller::class);
+    Route::resource('Coupon',CouponController::class);
     Route::resource('Vehicle',VehicleController::class);
     Route::resource('vehiclePricing',vehiclePricingController::class);
     Route::resource('specialOrder',SpecialOrderController::class);
-    
     Route::resource('systems',SystemSettingsController::class);
+    Route::resource('notifications',NotificationController::class);
+    Route::resource('admins',AdminController::class)->middleware(['superAdmin']);
     Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');
 

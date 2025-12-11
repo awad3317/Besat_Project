@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
             'whatsapp_number' => '966500000002',
             'phone_verified_at'=> now(),
             'password' => '12121212',
-            'type' => 'admin',
+            'type' => 'superAdmin',
             'is_banned' => false,
         ]);
     }
