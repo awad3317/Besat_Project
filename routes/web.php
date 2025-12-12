@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\drivercontroller;
 use App\Http\Controllers\ProfileController;
@@ -10,6 +10,7 @@ use App\Http\Controllers\requestcontroller;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\FirebaseController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SpecialOrderController;
 use App\Http\Controllers\SystemSettingsController;
@@ -40,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('systems',SystemSettingsController::class);
     Route::resource('notifications',NotificationController::class);
     Route::resource('admins',AdminController::class)->middleware(['superAdmin']);
+    Route::resource('log',ActivityLogController::class)->only(['index']);
     Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');
 

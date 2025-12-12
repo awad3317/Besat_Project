@@ -279,9 +279,12 @@
                     <li>
                       <a href="#" @click.prevent="selected = (selected === 'setting' ? '' : 'setting')"
                             class="menu-item group flex items-center relative"
-                            :class="(selected === 'setting') || window.location.href.includes(
-                                '{{ route('systems.index') }}') || window.location.href.includes('{{ route('notifications.index') }}')
-                                || window.location.href.includes('{{ route('admins.index') }}') ? 'menu-item-active' : 'menu-item-inactive'">
+                            :class="(selected === 'setting') 
+                            || window.location.href.includes('{{ route('systems.index') }}')
+                            || window.location.href.includes('{{ route('notifications.index') }}')
+                            || window.location.href.includes('{{ route('admins.index') }}')
+                            || window.location.href.includes('{{ route('log.index') }}')
+                             ? 'menu-item-active' : 'menu-item-inactive'">
 
                             <!-- السهم المطلق في أقصى اليسار -->
                             <svg class="absolute left-4 transition-transform duration-300"
@@ -296,6 +299,7 @@
                                 window.location.href.includes('{{ route('systems.index') }}')
                              || window.location.href.includes('{{ route('systems.index') }}') 
                              || window.location.href.includes('{{ route('admins.index') }}')
+                             || window.location.href.includes('{{ route('log.index') }}')
                              ?  'menu-item-icon-active' :'menu-item-icon-inactive'"
                                 width="24" height="24" viewBox="0 0 20 20" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -338,6 +342,13 @@
                                         :class="window.location.href.includes('{{ route('notifications.index') }}') ?
                                             'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
                                          الاشعارات
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('log.index') }}" class="menu-dropdown-item group"
+                                        :class="window.location.href.includes('{{ route('log.index') }}') ?
+                                            'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                         سجل النشاطات
                                     </a>
                                 </li>
                             </ul>

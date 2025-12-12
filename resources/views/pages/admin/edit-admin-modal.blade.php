@@ -55,8 +55,9 @@
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                 رقم الواتساب
                             </label>
-                            <input placeholder="967780236550" rows="4" name="whatsapp_number"
-                                class="hover:border-brand-500 dark:bg-dark-900 h-auto w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs resize-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">{{ old('whatsapp_number', $admin->whatsapp_number) }}
+                            <input placeholder="مثال: 967780236552" rows="4" name="whatsapp_number"
+                                    value="{{ old('type', $admin->whatsapp_number) }}"
+                                class="hover:border-brand-500 dark:bg-dark-900 h-auto w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs resize-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
                         </div>
 
                         <div class="space-y-3">

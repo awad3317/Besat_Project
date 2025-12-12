@@ -1,6 +1,9 @@
 @extends('layouts.app')
 @section('title', 'لوحة التحكم')
 @section('Breadcrumb', 'الصفحة الرئيسية')
+@section('addButton')
+
+@endsection
 @section('style')
   <style>
     /* ===== Responsive Layout ===== */
