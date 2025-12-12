@@ -14,6 +14,8 @@ class SpecialOrder extends Model
         'customer_whatsapp',
         'user_id',
         'title',
+        'start_address',
+        'end_address',
         'description',
         'driver_id',
         'status',

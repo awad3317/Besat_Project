@@ -2,6 +2,9 @@
 @section('title', 'لوحة التحكم')
 @section('Breadcrumb', 'الصفحة الرئيسية')
 @section('addButton')
+  @include('pages.specialOrder.create-special-order-modal')
+  <x-modals.success-modal />
+  <x-modals.error-modal />
 
 @endsection
 @section('style')

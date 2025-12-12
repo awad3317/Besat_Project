@@ -43,16 +43,16 @@ class VehicleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-        'type' => ['required', 'string', 'max:100',Rule::unique('vehicles','type')],
-        'description' => ['nullable', 'string', 'max:1000'],
-        'max_passengers' => ['required', 'integer', 'min:1'],
-        'min_price'=>['required','min:0'],
-        'image' => ['nullable', 'image', 'max:2048']
-    ]);
+            'type' => ['required', 'string', 'max:100',Rule::unique('vehicles','type')],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'max_passengers' => ['required', 'integer', 'min:1'],
+            'min_price'=>['required','min:0'],
+            'image' => ['nullable', 'image', 'max:2048']
+        ]);
 
-    if ($validator->fails()) {
-        return WebResponseClass::sendValidationError($validator);
-    }
+        if ($validator->fails()) {
+            return WebResponseClass::sendValidationError($validator);
+        }
     try {
         $validatData = $validator->validated();
         if($request->hasFile('image')){
@@ -88,12 +88,7 @@ class VehicleController extends Controller
                 ->with('openModalEdit',true)
                 ->with('vehicle', $vehicle);
         } catch (Exception $e) {
-            return redirect()->back()
-                ->with('error', true)
-                ->with('error_title', 'حدث خطأ!')
-                ->with('error_message', $e->getMessage())
-                ->with('error_buttonText', 'حسناً')
-                ->with('openModalEdit',false);
+            return WebResponseClass::sendError($e);
         }
     }
 
@@ -128,19 +123,10 @@ class VehicleController extends Controller
                 $data['image'] = $image_path;
             }
             $this->vehicleRepository->update($data,$id);
-            return redirect()->back()
-                    ->with('success', true)
-                    ->with('success_title', 'تم التحديث!')
-                    ->with('success_message', 'تم تحديث بيانات المركبة بنجاح')
-                    ->with('success_buttonText', 'حسناً');
+            return WebResponseClass::sendResponse( 'تم التحديث!', 'تم تحديث بيانات المركبة بنجاح');
 
         } catch (Exception $e) {
-            return redirect()->back()
-                    ->with('error', true)
-                    ->with('error_title', 'حدث خطأ!')
-                    ->with('error_message', $e->getMessage())
-                    ->with('error_buttonText', 'حسناً')
-                    ->withInput();
+            return WebResponseClass::sendError($e);
         }
     }
 

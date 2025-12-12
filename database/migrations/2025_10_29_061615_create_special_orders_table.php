@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('customer_phone')->nullable();
             $table->string('customer_whatsapp')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
-
             $table->string('title');
             $table->text('description')->nullable();
-
+            $table->string('start_address');
+            $table->string('end_address');
             $table->foreignId('driver_id')->nullable()->constrained('drivers')->onDelete('set null');
             $table->enum('status', ['pending', 'searching_driver', 'paused', 'in_progress', 'completed', 'cancelled'])->default('pending');
             $table->text('cancellation_reason')->nullable();

@@ -16,7 +16,7 @@ class VehicleRepository implements RepositoriesInterface
     }
     public function index()
     {
-        return Vehicle::all();
+        return Vehicle::paginate(10);
     }
 
     public function getById($id): Vehicle

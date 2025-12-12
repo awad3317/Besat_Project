@@ -126,5 +126,9 @@ return [
         'name' => 'الاسم',
         'email' => 'البريد الإلكتروني',
         'password' => 'كلمة المرور',
-    ],
+        'customer_name' => 'أسم العميل',
+        'customer_phone' => 'رقم جوال العميل',
+        'customer_whatsapp' => 'رقم واتساب العميل',
+        'title' => 'العنوان',
+        ],
 ];
