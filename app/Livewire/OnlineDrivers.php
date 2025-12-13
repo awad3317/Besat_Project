@@ -14,6 +14,6 @@ class OnlineDrivers extends Component
     }
     public function render()
     {
-        return view('livewire.online-drivers');
+        return view('livewire.specialOrder.online-drivers');
     }
 }

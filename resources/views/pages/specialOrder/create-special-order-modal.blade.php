@@ -71,7 +71,7 @@
           </div>
 
           <div class="col-span-1">
-            @livewire('online-drivers')
+            @livewire('specialOrder.online-drivers')
           </div>
           
         </div>
