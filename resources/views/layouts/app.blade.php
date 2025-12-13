@@ -401,6 +401,7 @@
     </div>
     <!-- ===== Page Wrapper End ===== -->
     @yield('script')
+    <script defer src="{{ asset('tailadmin/build/bundle.js') }}"></script>
     @livewireScripts
     <script>
         function autoAssignSystem() {

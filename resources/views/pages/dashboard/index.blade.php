@@ -643,7 +643,7 @@
 @endsection
 
 @section('script')
-  <script defer src="{{ asset('tailadmin/build/bundle.js') }}"></script>
+  
   <script>
     window.laravelChartData = {
       sales: [
