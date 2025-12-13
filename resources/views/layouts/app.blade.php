@@ -12,6 +12,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('tailadmin/build/favicon.ico') }}">
     <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet">
+    @livewireStyles
     @yield('style')
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
@@ -400,7 +401,7 @@
     </div>
     <!-- ===== Page Wrapper End ===== -->
     @yield('script')
-    <script defer src="{{ asset('tailadmin/build/bundle.js') }}"></script>
+    @livewireScripts
     <script>
         function autoAssignSystem() {
             return {

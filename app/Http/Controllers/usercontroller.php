@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\UserRepository;
 
 class UserController extends Controller
 {
+     public function __construct(private UserRepository $userRepository)
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('pages.users.index');
+        $users=$this->userRepository->getUsers();
+        return view('pages.users.index',compact('users'));
     }
 
     /**

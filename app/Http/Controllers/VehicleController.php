@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Vehicle;
 use Mockery\Expectation;
 use Illuminate\Http\Request;
+use App\Services\ActivityLog;
 use App\Services\ImageService;
 use Illuminate\Validation\Rule;
 use GPBMetadata\Google\Api\Auth;
@@ -60,10 +61,11 @@ class VehicleController extends Controller
             $validatData['image'] = $image_path;
         }        
         $vehicleData = $this->vehicleRepository->store($validatData);
+        ActivityLog::log('create','Vehicle','تمت إضافة مركبه جديده');
         return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة المركبة بنجاح');
         }
     catch (Exception $e) {
-        return WebResponseClass::sendError($e);
+        return WebResponseClass::sendExceptionError($e);
     }
 }
     
@@ -88,7 +90,7 @@ class VehicleController extends Controller
                 ->with('openModalEdit',true)
                 ->with('vehicle', $vehicle);
         } catch (Exception $e) {
-            return WebResponseClass::sendError($e);
+            return WebResponseClass::sendExceptionError($e);
         }
     }
 
@@ -123,10 +125,11 @@ class VehicleController extends Controller
                 $data['image'] = $image_path;
             }
             $this->vehicleRepository->update($data,$id);
+            ActivityLog::log('update','Vehicle','تم تحديث مركبة ');
             return WebResponseClass::sendResponse( 'تم التحديث!', 'تم تحديث بيانات المركبة بنجاح');
 
         } catch (Exception $e) {
-            return WebResponseClass::sendError($e);
+            return WebResponseClass::sendExceptionError($e);
         }
     }
 

@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use Exception;
 use Illuminate\Http\Request;
+use App\Services\ActivityLog;
 use Illuminate\Validation\Rule;
 use App\Classes\WebResponseClass;
+use App\Repositories\DriverRepository;
 use Illuminate\Support\Facades\Validator;
 use App\Repositories\SpecialOrderRepository;
 
 class SpecialOrderController extends Controller
 {
-    public function __construct(private SpecialOrderRepository $specialOrderRepository)
+    public function __construct(private SpecialOrderRepository $specialOrderRepository, private DriverRepository $driverRepository)
     {
         
     }
@@ -51,13 +53,21 @@ class SpecialOrderController extends Controller
             return WebResponseClass::sendValidationError($validator);
         }
         try {
+            $driver=$this->driverRepository->getById($request->driver_id);
+            if(!$driver->is_online || !$driver->is_active){
+                return WebResponseClass::sendError('السائق غير متاح او غير متصل');
+            }
             $validatData = $validator->validated();
             $validatData['created_by'] = auth()->user()->name;
             $validatData['status'] = 'paused';
             $this->specialOrderRepository->store($validatData);
+            ActivityLog::log('create','SpecialOrder','تم إنشاء رحلة جديده');
+            // send notification to driver
+
+            //
             return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة الرحلة بنجاح');
         } catch (Exception $e) {
-            return WebResponseClass::sendError($e);
+            return WebResponseClass::sendExceptionError($e);
         }
     }
 

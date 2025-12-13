@@ -50,4 +50,9 @@ class UserRepository implements RepositoriesInterface
         return User::where('type','admin')->get();
     }
 
+     public function getUsers()
+    {
+        return User::where('type','user')->paginate(10);
+    }
+
 }

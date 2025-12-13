@@ -52,17 +52,30 @@
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
               من   <span class="text-brand-600 dark:text-brand-400">*</span></label>
-            <input type="text" placeholder="مثال: المنصورة - سوق القات" name="customer_phone" required
+            <input type="text" placeholder="مثال: المنصورة - سوق القات" name="start_address" required
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
           </div>
 
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
               الى<span class="text-brand-600 dark:text-brand-400">*</span></label>
-            <input type="text" placeholder="مثال: المعلا - اسكريم المعلا" name="customer_phone" required
+            <input type="text" placeholder="مثال: المعلا - اسكريم المعلا" name="end_address" required
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
           </div>
+
+          <div class="col-span-1">
+            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              الوصف</label>
+            <textarea type="text" placeholder="الوصف" name="description"
+              class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white"></textarea>
+          </div>
+
+          <div class="col-span-1">
+            @livewire('online-drivers')
+          </div>
+          
         </div>
+        
 
         <div class="flex items-center justify-end w-full gap-3 mt-6">
           <button @click="isModalOpen = false" type="button"

@@ -17,12 +17,12 @@ class WebResponseClass
             ->with('success_buttonText', $buttonText);
     }
 
-    public static function sendError($e,$title='حدث خطأ!',$buttonText='حسناً')
+    public static function sendError($message,$title='حدث خطأ!',$buttonText='حسناً')
     {
         return redirect()->back()
             ->with('error', true)
             ->with('error_title', $title)
-            ->with('error_message', $e->getMessage())
+            ->with('error_message', $message)
             ->with('error_buttonText', $buttonText);
     }
 
@@ -34,5 +34,14 @@ class WebResponseClass
                     ->with('error_title', $title)
                     ->with('error_message', $validator->errors()->first())
                     ->with('error_buttonText', $buttonText);
+    }
+
+    public static function sendExceptionError($e,$title='حدث خطأ!',$buttonText='حسناً')
+    {
+        return redirect()->back()
+            ->with('error', true)
+            ->with('error_title', $title)
+            ->with('error_message', $e->getMessage())
+            ->with('error_buttonText', $buttonText);
     }
 }

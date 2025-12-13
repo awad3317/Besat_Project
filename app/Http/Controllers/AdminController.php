@@ -59,7 +59,7 @@ class AdminController extends Controller
             $admin=$this->userRepository->store($validatData);
             return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة المستخدم بنجاح');
         } catch (Exception $e) {
-            return WebResponseClass::sendError($e);
+            return WebResponseClass::sendExceptionError($e);
         }
     }
 

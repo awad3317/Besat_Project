@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\WebResponseClass;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -99,11 +100,7 @@ class vehiclePricingController extends Controller
             ->with('success_buttonText', 'حسناً');
         
         } catch (Exception $e) {
-            return redirect()->back()
-            ->with('error', true)
-            ->with('error_title', 'حدث خطأ!')
-            ->with('error_message', $e->getMessage())
-            ->with('error_buttonText', 'حسناً');
+            return WebResponseClass::sendExceptionError($e);
         }
 
     }
@@ -175,11 +172,7 @@ class vehiclePricingController extends Controller
                 ->with('success_buttonText', 'حسناً');
 
         } catch (Exception $e) {
-            return redirect()->back()
-                ->with('error', true)
-                ->with('error_title', 'حدث خطأ!')
-                ->with('error_message', 'فشل في تحديث السعر ')
-                ->with('error_buttonText', 'حسناً');
+            return WebResponseClass::sendExceptionError($e);
         }
     }
 

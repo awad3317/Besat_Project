@@ -16,7 +16,7 @@ class ActivityLogRepository implements RepositoriesInterface
     }
     public function index()
     {
-        return activity_log::paginate(10);
+        return activity_log::latest()->paginate(10);
     }
 
     public function getById($id): activity_log

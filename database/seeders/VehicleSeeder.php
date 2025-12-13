@@ -15,25 +15,24 @@ class VehicleSeeder extends Seeder
     {
         $vehicles = [
             [
-                'name' => 'دباب',
+                'type' => 'دباب',
                 'description' =>'دباب مريح وسهل الركوب',
-                'max_passengers' => 2
+                'max_passengers' => 2,
+                'min_price'=>200
             ],
             [
-                'name' => 'فوكسي',
+                'type' => 'فوكسي',
                 'description' => 'سيارة واسعة مناسبة للعائلات والطرق الوعرة',
-                'max_passengers' => 7
+                'max_passengers' => 7,
+                 'min_price'=>200
             ],
             [
-                'name' => ' تاكسي ',
+                'type' => ' تاكسي ',
                 'description' => 'مركبة كبيرة مناسبة لنقل البضائع والمجموعات',
-                'max_passengers' => 6
+                'max_passengers' => 6,
+                 'min_price'=>200
             ],
-            [
-                'name' => 'سيارة VIP',
-                'description' => 'سيارة موفرة للوقود مناسبة للرحلات القصيرة',
-                'max_passengers' => 4
-            ],
+           
         ];
         foreach ($vehicles as $vehicle) {
             Vehicle::create($vehicle);
