@@ -10,7 +10,7 @@ class OnlineDrivers extends Component
 {
     #[Computed]
     public function getOnlineDrivers()  {
-        return Driver::where('is_online',false)->where('is_active',true)->get();
+        return Driver::where('is_online',true)->where('is_active',true)->get();
     }
     public function render()
     {

@@ -23,7 +23,12 @@ class SpecialOrderController extends Controller
     public function index()
     {
         $orders=$this->specialOrderRepository->index();
-        return view('pages.specialOrder.index', compact('orders'));
+        $cancelledOrders = $this->specialOrderRepository->cancelledOrders()->count();
+        $completedOrders = $this->specialOrderRepository->cancelledOrders()->count();
+        $in_progressOrders = $this->specialOrderRepository->cancelledOrders()->count();
+        return view('pages.specialOrder.index', compact(
+            'orders',
+            'cancelledOrders','completedOrders','in_progressOrders'));
     }
 
     /**

@@ -39,5 +39,16 @@ class SpecialOrderRepository implements RepositoriesInterface
     {
         return SpecialOrder::where('id', $id)->delete() > 0;
     }
+    public function cancelledOrders(){
+        return SpecialOrder::where('status', 'cancelled')->get();
+    }
+    public function completedOrders(){
+        return SpecialOrder::where('status', 'completed')->get();
+    }
+    public function in_progressOrders(){
+        return SpecialOrder::where('status', '!=','completed')->where('status','!=','cancelled')->get();
+    }
+
+
 
 }
