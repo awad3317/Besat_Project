@@ -19,15 +19,14 @@
         <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              النوع</label>
+              النوع<span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
             <input type="text" placeholder="مثال: فوكسي" name="type" required
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
           </div>
 
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              عدد الأشخاص
-            </label>
+              عدد الأشخاص <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
             <input type="number" placeholder="مثال: 4" min="1" max="100" name="max_passengers" required
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
           </div>
@@ -35,7 +34,7 @@
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
               أقل سعر للمركبة ({{ config('app.currency_symbol', 'ر.ي') }})
-            </label>
+            <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
             <input type="number" step="0.01" min="0" placeholder="مثال: 25.00" name="min_price"
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
             <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">

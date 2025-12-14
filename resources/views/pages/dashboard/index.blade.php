@@ -68,7 +68,7 @@
       </div>
       <div class="mt-3 w-full">
         <span class="text-xs text-gray-500 dark:text-gray-400">المستخدمين</span>
-        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">100</h4>
+        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $totalUsers }}</h4>
       </div>
     </div>
 
@@ -87,7 +87,7 @@
       </div>
       <div class="mt-3 w-full">
         <span class="text-xs text-gray-500 dark:text-gray-400">السائقين</span>
-        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">50</h4>
+        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $totalDrivers }}</h4>
       </div>
     </div>
 
@@ -99,8 +99,8 @@
         </svg>
       </div>
       <div class="mt-3 w-full">
-        <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات</span>
-        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">1,250</h4>
+        <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات العامه</span>
+        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $totalRequests }}</h4>
       </div>
     </div>
 
@@ -115,8 +115,8 @@
         </svg>
       </div>
       <div class="mt-3 w-full">
-        <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات الحالية</span>
-        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">45</h4>
+        <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات الخاصة</span>
+        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{$totalSpecialOrders}}</h4>
       </div>
     </div>
   </div>
@@ -129,7 +129,7 @@
         class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 h-full">
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-            الطلبات خلال <span class="text-warning-500 dark:text-warning/90"> سنة</span>
+            الطلبات العامه خلال <span class="text-warning-500 dark:text-warning/90"> سنة</span>
           </h3>
         </div>
 

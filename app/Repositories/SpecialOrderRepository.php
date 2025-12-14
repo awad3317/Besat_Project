@@ -14,7 +14,7 @@ class SpecialOrderRepository implements RepositoriesInterface
     {
         //
     }
-    public function index(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function index()
     {
         return SpecialOrder::paginate(10);
     }

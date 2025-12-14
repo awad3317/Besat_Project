@@ -3,17 +3,38 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\UserRepository;
+use App\Repositories\DriverRepository;
+use App\Repositories\RequestRepository;
+use App\Repositories\SpecialOrderRepository;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        private UserRepository $userRepository,
+        private DriverRepository $driverRepository, 
+        private SpecialOrderRepository $specialOrderRepository,
+        private RequestRepository $requestRepository
+        )
+    {
+        
+    }
     
     public function index()
     {
         $salesData = $this->getRealSalesData();
+        $totalUsers=$this->userRepository->getUsers()->count();
+        $totalDrivers=$this->driverRepository->index()->count();
+        $totalSpecialOrders = $this->specialOrderRepository->index()->count();
+        $totalRequests= $this->requestRepository->index()->count();
         
         return view('pages.dashboard.index', [
             'monthlySales' => $salesData,
-            'chartTitle' => 'المبيعات الشهرية الحقيقية'
+            'chartTitle' => 'المبيعات الشهرية الحقيقية',
+            'totalUsers' => $totalUsers,
+            'totalDrivers' => $totalDrivers,
+            'totalSpecialOrders' => $totalSpecialOrders,
+            'totalRequests' => $totalRequests
         ]);
         // return view('');
     }

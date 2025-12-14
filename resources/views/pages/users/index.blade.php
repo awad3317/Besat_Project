@@ -114,12 +114,12 @@
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
-                                            <div x-data="{ switcherToggle: {{$user->is_banned}} }">
-                                                <label for="toggle2"
+                                            <div x-data="{ switcherToggle: {{ $user->is_banned ? 'true' : 'false' }} }">
+                                                <label for="'toggle_{{ $user->id }}'"
                                                     class="flex cursor-pointer items-center gap-3 text-sm font-medium text-gray-700 select-none dark:text-gray-400">
                                                     <div class="relative">
-                                                        <input type="checkbox" id="toggle2" class="sr-only"
-                                                            @change="switcherToggle = !switcherToggle" />
+                                                        <input type="checkbox" :id="'toggle_{{ $user->id }}'" class="sr-only"
+                                                            @change="toggleBan({{ $user->id }}, switcherToggle)" />
                                                         <div class="block h-6 w-11 rounded-full"
                                                             :class="switcherToggle ?  'bg-error-500' : 'bg-success-500 '"></div>
                                                         <div :class="switcherToggle ? 'translate-x-0' : 'translate-x-full'"

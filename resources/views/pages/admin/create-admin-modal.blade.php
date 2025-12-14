@@ -19,15 +19,14 @@
         <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              الإسم</label>
+              الإسم<span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
             <input type="text" placeholder="مثال: أحمد شرجبي" name="name" required
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
           </div>
 
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              رقم الجوال 
-            </label>
+              رقم الجوال <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
             <input type="text" placeholder="مثال: 967780236551" name="phone" required
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
             <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
@@ -37,8 +36,7 @@
 
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-              كلمة المرور
-            </label>
+              كلمة المرور<span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
             <input type="password" autocomplete="new-password"  placeholder="مثال: ***" name="password"
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
           </div>

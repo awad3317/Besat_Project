@@ -7,7 +7,7 @@ use App\Repositories\UserRepository;
 
 class UserController extends Controller
 {
-     public function __construct(private UserRepository $userRepository)
+    public function __construct(private UserRepository $userRepository)
     {
         
     }

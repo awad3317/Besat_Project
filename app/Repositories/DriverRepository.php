@@ -14,7 +14,7 @@ class DriverRepository implements RepositoriesInterface
     {
         //
     }
-    public function index(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function index()
     {
         return Driver::paginate(10);
     }

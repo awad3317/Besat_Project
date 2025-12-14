@@ -14,7 +14,7 @@ class RequestRepository implements RepositoriesInterface
     {
         //
     }
-    public function index(): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function index()
     {
         return Request::paginate(10);
     }
