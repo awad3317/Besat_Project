@@ -45,14 +45,6 @@
                         </div>
                         <div class="col-span-1">
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                كلمة المرور
-                            </label>
-                            <input type="password" placeholder="مثال: ****" name="password"
-                                class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
-                        </div>
-
-                        <div class="col-span-1">
-                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                 رقم الواتساب
                             </label>
                             <input placeholder="مثال: 967780236552" rows="4" name="whatsapp_number"

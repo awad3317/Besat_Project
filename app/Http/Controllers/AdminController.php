@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use Illuminate\Http\Request;
+use App\Services\ActivityLog;
 use App\Services\ImageService;
 use Illuminate\Validation\Rule;
 use App\Classes\WebResponseClass;
@@ -61,6 +62,7 @@ class AdminController extends Controller
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
         }
+        
     }
 
     /**
@@ -91,7 +93,32 @@ class AdminController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name'=>['required','string'],
+            'phone'=>['required',Rule::unique('users','phone')->ignore($id)],
+            'whatsapp_number'=>['nullable'],
+            'image'=>['nullable','image','max:2048']
+        ]);
+
+        if ($validator->fails()) {
+            return WebResponseClass::sendValidationError($validator);
+        }
+        try {
+            $admin = $this->userRepository->getById($id);
+            $validatData = $validator->validated();
+            if ($request->hasFile('image')) {
+                if ($admin->image) {
+                    $this->imageService->deleteImage($admin->image);
+                }
+                $image_path=$this->imageService->saveImage($request->file('image'),'users');
+                $validatData['image'] = $image_path;
+            }
+            $this->userRepository->update($validatData,$id);
+            ActivityLog::log('update','User','تم تحديث بيانات المسئول ');
+            return WebResponseClass::sendResponse( 'تم التحديث!', 'تم تحديث بيانات المسئول بنجاح');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 
     /**

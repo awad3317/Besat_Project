@@ -21,10 +21,11 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('start_address');
             $table->string('end_address');
+            $table->integer('price')->nullable();
             $table->foreignId('driver_id')->nullable()->constrained('drivers')->onDelete('set null');
             $table->enum('status', ['pending', 'searching_driver', 'paused', 'in_progress', 'completed', 'cancelled'])->default('pending');
             $table->text('cancellation_reason')->nullable();
-            $table->string('created_by')->default('app');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('cancelled_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });

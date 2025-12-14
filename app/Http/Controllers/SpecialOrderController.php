@@ -44,6 +44,7 @@ class SpecialOrderController extends Controller
             'customer_phone'=>['required', 'string', 'max:20'],
             'customer_whatsapp' => ['nullable', 'string', 'max:20'],
             'title' => ['required', 'string', 'max:255'],
+            'price' => ['required', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
             'start_address'=>['required'],
             'end_address' => ['required'],
@@ -58,8 +59,8 @@ class SpecialOrderController extends Controller
                 return WebResponseClass::sendError('السائق غير متاح او غير متصل');
             }
             $validatData = $validator->validated();
-            $validatData['created_by'] = auth()->user()->name;
-            $validatData['status'] = 'paused';
+            $validatData['created_by'] = auth()->user()->id;
+            $validatData['status'] = 'searching_driver';
             $this->specialOrderRepository->store($validatData);
             ActivityLog::log('create','SpecialOrder','تم إنشاء رحلة جديده');
             // send notification to driver

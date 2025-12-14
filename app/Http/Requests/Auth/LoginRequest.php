@@ -48,12 +48,12 @@ class LoginRequest extends FormRequest
                 'phone' => 'البيانات المدخلة غير صحيحة',
             ]);
         }
-        if(Auth::user()->type == 'user'){
+        if(Auth::user()->type == 'user' || Auth::user()->is_banned == true){
             Auth::logout();
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([ 
-                'phone' => 'ليس لديك صلاحية الدخول من خلال هذا الحساب',
+                'phone' => 'ليس لديك صلاحية الدخول من خلال هذا الحساب او ان الحساب محظور',
             ]);
         }
 
