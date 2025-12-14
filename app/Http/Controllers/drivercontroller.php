@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Repositories\DriverRepository;
 
-class drivercontroller extends Controller
+class DriverController extends Controller
 {
+    public function __construct(private DriverRepository $driverRepository)
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('pages.drivers.index');
+        $drivers=$this->driverRepository->index();
+        return view('pages.drivers.index',compact('drivers'));
     }
 
     /**
@@ -35,7 +41,8 @@ class drivercontroller extends Controller
      */
     public function show($id)
     {
-        return view('pages.drivers.show');
+        $driver=$this->driverRepository->getById($id);
+        return view('pages.drivers.show',compact('driver'));
     }
 
     /**

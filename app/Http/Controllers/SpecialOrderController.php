@@ -65,7 +65,7 @@ class SpecialOrderController extends Controller
             }
             $validatData = $validator->validated();
             $validatData['created_by'] = auth()->user()->id;
-            $validatData['status'] = 'searching_driver';
+            $validatData['status'] = 'paused';
             $this->specialOrderRepository->store($validatData);
             ActivityLog::log('create','SpecialOrder','تم إنشاء رحلة جديده');
             // send notification to driver

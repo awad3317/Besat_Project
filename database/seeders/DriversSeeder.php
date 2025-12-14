@@ -29,9 +29,6 @@ class DriversSeeder extends Seeder
                 'is_active' => true,
                 'is_online' => true,
                 'device_token' => 'device_token_001',
-                // يمكنك إضافة صور افتراضية
-                'vehicle_image' => 'vehicles/default.jpg',
-                'driver_image' => 'drivers/default.jpg',
             ],
             [
                 'vehicle_id' => 1,
@@ -45,8 +42,6 @@ class DriversSeeder extends Seeder
                 'is_active' => true,
                 'is_online' => false,
                 'device_token' => 'device_token_002',
-                'vehicle_image' => 'vehicles/default.jpg',
-                'driver_image' => 'drivers/default.jpg',
             ],
             [
                 'vehicle_id' => 1,
@@ -60,8 +55,6 @@ class DriversSeeder extends Seeder
                 'is_active' => true,
                 'is_online' => true,
                 'device_token' => 'device_token_003',
-                'vehicle_image' => 'vehicles/default.jpg',
-                'driver_image' => 'drivers/default.jpg',
             ],
             [
                 'vehicle_id' => 1,
@@ -75,8 +68,6 @@ class DriversSeeder extends Seeder
                 'is_active' => true,
                 'is_online' => true,
                 'device_token' => 'device_token_004',
-                'vehicle_image' => 'vehicles/default.jpg',
-                'driver_image' => 'drivers/default.jpg',
             ],
             [
                 'vehicle_id' => 1,
@@ -90,8 +81,6 @@ class DriversSeeder extends Seeder
                 'is_active' => false, // سائق غير نشط
                 'is_online' => false,
                 'device_token' => 'device_token_005',
-                'vehicle_image' => 'vehicles/default.jpg',
-                'driver_image' => 'drivers/default.jpg',
             ],
         ];
 

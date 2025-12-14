@@ -12,7 +12,7 @@ class Driver extends Model
     use HasFactory, HasApiTokens;
     protected $fillable = [
         'vehicle_id', 'name', 'phone', 'vehicle_image', 'driver_image',
-        'city', 'plate_number', 'whatsapp_number',
+        'city', 'plate_number', 'whatsapp_number','is_banned',
         'device_token', 'latitude', 'longitude', 'is_active', 'is_online'
     ];
 
