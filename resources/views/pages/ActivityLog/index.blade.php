@@ -101,7 +101,7 @@
                             <td class="py-3">
                                 <div class="flex items-center justify-center">
                                     <div class="flex flex-col items-center">
-                                        <p class="text-gray-500 text-theme-sm text-brand-600 dark:text-brand-400 font-medium">
+                                        <p class="text-gray-500 text-theme-sm text-warning-500 dark:text-brand-400 font-medium">
                                             {{ $log->created_at->format('h:i A') }}
                                         </p>
                                         <p class="text-gray-400 text-xs dark:text-gray-500">
