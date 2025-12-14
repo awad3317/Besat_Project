@@ -118,7 +118,7 @@
                             </li>
                         </ul>
 
-                        <a href="#"
+                        <a href="{{ route('notifications.index') }}"
                             class="text-theme-sm shadow-theme-xs mt-3 flex justify-center rounded-lg border border-gray-300 bg-white p-3 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
                             عرض جميع الإشعارات
                         </a>
