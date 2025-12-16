@@ -36,7 +36,7 @@ class SpecialOrderController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.specialOrder.create');
     }
 
     /**

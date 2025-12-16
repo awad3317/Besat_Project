@@ -9,7 +9,6 @@ use App\Classes\ApiResponseClass;
 use App\Services\FirebaseService;
 use App\Http\Controllers\Controller;
 use App\Repositories\RequestRepository;
-use App\Repositories\ServiceRepository;
 use App\Services\DriverLocationService;
 use App\Services\PriceCalculationService;
 use App\Repositories\AppSettingRepository;
@@ -20,7 +19,6 @@ class RequestController extends Controller
 {
     public function __construct(
         private RequestRepository $requestRepository, 
-        private ServiceRepository $serviceRepository,
         private PriceCalculationService $priceCalculationService,
         private DiscountCodeRepository $discountCodeRepository,
         private DriverLocationService $driverLocationService,
