@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Repositories\DriverRepository;
+use App\Services\RatingService;
 
 class DriverController extends Controller
 {
-    public function __construct(private DriverRepository $driverRepository)
+    public function __construct(private DriverRepository $driverRepository, private RatingService $ratingService)
     {
         
     }
@@ -17,7 +18,9 @@ class DriverController extends Controller
     public function index()
     {
         $drivers=$this->driverRepository->index();
-        return view('pages.drivers.index',compact('drivers'));
+        $onlineDrivers=$this->driverRepository->getIsOnline()->count();
+        $bannedDrivers=$this->driverRepository->getIsBanned()->count();
+        return view('pages.drivers.index',compact('drivers','onlineDrivers','bannedDrivers'));
     }
 
     /**
@@ -42,7 +45,21 @@ class DriverController extends Controller
     public function show($id)
     {
         $driver=$this->driverRepository->getById($id);
-        return view('pages.drivers.show',compact('driver'));
+        $ratings = $driver->ratings;
+        $ratingsCount = $ratings->count();
+        if ($ratingsCount > 0) {
+        $averageRating = $ratings->avg('rating_value');
+        $fullStars = floor($averageRating);
+        $hasHalfStar = ($averageRating - $fullStars) >= 0.5;
+    } else {
+        $averageRating = 0;
+        $fullStars = 0;
+        $hasHalfStar = false;
+    }
+        return view('pages.drivers.show',compact('driver','averageRating',
+        'ratingsCount',
+        'fullStars',
+        'hasHalfStar'));
     }
 
     /**

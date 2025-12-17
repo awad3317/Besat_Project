@@ -300,6 +300,7 @@
                              || window.location.href.includes('{{ route('systems.index') }}') 
                              || window.location.href.includes('{{ route('admins.index') }}')
                              || window.location.href.includes('{{ route('log.index') }}')
+                             || window.location.href.includes('{{ route('ads.index') }}')
                              ?  'menu-item-icon-active' :'menu-item-icon-inactive'"
                                 width="24" height="24" viewBox="0 0 20 20" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -349,6 +350,13 @@
                                         :class="window.location.href.includes('{{ route('log.index') }}') ?
                                             'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
                                          سجل النشاطات
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('ads.index') }}" class="menu-dropdown-item group"
+                                        :class="window.location.href.includes('{{ route('ads.index') }}') ?
+                                            'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
+                                         الإعلانات
                                     </a>
                                 </li>
                             </ul>

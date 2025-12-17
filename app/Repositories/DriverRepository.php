@@ -21,7 +21,7 @@ class DriverRepository implements RepositoriesInterface
 
     public function getById($id): Driver
     {
-        return Driver::findOrFail($id);
+        return Driver::with(['vehicle','requests','ratings'])->findOrFail($id);
     }
 
     public function store(array $data): Driver
@@ -44,5 +44,16 @@ class DriverRepository implements RepositoriesInterface
     {
         return Driver::where('phone', $phone)->first();
     }
+
+    public function getIsOnline()
+    {
+        return Driver::where('is_online', true)->get();
+    }
+
+    public function getIsBanned()
+    {
+        return Driver::where('is_online', true)->get();
+    }
+
 
 }

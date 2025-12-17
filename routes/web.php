@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('notifications',NotificationController::class);
     Route::resource('admins',AdminController::class)->middleware(['superAdmin']);
     Route::resource('log',ActivityLogController::class)->only(['index']);
+    Route::resource('ads',AdsController::class)->only(['index']);
     Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');
 
