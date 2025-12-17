@@ -45,7 +45,7 @@
             </div>
             <div class="mt-3 w-full">
                 <span class="text-xs text-gray-500 dark:text-gray-400">المحظورين</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{$bannedDrivers}}</h4>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">2</h4>
             </div>
         </div>
 
