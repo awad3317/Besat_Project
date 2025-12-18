@@ -400,9 +400,10 @@
         <!-- ===== Content Area End ===== -->
     </div>
     <!-- ===== Page Wrapper End ===== -->
-    @yield('script')
-    <script defer src="{{ asset('tailadmin/build/bundle.js') }}"></script>
     @livewireScripts
+    @yield('script')
+    
+    
     <script>
         function autoAssignSystem() {
             return {
