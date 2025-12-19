@@ -1,8 +1,19 @@
 <div>
+    
     <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
-        <div wire:click="filterByAll"
-            class="flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($activeFilter =='all')border border-brand-500 dark:border-brand-500 @endif">
+        
+        <div wire:click.debounce.150ms="applyFilter('all')"
+             wire:loading.class="opacity-50"
+             wire:target="applyFilter"
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($activeFilter =='all')border border-brand-500 dark:border-brand-500 @endif">
+            
+            <div wire:loading wire:target="applyFilter('all')" 
+                 class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
+                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+            </div>
+            
             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+                
                 <svg fill="#dc6803" height="30" width="30" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 438.775 438.775" xml:space="preserve">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -16,12 +27,22 @@
             </div>
             <div class="mt-3 w-full">
                 <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي السائقين</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $totalDrivers }}</h4>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                    {{ $this->stats['total'] ?? 0 }}
+                </h4>
             </div>
         </div>
 
-        <div wire:click="filterByBanned"
-            class="flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($activeFilter =='banned') border border-brand-500 dark:border-brand-500 @endif">
+        
+        <div wire:click.debounce.150ms="applyFilter('banned')"
+             wire:loading.class="opacity-50"
+             wire:target="applyFilter"
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($activeFilter =='banned') border border-brand-500 dark:border-brand-500 @endif">
+            <div wire:loading wire:target="applyFilter('banned')" 
+                 class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
+                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+            </div>
+            
             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
                 <svg width="30" height="30" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" fill="#dc6803" stroke="#dc6803">
@@ -41,13 +62,23 @@
             </div>
             <div class="mt-3 w-full">
                 <span class="text-xs text-gray-500 dark:text-gray-400">المحظورين</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $bannedDrivers }}</h4>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                    {{ $this->stats['banned'] ?? 0 }}
+                </h4>
             </div>
         </div>
 
-        <div wire:click="filterByConnected"
-            class="flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($activeFilter =='connected') border border-brand-500 dark:border-brand-500 @endif">
+        <div wire:click.debounce.150ms="applyFilter('connected')"
+             wire:loading.class="opacity-50"
+             wire:target="applyFilter"
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($activeFilter =='connected') border border-brand-500 dark:border-brand-500 @endif">
+            <div wire:loading wire:target="applyFilter('connected')" 
+                 class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
+                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+            </div>
+            
             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+        
                 <svg width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#dc6803">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -64,18 +95,27 @@
             </div>
             <div class="mt-3 w-full">
                 <span class="text-xs text-gray-500 dark:text-gray-400">المتصلين</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $connectedDrivers }}</h4>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                    {{ $this->stats['connected'] ?? 0 }}
+                </h4>
             </div>
         </div>
 
-        <div wire:click="filterByActive"
-            class="flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($activeFilter =='active') border border-brand-500 dark:border-brand-500 @endif">
+        <div wire:click.debounce.150ms="applyFilter('active')"
+             wire:loading.class="opacity-50"
+             wire:target="applyFilter"
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($activeFilter =='active') border border-brand-500 dark:border-brand-500 @endif">
+            <div wire:loading wire:target="applyFilter('active')" 
+                 class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
+                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+            </div>
+            
             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
                 <svg fill="#dc6803" height="30" width="30" version="1.1"
                     xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" xml:space="preserve" stroke="#dc6803"
                     stroke-width="0.00024000000000000003">
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                     <g id="SVGRepo_iconCarrier">
                         <g id="active">
@@ -86,32 +126,43 @@
             </div>
             <div class="mt-3 w-full">
                 <span class="text-xs text-gray-500 dark:text-gray-400">المتاحين</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $activeDrivers }}</h4>
+                
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                    {{ $this->stats['active'] ?? 0 }}
+                </h4>
             </div>
         </div>
     </div>
     <div class="space-y-5 sm:space-y-6">
         <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="px-5 py-4 sm:px-6 sm:py-5">
-
                 <div class="flex flex-col sm:flex-row gap-4 items-end">
-
-                    <!-- حقل البحث -->
-                    <div class="flex-1 min-w-[250px]">
-                        <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300 text-right">
-                            البحث
-                        </label>
-                        <input wire:model.live.blur="search" type="text"
-                            class="shadow-theme-xs h-10 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 text-right"
-                             placeholder="اكتب ثم اضغط Tab أو خارج الحقل" />
+    <div class="flex-1 min-w-[250px]">
+        <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300 text-right">
+            البحث
+        </label>
+        <div class="relative">
+            <input wire:model.live="search"
+                   type="text"
+                   class="shadow-theme-xs h-10 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 text-right pr-32"
+                   placeholder="ابحث بالاسم أو الهاتف..."
+                   wire:keydown.enter="applySearch">
+            <div class="absolute left-0 top-0 bottom-0 flex items-center px-3">
+                <div wire:loading wire:target="search" class="mt-2">
+                    <div class="h-full w-full rounded overflow-hidden">
+                        <div class="h-5 w-5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
                     </div>
-                </div>
+                </div>  
+            </div>
+        </div>
+    </div>
+</div>
             </div>
 
             <div class="p-5 border-t border-gray-100 dark:border-gray-800 sm:p-6">
-                <!-- ====== Table Six Start -->
-                <div
-                    class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                <div wire:loading.class="opacity-50" 
+                     wire:target="search,applyFilter,toggleBan"
+                     class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                     <div class="max-w-full overflow-x-auto">
                         <table class="min-w-full">
                             <!-- table header start -->
@@ -176,27 +227,36 @@
                                 </tr>
                             </thead>
                             <!-- table header end -->
+                            
                             <!-- table body start -->
                             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                                @forelse ($drivers as $driver)
-                                    <tr>
+                                @forelse ($this->drivers as $driver)
+                                    <tr wire:key="driver-{{ $driver->id }}">
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center">
                                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                    {{ $loop->iteration }}
+                                                    {{ ($this->drivers->currentPage() - 1) * $this->drivers->perPage() + $loop->iteration }}
                                                 </p>
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center">
-                                                <div class="flex items-center gap-3" x-data="{ driverStatus: true }">
+                                                <div class="flex items-center gap-3">
                                                     <div class="relative mx-2 h-10 w-10 flex-shrink-0">
                                                         @if ($driver->driver_image)
-                                                            <img src="{{ url("$driver->driver_image") }}" alt="User"
+                                                            <img src="{{ url("$driver->driver_image") }}" 
+                                                                alt="User"
+                                                                loading="lazy"
+                                                                width="40"
+                                                                height="40"
                                                                 class="h-full w-full rounded-full object-cover" />
                                                         @else
                                                             <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}"
-                                                                alt="User" class="h-full w-full rounded-full object-cover" />
+                                                                alt="User" 
+                                                                loading="lazy"
+                                                                width="40"
+                                                                height="40"
+                                                                class="h-full w-full rounded-full object-cover" />
                                                         @endif
                                                         @if ($driver->is_online)
                                                             <span
@@ -208,8 +268,7 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <span
-                                                        class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                                    <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                                         {{ $driver->name }}
                                                     </span>
                                                     <span class="block text-gray-500 text-theme-xs dark:text-gray-400">
@@ -232,33 +291,36 @@
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center">
                                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                    {{ $driver->vehicle->type }}
+                                                    {{ $driver->vehicle->type ?? 'لا يوجد' }}
                                                 </p>
                                             </div>
                                         </td>
                                         <td class="py-3">
                                             <div class="flex items-center">
                                                 @if ($driver->is_active)
-                                                    <p
-                                                        class="rounded-full px-2 py-0.5 text-theme-xs font-medium bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500">
+                                                    <p class="rounded-full px-2 py-0.5 text-theme-xs font-medium bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500">
                                                         متاح
                                                     </p>
                                                 @else
-                                                    <p
-                                                        class="rounded-full px-2 py-0.5 text-theme-xs font-medium bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500">
+                                                    <p class="rounded-full px-2 py-0.5 text-theme-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                                                         غير متاح
                                                     </p>
                                                 @endif
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
-                                            <div x-data="{ isBanned: {{ $driver->is_banned ? 'true' : 'false' }} }">
+                                            <div x-data="{ isBanned: {{ $driver->is_banned ? 'true' : 'false' }} }"
+                                                 wire:key="toggle-{{ $driver->id }}-{{ $driver->is_banned }}">
                                                 <label :for="'toggle_{{ $driver->id }}'"
                                                     class="flex cursor-pointer items-center gap-3 text-sm font-medium text-gray-700 select-none dark:text-gray-400">
                                                     <div class="relative">
-                                                        <input type="checkbox" :id="'toggle_{{ $driver->id }}'"
-                                                            class="sr-only" x-model="isBanned"
-                                                            @change="$wire.toggleBan({{ $driver->id }})" />
+                                                        <input type="checkbox" 
+                                                               :id="'toggle_{{ $driver->id }}'"
+                                                               class="sr-only" 
+                                                               x-model="isBanned"
+                                                               @change="$wire.toggleBan({{ $driver->id }})"
+                                                                />
+                                                        
                                                         <div class="block h-6 w-11 rounded-full"
                                                             :class="isBanned ? 'bg-success-500' : 'bg-error-500'">
                                                         </div>
@@ -272,14 +334,14 @@
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center">
                                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                    {{ $driver->requests->count() }}
+                                                    {{ $driver->requests_count ?? $driver->requests->count() }}
                                                 </p>
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center justify-center">
-                                                <button onclick="window.location.href='{{ route('drivers.show', 1) }}'"
-                                                    class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                                                <a href="{{ route('drivers.show', $driver->id) }}"
+                                                   class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -287,16 +349,15 @@
                                                             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
                                                     تفاصيل
-                                                </button>
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="p-2">
+                                        <td colspan="8" class="p-8 text-center">
                                             <div class="flex flex-col items-center justify-center text-center">
-                                                <div
-                                                    class="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
+                                                <div class="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
                                                     <svg fill="#dc6803" height="100px" width="100px" version="1.1"
                                                         id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                                         xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -318,72 +379,58 @@
                                         </td>
                                     </tr>
                                 @endforelse
-
                             </tbody>
-                        </table>
-                        @if($drivers->hasPages())
+                        </table>    
+                    
+                        @if($this->drivers->hasPages())
                             <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                                 <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
-
-                                    <div class="flex items-center space-x-1 rtl:space-x-reverse">
-                                        @if($drivers->onFirstPage())
-                                            <button disabled
-                                                class="px-3 py-1.5 text-sm font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 dark:text-gray-600 rounded-md cursor-not-allowed">
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        عرض {{ $this->drivers->firstItem() ?? 0 }} إلى {{ $this->drivers->lastItem() ?? 0 }} من {{ $this->drivers->total() }} عنصر
+                                    </div>
+                                    
+                                    <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                                        @if(!$this->drivers->onFirstPage())
+                                            <button wire:click="previousPage"
+                                                    wire:loading.attr="disabled"
+                                                    class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                    :disabled="$wire.page == 1">
                                                 السابق
                                             </button>
-                                        @else
-                                            <a href="{{ $drivers->previousPageUrl() }}"
-                                                class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors hover:text-brand-400 hover:border-brand-400">
-                                                السابق
-                                            </a>
                                         @endif
-
+                                        
                                         @php
-                                            $current = $drivers->currentPage();
-                                            $last = $drivers->lastPage();
+                                            $current = $this->drivers->currentPage();
+                                            $last = $this->drivers->lastPage();
                                             $start = max(1, $current - 2);
                                             $end = min($last, $current + 2);
-
+                                            
                                             if ($end - $start < 4) {
                                                 $start = max(1, $end - 4);
                                                 $end = min($last, $start + 4);
                                             }
                                         @endphp
-
+                                        
                                         @if($start > 1)
-                                            <span class="px-3 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">
-                                                ...
-                                            </span>
+                                            <span class="px-3 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">...</span>
                                         @endif
-
+                                        
                                         @for($page = $start; $page <= $end; $page++)
-                                            @if($page == $drivers->currentPage())
-                                                <span
-                                                    class="p-3 py-1.5 text-sm font-medium bg-brand-500 dark:bg-brand-500 rounded-md">
-                                                    {{ $page }}
-                                                </span>
-                                            @else
-                                                <a href="{{ $drivers->url($page) }}"
-                                                    class="p-3 py-1.5 text-sm font-medium text-brand-400 dark:text-brand-400 bg-brand-400 dark:bg-gray-800 rounded-md">
-                                                    {{ $page }}
-                                                </a>
-                                            @endif
+                                            <button wire:click="gotoPage({{ $page }})"
+                                                    wire:loading.attr="disabled"
+                                                    class="px-3 py-1.5 text-sm font-medium rounded-md {{ $page == $current ? 'bg-brand-500 text-white' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700' }}">
+                                                {{ $page }}
+                                            </button>
                                         @endfor
-
+                                        
                                         @if($end < $last)
-                                            <span class="px-3 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">
-                                                ...
-                                            </span>
+                                            <span class="px-3 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">...</span>
                                         @endif
-
-                                        @if($drivers->hasMorePages())
-                                            <a href="{{ $drivers->nextPageUrl() }}"
-                                                class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors hover:text-brand-400 hover:border-brand-400">
-                                                التالي
-                                            </a>
-                                        @else
-                                            <button disabled
-                                                class="px-3 py-1.5 text-sm font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 dark:text-gray-600 rounded-md cursor-not-allowed">
+                                        
+                                        @if($this->drivers->hasMorePages())
+                                            <button wire:click="nextPage"
+                                                    wire:loading.attr="disabled"
+                                                    class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                                 التالي
                                             </button>
                                         @endif
@@ -393,7 +440,6 @@
                         @endif
                     </div>
                 </div>
-                <!-- ====== Table Six End -->
             </div>
         </div>
     </div>

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->boolean('is_online')->default(false);
             $table->boolean('is_active')->default(false);
             $table->timestamps();
+            $table->index(['is_online', 'is_banned', 'is_active']);
         });
     }
 
