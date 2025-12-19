@@ -13,9 +13,5 @@
 @endsection
 
 @section('script')
-<script>
-    window.addEventListener('page-reload', event => {
-        window.location.reload();
-    });
-</script>
+
 @endsection

@@ -17,10 +17,7 @@ class DriverController extends Controller
      */
     public function index()
     {
-        $drivers=$this->driverRepository->index();
-        $onlineDrivers=$this->driverRepository->getIsOnline()->count();
-        $bannedDrivers=$this->driverRepository->getIsBanned()->count();
-        return view('pages.drivers.index',compact('drivers','onlineDrivers','bannedDrivers'));
+        return view('pages.drivers.index');
     }
 
     /**
@@ -47,15 +44,14 @@ class DriverController extends Controller
         $driver=$this->driverRepository->getById($id);
         $ratings = $driver->ratings;
         $ratingsCount = $ratings->count();
+        $averageRating = 0;
+        $fullStars = 0;
+        $hasHalfStar = false;
         if ($ratingsCount > 0) {
         $averageRating = $ratings->avg('rating_value');
         $fullStars = floor($averageRating);
         $hasHalfStar = ($averageRating - $fullStars) >= 0.5;
-    } else {
-        $averageRating = 0;
-        $fullStars = 0;
-        $hasHalfStar = false;
-    }
+        }
         return view('pages.drivers.show',compact('driver','averageRating',
         'ratingsCount',
         'fullStars',
