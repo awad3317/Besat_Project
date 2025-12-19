@@ -138,7 +138,7 @@
             <div class="px-5 py-4 sm:px-6 sm:py-5">
                 <div class="flex flex-col sm:flex-row gap-4 items-end">
     <div class="flex-1 min-w-[250px]">
-        <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300 text-right">
+        <label class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
             البحث
         </label>
         <div class="relative">
