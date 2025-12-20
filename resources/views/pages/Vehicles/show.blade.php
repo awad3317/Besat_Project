@@ -28,7 +28,7 @@
         </div>
         <div class="mt-3 w-full">
           <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي السائقين</span>
-          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">50</h4>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $vehicle->drivers->count() }}</h4>
         </div>
       </div>
 
@@ -42,7 +42,9 @@
         </div>
         <div class="mt-3 w-full">
           <span class="text-xs text-gray-500 dark:text-gray-400">أقل سعر للمركبة</span>
-          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{$vehicle->min_price}} {{ config('app.currency_symbol', 'ر.ي') }}</h4>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{$vehicle->min_price}}
+            {{ config('app.currency_symbol', 'ر.ي') }}
+          </h4>
         </div>
       </div>
 
@@ -227,12 +229,17 @@
                       </p>
                     </div>
                   </th>
-
-
                   <th class="px-5 py-3 sm:px-6">
                     <div class="flex items-center">
                       <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                         عدد الطلبات
+                      </p>
+                    </div>
+                  </th>
+                  <th class="py-3">
+                    <div class="flex items-center justify-center">
+                      <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                        الإجراءات
                       </p>
                     </div>
                   </th>
@@ -241,111 +248,104 @@
               <!-- table header end -->
               <!-- table body start -->
               <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                <tr>
-                  <td class="px-5 py-4 sm:px-6">
-                    <div class="flex items-center">
-                      <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                        1
-                      </p>
-                    </div>
-                  </td>
-                  <td class="px-5 py-4 sm:px-6">
-                    <div class="flex items-center">
-                      <div class="flex items-center gap-3" x-data="{ driverStatus: true }">
-                        <div class="relative h-10 w-10 flex-shrink-0">
-                          <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="User"
-                            class="h-full w-full rounded-full object-cover" />
-                          <span
-                            class="bg-success-500 absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900">
+                @forelse ($vehicle->drivers as $driver)
+                  <tr>
+                    <td class="px-5 py-4 sm:px-6">
+                      <div class="flex items-center">
+                        <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                          {{ $loop->iteration }}
+                        </p>
+                      </div>
+                    </td>
+                    <td class="px-5 py-4 sm:px-6">
+                      <div class="flex items-center">
+                        <div class="flex items-center gap-3" x-data="{ driverStatus: true }">
+                          <div class="relative mx-2 h-10 w-10 flex-shrink-0">
+                            @if ($driver->driver_image)
+                              <img src="{{ url("$driver->driver_image") }}" alt="User" loading="lazy" width="40" height="40"
+                                class="h-full w-full rounded-full object-cover" />
+                            @else
+                              <img src="{{ asset('assets/img/User_img.png') }}" alt="User" loading="lazy" width="40"
+                                height="40" class="h-full w-full rounded-full object-cover" />
+                            @endif
 
+                            @if ($driver->is_online)
+                              <span
+                                class="bg-success-500 absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"></span>
+                            @else
+                              <span
+                                class="absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"></span>
+                            @endif
+                          </div>
+                        </div>
+                        <div>
+                          <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            {{ $driver->name }}
+                          </span>
+                          <span class="block text-gray-500 text-theme-xs dark:text-gray-400">
+                            {{ $driver->phone }}
                           </span>
                         </div>
                       </div>
-                      <div>
-                        <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          احمد شرجبي
-                        </span>
-                        <span class="block text-gray-500 text-theme-xs dark:text-gray-400">
-                          +967780236552
-                        </span>
+                    </td>
+                    <td class="px-5 py-4 sm:px-6">
+                      <div class="flex items-center">
+                        <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                          @if ($driver->whatsapp_number)
+                            {{ $driver->whatsapp_number }}
+                          @else
+                            لا يوجد
+                          @endif
+                        </p>
                       </div>
-                    </div>
-                  </td>
-                  <td class="px-5 py-4 sm:px-6">
-                    <div class="flex items-center">
-                      <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                        +967780236551
-                      </p>
-                    </div>
-                  </td>
-                  <td class="px-5 py-4 sm:px-6">
-                    <div class="flex items-center">
-                      <p class="text-gray-500 text-theme-sm dark:text-gray-400">30</p>
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    <td class="px-5 py-4 sm:px-6">
+                      <div class="flex items-center">
+                        <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ $driver->requests->count() }}</p>
+                      </div>
+                    </td>
+                    <td class="px-5 py-4 sm:px-6">
+                      <div class="flex items-center justify-center">
+                        <a href="{{ route('drivers.show', $driver->id) }}"
+                          class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          تفاصيل
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="8" class="p-8 text-center">
+                      <div class="flex flex-col items-center justify-center text-center">
+                        <div
+                          class="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
+                          <svg fill="#dc6803" height="100px" width="100px" version="1.1" id="Capa_1"
+                            xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                            viewBox="0 0 438.775 438.775" xml:space="preserve">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                              <path
+                                d="M135.646,150.005c10.719,6.367,22.735,9.551,34.752,9.551c12.018,0,24.036-3.185,34.754-9.552 c25.497-15.148,39.324-45.114,37.937-82.214c-1.679-44.887-38.677-66.603-72.341-67.784c-0.234-0.008-0.467-0.008-0.701,0 C136.382,1.188,99.384,22.903,97.705,67.79C96.318,104.891,110.148,134.856,135.646,150.005z M170.397,19.79 c25.114,1.012,50.86,16.348,52.649,47.348h-7.381c-11.385-13-27.598-20-45.233-20c-0.001,0-0.002,0-0.003,0 c-17.672,0-33.909,7-45.3,20h-7.382C119.536,36.138,145.282,20.802,170.397,19.79z M129.925,87.138c3.188,0,6.184-1.411,8.067-3.982 c7.617-10.399,19.441-16.31,32.438-16.309c12.956,0.001,24.755,5.884,32.37,16.281c1.883,2.572,4.88,4.01,8.067,4.01h11.303 c-2.984,21-12.474,36.794-27.235,45.563c-15.136,8.992-33.939,8.938-49.075-0.054c-14.762-8.77-24.252-24.509-27.237-45.509H129.925 z M380.67,326.878c0,61.7-50.196,111.897-111.896,111.897c-5.522,0-10-4.478-10-10s4.478-10,10-10 c50.672,0,91.896-41.225,91.896-91.897c0-5.522,4.478-10,10-10S380.67,321.355,380.67,326.878z M339.234,324.878 c0-4.585-0.429-9.073-1.246-13.424c-0.028-0.172-0.062-0.343-0.099-0.515c-6.515-33.312-35.925-58.523-71.114-58.523 c-39.958,0-72.467,32.506-72.467,72.462c0,39.954,32.509,72.46,72.467,72.46C306.729,397.338,339.234,364.832,339.234,324.878z M318.802,327.059c-1.009,24.534-18.414,44.776-42.414,49.323v-41.769C291.388,333.821,305.631,331.262,318.802,327.059z M266.775,272.416c22.655,0,42.002,14.438,49.326,34.595c-14.874,5.163-31.744,7.867-49.326,7.867 c-17.581,0-34.455-2.705-49.333-7.869C224.767,286.853,244.116,272.416,266.775,272.416z M256.388,376.382 c-23-4.547-41.416-24.789-42.422-49.326c13.173,4.204,27.422,6.766,42.422,7.558V376.382z M101.505,248.654L80.128,364.138h84.43 c5.522,0,10,4.477,10,10c0,5.522-4.477,10-10,10H68.106c-2.971,0-5.788-1.393-7.688-3.677c-1.899-2.284-2.686-5.365-2.145-8.287 L81.839,244.94c5.605-30.255,27.82-52.549,60.95-61.167c17.559-4.568,36.928-4.628,54.538-0.174 c19.041,4.817,34.973,14.441,46.073,27.832c3.524,4.252,2.935,10.556-1.317,14.08c-4.253,3.527-10.556,2.935-14.08-1.316 c-16.834-20.305-49.804-28.968-80.179-21.066c-9.588,2.494-17.967,6.422-24.9,11.552l51.579,51.586 c3.905,3.905,3.905,10.236-0.001,14.142c-3.904,3.906-10.237,3.905-14.142-0.001l-51.198-51.204 C105.415,234.994,102.818,241.57,101.505,248.654z">
+                              </path>
+                            </g>
+                          </svg>
+                        </div>
+                        <p class="text-gray-500 text-theme-sm dark:text-gray-400 font-medium">
+                          لا يوجد سائقين حتى الآن
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                @endforelse
+
               </tbody>
             </table>
           </div>
-
-          {{-- <!-- الباجينشن -->
-          <div class="flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-gray-800 sm:px-6">
-            <div class="flex flex-1 justify-between sm:hidden">
-              <a href="#"
-                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">السابق</a>
-              <a href="#"
-                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">التالي</a>
-            </div>
-            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-              <div>
-                <p class="text-sm text-gray-700 dark:text-gray-300">
-                  عرض
-                  <span class="font-medium">1</span>
-                  إلى
-                  <span class="font-medium">10</span>
-                  من
-                  <span class="font-medium">97</span>
-                  نتائج
-                </p>
-              </div>
-              <div>
-                <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                  <a href="#"
-                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:ring-gray-600 dark:hover:bg-gray-700">
-                    <span class="sr-only">السابق</span>
-                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd"
-                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                        clip-rule="evenodd" />
-                    </svg>
-                  </a>
-                  <a href="#" aria-current="page"
-                    class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">1</a>
-                  <a href="#"
-                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:text-gray-100 dark:ring-gray-600 dark:hover:bg-gray-700">2</a>
-                  <a href="#"
-                    class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:text-gray-100 dark:ring-gray-600 dark:hover:bg-gray-700 md:inline-flex">3</a>
-                  <span
-                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0 dark:text-gray-300 dark:ring-gray-600">...</span>
-                  <a href="#"
-                    class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:text-gray-100 dark:ring-gray-600 dark:hover:bg-gray-700 md:inline-flex">8</a>
-                  <a href="#"
-                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:text-gray-100 dark:ring-gray-600 dark:hover:bg-gray-700">9</a>
-                  <a href="#"
-                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:text-gray-100 dark:ring-gray-600 dark:hover:bg-gray-700">10</a>
-                  <a href="#"
-                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:ring-gray-600 dark:hover:bg-gray-700">
-                    <span class="sr-only">التالي</span>
-                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd"
-                        d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                        clip-rule="evenodd" />
-                    </svg>
-                  </a>
-                </nav>
-              </div>
-            </div>
-          </div> --}}
         </div>
         <!-- ====== Table Six End -->
       </div>

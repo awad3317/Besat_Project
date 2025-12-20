@@ -21,7 +21,7 @@ class UserRepository implements RepositoriesInterface
 
     public function getById($id): User
     {
-        return User::findOrFail($id);
+        return User::with(['requests'])->findOrFail($id);
     }
 
     public function store(array $data): User
@@ -52,7 +52,7 @@ class UserRepository implements RepositoriesInterface
 
      public function getUsers()
     {
-        return User::where('type','user')->paginate(10);
+        return User::where('type','user')->with(['requests'])->paginate(10);
     }
 
 }

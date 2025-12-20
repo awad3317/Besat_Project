@@ -2,6 +2,35 @@
 @section('title', 'إدارة المستخدمين')
 @section('Breadcrumb', 'إدارة المستخدمين')
 @section('content')
+ <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
+      <div
+        class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+          <svg fill="#dc6803" width="20" height="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
+          </svg>
+        </div>
+        <div class="mt-3 w-full">
+          <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي المستخدمين</span>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">4</h4>
+        </div>
+      </div>
+
+      <div
+        class=" flex  m:hidden flex-col items-start justify-between rounded-xl p-4  transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+
+      </div>
+
+      <div
+        class="flex m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+
+      </div>
+
+      <div
+        class="flex  m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+
+      </div>
+    </div>
     <div class="space-y-5 sm:space-y-6">
         <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="px-5 py-4 sm:px-6 sm:py-5">
@@ -131,7 +160,9 @@
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center">
-                                                <p class="text-gray-500 text-theme-sm dark:text-gray-400">{{ $user->requests()->count() }}</p>
+                                                <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                                    {{ $user->requests()->count() }}
+                                                </p>
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
