@@ -45,9 +45,13 @@ class UserRepository implements RepositoriesInterface
         return User::where('phone', $phone)->first();
     }
 
-    public function getAdmins()
+    public function getAdmins($request)
     {
-        return User::where('type','admin')->get();
+        $query = User::where('type','admin');
+        if ($request->has('is_banned') && $request->is_banned !== null) {
+            $query->where('is_banned', 1);
+        }
+        return $query->paginate(10);
     }
 
      public function getUsers()

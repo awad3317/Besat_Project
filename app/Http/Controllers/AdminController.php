@@ -20,9 +20,9 @@ class AdminController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $admins=$this->userRepository->getAdmins();
+        $admins=$this->userRepository->getAdmins($request);
         return view('pages.admin.index',compact('admins'));
     }
 

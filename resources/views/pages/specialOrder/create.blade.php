@@ -102,7 +102,7 @@
         إنشاء رحلة جديدة
       </h4>
 
-      <!-- قسم الخريطة -->
+
       <div class="col-span-2 mb-6">
         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
           تحديد المسار على الخريطة
@@ -134,7 +134,6 @@
       </div>
 
       <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
-        <!-- عنوان الرحلة -->
         <div class="col-span-1">
           <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
             عنوان الرحلة <span class="text-red-500">*</span>
@@ -147,7 +146,6 @@
           @enderror
         </div>
 
-        <!-- اسم العميل -->
         <div class="col-span-1">
           <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
             اسم العميل <span class="text-red-500">*</span>

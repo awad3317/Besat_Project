@@ -20,5 +20,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Livewire::component('drivers.index', \App\Livewire\drivers\Index::class);
+        Livewire::component('users.index', \App\Livewire\users\Index::class);
     }
 }
