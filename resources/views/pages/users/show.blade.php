@@ -20,7 +20,7 @@
         </div>
         <div class="mt-3 w-full">
           <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي الطلبات</span>
-          {{-- <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $user->requests->count() }}</h4> --}}
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $user->requests->count() }}</h4>
         </div>
       </div>
 
