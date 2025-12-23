@@ -204,7 +204,7 @@
                                             </div>
                                         </td>
                                         
-                                        <!-- الإجراءات -->
+                                        
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center justify-center">
                                                 <a href="{{ route('users.show', $user->id) }}"

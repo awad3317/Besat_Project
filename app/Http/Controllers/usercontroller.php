@@ -41,6 +41,7 @@ class UserController extends Controller
     public function show($id)
     {
         $user = $this->userRepository->getById($id);
+        dd($user);
         return view('pages.users.show', compact('user'));
     }
 
