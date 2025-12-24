@@ -23,5 +23,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Livewire::component('drivers.index', \App\Livewire\drivers\Index::class);
         Livewire::component('users.index', \App\Livewire\Users\Index::class);
+        Livewire::component('special-orders.index', \App\Livewire\SpecialOrders\Index::class);
     }
 }

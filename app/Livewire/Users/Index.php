@@ -23,7 +23,7 @@ class Index extends Component
         'page' => ['except' => 1],
     ];
     
-    #[Computed] 
+    #[Computed(cache: true)]
     public function stats()
     {
         return [
