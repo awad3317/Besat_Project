@@ -27,8 +27,8 @@ class Index extends Component
     public function stats()
     {
         return [
-            'total' => User::count(),
-            'banned' => User::where('is_banned', true)->count(),
+            'total' => User::where('type', 'user')->count(),
+            'banned' => User::where('is_banned', true)->where('type', 'user')->count(),
         ];
     }
     
@@ -46,6 +46,9 @@ class Index extends Component
     public function toggleBan($userId)
     {
         $user = User::findOrFail($userId);
+        if($user->type == 'superAdmin') {
+            return;
+        }
         $user->is_banned = !$user->is_banned;
         $user->save();
     }
@@ -62,6 +65,7 @@ class Index extends Component
                 });
             })
             ->when($this->activeFilter === 'banned', fn($q) => $q->where('is_banned', true))
+            ->where('type', 'user')
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
     }
