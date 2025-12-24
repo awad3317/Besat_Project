@@ -7,7 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\requestcontroller;
+use App\Http\Controllers\RequestController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\FirebaseController;
 use App\Http\Controllers\DashboardController;
@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::resource('users', UserController::class);
     Route::resource('drivers', DriverController::class);
-    Route::resource('request',requestcontroller::class);
+    Route::resource('request',RequestController::class);
     Route::resource('Coupon',CouponController::class);
     Route::resource('Vehicle',VehicleController::class);
     Route::resource('vehiclePricing',vehiclePricingController::class);
