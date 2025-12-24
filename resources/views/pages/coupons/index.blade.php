@@ -6,8 +6,13 @@
 @endsection
 @section('content')
 
+    <livewire:discount-codes.index />
+
+
+
 @endsection
 
 @section('script')
+    
 
 @endsection

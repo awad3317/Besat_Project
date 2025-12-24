@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\DiscountCode;
 
 class CouponController extends Controller
 {
@@ -11,7 +12,8 @@ class CouponController extends Controller
      */
     public function index()
     {
-        return view('pages.coupons.index');
+        $coupons = DiscountCode::all();
+        return view('pages.coupons.index',['coupons' => $coupons]);
     }
 
     /**

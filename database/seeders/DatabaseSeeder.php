@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             AppSettingsSeeder::class,
             // VehiclePricingSeeder::class,
             DriversSeeder::class,
+            DiscountCodeSeeder::class,
         ]);
     }
 }
