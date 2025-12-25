@@ -17,4 +17,11 @@ class DiscountCode extends Model
     {
         return $this->hasMany(Request::class, 'discount_code_id');
     }
+    
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'discount_code_user')
+                    ->withTimestamps(); 
+    }
 }

@@ -62,6 +62,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Request::class);
     }
+    
+    public function usedDiscountCodes()
+    {
+        return $this->belongsToMany(DiscountCode::class, 'discount_code_user')
+                    ->withTimestamps();
+    }
 
      public function ratings()
     {

@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Schema; // <-- 1. أضف هذا السطر
+use Illuminate\Support\Facades\Schema;
 
 class DiscountCodeSeeder extends Seeder
 {

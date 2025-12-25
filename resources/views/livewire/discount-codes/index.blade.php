@@ -1,7 +1,6 @@
 <div class="p-4 md:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen font-outfit" dir="rtl">
     <div class="max-w-[1400px] mx-auto space-y-6">
 
-        <!-- Summary Cards -->
         <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-1">
 
             <!-- Total Coupons Card -->
@@ -15,9 +14,11 @@
                 </div>
 
                 {{-- Icon --}}
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                    <svg fill="#dc6803" width="20" height="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
+                <div
+                    class="flex h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-lg border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
                     </svg>
                 </div>
 
@@ -38,11 +39,19 @@
                     <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent">
                     </div>
                 </div>
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                    <svg width="20" height="20" viewBox="0 0 1024 1024" fill="#34D399" class="icon" version="1.1"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path d="M824.8 1003.2H203.2c-12.8 0-25.6-2.4-37.6-7.2...z"></path>
-                        <path d="M752.8 308H274.4V152.8c0-32.8 26.4-60...z"></path>
+                <div
+                    class="flex h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-lg border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
+                    <svg fill="#dc6803" height="30" width="30" version="1.1"
+                        xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" xml:space="preserve"
+                        stroke="#dc6803" stroke-width="0.00024000000000000003">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <g id="active">
+                                <path d="M8.6,20.1l-7.8-8l1.4-1.4l6.4,6.5L21.8,3.9l1.4,1.4L8.6,20.1z"></path>
+                            </g>
+                        </g>
                     </svg>
                 </div>
 
@@ -65,10 +74,22 @@
                 </div>
 
                 {{-- Icon --}}
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                    <svg width="20" height="20" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                        fill="#F87171">
-                        <path d="M213.333333,1.42108547e-14 C331.15408...Z"></path>
+                <div
+                    class="flex h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-lg border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
+                    <svg width="30" height="30" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" fill="#dc6803" stroke="#dc6803">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                        <g id="SVGRepo_iconCarrier">
+                            <title>cancelled</title>
+                            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <g id="add" fill="#dc6803" transform="translate(42.666667, 42.666667)">
+                                    <path
+                                        d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z"
+                                        id="Combined-Shape"> </path>
+                                </g>
+                            </g>
+                        </g>
                     </svg>
                 </div>
 
@@ -85,18 +106,11 @@
             </div>
 
         </div>
-
-        <div x-data="{ openId: null }" class="p-4 md:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen font-outfit"
+        <div class="pt-4 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen font-outfit"
             dir="rtl">
             <div class="max-w-[1400px] mx-auto space-y-6">
-
-                {{-- Summary Cards and Header can go here --}}
-                {{-- ... --}}
-
-                <!-- Main Container for Search and Grid -->
                 <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
 
-                    <!-- Search Header -->
                     <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-100 dark:border-gray-800">
                         <div class="flex flex-col sm:flex-row gap-4 items-center">
                             <div class="flex-1 w-full">
@@ -122,88 +136,105 @@
                     <!-- Content Body -->
                     <div class="p-5 sm:p-6">
                         <!-- Cards Grid -->
+                        <!-- Cards Grid -->
                         <div wire:loading.class.delay="opacity-50"
                             wire:target="search, nextPage, previousPage, gotoPage"
                             class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 transition-opacity">
 
                             @forelse ($this->coupons as $coupon)
                             <div wire:key="coupon-{{ $coupon->id }}"
-                                class="group bg-white dark:bg-gray-dark rounded-xl border shadow-theme-sm hover:shadow-theme-md transition-all duration-300 overflow-hidden"
-                                {{-- ✅ CORRECTION: Use Alpine's :class for dynamic styling --}}
-                                :class="{ 'ring-2 ring-brand-500/50 border-brand-500': openId === {{ $coupon->id }} }">
+                                class="group bg-white dark:bg-gray-dark dark:border-gray-700 rounded-xl border shadow-theme-sm hover:shadow-theme-md transition-all duration-300 overflow-hidden flex flex-col">
 
-                                <!-- Card Header -->
-                                <div class="p-6 flex items-start justify-between text-right">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="size-14 flex-shrink-0 flex items-center justify-center rounded-full border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
-                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
-                                            </svg>
+                                <!-- 1. Card Header (Static) -->
+                                <div class="p-6 flex-grow">
+                                    <div class="flex items-start justify-between text-right">
+                                        {{-- Left Side: Icon and Info --}}
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="size-14 flex-shrink-0 flex items-center justify-center rounded-full border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
+                                                <svg class="w-7 h-7" fill="none" stroke="currentColor"
+                                                    stroke-width="1.5" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
+                                                </svg>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <h4 class="text-base font-bold text-gray-900 dark:text-white">
+                                                    {{ $coupon->code }}
+                                                </h4>
+                                                <p class="text-theme-xs text-gray-500 font-medium">معدل الخصم:
+                                                    {{ number_format($coupon->discount_rate * 100, 2) }}%
+                                                </p>
+                                                <p class="text-[11px] text-gray-400 font-semibold">استخدم
+                                                    {{ $coupon->current_uses }} / {{ $coupon->max_uses }} مرة
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div class="space-y-1">
-                                            <h4 class="text-base font-bold text-gray-900 dark:text-white">
-                                                {{ $coupon->code }}</h4>
-                                            <p class="text-theme-xs text-gray-500 font-medium">معدل الخصم:
-                                                {{ number_format($coupon->discount_rate * 100, 2) }}%</p>
-                                            <p class="text-[11px] text-gray-400 font-semibold">استخدم
-                                                {{ $coupon->current_uses }} / {{ $coupon->max_uses }} مرة</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col items-end justify-between h-full">
-                                        <span
-                                            class="px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm @if($coupon->is_active) bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-400 @else bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 @endif">
-                                            {{ $coupon->is_active ? 'نشط' : 'غير نشط' }}
-                                        </span>
 
-                                        <!-- ✅ CORRECTION: Use Alpine's @click to toggle 'openId' -->
-                                        <button type="button"
-                                            @click="openId = (openId === {{ $coupon->id }}) ? null : {{ $coupon->id }}"
-                                            class="mt-2 text-gray-400 hover:text-brand-500 transition-colors">
-                                            <svg width="18" height="18" fill="none" stroke="currentColor"
-                                                stroke-width="2.5" viewBox="0 0 24 24"
-                                                class="transition-transform duration-300" {{-- ✅ CORRECTION: Use
-                                                Alpine's :class for dynamic rotation --}}
-                                                :class="{ 'rotate-180': openId === {{ $coupon->id }} }">
-                                                <path d="M6 9l6 6 6-6" />
-                                            </svg>
-                                        </button>
+                                        {{-- Right Side: Status Badge --}}
+                                        <div class="flex-shrink-0">
+                                            <span
+                                                class="px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm @if($coupon->is_active) bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-400 @else bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 @endif">
+                                                {{ $coupon->is_active ? 'نشط' : 'غير نشط' }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- ✅ CORRECTION: Use Alpine's <template x-if> for client-side toggling -->
-                                <template x-if="openId === {{ $coupon->id }}">
-                                    <div class="border-t border-gray-100 dark:border-gray-800" x-transition>
-                                        <div
-                                            class="px-6 py-4 bg-gray-50/50 dark:bg-white/[0.03] border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                                            <div class="w-full">
-                                                @php($percentage = $coupon->max_uses > 0 ? ($coupon->current_uses / $coupon->max_uses) * 100 : 0)
-                                                <div class="flex justify-between mb-1">
-                                                    <span
-                                                        class="text-xs font-medium text-gray-600 dark:text-white">الاستخدام</span>
-                                                    <span
-                                                        class="text-xs font-medium text-gray-600 dark:text-white">{{ number_format($percentage, 0) }}%</span>
-                                                </div>
-                                                <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
-                                                    <div class="bg-brand-500 h-1.5 rounded-full"
-                                                        style="width: {{ $percentage }}%"></div>
-                                                </div>
-                                            </div>
-                                            <div class="flex gap-2 ms-4">
-                                                <a href="{{ route('Coupon.show', $coupon->id) }}"
-                                                    class="p-2 text-gray-400 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10 rounded-lg">
-                                                    <svg width="18" height="18" fill="none" stroke="currentColor"
-                                                        stroke-width="2" viewBox="0 0 24 24">
-                                                        <path
-                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                </a>
-                                            </div>
+                                <!-- 2. Card Footer (Static) -->
+                                <div
+                                    class="px-6 py-4 bg-gray-50/50 dark:bg-white/[0.03] border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                                    {{-- Progress Bar --}}
+                                    <div class="w-full">
+                                        @php($percentage = $coupon->max_uses > 0 ? ($coupon->current_uses / $coupon->max_uses) * 100 : 0)
+                                        <div class="flex justify-between mb-1">
+                                            <span
+                                                class="text-xs font-medium text-gray-600 dark:text-white">الاستخدام</span>
+                                            <span
+                                                class="text-xs font-medium text-gray-600 dark:text-white">{{ number_format($percentage, 0) }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
+                                            <div class="bg-brand-500 h-1.5 rounded-full"
+                                                style="width: {{ $percentage }}%"></div>
                                         </div>
                                     </div>
-                                </template>
+
+                                    {{-- Action Buttons --}}
+                                    <div class="flex gap-1 ms-4 flex-shrink-0">
+
+                                        <a href="{{ route('Coupon.show', $coupon->id) }}" title="عرض التفاصيل"
+                                            class="p-2 text-gray-400 hover:text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-lg transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </a>
+
+                                        {{-- Edit Button --}}
+                                        {{-- <a href="route('discount-codes.edit', $coupon->id)" title="تعديل"
+                                            class="p-2 text-gray-400 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10 rounded-lg transition-colors">
+                                            <svg width="18" height="18" fill="none" stroke="currentColor"
+                                                stroke-width="2" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </a> --}}
+
+                                        {{-- Delete Button --}}
+                                        {{-- <button type="button" title="حذف" wire:click="delete({{ $coupon->id }})"
+                                            wire:confirm="هل أنت متأكد من حذف الكوبون '{{ $coupon->code }}'؟"
+                                            class="p-2 text-gray-400 hover:text-error-600 hover:bg-error-50 dark:hover:bg-error-500/10 rounded-lg transition-colors">
+                                            <svg width="18" height="18" fill="none" stroke="currentColor"
+                                                stroke-width="2" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button> --}}
+                                    </div>
+                                </div>
                             </div>
                             @empty
                             <div class="md:col-span-2 xl:col-span-3 2xl:col-span-4 text-center py-16">
@@ -212,19 +243,16 @@
                             </div>
                             @endforelse
                         </div>
-
-                        <!-- Pagination -->
                         @if ($this->coupons->hasPages())
-                            <div class="mt-8">
+                            <div style="margin-top: 20px;">
                                 {{ $this->coupons->links() }}
                             </div>
                         @endif
+
                     </div>
                 </div>
             </div>
         </div>
-
-
-
     </div>
+</div>
 </div>

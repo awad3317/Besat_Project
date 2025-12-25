@@ -1,6 +1,11 @@
 @extends('layouts.app')
 @section('title', 'كوبونات الخصم')
 @section('Breadcrumb', 'كوبونات الخصم')
+@section('addButton')
+    @include('pages.coupons.create-coupon-modal')
+    <x-modals.success-modal />
+    <x-modals.error-modal />
+@endsection
 @section('style')
 
 @endsection

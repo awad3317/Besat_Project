@@ -12,8 +12,7 @@ class CouponController extends Controller
      */
     public function index()
     {
-        $coupons = DiscountCode::all();
-        return view('pages.coupons.index',['coupons' => $coupons]);
+        return view('pages.coupons.index');
     }
 
     /**
@@ -35,9 +34,12 @@ class CouponController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $coupon = DiscountCode::findOrFail($id);
+
+        $users = $coupon->users()->paginate(10);
+        return view('pages.coupons.show', compact('coupon','users'));
     }
 
     /**

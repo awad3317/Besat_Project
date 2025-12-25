@@ -54,10 +54,6 @@ class Index extends Component
             ->latest() 
             ->simplePaginate(9);
     }
-
-    /**
-     * عرض الـ View
-     */
     public function render()
     {
         return view('livewire.discount-codes.index');
