@@ -79,7 +79,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="flex items-center justify-end w-full gap-3 mt-6">
                         <button @click="isModalEditOpen = false" type="button"
                             class="hover:border-brand-500 flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 sm:w-auto">
