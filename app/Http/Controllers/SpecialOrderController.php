@@ -108,4 +108,9 @@ class SpecialOrderController extends Controller
     {
         //
     }
+
+    public function showPrice(Request $request){
+        // $price=$this->specialOrderRepository->calculatePrice($request->start_address,$request->end_address);
+        // return WebResponseClass::sendResponse(['price'=>$price],'تم الحساب');
+    }
 }
