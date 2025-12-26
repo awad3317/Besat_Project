@@ -42,7 +42,6 @@
                         <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">أدخل النسبة المئوية للخصم (مثل 10
                             أو 25.5).</p>
                     </div>
-
                     <div>
                         <label for="max_uses" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                             الحد الأقصى للاستخدام <span
@@ -56,15 +55,12 @@
                     <div class="sm:col-span-2">
                         {{-- 1. Initialize Alpine.js component. 'isActive' starts as true. --}}
                         <div x-data="{ isActive: true }">
-                            <label
+                            {{-- استبدال label بـ div لتجنب تضارب الأحداث، والتحكم بالحالة عبر النقر على الحاوية --}}
+                            <div @click="isActive = !isActive"
                                 class="flex cursor-pointer items-center gap-3 text-sm font-medium text-gray-700 select-none dark:text-gray-400">
-
-                                {{-- The hidden checkbox that holds the actual form value --}}
-                                {{-- It is now bound to the 'isActive' state using x-model --}}
-                                <input type="checkbox" name="is_active" x-model="isActive" class="hidden">
-
-                                {{-- 2. The visual toggle switch --}}
-                                <div class="relative" @click="isActive = !isActive">
+                                {{-- حقل مخفي واحد يحمل القيمة بناءً على الحالة --}}
+                                <input type="hidden" name="is_active" :value="isActive ? 1 : 0">
+                                <div class="relative">
 
                                     {{-- Background of the switch --}}
                                     {{-- :class changes the color based on 'isActive' state --}}
@@ -79,8 +75,8 @@
                                     </div>
                                 </div>
 
-                                <span>تفعيل الكوبون فور إنشائه</span>
-                            </label>
+                                <span>تفعيل الكوبون  </span>
+                            </div>
                         </div>
                     </div>
 

@@ -2,11 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Exception;
 use App\Models\DiscountCode;
+use Illuminate\Http\Request;
+use App\Services\ActivityLog;
+use App\Classes\WebResponseClass;
+use Illuminate\Support\Facades\Validator;
+use App\Repositories\DiscountCodeRepository;
 
 class CouponController extends Controller
 {
+
+    public function __construct(private DiscountCodeRepository $DiscountCodeRepository)
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      */
@@ -28,7 +38,28 @@ class CouponController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'code' => ['required', 'string', 'max:50', 'unique:discount_codes,code'],
+            'discount_rate' => ['required', 'numeric', 'min:1', 'max:100'],
+            'max_uses' => ['required', 'integer', 'min:1'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        if ($validator->fails()) {
+            return WebResponseClass::sendValidationError($validator);
+        }
+
+        try {
+            $validatedData = $validator->validated();
+            $validatedData['discount_rate'] = $validatedData['discount_rate'] / 100;
+
+            DiscountCode::create($validatedData);
+            ActivityLog::log('create', 'DiscountCode', 'تم إضافة كوبون خصم جديد');
+
+            return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة الكوبون بنجاح');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 
     /**
@@ -45,9 +76,21 @@ class CouponController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        try {
+            $coupon=$this->DiscountCodeRepository->getById($id);
+            return redirect()->back()
+                ->with('openModalEdit',true)
+                ->with('Coupon', $coupon);
+        } catch (Exception $e) {
+            return redirect()->back()
+                ->with('error', true)
+                ->with('error_title', 'حدث خطأ!')
+                ->with('error_message', $e->getMessage())
+                ->with('error_buttonText', 'حسناً')
+                ->with('openModalEdit',false);
+        }
     }
 
     /**
@@ -55,7 +98,31 @@ class CouponController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'code' => ['required', 'string', 'max:50', 'unique:discount_codes,code,'.$id],
+            'discount_rate' => ['required', 'numeric', 'min:1', 'max:100'],
+            'max_uses' => ['required', 'integer', 'min:1'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        if ($validator->fails()) {
+            return WebResponseClass::sendValidationError($validator);
+        }
+
+        try {
+            $validatedData = $validator->validated();
+            if($validatedData['max_uses'] < $this->DiscountCodeRepository->getById($id)->current_uses){
+                return WebResponseClass::sendError('يجب أن يكون الحد الأقصى للاستخدام أكبر من أو يساوي عدد الاستخدامات الحالية للكوبون.', 'خطأ في الحد الأقصى للاستخدام');
+            }
+            $validatedData['discount_rate'] = $validatedData['discount_rate'] / 100;
+
+            $this->DiscountCodeRepository->update($validatedData, $id);
+            ActivityLog::log('update', 'DiscountCode', 'تم تعديل كوبون خصم');
+
+            return WebResponseClass::sendResponse('تم التعديل!', 'تم تعديل الكوبون بنجاح');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 
     /**

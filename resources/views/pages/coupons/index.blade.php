@@ -3,6 +3,7 @@
 @section('Breadcrumb', 'كوبونات الخصم')
 @section('addButton')
     @include('pages.coupons.create-coupon-modal')
+    @include('pages.coupons.edit-coupon-modal')
     <x-modals.success-modal />
     <x-modals.error-modal />
 @endsection
