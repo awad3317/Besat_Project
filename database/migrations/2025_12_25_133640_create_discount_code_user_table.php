@@ -12,7 +12,9 @@ return new class extends Migration
             // $table->primary(['user_id', 'discount_code_id']);
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('discount_code_id')->constrained()->cascadeOnDelete();
+            $table->integer('usage_count')->default(1);
             $table->timestamp('created_at')->useCurrent();
+            $table->primary(['user_id', 'discount_code_id']);
         });
     }
 

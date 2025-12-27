@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('code', 50)->unique();
             $table->decimal('discount_rate', 5, 4);
             $table->boolean('is_active')->default(true);
-            $table->integer('max_uses');
+            $table->integer('max_uses')->nullable();
+            $table->integer('usage_limit_per_user')->nullable();
             $table->integer('current_uses')->default(0);
             $table->timestamps();
         });

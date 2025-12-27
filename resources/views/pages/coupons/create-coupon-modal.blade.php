@@ -29,6 +29,9 @@
                         </label>
                         <input type="text" id="code" name="code" required placeholder="مثال: RAMADAN25"
                             class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+                            <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
+                                يجب أن يكون فريد (غير مكرر)
+                        </p>
                     </div>
 
                     <div>
@@ -42,6 +45,7 @@
                         <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">أدخل النسبة المئوية للخصم (مثل 10
                             أو 25.5).</p>
                     </div>
+                    
                     <div>
                         <label for="max_uses" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                             الحد الأقصى للاستخدام <span
@@ -50,8 +54,20 @@
                         <input type="number" id="max_uses" name="max_uses" required min="1" placeholder="مثال: 100"
                             class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
                     </div>
-
-
+                    
+                    <div>
+                        <label for="usage_limit_per_user" 
+                               class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                            الحد الأقصى لكل مستخدم <span class="mt-1 text-xs text-gray-500 dark:text-gray-400">(اختياري)</span>
+                        </label>
+                        <input type="number" id="usage_limit_per_user" name="usage_limit_per_user" 
+                               min="1" placeholder="مثال: 3"
+                               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+                        <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
+                            عدد المرات التي يستطيع كل مستخدم استخدام هذا الكوبون (اتركه فارغاً ليكون غير محدود)
+                        </p>
+                    </div>
+                    
                     <div class="sm:col-span-2">
                         {{-- 1. Initialize Alpine.js component. 'isActive' starts as true. --}}
                         <div x-data="{ isActive: true }">
@@ -79,7 +95,6 @@
                             </div>
                         </div>
                     </div>
-
 
                 </div>
 

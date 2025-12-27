@@ -193,9 +193,7 @@
 
       </div>
 
-
       <livewire:special-orders.create />
-
 
       <!-- أزرار التحكم -->
       <div class="flex items-center justify-end w-full gap-3 mt-6">

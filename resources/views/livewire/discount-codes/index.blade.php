@@ -162,6 +162,7 @@
                                                 <h4 class="text-base font-bold text-gray-900 dark:text-white">
                                                     {{ $coupon->code }}
                                                 </h4>
+                                                
                                                 <p class="text-theme-xs text-gray-500 font-medium">معدل الخصم:
                                                     {{ number_format($coupon->discount_rate * 100, 2) }}%
                                                 </p>

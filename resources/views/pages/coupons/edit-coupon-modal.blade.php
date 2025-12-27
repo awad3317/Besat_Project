@@ -25,8 +25,11 @@
                             <label for="code" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                 كود الخصم <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>
                             </label>
-                            <input type="text" id="code" name="code" required value="{{ $Coupon->code }}" placeholder="مثال: RAMADAN25"
+                            <input  type="text" id="code" name="code" required value="{{ $Coupon->code }}" placeholder="مثال: RAMADAN25"
                                 class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+                                <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
+                                 يجب أن يكون فريد (غير مكرر)
+                        </p>
                         </div>
 
                         <div>
@@ -50,6 +53,20 @@
                                 class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
                         </div>
 
+                        <!-- الحقل الجديد: عدد مرات الاستخدام لكل مستخدم -->
+                        <div>
+                            <label for="usage_limit_per_user" 
+                                   class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                الحد الأقصى لكل مستخدم <span class="mt-1 text-xs text-gray-500 dark:text-gray-400">(اختياري)</span>
+                            </label>
+                            <input type="number" id="usage_limit_per_user" name="usage_limit_per_user" 
+                                   value="{{ old('usage_limit_per_user', $Coupon->usage_limit_per_user) }}"
+                                   min="1" placeholder="مثال: 3"
+                                   class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+                            <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
+                                عدد المرات التي يستطيع كل مستخدم استخدام هذا الكوبون (اتركه فارغاً ليكون غير محدود)
+                            </p>
+                        </div>
 
                         <div class="sm:col-span-2">
                             {{-- 1. Initialize Alpine.js component. 'isActive' starts as true. --}}
@@ -78,6 +95,8 @@
                                 </div>
                             </div>
                         </div>
+                        
+
                     </div>
                     <div class="flex items-center justify-end w-full gap-3 mt-6">
                         <button @click="isModalEditOpen = false" type="button"

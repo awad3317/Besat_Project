@@ -66,6 +66,7 @@ class User extends Authenticatable
     public function usedDiscountCodes()
     {
         return $this->belongsToMany(DiscountCode::class, 'discount_code_user')
+                    ->withPivot('usage_count')
                     ->withTimestamps();
     }
 

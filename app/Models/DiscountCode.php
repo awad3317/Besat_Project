@@ -10,7 +10,7 @@ class DiscountCode extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code', 'discount_rate', 'is_active', 'max_uses', 'current_uses'
+        'code', 'discount_rate', 'is_active', 'max_uses',  'usage_limit_per_user', 'current_uses'
     ];
 
     public function requests()
@@ -22,6 +22,7 @@ class DiscountCode extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'discount_code_user')
+                    ->withPivot('usage_count')
                     ->withTimestamps(); 
     }
 }

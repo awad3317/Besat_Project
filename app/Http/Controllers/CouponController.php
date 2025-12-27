@@ -9,6 +9,7 @@ use App\Services\ActivityLog;
 use App\Classes\WebResponseClass;
 use Illuminate\Support\Facades\Validator;
 use App\Repositories\DiscountCodeRepository;
+use Illuminate\Validation\Rule;
 
 class CouponController extends Controller
 {
@@ -39,23 +40,20 @@ class CouponController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code' => ['required', 'string', 'max:50', 'unique:discount_codes,code'],
+            'code' => ['required', 'string', 'max:50', Rule::unique(DiscountCode::class, 'code')],
             'discount_rate' => ['required', 'numeric', 'min:1', 'max:100'],
             'max_uses' => ['required', 'integer', 'min:1'],
+            'usage_limit_per_user' => ['nullable', 'integer', 'min:1'],
             'is_active' => ['nullable', 'boolean'],
         ]);
-
         if ($validator->fails()) {
             return WebResponseClass::sendValidationError($validator);
         }
-
         try {
             $validatedData = $validator->validated();
             $validatedData['discount_rate'] = $validatedData['discount_rate'] / 100;
-
             DiscountCode::create($validatedData);
             ActivityLog::log('create', 'DiscountCode', 'تم إضافة كوبون خصم جديد');
-
             return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة الكوبون بنجاح');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
@@ -102,6 +100,7 @@ class CouponController extends Controller
             'code' => ['required', 'string', 'max:50', 'unique:discount_codes,code,'.$id],
             'discount_rate' => ['required', 'numeric', 'min:1', 'max:100'],
             'max_uses' => ['required', 'integer', 'min:1'],
+            'usage_limit_per_user' => ['nullable', 'integer', 'min:1'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -111,8 +110,12 @@ class CouponController extends Controller
 
         try {
             $validatedData = $validator->validated();
-            if($validatedData['max_uses'] < $this->DiscountCodeRepository->getById($id)->current_uses){
+            $coupon = $this->DiscountCodeRepository->getById($id);
+            if($validatedData['max_uses'] < $coupon->current_uses){
                 return WebResponseClass::sendError('يجب أن يكون الحد الأقصى للاستخدام أكبر من أو يساوي عدد الاستخدامات الحالية للكوبون.', 'خطأ في الحد الأقصى للاستخدام');
+            }
+            if($validatedData['usage_limit_per_user'] < $coupon->usage_limit_per_user){
+                return WebResponseClass::sendError('يجب أن يكون حد الاستخدام لكل مستخدم أكبر من أو يساوي الحد السابق.', 'خطأ في حد الاستخدام لكل مستخدم');  
             }
             $validatedData['discount_rate'] = $validatedData['discount_rate'] / 100;
 
