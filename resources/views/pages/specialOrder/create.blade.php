@@ -286,7 +286,7 @@
         </button>
       </div>
     </form>
-    @include('pages.specialorder.show-price-modal')
+    @include('pages.specialOrder.show-price-modal')
   </div>
   {{-- 3. إضافة المودال الخاص بعرض السعر --}}
   
