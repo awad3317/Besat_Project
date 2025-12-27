@@ -7,13 +7,18 @@ use Illuminate\Http\Request;
 use App\Services\ActivityLog;
 use Illuminate\Validation\Rule;
 use App\Classes\WebResponseClass;
+use App\Services\DiscountCodeService;
 use App\Repositories\DriverRepository;
+use App\Repositories\VehicleRepository;
 use Illuminate\Support\Facades\Validator;
 use App\Repositories\SpecialOrderRepository;
 
 class SpecialOrderController extends Controller
 {
-    public function __construct(private SpecialOrderRepository $specialOrderRepository, private DriverRepository $driverRepository)
+    public function __construct(private SpecialOrderRepository $specialOrderRepository, 
+    private DriverRepository $driverRepository, 
+    private VehicleRepository $vehicleRepository, 
+    private DiscountCodeService $discountCodeService )
     {
         
     }
@@ -109,8 +114,75 @@ class SpecialOrderController extends Controller
         //
     }
 
-    public function showPrice(Request $request){
-        // $price=$this->specialOrderRepository->calculatePrice($request->start_address,$request->end_address);
-        // return WebResponseClass::sendResponse(['price'=>$price],'تم الحساب');
+     /**
+     * حساب سعر الرحلة بناءً على الإحداثيات.
+     */
+    public function calculatePrice(Request $request)
+    {
+
+        $validated = $request->validate([
+            'start_latitude' => ['required','numeric'],
+            'start_longitude' => ['required','numeric'],
+            'end_latitude' => ['required','numeric'],
+            'end_longitude' => ['required','numeric'],
+            'vehicle_id'=>['required','integer'],
+            'coupon_code'=>['nullable','string']
+        ]);
+         
+        $distanceInKm = $this->calculateDistance(
+            $validated['start_latitude'],
+            $validated['start_longitude'],
+            $validated['end_latitude'],
+            $validated['end_longitude']
+        );
+        $vehicle=$this->vehicleRepository->getById($validated['vehicle_id'])->type;
+        if(isset($validated['coupon_code'])){
+            $coupon =number_format($this->discountCodeService->getDiscountCode($validated['coupon_code'])->discount_rate * 100, 2) ;
+        }
+        else{
+            $coupon = null;
+        }
+
+
+        // =======================================================
+        // ==> هنا تضع المنطق الخاص بك لحساب السعر
+        // يمكنك استخدام الإحداثيات لحساب المسافة عبر Google Maps API
+        // أو استخدام معادلة تسعير خاصة بك.
+        // =======================================================
+
+        $price = rand(1500, 5000); 
+
+        return response()->json(['distanceInKm' => $distanceInKm, 'price' => $price, 'vehicle' => $vehicle, 'coupon' => $coupon ]);
+    }
+    /**
+     * دالة مساعدة لحساب المسافة بين نقطتين بالكيلومتر
+     * باستخدام معادلة هافيرسين (Haversine).
+     *
+     * @param float $lat1 خط عرض نقطة البداية
+     * @param float $lon1 خط طول نقطة البداية
+     * @param float $lat2 خط عرض نقطة النهاية
+     * @param float $lon2 خط طول نقطة النهاية
+     * @return float المسافة بالكيلومتر
+     */
+    private function calculateDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
+    {
+        // نصف قطر الأرض بالكيلومتر
+        $earthRadius = 6371;
+
+        // تحويل الفروقات من درجات إلى راديان
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        // تطبيق معادلة هافيرسين
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+             sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        // المسافة النهائية
+        $distance = $earthRadius * $c;
+
+        return $distance;
     }
 }

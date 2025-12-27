@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
         ->name('system-settings.auto-assign.update');
 
         
+Route::post('/calculate-price', [SpecialOrderController::class, 'calculatePrice'])->name('trip.calculatePrice');
     Route::get('/system-settings/auto-assign', [SystemSettingsController::class, 'getAutoAssignSetting'])
         ->name('system-settings.auto-assign.get');
     Route::patch('/firebase/token', [FirebaseController::class, 'updateToken'])->name('firebase.token');

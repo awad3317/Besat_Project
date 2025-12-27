@@ -29,31 +29,38 @@
 
     <!-- رقم الواتساب -->
     <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">رقم الواتساب</label>
+        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">رقم واتساب العميل</label>
         <input type="tel" placeholder="مثال: 967780236552" 
             class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
         @error('customer_whatsapp') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
     </div>
 
-    <!-- سعر الرحلة -->
-    <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">سعر الرحلة (ريال)</label>
-        <input type="number"  placeholder="سيتم حسابه تلقائياً"
-            class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
-        @error('price') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-    </div>
-
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">اختيار المركبة <span
                 class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
-        <select wire:model="driver_id"
-            class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600">
-            <option value="">اختر المركبه</option>
+        <select id="vehicle_id" name="vehicle_id"
+            class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+            <option>اختر المركبه</option>
             @foreach($this->vehicles as $vehicle)
-            <option value="{{ $vehicle->id }}">{{ $vehicle->type }}</option>
+            <option class="" value="{{ $vehicle->id }}">{{ $vehicle->type }}</option>
             @endforeach
         </select>
-        @error('driver_id') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+    </div>
+
+    <div class="col-span-1">
+        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">كوبون الخصم (اختياري)</label>
+        <div class="flex gap-2">
+            <input id="coupon_code" type="text" name="coupon_code" wire:model.defer="coupon_code" placeholder="أدخل كود الخصم" class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+            <button type="button" wire:click="applyCoupon" wire:loading.attr="disabled" class="flex justify-center hover:bg-brand-600 px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500">
+                <span wire:loading.remove wire:target="applyCoupon">تحقق</span>
+                <span wire:loading wire:target="applyCoupon">جاري...</span>
+            </button>
+        </div>
+        @if($coupon_message)
+            <p class="mt-1 text-l text-warning-500 dark:text-warning/90">
+                {{ $coupon_message }}
+            </p>
+        @endif
     </div>
 
     <!-- الوصف -->

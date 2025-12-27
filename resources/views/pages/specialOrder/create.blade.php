@@ -94,8 +94,8 @@
 @endsection
 
 @section('content')
-  <div class="w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
-    <form method="POST" action="{{ route('specialOrder.store') }}" enctype="multipart/form-data" id="tripForm">
+  <div x-data="{ loadingPrice: false, showPriceModal: false, calculatedPrice: null, distanceInKm: null, vehicle: null, coupon: null, discount_amount: 1}" class="w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
+    <form method="POST" id="tripForm" action="{{ route('specialOrder.store') }}" enctype="multipart/form-data" id="tripForm">
       @csrf
       <div class="col-span-2 mb-6">
         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -166,29 +166,31 @@
             نقطة النهاية <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>
           </label>
           <div class="flex flex-col space-y-2">
-           <input type="text" id="end_address" name="end_address" placeholder="مثال: المعلا - اسكريم المعلا" required
+            <input type="text" id="end_address" name="end_address" placeholder="مثال: المعلا - اسكريم المعلا" required
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white"
               value="{{ old('end_address') }}">
             <div class="grid grid-cols-2 gap-2">
               <input type="hidden" id="end_latitude" name="end_latitude" value="{{ old('end_latitude') }}">
               <input type="hidden" id="end_longitude" name="end_longitude" value="{{ old('end_longitude') }}">
               <div class="coordinates-input text-xs text-gray-500">
-                خط العرض: <span class="mt-1 text-xs text-warning-500 dark:text-warning/90" id="endLatDisplay">{{ old('end_latitude', '--') }}</span>
+                خط العرض: <span class="mt-1 text-xs text-warning-500 dark:text-warning/90"
+                  id="endLatDisplay">{{ old('end_latitude', '--') }}</span>
               </div>
               <div class="coordinates-input text-xs text-gray-500">
-                خط الطول: <span class="mt-1 text-xs text-warning-500 dark:text-warning/90" id="endLngDisplay">{{ old('end_longitude', '--') }}</span>
+                خط الطول: <span class="mt-1 text-xs text-warning-500 dark:text-warning/90"
+                  id="endLngDisplay">{{ old('end_longitude', '--') }}</span>
               </div>
             </div>
-          @error('end_address')
-            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-          @enderror
-          @error('end_latitude')
-            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-          @enderror
-          @error('end_longitude')
-            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-          @enderror
-        </div>
+            @error('end_address')
+              <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+            @enderror
+            @error('end_latitude')
+              <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+            @enderror
+            @error('end_longitude')
+              <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+            @enderror
+          </div>
         </div>
 
       </div>
@@ -196,18 +198,98 @@
       <livewire:special-orders.create />
 
       <!-- أزرار التحكم -->
+
+      <!-- أزرار التحكم -->
       <div class="flex items-center justify-end w-full gap-3 mt-6">
-        <a href="{{ url()->previous() }}" type="button"
-          class="hover:border-brand-500 flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 sm:w-auto">
-          السعر
-        </a>
+
+        {{-- 2. تعديل زر "السعر" --}}
+        <button type="button" @click="
+                            loadingPrice = true;
+
+                            // جلب الإحداثيات
+                            const startLat = document.getElementById('start_latitude').value;
+                            const startLng = document.getElementById('start_longitude').value;
+                            const endLat = document.getElementById('end_latitude').value;
+                            const endLng = document.getElementById('end_longitude').value;
+                            const vehicle_id = document.getElementById('vehicle_id').value;
+                            const coupon_code = document.getElementById('coupon_code').value;
+
+
+
+                            // تحقق من وجود الإحداثيات
+                            if (!startLat || !endLat) {
+                                alert('يرجى تحديد نقطة البداية والنهاية على الخريطة أولاً.');
+                                loadingPrice = false;
+                                return; 
+                            }
+
+                            if(!vehicle_id){
+                                alert (' يجب اختيار المركبه اولا ')
+                                loadingPrice = false;
+                                return;
+                            }
+
+                            // إرسال الطلب
+                            fetch('{{ route('trip.calculatePrice') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    start_latitude: startLat,
+                                    start_longitude: startLng,
+                                    end_latitude: endLat,
+                                    end_longitude: endLng,
+                                    vehicle_id: vehicle_id,
+                                    coupon_code: coupon_code,
+                                    
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if(data.price) {
+                                    calculatedPrice = data.price;
+                                    distanceInKm = data.distanceInKm;
+                                    vehicle = data.vehicle;
+                                    coupon = data.coupon;
+                                    showPriceModal = true;
+                                } else {
+                                    alert('حدث خطأ أثناء حساب السعر.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('فشل الاتصال بالخادم.');
+                            })
+                            .finally(() => {
+                                loadingPrice = false;
+                            });
+                        " :disabled="loadingPrice"
+          class="hover:border-brand-500 flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 sm:w-auto disabled:opacity-50">
+
+          <span x-show="!loadingPrice">السعر</span>
+          <span x-show="loadingPrice">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+          </span>
+        </button>
+
+        {{-- زر إنشاء الرحلة --}}
         <button type="submit"
           class="flex justify-center hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500">
           إنشاء رحلة
         </button>
       </div>
     </form>
+    @include('pages.specialorder.show-price-modal')
   </div>
+  {{-- 3. إضافة المودال الخاص بعرض السعر --}}
+  
 @endsection
 
 @section('script')
