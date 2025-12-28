@@ -66,7 +66,6 @@ class CouponController extends Controller
     public function show($id)
     {
         $coupon = DiscountCode::findOrFail($id);
-
         $users = $coupon->users()->paginate(10);
         return view('pages.coupons.show', compact('coupon','users'));
     }
@@ -82,12 +81,7 @@ class CouponController extends Controller
                 ->with('openModalEdit',true)
                 ->with('Coupon', $coupon);
         } catch (Exception $e) {
-            return redirect()->back()
-                ->with('error', true)
-                ->with('error_title', 'حدث خطأ!')
-                ->with('error_message', $e->getMessage())
-                ->with('error_buttonText', 'حسناً')
-                ->with('openModalEdit',false);
+            return WebResponseClass::sendExceptionError($e);
         }
     }
 
