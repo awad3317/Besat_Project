@@ -74,4 +74,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Rating::class);
     }
+    // In App\Models\Customer.php
+public function getInitials(): string
+{
+    $words = explode(' ', $this->name);
+    $initials = '';
+    if (isset($words[0])) {
+        $initials .= mb_substr($words[0], 0, 1);
+    }
+    if (isset($words[1])) {
+        $initials .= mb_substr($words[1], 0, 1);
+    }
+    return mb_strtoupper($initials);
+}
 }

@@ -9,66 +9,25 @@ class PriceCalculationService{
 /**
      * Create a new class instance.
      */
-    public function __construct(private ServiceRepository $serviceRepository, private AppSettingRepository $appSettingRepository    )
+    public function __construct()
     {
         //
     }
-    public function calculateBasePrice($serviceId, $distanceKm)
+    public function calculateDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
     {
-        $service = $this->serviceRepository->getById($serviceId);
-    
-        $basePrice = $service->base_price;
-        $distanceCost = $service->price_per_km * $distanceKm;
-        $originalPrice = $basePrice + $distanceCost;
+        $earthRadius = 6371;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
 
-        return [
-            'service' => [
-                'id' => $service->id,
-                'name' => $service->name,
-                'base_price' => $service->base_price,
-                'price_per_km' => $service->price_per_km
-            ],
-            'distance_km' => $distanceKm,
-            'original_price' => $originalPrice,
-            'discount_applied' => false,
-            'discount_amount' => 0,
-            'final_price' => $originalPrice,
-        ];
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        $distance = $earthRadius * $c;
+        return round($distance, 1);
     }
-
-    public function calculatePriceWithDiscount($serviceId, $distanceKm, $coupon)
-    {
+    public function calculateBasePriceBasedOnVehicleType($distanceKm, $vehicle){
         
-        $baseResult = $this->calculateBasePrice($serviceId, $distanceKm);
-        $originalPrice = $baseResult['original_price'];
-
-        
-        $discountAmount = $this->calculateDiscountAmount($originalPrice, $coupon);
-        $finalPrice = max(0, $originalPrice - $discountAmount);
-
-        
-        return [
-            'service' => $baseResult['service'],
-            'distance_km' => $baseResult['distance_km'],
-            'original_price' => $originalPrice,
-            'discount_applied' => true,
-            'discount_amount' => $discountAmount,
-            'final_price' => $finalPrice,
-        ];
     }
-
-     private function calculateDiscountAmount($originalPrice, $coupon)
-    {
-        return ($originalPrice * $coupon->discount_rate) / 100;
-    }
-    public function calculateCommission($finalPrice){
-        $setting = $this->appSettingRepository->getSetting();
-
-        $commissionRate = $setting ? $setting->commission_rate : 10;
-
-        $commission = ($finalPrice * $commissionRate) / 100;
-        return $commission;
-     }
-
 
 }

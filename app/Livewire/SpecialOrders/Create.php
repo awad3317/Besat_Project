@@ -2,16 +2,54 @@
 
 namespace App\Livewire\SpecialOrders;
 
-use Livewire\Component;
-use Livewire\Attributes\Computed;
+use App\Models\User;
 use App\Models\Vehicle;
-use App\Services\DiscountCodeService;
+use Livewire\Component;
 use App\Models\DiscountCode;
+use Livewire\Attributes\Computed;
+use App\Services\DiscountCodeService;
 
 class Create extends Component
 {
     public $coupon_code = '';
     public $coupon_message = '';
+     
+    public $customer_phone = '';    
+    public $customers_list = [];     
+    public $selected_customer_id = null;
+
+    /**
+     * هذه الدالة (Hook) تعمل تلقائيًا عند تحديث قيمة customer_phone
+     */
+    public function updatedCustomerPhone($value)
+    {
+        // إذا كان حقل البحث يحتوي على 3 أحرف أو أكثر، ابدأ البحث
+        if (strlen($value) >= 3) {
+            $this->customers_list = User::where('phone', 'like', '%' . $value . '%')
+                ->orWhere('name', 'like', '%' . $value . '%')
+                ->where('type','user')
+                ->where('is_banned',0)
+                ->limit(5)
+                ->get();
+        } else {
+            
+            $this->customers_list = [];
+        }
+
+        // إعادة تعيين العميل المختار إذا بدأ المستخدم بحثاً جديداً
+        $this->selected_customer_id = null;
+    }
+
+    /**
+     * هذه الدالة تعمل عند اختيار عميل من القائمة
+     */
+    public function selectCustomer($customerId, $customerPhone)
+    {
+        $this->customer_phone = $customerPhone;     // املأ الحقل برقم جوال العميل
+        $this->selected_customer_id = $customerId;  // احتفظ بالـ ID الخاص به
+        $this->customers_list = [];                 // أخفِ قائمة النتائج
+    }
+    // --- نهاية الإضافات ---
 
     public function applyCoupon(DiscountCodeService $discountCodeService)
     {

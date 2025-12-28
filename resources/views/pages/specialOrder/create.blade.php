@@ -94,7 +94,17 @@
 @endsection
 
 @section('content')
-  <div x-data="{ loadingPrice: false, showPriceModal: false, calculatedPrice: null, distanceInKm: null, vehicle: null, coupon: null, discount_amount: 1}" class="w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
+  <div x-data="{ loadingPrice: false,
+                showErrorModal: false,
+                errorMessage: null,
+                showPriceModal: false, 
+                calculatedPrice: null,
+                distanceInKm: null, 
+                vehicle: null, 
+                coupon: null, 
+                discount_amount: 0,
+                original_price: null,
+                }" class="w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
     <form method="POST" id="tripForm" action="{{ route('specialOrder.store') }}" enctype="multipart/form-data" id="tripForm">
       @csrf
       <div class="col-span-2 mb-6">
@@ -205,7 +215,7 @@
         {{-- 2. تعديل زر "السعر" --}}
         <button type="button" @click="
                             loadingPrice = true;
-
+                            showPriceModal = false;
                             // جلب الإحداثيات
                             const startLat = document.getElementById('start_latitude').value;
                             const startLng = document.getElementById('start_longitude').value;
@@ -214,17 +224,16 @@
                             const vehicle_id = document.getElementById('vehicle_id').value;
                             const coupon_code = document.getElementById('coupon_code').value;
 
-
-
                             // تحقق من وجود الإحداثيات
                             if (!startLat || !endLat) {
-                                alert('يرجى تحديد نقطة البداية والنهاية على الخريطة أولاً.');
+                                showErrorModal= true;
+                                errorMessage='يجب عليك تحديد نقطة النهاية والبدايه';
                                 loadingPrice = false;
                                 return; 
                             }
-
                             if(!vehicle_id){
-                                alert (' يجب اختيار المركبه اولا ')
+                                showErrorModal= true;
+                                errorMessage = 'يجب اختيار المركبه اولا';
                                 loadingPrice = false;
                                 return;
                             }
@@ -248,14 +257,18 @@
                             })
                             .then(response => response.json())
                             .then(data => {
-                                if(data.price) {
+                                if(data.price !== undefined) {
+                                    original_price = data.original_price;
                                     calculatedPrice = data.price;
                                     distanceInKm = data.distanceInKm;
                                     vehicle = data.vehicle;
                                     coupon = data.coupon;
+                                    discount_amount = data.discount_amount;
                                     showPriceModal = true;
-                                } else {
-                                    alert('حدث خطأ أثناء حساب السعر.');
+                                }if(data.error){
+                                    showErrorModal = true;
+                                    errorMessage = data.error;
+                                    loadingPrice = false;
                                 }
                             })
                             .catch(error => {
