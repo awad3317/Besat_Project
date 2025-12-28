@@ -10,7 +10,6 @@ use App\Classes\WebResponseClass;
 use Illuminate\Support\Facades\Validator;
 use App\Repositories\DiscountCodeRepository;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Cache;
 
 class CouponController extends Controller
 {
@@ -55,7 +54,6 @@ class CouponController extends Controller
             $validatedData['discount_rate'] = $validatedData['discount_rate'] / 100;
             DiscountCode::create($validatedData);
             ActivityLog::log('create', 'DiscountCode', 'تم إضافة كوبون خصم جديد');
-            Cache::forget('stats');
             return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة الكوبون بنجاح');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
@@ -123,7 +121,6 @@ class CouponController extends Controller
 
             $this->DiscountCodeRepository->update($validatedData, $id);
             ActivityLog::log('update', 'DiscountCode', 'تم تعديل كوبون خصم');
-            Cache::forget('stats');
 
             return WebResponseClass::sendResponse('تم التعديل!', 'تم تعديل الكوبون بنجاح');
         } catch (Exception $e) {
