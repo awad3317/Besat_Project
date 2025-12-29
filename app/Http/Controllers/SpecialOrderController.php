@@ -138,9 +138,14 @@ class SpecialOrderController extends Controller
             $validated['end_longitude']
         );
         
-        $price_orginal = rand(1500, 5000); 
+        
+        $vehicle=$this->vehicleRepository->getById($validated['vehicle_id']);
+        $price_orginal = $this->priceCalculationService->calculateBasePriceBasedOnVehicleType($distanceInKm, $vehicle);
+        if($price_orginal == false){
+            return response()->json(['error' => '']);
+        }
         $price_final = $price_orginal;
-        $vehicle=$this->vehicleRepository->getById($validated['vehicle_id'])->type;
+        $vehicle = $vehicle->type;
         $coupon_rate = 0;
         $coupon_for_response = null; 
         $discount_amount = 0;
@@ -152,7 +157,7 @@ class SpecialOrderController extends Controller
             if(!$this->discountCodeService->checkIsActive($coupon_object)){
                 return response()->json(['error' => 'كود الخصم غير متاح']);
             }
-            // if($this->discountCodeService->checkGlobalUsage($coupon)){
+            // if($this->discountCodeService->checkGlobalUsage($coupon_object)){
             //     return response()->json(['error'=> 'كود الخصم غير متاح']);
             // }
             // عندما يتم ارسال المستخدم فعل هدا الكود
@@ -165,6 +170,7 @@ class SpecialOrderController extends Controller
             $price_final = $price_orginal - $discount_amount;
             
         }
+
         return response()->json(['distanceInKm' => $distanceInKm, 'price' => $price_final, 'vehicle' => $vehicle, 'coupon' => $coupon_for_response , 'discount_amount'=>$discount_amount, 'original_price' => $price_orginal]);
     }
    
