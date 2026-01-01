@@ -16,14 +16,14 @@ use App\Repositories\SpecialOrderRepository;
 
 class SpecialOrderController extends Controller
 {
-    public function __construct(private SpecialOrderRepository $specialOrderRepository, 
-    private DriverRepository $driverRepository, 
-    private VehicleRepository $vehicleRepository, 
+    public function __construct(private SpecialOrderRepository $specialOrderRepository,
+    private DriverRepository $driverRepository,
+    private VehicleRepository $vehicleRepository,
     private DiscountCodeService $discountCodeService,
     private PriceCalculationService $priceCalculationService
    )
     {
-        
+
     }
     /**
      * Display a listing of the resource.
@@ -130,24 +130,20 @@ class SpecialOrderController extends Controller
             'end_longitude' => ['required','numeric'],
             'vehicle_id'=>['required','integer'],
         ]);
-         
-        $distanceInKm = $this->priceCalculationService->calculateDistance(
+        $distanceInKm = $this->priceCalculationService->getdistanceInKm(
             $validated['start_latitude'],
             $validated['start_longitude'],
             $validated['end_latitude'],
             $validated['end_longitude']
         );
-        
-        
         $vehicle=$this->vehicleRepository->getById($validated['vehicle_id']);
-        $price_orginal = $this->priceCalculationService->calculateBasePriceBasedOnVehicleType($distanceInKm, $vehicle);
-        if($price_orginal == false){
-            return response()->json(['error' => '']);
-        }
+        $price_per_km = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
+        $price_orginal = $this->priceCalculationService->calculatePrice($distanceInKm,$price_per_km,$vehicle->min_price);
+
         $price_final = $price_orginal;
         $vehicle = $vehicle->type;
         $coupon_rate = 0;
-        $coupon_for_response = null; 
+        $coupon_for_response = null;
         $discount_amount = 0;
         if(isset($request->coupon_code) && !empty($request->coupon_code)){
             $coupon_object  = $this->discountCodeService->getDiscountCode($request->coupon_code);
@@ -168,12 +164,12 @@ class SpecialOrderController extends Controller
             $coupon_for_response = number_format($coupon_rate * 100, 2);
             $discount_amount = $price_orginal * ($coupon_rate);
             $price_final = $price_orginal - $discount_amount;
-            
+
         }
 
         return response()->json(['distanceInKm' => $distanceInKm, 'price' => $price_final, 'vehicle' => $vehicle, 'coupon' => $coupon_for_response , 'discount_amount'=>$discount_amount, 'original_price' => $price_orginal]);
     }
-   
+
 
 
 }
