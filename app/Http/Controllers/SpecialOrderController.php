@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use App\Services\ActivityLog;
 use Illuminate\Validation\Rule;
@@ -53,27 +55,35 @@ class SpecialOrderController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'customer_name'=>['required', 'string','max:255'],
-            'customer_phone'=>['required', 'string', 'max:20'],
-            'customer_whatsapp' => ['nullable', 'string', 'max:20'],
+            'user_id'=>['required', Rule::exists(User::class, 'id')],
+            'vehicle_id'=>['required',Rule::exists(Vehicle::class, 'id')],
             'title' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
             'start_address'=>['required'],
+            'start_latitude' => ['required','numeric'],
+            'start_longitude' => ['required','numeric'],
+            'end_latitude' => ['required','numeric'],
+            'end_longitude' => ['required','numeric'],
             'end_address' => ['required'],
-            'driver_id' => ['required', Rule::exists('drivers', 'id')],
         ]);
         if ($validator->fails()) {
             return WebResponseClass::sendValidationError($validator);
         }
         try {
-            $driver=$this->driverRepository->getById($request->driver_id);
-            if(!$driver->is_online || !$driver->is_active){
-                return WebResponseClass::sendError('السائق غير متاح او غير متصل');
-            }
             $validatData = $validator->validated();
+            $distanceInKm = $this->priceCalculationService->getdistanceInKm(
+                $validatData['start_latitude'],
+                $validatData['start_longitude'],
+                $validatData['end_latitude'],
+                $validatData['end_longitude']
+            );
+            $vehicle=$this->vehicleRepository->getById($validatData['vehicle_id']);
+            $price_per_km = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
+            $price_orginal = $this->priceCalculationService->calculatePrice($distanceInKm,$price_per_km,$vehicle->min_price);
+            $validatData['price'] = $price_orginal;
             $validatData['created_by'] = auth()->user()->id;
             $validatData['status'] = 'paused';
+            dd($validatData);
             $this->specialOrderRepository->store($validatData);
             ActivityLog::log('create','SpecialOrder','تم إنشاء رحلة جديده');
             // send notification to driver

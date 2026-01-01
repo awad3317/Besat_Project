@@ -19,7 +19,6 @@ class SpecialOrder extends Model
         'end_address',
         'description',
         'driver_id',
-        'ؤ',
         'cancellation_reason',
         'created_by',
         'cancelled_by'

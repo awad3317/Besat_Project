@@ -35,9 +35,9 @@ class Create extends Component
     }
 
 
-    public function selectCustomer($customerId, $customerPhone)
+    public function selectCustomer($customerId, $customerPhone,$name)
     {
-        $this->customer_phone = $customerPhone;
+        $this->customer_phone = $customerPhone. ' - ' . $name;
         $this->selected_customer_id = $customerId;
         $this->customers_list = [];
     }

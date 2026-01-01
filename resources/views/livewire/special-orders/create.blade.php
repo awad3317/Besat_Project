@@ -3,8 +3,8 @@
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">عنوان الرحلة <span
                 class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
-        {{-- ✅ ربط الحقل بخاصية title في Livewire --}}
-        <input type="text" placeholder="مثال: رحلة خاصة"
+
+        <input type="text" placeholder="مثال: رحلة خاصة" name="title"
             class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
         @error('title')
             <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
@@ -51,7 +51,7 @@
                 <div>
                     @forelse($customers_list as $customer)
                         {{-- When a customer is clicked, call the selectCustomer method --}}
-                        <div wire:click="selectCustomer({{ $customer->id }}, '{{ $customer->phone }}')"
+                        <div wire:click="selectCustomer({{ $customer->id }}, '{{ $customer->phone }}','{{$customer->name}}')"
                             class="flex items-center gap-3 p-2 px-4 transition-colors duration-150 border-b cursor-pointer border-gray-200/50 dark:border-gray-700/50 hover:bg-sky-50 dark:hover:bg-gray-700">
 
                             {{-- Avatar with initials --}}
@@ -82,7 +82,7 @@
             </div>
         @endif
     </div>
-
+    <input type="hidden" name="user_id" value="{{$selected_customer_id}}">
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">اختيار المركبة <span
                 class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
@@ -117,7 +117,7 @@
     <!-- الوصف -->
     <div class="col-span-2">
         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">الوصف</label>
-        <textarea placeholder="أدخل وصفاً للرحلة"
+        <textarea placeholder="أدخل وصفاً للرحلة" name="description"
             class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white"></textarea>
         @error('description')
             <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
