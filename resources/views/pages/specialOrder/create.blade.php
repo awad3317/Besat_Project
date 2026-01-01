@@ -3,6 +3,8 @@
 @section('Breadcrumb', 'إنشاء رحلة جديدة')
 
 @section('addButton')
+    <x-modals.success-modal />
+    <x-modals.error-modal />
 @endsection
 
 @section('style')
@@ -97,11 +99,11 @@
   <div x-data="{ loadingPrice: false,
                 showErrorModal: false,
                 errorMessage: null,
-                showPriceModal: false, 
+                showPriceModal: false,
                 calculatedPrice: null,
-                distanceInKm: null, 
-                vehicle: null, 
-                coupon: null, 
+                distanceInKm: null,
+                vehicle: null,
+                coupon: null,
                 discount_amount: 0,
                 original_price: null,
                 }" class="w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
@@ -142,7 +144,7 @@
             نقطة البداية <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>
           </label>
           <div class="flex flex-col space-y-2">
-            <input type="text" name="start_address" placeholder="مثال: المنصورة - سوق القات" required
+            <input type="text" name="start_address" placeholder="مثال: المنصورة - سوق القات"
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white"
               value="{{ old('start_address') }}">
             <div class="grid grid-cols-2 gap-2">
@@ -176,7 +178,7 @@
             نقطة النهاية <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>
           </label>
           <div class="flex flex-col space-y-2">
-            <input type="text" id="end_address" name="end_address" placeholder="مثال: المعلا - اسكريم المعلا" required
+            <input type="text" id="end_address" name="end_address" placeholder="مثال: المعلا - اسكريم المعلا"
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white"
               value="{{ old('end_address') }}">
             <div class="grid grid-cols-2 gap-2">
@@ -229,7 +231,7 @@
                                 showErrorModal= true;
                                 errorMessage='يجب عليك تحديد نقطة النهاية والبدايه';
                                 loadingPrice = false;
-                                return; 
+                                return;
                             }
                             if(!vehicle_id){
                                 showErrorModal= true;
@@ -252,7 +254,7 @@
                                     end_longitude: endLng,
                                     vehicle_id: vehicle_id,
                                     coupon_code: coupon_code,
-                                    
+
                                 })
                             })
                             .then(response => response.json())
@@ -302,7 +304,7 @@
     @include('pages.specialOrder.show-price-modal')
   </div>
   {{-- 3. إضافة المودال الخاص بعرض السعر --}}
-  
+
 @endsection
 
 @section('script')

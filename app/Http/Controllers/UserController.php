@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
+use App\Services\ActivityLog;
+use Illuminate\Validation\Rule;
+use App\Classes\WebResponseClass;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function __construct(private UserRepository $userRepository)
     {
-        
+
     }
     /**
      * Display a listing of the resource.
@@ -24,7 +30,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return redirect()->route('users.index')->with('isModalOpen',true);
     }
 
     /**
@@ -32,7 +38,23 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name'=>['required','string'],
+            'phone'=>['required'],
+            'whatsapp_number'=>['nullable'],
+            'password'=>['required','min:8']
+        ]);
+        if ($validator->fails()) {
+            return WebResponseClass::sendValidationError($validator);
+        }
+        try {
+            $validatedData = $validator->validated();
+            $user=$this->userRepository->store($validatedData);
+            ActivityLog::log('create', 'User', 'تم أضافة مستخدم جديد');
+            return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة مستخدم بنجاح','حسناً','specialOrder.create');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 
     /**

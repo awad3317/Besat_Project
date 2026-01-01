@@ -8,13 +8,23 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class WebResponseClass
 {
-    public static function sendResponse($title, $message,$buttonText='حسناً')
+    public static function sendResponse($title, $message,$buttonText='حسناً',$route=null)
     {
-        return redirect()->back()
+        if($route==null){
+            return redirect()->back()
             ->with('success', true)
             ->with('success_title',$title)
             ->with('success_message', $message)
             ->with('success_buttonText', $buttonText);
+        }
+        else{
+            return redirect()->route($route)
+            ->with('success', true)
+            ->with('success_title',$title)
+            ->with('success_message', $message)
+            ->with('success_buttonText', $buttonText);
+        }
+
     }
 
     public static function sendError($message,$title='حدث خطأ!',$buttonText='حسناً')
