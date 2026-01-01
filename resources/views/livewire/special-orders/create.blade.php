@@ -56,14 +56,14 @@
 
                             {{-- Avatar with initials --}}
                             <div
-                                class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-bold text-sky-800 bg-sky-100 rounded-full dark:bg-sky-900/50 dark:text-sky-300">
+                                class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-bold  bg-sky-100 rounded-full dark:bg-sky-900/50 text-warning-500 dark:text-warning/90">
                                 {{-- Assuming you have a getInitials() method on your User model --}}
                                 {{ Str::upper(Str::substr($customer->name, 0, 2)) }}
                             </div>
 
                             {{-- Name and Phone --}}
                             <div class="flex-grow">
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $customer->name }}
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $customer->name }}
                                 </p>
                                 <p class="text-xs tracking-wider text-gray-500 dark:text-gray-400">
                                     {{ $customer->phone }}</p>
