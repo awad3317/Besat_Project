@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Services\ActivityLog;
 use Illuminate\Validation\Rule;
 use App\Classes\WebResponseClass;
+use App\Services\DiscountCodeService;
 use App\Repositories\RequestRepository;
 use App\Repositories\VehicleRepository;
 use App\Services\PriceCalculationService;
@@ -18,7 +19,8 @@ class RequestController extends Controller
 {
     public function __construct(private RequestRepository $requestRepository,
     private VehicleRepository $vehicleRepository,
-    private PriceCalculationService $priceCalculationService
+    private PriceCalculationService $priceCalculationService,
+    private DiscountCodeService $discountCodeService,
    )
     {}
     /**
@@ -35,7 +37,7 @@ class RequestController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.request.create');
     }
 
     /**
@@ -44,16 +46,18 @@ class RequestController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id'=>['required', Rule::exists(User::class, 'id')],
+            'user_id'=>['required', Rule::exists(User::class, 'id')->where('type', 'user')],
             'vehicle_id'=>['required',Rule::exists(Vehicle::class, 'id')],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'discount_code' => ['nullable', 'string'],
+            'notes' => ['nullable', 'string'],
             'start_address'=>['required'],
             'start_latitude' => ['required','numeric'],
             'start_longitude' => ['required','numeric'],
             'end_latitude' => ['required','numeric'],
             'end_longitude' => ['required','numeric'],
             'end_address' => ['required'],
+            'payment_method' => ['required',Rule::in(['cash', 'deposit'])],
         ]);
         if ($validator->fails()) {
             return WebResponseClass::sendValidationError($validator);
@@ -68,13 +72,40 @@ class RequestController extends Controller
             );
             $vehicle=$this->vehicleRepository->getById($validatData['vehicle_id']);
             $price_per_km = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
-            $price_orginal = $this->priceCalculationService->calculatePrice($distanceInKm,$price_per_km,$vehicle->min_price);
-            $validatData['price'] = $price_orginal;
-            $validatData['created_by'] = auth()->user()->id;
-            $validatData['status'] = 'paused';
-            dd($validatData);
+            $orginal_price = $this->priceCalculationService->calculatePrice($distanceInKm,$price_per_km,$vehicle->min_price);
+            $discount_amount = 0;
+            $price_final = $orginal_price;
+            $discount_code_id = null;
+            if(isset($validatData['discount_code']) && !empty($validatData['discount_code'])){
+                $coupon_object  = $this->discountCodeService->getDiscountCode($validatData['discount_code']);
+                if (!$coupon_object) {
+                    return WebResponseClass::sendError('كود الخصم الذي أدخلته غير صحيح.');
+                }
+                if(!$this->discountCodeService->checkIsActive($coupon_object)){
+                    return WebResponseClass::sendError('كود الخصم غير متاح');
+                }
+                if(!$this->discountCodeService->checkGlobalUsage($coupon_object)){
+                    return WebResponseClass::sendError( 'كود الخصم تجاوز الاستخدام المسموح به');
+                }
+                if(!$this->discountCodeService->checkUserEligibility($coupon_object,$validatData['user_id'])){
+                    return WebResponseClass::sendError('كود الخصم تم استخدامه من قبل هذا المستخدم.');
+                }
+                $discount_code_id=$coupon_object->id;
+                $discount_amount = $orginal_price * ($coupon_object->discount_rate);
+                $price_final = $orginal_price - $discount_amount;
+                $this->discountCodeService->recordCouponUsage($coupon_object,$validatData['user_id']);
+            }
+            $validatData['app_commission_amount'] = $this->priceCalculationService->calculateCommission($orginal_price);
+            $validatData['final_price'] = $price_final - $validatData['app_commission_amount'];
+            $validatData['discount_code_id']= $discount_code_id;
+            $validatData['discount_amount']= $discount_amount;
+            $validatData['original_price'] = $orginal_price;
+            $validatData['distance_km'] = $distanceInKm;
+            $validatData['created_by_user'] = auth()->user()->id;
+            $validatData['created_by']='Web';
+            $validatData['status'] = 'searching_driver';
             $this->requestRepository->store($validatData);
-            ActivityLog::log('create','SpecialOrder','تم إنشاء رحلة جديده');
+            ActivityLog::log('create','Request','تم إنشاء رحلة جديده');
             // send notification to driver
 
             //

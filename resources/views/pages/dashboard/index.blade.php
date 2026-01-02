@@ -2,7 +2,7 @@
 @section('title', 'لوحة التحكم')
 @section('Breadcrumb', 'الصفحة الرئيسية')
 @section('addButton')
-  <a href="{{ route('specialOrder.create') }}"
+  <a href="{{ route('request.create') }}"
     class="bg-brand-500 hover:bg-brand-50 h-10 rounded-lg px-6 py-2 text-sm font-medium text-white min-w-[100px] inline-flex items-center justify-center">
     إنشاء رحلة جديدة
   </a>

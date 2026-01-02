@@ -17,13 +17,16 @@ return new class extends Migration
             $table->foreignId('driver_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('vehicle_id')->nullable()->constrained()->onDelete('set null');   
             $table->foreignId('discount_code_id')->nullable()->references('id')->on('discount_codes')->onDelete('set null');
+            $table->foreignId('created_by_user')->nullable()->constrained('users')->onDelete('set null');
+            $table->enum('created_by',['APP','Web']);
+            $table->string('title')->nullable();
             $table->decimal('start_latitude', 10, 8);
             $table->decimal('start_longitude', 10, 8);
             $table->string('start_address');
             $table->decimal('end_latitude', 10, 8);
             $table->decimal('end_longitude', 10, 8);
             $table->string('end_address');
-            $table->string('status');
+            $table->enum('status', ['pending', 'searching_driver', 'paused', 'in_progress', 'completed', 'cancelled'])->default('searching_driver');
             $table->decimal('original_price', 10, 2);
             $table->decimal('discount_amount', 10, 2)->default(0);
             $table->decimal('app_commission_amount', 10, 2);

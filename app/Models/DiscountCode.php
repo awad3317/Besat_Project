@@ -21,8 +21,7 @@ class DiscountCode extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'discount_code_user')
-                    ->withPivot('usage_count')
-                    ->withTimestamps(); 
+        return $this->belongsToMany(User::class, 'discount_code_user', 'discount_code_id', 'user_id')
+                    ->withPivot('usage_count');
     }
 }

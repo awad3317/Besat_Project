@@ -46,7 +46,7 @@ class SpecialOrderController extends Controller
      */
     public function create()
     {
-        return view('pages.specialOrder.create');
+        
     }
 
     /**
@@ -127,9 +127,6 @@ class SpecialOrderController extends Controller
         //
     }
 
-     /**
-     * حساب سعر الرحلة بناءً على الإحداثيات.
-     */
     public function calculatePrice(Request $request)
     {
 
@@ -139,6 +136,8 @@ class SpecialOrderController extends Controller
             'end_latitude' => ['required','numeric'],
             'end_longitude' => ['required','numeric'],
             'vehicle_id'=>['required','integer'],
+            'discount_code'=> ['nullable','string'],
+            'user_id'=>['required_with:discount_code','nullable','integer'],
         ]);
         $distanceInKm = $this->priceCalculationService->getdistanceInKm(
             $validated['start_latitude'],
@@ -155,21 +154,20 @@ class SpecialOrderController extends Controller
         $coupon_rate = 0;
         $coupon_for_response = null;
         $discount_amount = 0;
-        if(isset($request->coupon_code) && !empty($request->coupon_code)){
-            $coupon_object  = $this->discountCodeService->getDiscountCode($request->coupon_code);
+        if(isset($validated['discount_code']) && !empty($validated['discount_code'])){
+            $coupon_object  = $this->discountCodeService->getDiscountCode($validated['discount_code']);
             if (!$coupon_object) {
                 return response()->json(['error' => 'كود الخصم الذي أدخلته غير صحيح.'], 422); // 422 هو كود مناسب لأخطاء التحقق
             }
             if(!$this->discountCodeService->checkIsActive($coupon_object)){
                 return response()->json(['error' => 'كود الخصم غير متاح']);
             }
-            // if($this->discountCodeService->checkGlobalUsage($coupon_object)){
-            //     return response()->json(['error'=> 'كود الخصم غير متاح']);
-            // }
-            // عندما يتم ارسال المستخدم فعل هدا الكود
-            // if($this->discountCodeService->checkUserEligibility($coupon)){
-            //     return response()->json(['error' => 'كود الخصم غير متاح']);
-            // }
+            if(!$this->discountCodeService->checkGlobalUsage($coupon_object)){
+                return response()->json(['error'=> 'كود الخصم تجاوز الاستخدام المسموح به']);
+            }
+            if(!$this->discountCodeService->checkUserEligibility($coupon_object,$validated['user_id'])){
+                return response()->json(['error' => 'كود الخصم تم استخدامه من قبل هذا المستخدم.']);
+            }
             $coupon_rate = $coupon_object->discount_rate;
             $coupon_for_response = number_format($coupon_rate * 100, 2);
             $discount_amount = $price_orginal * ($coupon_rate);

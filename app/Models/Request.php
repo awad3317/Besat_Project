@@ -10,8 +10,10 @@ class Request extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'driver_id', 'service_id', 'discount_code_id',
+        'user_id', 'driver_id', 'discount_code_id',
         'start_latitude', 'start_longitude', 'start_address',
+        'app_commission_amount', 'vehicle_id', 'created_by_user',
+        'created_by','title',
         'end_latitude', 'end_longitude', 'end_address', 'status',
         'original_price', 'discount_amount', 'final_price',
         'distance_km', 'notes', 'payment_method'

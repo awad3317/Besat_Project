@@ -13,7 +13,7 @@ class PriceCalculationService{
 /**
      * Create a new class instance.
      */
-    public function __construct(private VehicleRepository $vehicleRepository)
+    public function __construct(private VehicleRepository $vehicleRepository,private AppSettingRepository $appSettingRepository)
     {
         //
     }
@@ -73,4 +73,9 @@ class PriceCalculationService{
         return max($total_price, $min_price);
     }
 
+    public function calculateCommission($orginal_price){
+        $commission_rate=$this->appSettingRepository->getSetting()->commission_rate;
+        $commission_amount = $orginal_price * ($commission_rate / 100);
+        return round($commission_amount);
+    }
 }
