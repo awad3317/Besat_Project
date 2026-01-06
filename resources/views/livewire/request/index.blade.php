@@ -53,7 +53,6 @@
             </div>
         </div>
 
-        {{-- فلتر: الملغية --}}
         <div wire:click.debounce.150ms="applyFilter('cancelled')" wire:loading.class="opacity-50" wire:target="applyFilter"
              class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md flex-1 @if($activeFilter == 'cancelled') border border-brand-500 dark:border-brand-500 @else border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] @endif">
             <div wire:loading wire:target="applyFilter('cancelled')" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
@@ -71,9 +70,7 @@
         </div>
     </div>
 
-    {{-- 2. مربع البحث وجدول البيانات --}}
     <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
-        {{-- حقل البحث --}}
         <div class="mb-5">
             <label class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">البحث</label>
             <div class="relative">
