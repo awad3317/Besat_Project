@@ -106,9 +106,7 @@ class RequestController extends Controller
             $validatData['status'] = 'searching_driver';
             $this->requestRepository->store($validatData);
             ActivityLog::log('create','Request','تم إنشاء رحلة جديده');
-            // send notification to driver
-
-            //
+            
             return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة الرحلة بنجاح');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
