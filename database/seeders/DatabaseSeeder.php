@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             VehicleSeeder::class,
             UserSeeder::class,
             AppSettingsSeeder::class,
+            SurchargeSeeder::class,
             // VehiclePricingSeeder::class,
             DriversSeeder::class,
             // DiscountCodeSeeder::class,
