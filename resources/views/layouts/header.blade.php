@@ -23,8 +23,8 @@
                 </svg>
 
                 <!-- cross icon -->
-                <svg :class="sidebarToggle ? 'block lg:hidden' : 'hidden'" class="fill-current" width="24" height="24"
-                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg :class="sidebarToggle ? 'block lg:hidden' : 'hidden'" class="fill-current" width="24"
+                    height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd"
                         d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
                         fill="" />
@@ -33,7 +33,8 @@
             <!-- Hamburger Toggle BTN -->
 
             <a href="index.html" class="lg:hidden w-12 h-12">
-                <img class="dark:hidden " src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}" alt="Logo" />
+                <img class="dark:hidden " src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
+                    alt="Logo" />
                 <img class="hidden dark:block w-12 h-12" src="{{ asset('tailadmin/build/src/images/user/Busat.png') }}"
                     alt="Logo" />
             </a>
@@ -56,12 +57,12 @@
             class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 lg:flex lg:justify-end lg:px-0 lg:shadow-none">
             <div class="2xsm:gap-3 flex items-center gap-2">
                 <!-- Notification Menu Area -->
-                <div class="relative" x-data="{ dropdownOpen: false, notifying: true }"
-                    @click.outside="dropdownOpen = false">
+                <div class="relative" x-data="{ dropdownOpen: false, notifying: true }" @click.outside="dropdownOpen = false">
                     <button
                         class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200  text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-900 dark:border-gray-800  dark:hover:bg-gray-800 dark:hover:text-white"
-                        @click.prevent="dropdownOpen = ! dropdownOpen; notifying = false" :class="notifying ?
-                                'text-orange-500 border-orange-300 dark:text-orange-500 dark:border-orange-300' : ''">
+                        @click.prevent="dropdownOpen = ! dropdownOpen; notifying = false"
+                        :class="notifying ?
+                            'text-orange-500 border-orange-300 dark:text-orange-500 dark:border-orange-300' : ''">
 
                         <span :class="!notifying ? 'hidden' : 'flex'"
                             class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400 dark:bg-orange-500">
@@ -87,8 +88,8 @@
                             </h5>
 
                             <button @click="dropdownOpen = false" class="text-gray-500 dark:text-gray-400">
-                                <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
+                                <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" clip-rule="evenodd"
                                         d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
                                         fill="" />
@@ -131,11 +132,12 @@
                     <div class="relative" x-data="{ dropdownOpen: false }" x-init="init()">
                         <button
                             class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
-                            @click.prevent="dropdownOpen = !dropdownOpen" :class="autoAssignEnabled ?
-                'text-orange-500 border-orange-300 dark:text-orange-400 dark:border-orange-500' : ''">
+                            @click.prevent="dropdownOpen = !dropdownOpen"
+                            :class="autoAssignEnabled ?
+                                'text-orange-500 border-orange-300 dark:text-orange-400 dark:border-orange-500' : ''">
 
-                            <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
+                            <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M16.25 7.5H13.75V5C13.75 3.75 12.5 2.5 11.25 2.5H8.75C7.5 2.5 6.25 3.75 6.25 5V7.5H3.75C2.5 7.5 1.25 8.75 1.25 10V15C1.25 16.25 2.5 17.5 3.75 17.5H16.25C17.5 17.5 18.75 16.25 18.75 15V10C18.75 8.75 17.5 7.5 16.25 7.5ZM8.75 5H11.25V7.5H8.75V5ZM16.25 15H3.75V10H16.25V15Z"
                                     stroke="currentColor" stroke-width="1" />
@@ -167,14 +169,15 @@
                             <div class="flex items-center justify-between py-2">
                                 <label class="relative inline-flex items-center cursor-pointer gap-3">
                                     <input type="checkbox" x-model="autoAssignEnabled"
-                                        @change="updateAutoAssignSetting($event.target.checked)" class="sr-only peer" />
+                                        @change="updateAutoAssignSetting($event.target.checked)"
+                                        class="sr-only peer" />
 
                                     <!-- Circular Button with Animation -->
                                     <div class="relative flex items-center justify-center w-11 h-11 rounded-full border-2 transition-all duration-500 ease-in-out transform hover:scale-110 group"
                                         :class="autoAssignEnabled
-                            ?
-                            'border-orange-300 bg-orange-50 text-orange-500 shadow-lg shadow-orange-200 dark:shadow-orange-900/30' :
-                            'border-gray-200 bg-white text-gray-500 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'">
+                                            ?
+                                            'border-orange-300 bg-orange-50 text-orange-500 shadow-lg shadow-orange-200 dark:shadow-orange-900/30' :
+                                            'border-gray-200 bg-white text-gray-500 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'">
                                         <!-- Animated Icon -->
                                         <div class="transition-all duration-500 transform"
                                             :class="autoAssignEnabled ? 'rotate-180 scale-110' : 'rotate-0 scale-100'">
@@ -213,9 +216,10 @@
                             </div>
 
                             <!-- Status Message -->
-                            <div x-show="message" class="mt-2 p-2 rounded text-sm" :class="messageType === 'success' ? 
-                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 
-                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'">
+                            <div x-show="message" class="mt-2 p-2 rounded text-sm"
+                                :class="messageType === 'success' ?
+                                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'">
                                 <span x-text="message"></span>
                             </div>
                         </div>
@@ -243,6 +247,40 @@
                 </button>
                 <!-- Dark Mode Toggler -->
 
+               <!-- ========= Rain Surcharge Toggler Start ========= -->
+<div x-data="rainSurchargeSystem()" x-init="init()">
+    <button
+        class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+        @click.prevent="toggleRainSurcharge()"
+        {{-- This class now only controls the border color when active --}}
+        :class="rainSurchargeEnabled ? 'border-orange-300 dark:border-orange-500' : ''"
+        title="تفعيل/إلغاء زيادة الطقس الممطر"
+    >
+        <!-- Rainy Cloud Icon with dynamic color -->
+        <svg
+            class="h-5 w-5 transition-colors duration-300"
+            {{-- This new class binding controls the icon color specifically --}}
+            :class="rainSurchargeEnabled ? 'text-blue-500 dark:text-blue-400' : ''"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 13v8m-8-8v8m4-6v8M20 16.58A5 5 0 0018 7h-1.26A8 8 0 104 15.25" />
+        </svg>
+
+        <!-- Active State Indicator (Ping Animation) - Stays Orange -->
+        <span x-show="rainSurchargeEnabled" class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400">
+            <span class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
+        </span>
+    </button>
+</div>
+<!-- ========= Rain Surcharge Toggler End ========= -->
+
+
+
+
 
             </div>
 
@@ -252,16 +290,19 @@
                     @click.prevent="dropdownOpen = ! dropdownOpen">
                     <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
                         @if (Auth::user()->image)
-                            <img src="{{ url(Auth::user()->image) }}" alt="User Image" class="h-full w-full object-cover" />
+                            <img src="{{ url(Auth::user()->image) }}" alt="User Image"
+                                class="h-full w-full object-cover" />
                         @else
-                            <img src="{{ asset('assets/img/User_img.png') }}" alt="User Image" class="h-full w-full object-cover" />
+                            <img src="{{ asset('assets/img/User_img.png') }}" alt="User Image"
+                                class="h-full w-full object-cover" />
                         @endif
                     </span>
 
                     <span class="text-theme-sm mr-1 block font-medium">{{ Auth::user()->name }}</span>
 
-                    <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" width="18"
-                        height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400"
+                        width="18" height="20" viewBox="0 0 18 20" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
                         <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="" stroke-width="1.5"
                             stroke-linecap="round" stroke-linejoin="round" />
                     </svg>

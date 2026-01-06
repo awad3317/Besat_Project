@@ -46,7 +46,7 @@ class SpecialOrderController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**
@@ -86,9 +86,7 @@ class SpecialOrderController extends Controller
             dd($validatData);
             $this->specialOrderRepository->store($validatData);
             ActivityLog::log('create','SpecialOrder','تم إنشاء رحلة جديده');
-            // send notification to driver
-
-            //
+            
             return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة الرحلة بنجاح');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
