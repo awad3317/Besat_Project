@@ -1,6 +1,7 @@
 <div x-data="{ 
     isModalEditOpen: @if(session('openModalEdit')) true @else false @endif,
-    imagePreview: null 
+    imagePreview: null,
+    isLoading: false 
 }">
     <div x-show="isModalEditOpen" class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto z-99999"
         style="display: none;">
@@ -16,7 +17,7 @@
             @endphp
             @if($vehicle)
                 <form method="POST" action="{{ route('Vehicle.update', $vehicle->id) }}" enctype="multipart/form-data"
-                    id="editVehicleForm">
+                    id="editVehicleForm" @submit="isLoading = true">
                     @csrf
                     @method('put')
                     <h4 class="mb-6 text-lg font-medium text-gray-800 dark:text-white/90">
@@ -147,9 +148,18 @@
                             class="hover:border-brand-500 flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 sm:w-auto">
                             إغلاق
                         </button>
-                        <button type="submit"
-                            class="flex justify-center hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500">
-                            تحديث المركبة
+                        <button type="submit" :disabled="isLoading"
+                            class="flex items-center justify-center gap-2 hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500 disabled:opacity-75 disabled:cursor-not-allowed transition-all">
+                            <!-- Loading Spinner -->
+                            <svg x-show="isLoading" class="animate-spin h-5 w-5 text-white"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                                </circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            <span x-text="isLoading ? 'جاري التحديث...' : 'تحديث المركبة'"></span>
                         </button>
                     </div>
                 </form>

@@ -17,9 +17,10 @@ return new class extends Migration
             $table->boolean('auto_assign_to_drivers')->default(false);
             $table->string('version');
             $table->string('update_url');
-            $table->string('company_website');
+            $table->string('company_website')->nullable();
             $table->string('company_whatsapp');
             $table->string('ref_no');
+            $table->boolean('maintenance_mode')->default(false);
             $table->timestamps();
         });
     }

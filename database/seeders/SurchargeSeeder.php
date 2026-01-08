@@ -21,9 +21,10 @@ class SurchargeSeeder extends Seeder
             'amount'        => 2000.00,
             'is_active'     => true,
         ]);
-         Surcharge::create([
+        Surcharge::create([
             'name'      => 'زيادة آخر الليل',
             'type'      => 'time_based',
+            'condition_key' => 'is_night',
             'time_from' => '00:00:00',
             'time_to'   => '06:00:00',
             'amount'    => 3000.00,

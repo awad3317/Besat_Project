@@ -15,8 +15,13 @@ class app_setting extends Model
         'auto_assign_to_drivers',
         'version',
         'update_url',
+        'company_website',
+        'whatsapp_support',
+        'ref_no',
+        'maintenance_mode',
     ];
     protected $casts = [
         'auto_assign_to_drivers' => 'boolean',
+        'maintenance_mode' => 'boolean',
     ];
 }

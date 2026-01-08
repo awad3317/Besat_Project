@@ -247,41 +247,6 @@
                 </button>
                 <!-- Dark Mode Toggler -->
 
-               <!-- ========= Rain Surcharge Toggler Start ========= -->
-<div x-data="rainSurchargeSystem()" x-init="init()">
-    <button
-        class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
-        @click.prevent="toggleRainSurcharge()"
-        {{-- This class now only controls the border color when active --}}
-        :class="rainSurchargeEnabled ? 'border-orange-300 dark:border-orange-500' : ''"
-        title="تفعيل/إلغاء زيادة الطقس الممطر"
-    >
-        <!-- Rainy Cloud Icon with dynamic color -->
-        <svg
-            class="h-5 w-5 transition-colors duration-300"
-            {{-- This new class binding controls the icon color specifically --}}
-            :class="rainSurchargeEnabled ? 'text-blue-500 dark:text-blue-400' : ''"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16 13v8m-8-8v8m4-6v8M20 16.58A5 5 0 0018 7h-1.26A8 8 0 104 15.25" />
-        </svg>
-
-        <!-- Active State Indicator (Ping Animation) - Stays Orange -->
-        <span x-show="rainSurchargeEnabled" class="absolute top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-orange-400">
-            <span class="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75"></span>
-        </span>
-    </button>
-</div>
-<!-- ========= Rain Surcharge Toggler End ========= -->
-
-
-
-
-
             </div>
 
             <!-- User Area -->

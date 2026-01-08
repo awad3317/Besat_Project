@@ -1,4 +1,4 @@
-<div x-data="{ isModalOpen: false}">
+<div x-data="{ isModalOpen: false, isLoading: false }">
   <button @click="isModalOpen = true"
     class="bg-brand-500 hover:bg-brand-600 h-10 rounded-lg px-6 py-2 text-sm font-medium text-white min-w-[100px]">
     إضافة مركبه
@@ -11,7 +11,8 @@
 
     <div @click.outside="isModalOpen = false"
       class="relative w-full max-w-[630px] rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-10">
-      <form method="POST" action="{{ route('Vehicle.store') }}" enctype="multipart/form-data">
+      <form method="POST" action="{{ route('Vehicle.store') }}" enctype="multipart/form-data"
+        @submit="isLoading = true">
         @csrf
         <h4 class="mb-6 text-lg font-medium text-gray-800 dark:text-white/90">
           إضافة مركبه جديدة
@@ -34,7 +35,7 @@
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
               أقل سعر للمركبة ({{ config('app.currency_symbol', 'ر.ي') }})
-            <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
+              <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
             <input type="number" step="0.01" min="0" placeholder="مثال: 25.00" name="min_price"
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
             <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
@@ -100,9 +101,17 @@
             class="hover:border-brand-500 flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 sm:w-auto">
             إغلاق
           </button>
-          <button type="submit"
-            class="flex justify-center hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500">
-            إضافة المركبه
+          <button type="submit" :disabled="isLoading"
+            class="flex items-center justify-center gap-2 hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500 disabled:opacity-75 disabled:cursor-not-allowed transition-all">
+            <!-- Loading Spinner -->
+            <svg x-show="isLoading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+              fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            <span x-text="isLoading ? 'جاري الإضافة...' : 'إضافة المركبه'"></span>
           </button>
         </div>
       </form>

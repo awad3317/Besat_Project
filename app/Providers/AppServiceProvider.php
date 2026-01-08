@@ -28,5 +28,6 @@ class AppServiceProvider extends ServiceProvider
         Livewire::component('special-orders.create', \App\Livewire\SpecialOrders\Create::class);
         Livewire::component('request.create', \App\Livewire\Request\Create::class);
         Livewire::component('request.index',\App\Livewire\Request\Index::class);
+        Livewire::component('systems.settings', \App\Livewire\Systems\Settings::class);
     }
 }

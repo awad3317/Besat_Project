@@ -5,10 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\app_setting;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Repositories\AppSettingRepository;
+
 class SystemSettingsController extends Controller
 {
+    public function __construct(private AppSettingRepository $appSettingRepository)
+    {
+    }
     public function index(){
-        return view('pages.systems.index');
+        $settings = $this->appSettingRepository->getSetting();
+        return view('pages.systems.index',compact('settings'));
     }
     public function updateAutoAssignSetting(Request $request): JsonResponse
     {
