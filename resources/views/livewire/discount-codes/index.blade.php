@@ -16,7 +16,7 @@
                 {{-- Icon --}}
                 <div
                     class="flex h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-lg border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <svg width="30" height="30" fill="none" stroke="#dc6803" stroke-width="1.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
                     </svg>
@@ -106,8 +106,7 @@
             </div>
 
         </div>
-        <div class="pt-4 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen font-outfit"
-            dir="rtl">
+        <div class="pt-4 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen font-outfit" dir="rtl">
             <div class="max-w-[1400px] mx-auto space-y-6">
                 <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
 
@@ -162,7 +161,7 @@
                                                 <h4 class="text-base font-bold text-gray-900 dark:text-white">
                                                     {{ $coupon->code }}
                                                 </h4>
-                                                
+
                                                 <p class="text-theme-xs text-gray-500 font-medium">معدل الخصم:
                                                     {{ number_format($coupon->discount_rate * 100, 2) }}%
                                                 </p>

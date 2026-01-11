@@ -5,6 +5,7 @@
   @include('pages.VehiclePricing.edit-vehicle-pricing-modal')
   <x-modals.success-modal />
   <x-modals.error-modal />
+  <x-modals.delete-modal />
 @endsection
 @section('style')
 
@@ -59,8 +60,7 @@
       </div>
     </div>
   </div>
-  <div
-    class="overflow-hidden rounded-2xl border border-gray-200 bg-white pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 mb-4">
+  <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 mb-4">
     <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -172,18 +172,13 @@
                     </button>
 
                     @if($loop->last)
-                      <form action="{{ route('vehiclePricing.destroy', $price->id) }}" method="POST" class="inline"
-                        onsubmit="return confirm('هل أنت متأكد من حذف هذا السعر؟')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                          class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </form>
+                      <button @click="$dispatch('open-delete-modal', { action: '{{ route('vehiclePricing.destroy', $price->id) }}' })" type="button"
+                        class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
                     @endif
                   </div>
                 </div>
@@ -196,6 +191,7 @@
       </table>
       <!-- table end -->
     </div>
+    
   </div>
   <div class="space-y-5 sm:space-y-6">
     <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">

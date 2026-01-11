@@ -3,7 +3,7 @@
     <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
         {{-- فلتر: الكل --}}
         <div wire:click.debounce.150ms="applyFilter('all')" wire:loading.class="opacity-50" wire:target="applyFilter"
-             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md flex-1 @if($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] @endif">
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('all')" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
                 <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
             </div>
@@ -20,7 +20,7 @@
 
         {{-- فلتر: الطلبات الجارية --}}
         <div wire:click.debounce.150ms="applyFilter('in_progress')" wire:loading.class="opacity-50" wire:target="applyFilter"
-             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md flex-1 @if($activeFilter == 'in_progress') border border-brand-500 dark:border-brand-500 @else border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] @endif">
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'in_progress') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800  @endif">
              <div wire:loading wire:target="applyFilter('in_progress')" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
                 <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
             </div>
@@ -37,7 +37,7 @@
 
         {{-- فلتر: المكتملة --}}
         <div wire:click.debounce.150ms="applyFilter('completed')" wire:loading.class="opacity-50" wire:target="applyFilter"
-             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md flex-1 @if($activeFilter == 'completed') border border-brand-500 dark:border-brand-500 @else border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] @endif">
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'completed') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('completed')" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
                 <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
             </div>
@@ -54,7 +54,7 @@
         </div>
 
         <div wire:click.debounce.150ms="applyFilter('cancelled')" wire:loading.class="opacity-50" wire:target="applyFilter"
-             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md flex-1 @if($activeFilter == 'cancelled') border border-brand-500 dark:border-brand-500 @else border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] @endif">
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'cancelled') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('cancelled')" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
                 <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
             </div>

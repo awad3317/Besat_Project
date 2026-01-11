@@ -26,6 +26,7 @@ class Settings extends Component
 
     // خصائص لنموذج الرسوم الإضافية
     public array $surchargeForm = [];
+    public $isTimeEditable = true;
 
     // يتم استدعاؤها عند تحميل المكون لأول مرة
     public function mount()
@@ -76,10 +77,14 @@ class Settings extends Component
             $this->modalTitle = 'تعديل قاعدة تسعير';
             $this->modalDesc = 'قم بتعديل بيانات قاعدة التسعير الحالية';
             $this->surchargeForm = $surcharge->toArray();
+            $this->isTimeEditable = !is_null($surcharge->time_from) && !is_null($surcharge->time_to);
         } else {
             $this->modalTitle = 'إضافة قاعدة جديدة';
             $this->modalDesc = 'قم بإضافة قاعدة تسعير جديدة للنظام';
+            $this->modalTitle = 'إضافة قاعدة جديدة';
+            $this->modalDesc = 'قم بإضافة قاعدة تسعير جديدة للنظام';
             $this->surchargeForm = ['id' => null, 'name' => '', 'type' => 'percentage', 'time_from' => '', 'time_to' => '', 'amount' => '', 'is_active' => true];
+            $this->isTimeEditable = true;
         }
         $this->modalOpen = true;
     }
