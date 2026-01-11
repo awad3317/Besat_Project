@@ -101,7 +101,7 @@ class RequestController extends Controller
                 $this->discountCodeService->recordCouponUsage($coupon_object,$validatData['user_id']);
             }
             $validatData['app_commission_amount'] = $this->priceCalculationService->calculateCommission($orginal_price);
-            $validatData['final_price'] = $price_final - $validatData['app_commission_amount'] + $totalSurcharge;
+            $validatData['final_price'] = $price_final + $validatData['app_commission_amount'] + $totalSurcharge;
             $validatData['discount_code_id']= $discount_code_id;
             $validatData['discount_amount']= $discount_amount;
             $validatData['original_price'] = $orginal_price;
@@ -128,7 +128,9 @@ class RequestController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $request = $this->requestRepository->getById($id);
+        $request->load(['user', 'driver', 'vehicle', 'surcharges', 'discountCode']);
+        return view('pages.request.show', compact('request'));
     }
 
     /**

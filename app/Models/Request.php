@@ -28,6 +28,11 @@ class Request extends Model
         return $this->belongsTo(Driver::class);
     }
 
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
     public function discountCode()
     {
         return $this->belongsTo(DiscountCode::class, 'discount_code_id');
