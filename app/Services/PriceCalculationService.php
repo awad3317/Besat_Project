@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Models\vehicle_pricing;
+use App\Models\Surcharge;
+use App\Models\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Repositories\VehicleRepository;
@@ -78,4 +81,67 @@ class PriceCalculationService{
         $commission_amount = $orginal_price * ($commission_rate / 100);
         return round($commission_amount);
     }
+
+    public function getApplicableSurcharges()
+    {
+        $activeSurcharges = Surcharge::where('is_active', true)->get();
+        $applicableSurcharges = collect();
+        $now = Carbon::now();
+
+        foreach ($activeSurcharges as $surcharge) {
+            $isApplicable = false;
+
+            // Check if time range is set
+            if ($surcharge->time_from && $surcharge->time_to) {
+                // Parse time_from and time_to
+                $startTime = Carbon::parse($surcharge->time_from->format('H:i'));
+                $endTime = Carbon::parse($surcharge->time_to->format('H:i'));
+                $currentTime = Carbon::parse($now->format('H:i'));
+
+                // Handle overnight ranges (e.g., 22:00 to 05:00)
+                if ($startTime->gt($endTime)) {
+                    if ($currentTime->gte($startTime) || $currentTime->lte($endTime)) {
+                        $isApplicable = true;
+                    }
+                } else {
+                    // Normal range (e.g., 08:00 to 17:00)
+                    if ($currentTime->between($startTime, $endTime)) {
+                        $isApplicable = true;
+                    }
+                }
+            } else {
+                // If no specific time range, applying it assuming it always applies if active
+                 $isApplicable = true;
+            }
+
+            if ($isApplicable) {
+                $applicableSurcharges->push($surcharge);
+            }
+        }
+        return $applicableSurcharges;
+    }
+
+    public function attachSurcharges(Request $request, $surcharges)
+    {
+        $surchargesToAttach = [];
+        foreach ($surcharges as $surcharge) {
+            $surchargesToAttach[$surcharge->id] = ['amount' => $surcharge->amount];
+        }
+        
+        if (!empty($surchargesToAttach)) {
+            $request->surcharges()->syncWithoutDetaching($surchargesToAttach);
+        }
+    }
+
+    // public function calculateTotalSurcharge(?Request $request = null)
+    // {
+    //     $applicableSurcharges = $this->getApplicableSurcharges();
+    //     $totalSurcharge = $applicableSurcharges->sum('amount');
+
+    //     if ($request) {
+    //         $this->attachSurcharges($request, $applicableSurcharges);
+    //     }
+
+    //     return $totalSurcharge;
+    // }
 }

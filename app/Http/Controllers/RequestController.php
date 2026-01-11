@@ -73,6 +73,11 @@ class RequestController extends Controller
             $vehicle=$this->vehicleRepository->getById($validatData['vehicle_id']);
             $price_per_km = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
             $orginal_price = $this->priceCalculationService->calculatePrice($distanceInKm,$price_per_km,$vehicle->min_price);
+            
+            // Calculate and add surcharges
+            $applicableSurcharges = $this->priceCalculationService->getApplicableSurcharges();
+            $totalSurcharge = $applicableSurcharges->sum('amount');
+
             $discount_amount = 0;
             $price_final = $orginal_price;
             $discount_code_id = null;
@@ -96,15 +101,20 @@ class RequestController extends Controller
                 $this->discountCodeService->recordCouponUsage($coupon_object,$validatData['user_id']);
             }
             $validatData['app_commission_amount'] = $this->priceCalculationService->calculateCommission($orginal_price);
-            $validatData['final_price'] = $price_final - $validatData['app_commission_amount'];
+            $validatData['final_price'] = $price_final - $validatData['app_commission_amount'] + $totalSurcharge;
             $validatData['discount_code_id']= $discount_code_id;
             $validatData['discount_amount']= $discount_amount;
             $validatData['original_price'] = $orginal_price;
             $validatData['distance_km'] = $distanceInKm;
+            $validatData['surcharge_amount'] = $totalSurcharge;
             $validatData['created_by_user'] = auth()->user()->id;
             $validatData['created_by']='Web';
             $validatData['status'] = 'searching_driver';
-            $this->requestRepository->store($validatData);
+            $createdRequest = $this->requestRepository->store($validatData);
+            
+            // Attach surcharges to the created request
+            $this->priceCalculationService->attachSurcharges($createdRequest, $applicableSurcharges);
+            
             ActivityLog::log('create','Request','تم إنشاء رحلة جديده');
             
             return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة الرحلة بنجاح');

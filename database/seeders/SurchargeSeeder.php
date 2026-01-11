@@ -13,7 +13,9 @@ class SurchargeSeeder extends Seeder
      */
     public function run(): void
     {
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         Surcharge::truncate();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
         Surcharge::create([
             'name'          => 'زيادة الطقس الممطر',
             'type'          => 'conditional',

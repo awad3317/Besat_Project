@@ -13,7 +13,7 @@ class Request extends Model
         'user_id', 'driver_id', 'discount_code_id',
         'start_latitude', 'start_longitude', 'start_address',
         'app_commission_amount', 'vehicle_id', 'created_by_user',
-        'created_by','title',
+        'created_by','title', 'surcharge_amount',
         'end_latitude', 'end_longitude', 'end_address', 'status',
         'original_price', 'discount_amount', 'final_price',
         'distance_km', 'notes', 'payment_method'
@@ -31,6 +31,13 @@ class Request extends Model
     public function discountCode()
     {
         return $this->belongsTo(DiscountCode::class, 'discount_code_id');
+    }
+
+    public function surcharges()
+    {
+        return $this->belongsToMany(Surcharge::class, 'request_surcharge')
+                    ->withPivot('amount')
+                    ->withTimestamps();
     }
 
     public static function statusConfig()

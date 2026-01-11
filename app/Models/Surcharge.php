@@ -23,4 +23,11 @@ class Surcharge extends Model
         'time_from' => 'datetime:H:i',
         'time_to' => 'datetime:H:i',
     ];
+
+    public function requests()
+    {
+        return $this->belongsToMany(Request::class, 'request_surcharge')
+                    ->withPivot('amount')
+                    ->withTimestamps();
+    }
 }
