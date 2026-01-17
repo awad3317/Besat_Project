@@ -58,3 +58,4 @@ Route::post('/driver/resetPassword', [DriverForgetPasswordController::class,'res
 Route::get('/appSettings', [AppSettingController::class, 'index']); 
 
 Route::get('/ip',[RequestController::class,'index']);
+Route::post('/upload-pdf', [AppSettingController::class, 'uploadPdf']);

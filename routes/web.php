@@ -56,6 +56,5 @@ Route::post('/calculate-price', [SpecialOrderController::class, 'calculatePrice'
     Route::post('/firebase/validate-token', [FirebaseController::class, 'validateToken'])->name('firebase.validate-token');
 
 });
-Route::get('/upload-pdf', [AppSettingController::class, 'uploadPdf']);
 
 require __DIR__.'/auth.php';

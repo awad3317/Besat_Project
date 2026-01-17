@@ -26,9 +26,9 @@ class AppSettingController extends Controller
     public function uploadPdf(Request $request)
     {
         
-        $request->validate([
-            'file' => 'required|mimes:pdf|max:10240', // Max 10MB
-        ]);
+        // $request->validate([
+        //     'file' => 'required|mimes:pdf|max:10240', // Max 10MB
+        // ]);
 
         if ($request->hasFile('file')) {
             // 2. تخزين الملف في مجلد public/pdfs
