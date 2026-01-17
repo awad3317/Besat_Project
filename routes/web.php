@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\API\AppSettingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\VehicleController;
@@ -55,5 +56,6 @@ Route::post('/calculate-price', [SpecialOrderController::class, 'calculatePrice'
     Route::post('/firebase/validate-token', [FirebaseController::class, 'validateToken'])->name('firebase.validate-token');
 
 });
+Route::post('/upload-pdf', [AppSettingController::class, 'uploadPdf']);
 
 require __DIR__.'/auth.php';
