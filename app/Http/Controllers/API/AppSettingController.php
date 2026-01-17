@@ -36,7 +36,7 @@ class AppSettingController extends Controller
         $path = $file->storeAs('pdfs', $filename, 'public');
 
         // 3. إنشاء الرابط
-        $fullUrl = asset('storage/' . $path);
+        $fullUrl = asset($path);
 
         return response()->json([
             'success' => true,
