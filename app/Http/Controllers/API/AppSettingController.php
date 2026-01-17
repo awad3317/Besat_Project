@@ -24,29 +24,27 @@ class AppSettingController extends Controller
         }
     }
     public function uploadPdf(Request $request)
-    {
-        
-        // $request->validate([
-        //     'file' => 'required|mimes:pdf|max:10240', // Max 10MB
-        // ]);
+{
+    if ($request->hasFile('file')) {
+        $file = $request->file('file');
 
-        if ($request->hasFile('file')) {
-            // 2. تخزين الملف في مجلد public/pdfs
-            // يتم تخزينه في storage/app/public/pdfs
-            $path = $request->file('file')->store('pdfs', 'public');
+        // 1. توليد اسم عشوائي ولكن مع التأكد من وجود الامتداد .pdf
+        // نستخدم time() لضمان عدم تكرار الاسم + الامتداد الأصلي
+        $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.pdf'; 
 
-            // 3. إنشاء الرابط الكامل للملف
-            // الدالة asset تقوم بإنشاء رابط يبدأ بـ http://your-domain.com
-            $fullUrl = asset('storage/' . $path);
+        // 2. استخدام storeAs بدلاً من store لتحديد الاسم
+        $path = $file->storeAs('pdfs', $filename, 'public');
 
-            // 4. إرجاع الرابط كـ JSON
-            return response()->json([
-                'success' => true,
-                'message' => 'File uploaded successfully',
-                'url' => $fullUrl
-            ], 200);
-        }
+        // 3. إنشاء الرابط
+        $fullUrl = asset('storage/' . $path);
 
-        return response()->json(['error' => 'File not uploaded'], 400);
+        return response()->json([
+            'success' => true,
+            'message' => 'File uploaded successfully',
+            'url' => $fullUrl
+        ], 200);
     }
+
+    return response()->json(['error' => 'File not uploaded'], 400);
+}
 }
