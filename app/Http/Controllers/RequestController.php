@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Request as RequestModel;
 use Exception;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -21,7 +22,7 @@ class RequestController extends Controller
     private VehicleRepository $vehicleRepository,
     private PriceCalculationService $priceCalculationService,
     private DiscountCodeService $discountCodeService,
-   )
+    )
     {}
     /**
      * Display a listing of the resource.
@@ -64,6 +65,16 @@ class RequestController extends Controller
         }
         try {
             $validatData = $validator->validated();
+
+            // Check for existing active request
+            $existingRequest = RequestModel::where('user_id', $validatData['user_id'])
+                ->whereIn('status', ['searching_driver', 'in_progress', 'pending', 'paused'])
+                ->exists();
+
+            if ($existingRequest) {
+                return WebResponseClass::sendError('عذراً، لديك رحلة قيد التنفيذ أو جاري البحث عن سائق. يرجى إكمالها أولاً.');
+            }
+
             $distanceInKm = $this->priceCalculationService->getdistanceInKm(
                 $validatData['start_latitude'],
                 $validatData['start_longitude'],

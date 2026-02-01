@@ -23,20 +23,32 @@
         <div class="flex gap-2">
 
             {{-- The search input field --}}
-            <input id="customer_search" type="tel" placeholder="أبحث برقم الهاتف أو الاسم" {{-- This is the crucial part: binding to the correct properties for live search --}}
-                wire:model.live.debounce.300ms="customer_phone" autocomplete="off"
-                class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+            <input id="customer_search" type="tel" placeholder="أبحث برقم الهاتف أو الاسم" {{-- This is the crucial
+                part: binding to the correct properties for live search --}}
+                wire:model.live.debounce.300ms="customer_phone" autocomplete="off" @if($selected_customer_id) disabled
+                @endif
+                class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white disabled:bg-gray-100 disabled:cursor-not-allowed dark:disabled:bg-gray-800">
 
-            {{-- The button (its functionality is now visual, as the search is live) --}}
-            <a href="{{ route('users.create') }}"
-                class="flex justify-center hover:bg-brand-600 px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500"
-                title="البحث يعمل تلقائياً أثناء الكتابة">
-                <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                    stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-
-            </a>
+            {{-- Reset Button (Shows when a customer is selected) --}}
+            @if($selected_customer_id)
+                <button type="button" wire:click="resetCustomer"
+                    class="flex justify-center hover:bg-brand-600 px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500"
+                    title="إعادة تعيين">
+                    <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </button>
+            @else
+                {{-- Create User Button (Shows when no customer is selected) --}}
+                <a href="{{ route('users.create') }}"
+                    class="flex justify-center hover:bg-brand-600 px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500"
+                    title="البحث يعمل تلقائياً أثناء الكتابة">
+                    <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                </a>
+            @endif
         </div>
 
         {{-- Display validation rrors for the search input --}}
@@ -66,7 +78,8 @@
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $customer->name }}
                                 </p>
                                 <p class="text-xs tracking-wider text-gray-500 dark:text-gray-400">
-                                    {{ $customer->phone }}</p>
+                                    {{ $customer->phone }}
+                                </p>
                             </div>
 
                             {{-- Optional selection icon --}}
@@ -96,7 +109,7 @@
     </div>
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">طريقة الدفع <span
-            class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
+                class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
         <select name="payment_method"
             class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
             <option value="cash" selected>كاش</option>

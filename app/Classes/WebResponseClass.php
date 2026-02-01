@@ -40,6 +40,7 @@ class WebResponseClass
     {
         return redirect()->back()
                     ->withErrors($validator)
+                    ->withInput()
                     ->with('error', true)
                     ->with('error_title', $title)
                     ->with('error_message', $validator->errors()->first())

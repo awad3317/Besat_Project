@@ -41,6 +41,13 @@ class Create extends Component
         $this->customers_list = [];
     }
 
+    public function resetCustomer()
+    {
+        $this->customer_phone = '';
+        $this->selected_customer_id = null;
+        $this->customers_list = [];
+    }
+
     public function applyCoupon(DiscountCodeService $discountCodeService)
     {
         $this->reset(['coupon_message']);

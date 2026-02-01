@@ -3,6 +3,7 @@
 namespace App\Livewire\Request;
 
 use App\Models\Request as RequestModel;
+use App\Models\Driver;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
@@ -77,6 +78,54 @@ class Index extends Component
             })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
+    }
+
+    public $selectedRequestId = null;
+    public $driverSearch = '';
+
+    // ... existing properties ...
+
+    #[Computed]
+    public function drivers()
+    {
+        $request = $this->selectedRequestId ? RequestModel::find($this->selectedRequestId) : null;
+
+        return Driver::where('is_active', true)
+            ->where('is_online', true)
+            ->where('is_banned', false)
+            ->when($request, function ($query) use ($request) {
+                $query->where('vehicle_id', $request->vehicle_id);
+            })
+            ->when($this->driverSearch, function ($query) {
+                $query->where('name', 'like', '%' . $this->driverSearch . '%')
+                      ->orWhere('phone', 'like', '%' . $this->driverSearch . '%');
+            })
+            ->limit(10)
+            ->get();
+    }
+
+    public function openAssignDriverModal($requestId)
+    {
+        $this->selectedRequestId = $requestId;
+        $this->driverSearch = '';
+        $this->dispatch('open-modal', 'assign-driver-modal');
+    }
+
+    public function assignDriver($driverId)
+    {
+        $request = RequestModel::find($this->selectedRequestId);
+        if ($request) {
+            $request->update([
+                'driver_id' => $driverId,
+                'status' => 'in_progress' // Or keep current status depending on logic, but usually assignment implies progress
+            ]);
+            
+            // Generate notification logic if needed (optional for now as per plan)
+        }
+
+        $this->dispatch('close-modal', 'assign-driver-modal');
+        $this->selectedRequestId = null;
+        $this->dispatch('notify', message: 'تم تعيين السائق بنجاح', type: 'success');
     }
 
     public function render()

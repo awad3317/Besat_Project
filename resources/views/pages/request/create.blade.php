@@ -3,8 +3,8 @@
 @section('Breadcrumb', 'إنشاء رحلة جديدة')
 
 @section('addButton')
-    <x-modals.success-modal />
-    <x-modals.error-modal />
+  <x-modals.success-modal />
+  <x-modals.error-modal />
 @endsection
 
 @section('style')
@@ -97,17 +97,19 @@
 
 @section('content')
   <div x-data="{ loadingPrice: false,
-                showErrorModal: false,
-                errorMessage: null,
-                showPriceModal: false,
-                calculatedPrice: null,
-                distanceInKm: null,
-                vehicle: null,
-                coupon: null,
-                discount_amount: 0,
-                original_price: null,
-                }" class="w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
-    <form method="POST" id="tripForm" action="{{ route('request.store') }}" enctype="multipart/form-data" id="tripForm">
+                  loadingSubmit: false,
+                  showErrorModal: false,
+                  errorMessage: null,
+                  showPriceModal: false,
+                  calculatedPrice: null,
+                  distanceInKm: null,
+                  vehicle: null,
+                  coupon: null,
+                  discount_amount: 0,
+                  original_price: null,
+                  }" class="w-full rounded-3xl bg-white p-6 dark:bg-gray-900">
+    <form method="POST" id="tripForm" action="{{ route('request.store') }}" enctype="multipart/form-data"
+      @submit="loadingSubmit = true">
       @csrf
       <div class="col-span-2 mb-6">
         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -189,7 +191,7 @@
       </div>
 
       <livewire:request.create />
-      
+
 
       <!-- أزرار التحكم -->
 
@@ -198,79 +200,79 @@
 
         {{-- 2. تعديل زر "السعر" --}}
         <button type="button" @click="
-                            loadingPrice = true;
-                            showPriceModal = false;
-                            // جلب الإحداثيات
-                            const startLat = document.getElementById('start_latitude').value;
-                            const startLng = document.getElementById('start_longitude').value;
-                            const endLat = document.getElementById('end_latitude').value;
-                            const endLng = document.getElementById('end_longitude').value;
-                            const vehicle_id = document.getElementById('vehicle_id').value;
-                            const discount_code = document.getElementById('discount_code').value;
-                            const user_id = document.getElementById('user_id').value;
+                              loadingPrice = true;
+                              showPriceModal = false;
+                              // جلب الإحداثيات
+                              const startLat = document.getElementById('start_latitude').value;
+                              const startLng = document.getElementById('start_longitude').value;
+                              const endLat = document.getElementById('end_latitude').value;
+                              const endLng = document.getElementById('end_longitude').value;
+                              const vehicle_id = document.getElementById('vehicle_id').value;
+                              const discount_code = document.getElementById('discount_code').value;
+                              const user_id = document.getElementById('user_id').value;
 
 
-                            // تحقق من وجود الإحداثيات
-                            if (!startLat || !endLat) {
-                                showErrorModal= true;
-                                errorMessage='يجب عليك تحديد نقطة النهاية والبدايه';
-                                loadingPrice = false;
-                                return;
-                            }
-                            if(!vehicle_id){
-                                showErrorModal= true;
-                                errorMessage = 'يجب اختيار المركبه اولا';
-                                loadingPrice = false;
-                                return;
-                            }
-                            if(discount_code && !user_id){
-                                showErrorModal= true;
-                                errorMessage = 'يجب عليك أختيار مستخدم اولا عند ادخال كود خصم';
-                                loadingPrice = false;
-                                return;
-                            }
+                              // تحقق من وجود الإحداثيات
+                              if (!startLat || !endLat) {
+                                  showErrorModal= true;
+                                  errorMessage='يجب عليك تحديد نقطة النهاية والبدايه';
+                                  loadingPrice = false;
+                                  return;
+                              }
+                              if(!vehicle_id){
+                                  showErrorModal= true;
+                                  errorMessage = 'يجب اختيار المركبه اولا';
+                                  loadingPrice = false;
+                                  return;
+                              }
+                              if(discount_code && !user_id){
+                                  showErrorModal= true;
+                                  errorMessage = 'يجب عليك أختيار مستخدم اولا عند ادخال كود خصم';
+                                  loadingPrice = false;
+                                  return;
+                              }
 
-                            // إرسال الطلب
-                            fetch('{{ route('trip.calculatePrice') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                body: JSON.stringify({
-                                    start_latitude: startLat,
-                                    start_longitude: startLng,
-                                    end_latitude: endLat,
-                                    end_longitude: endLng,
-                                    vehicle_id: vehicle_id,
-                                    discount_code: discount_code,
-                                    user_id: user_id,
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if(data.price !== undefined) {
-                                    original_price = data.original_price;
-                                    calculatedPrice = data.price;
-                                    distanceInKm = data.distanceInKm;
-                                    vehicle = data.vehicle;
-                                    coupon = data.coupon;
-                                    discount_amount = data.discount_amount;
-                                    showPriceModal = true;
-                                }if(data.error){
-                                    showErrorModal = true;
-                                    errorMessage = data.error;
-                                    loadingPrice = false;
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('فشل الاتصال بالخادم.');
-                            })
-                            .finally(() => {
-                                loadingPrice = false;
-                            });
-                        " :disabled="loadingPrice"
+                              // إرسال الطلب
+                              fetch('{{ route('trip.calculatePrice') }}', {
+                                  method: 'POST',
+                                  headers: {
+                                      'Content-Type': 'application/json',
+                                      'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                  },
+                                  body: JSON.stringify({
+                                      start_latitude: startLat,
+                                      start_longitude: startLng,
+                                      end_latitude: endLat,
+                                      end_longitude: endLng,
+                                      vehicle_id: vehicle_id,
+                                      discount_code: discount_code,
+                                      user_id: user_id,
+                                  })
+                              })
+                              .then(response => response.json())
+                              .then(data => {
+                                  if(data.price !== undefined) {
+                                      original_price = data.original_price;
+                                      calculatedPrice = data.price;
+                                      distanceInKm = data.distanceInKm;
+                                      vehicle = data.vehicle;
+                                      coupon = data.coupon;
+                                      discount_amount = data.discount_amount;
+                                      showPriceModal = true;
+                                  }if(data.error){
+                                      showErrorModal = true;
+                                      errorMessage = data.error;
+                                      loadingPrice = false;
+                                  }
+                              })
+                              .catch(error => {
+                                  console.error('Error:', error);
+                                  alert('فشل الاتصال بالخادم.');
+                              })
+                              .finally(() => {
+                                  loadingPrice = false;
+                              });
+                          " :disabled="loadingPrice"
           class="hover:border-brand-500 flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 sm:w-auto disabled:opacity-50">
 
           <span x-show="!loadingPrice">السعر</span>
@@ -285,9 +287,19 @@
         </button>
 
         {{-- زر إنشاء الرحلة --}}
-        <button type="submit"
-          class="flex justify-center hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500">
-          إنشاء رحلة
+        <button type="submit" :disabled="loadingSubmit"
+          class="flex justify-center hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span x-show="!loadingSubmit">إنشاء رحلة</span>
+          <span x-show="loadingSubmit" class="flex items-center gap-2">
+            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            جاري الإنشاء...
+          </span>
         </button>
       </div>
     </form>

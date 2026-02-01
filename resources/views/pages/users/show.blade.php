@@ -152,19 +152,25 @@
                     <div class="flex items-center">
                       <div class="flex items-center gap-3">
                         <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                          @if ($request->driver->driver_image)
+                          @if ($request->driver && $request->driver->driver_image)
                             <img src='{{ url("$request->driver->driver_image") }}' alt="Driver Image" loading="lazy" />
                           @else
                             <img src="{{ asset('assets/img/User_img.png') }}" alt="Driver Image" loading="lazy" />
                           @endif
                         </div>
                         <div>
-                          <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {{ $request->driver->name }}
-                          </p>
-                          <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                            {{ $request->driver->phone }}
-                          </span>
+                          @if($request->driver)
+                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                              {{ $request->driver->name }}
+                            </p>
+                            <span class="text-gray-500 text-theme-xs dark:text-gray-400">
+                              {{ $request->driver->phone }}
+                            </span>
+                          @else
+                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                              غير معين
+                            </p>
+                          @endif
                         </div>
                       </div>
                     </div>
@@ -210,7 +216,7 @@
                   </td>
                   <td class="py-3">
                     <div class="flex items-center justify-center">
-                      <a href="{{ route('requests.show', $request->id) }}">
+                      <a href="{{ route('request.show', $request->id) }}"
                         class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs
                         font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800
                         dark:text-white">
@@ -229,8 +235,8 @@
                     <div class="flex flex-col items-center justify-center text-center">
                       <div
                         class="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
-                        <svg class="ml-10" fill="#dc6803" width="30" height="30"
-                          viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="ml-10" fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" id="icon"
+                          xmlns="http://www.w3.org/2000/svg">
                           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                           <g id="SVGRepo_iconCarrier">
