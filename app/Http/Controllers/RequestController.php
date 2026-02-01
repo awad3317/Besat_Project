@@ -117,7 +117,7 @@ class RequestController extends Controller
             
             ActivityLog::log('create','Request','تم إنشاء رحلة جديده');
             
-            return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة الرحلة بنجاح');
+            return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة الرحلة بنجاح','حسناً','request.index');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
         }

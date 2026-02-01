@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\WebResponseClass;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Services\ActivityLog;
 use Illuminate\Validation\Rule;
+use App\Classes\WebResponseClass;
+use Illuminate\Support\Facades\Validator;
 use App\Repositories\VehiclePricingRepository;
 
 class vehiclePricingController extends Controller
@@ -93,6 +94,7 @@ class vehiclePricingController extends Controller
             }
 
             $VehiclePricing = $this->VehiclePricingRepository->store($request->all());
+            ActivityLog::log('create', 'vehicle_pricing', 'تم إضافة سعر للمركبه '.'{'.$VehiclePricing->vehicle->type.'}');
             return redirect()->back()
             ->with('success', true)
             ->with('success_title', 'تم الإضافة!')
@@ -165,6 +167,7 @@ class vehiclePricingController extends Controller
                 'max_distance_km' => $request->max_distance_km,
             ];
             $this->VehiclePricingRepository->update($data,$id);
+            ActivityLog::log('update', 'vehicle_pricing', 'تم تحديث السعر للمركبه '.'{'.$VehiclePricing->vehicle->type.'}');
             return redirect()->back()
                 ->with('success', true)
                 ->with('success_title', 'تم التحديث!')

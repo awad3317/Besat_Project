@@ -51,7 +51,7 @@ class UserController extends Controller
             $validatedData = $validator->validated();
             $user=$this->userRepository->store($validatedData);
             ActivityLog::log('create', 'User', 'تم أضافة مستخدم جديد');
-            return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة مستخدم بنجاح','حسناً','specialOrder.create');
+            return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة مستخدم بنجاح','حسناً','request.create');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
         }

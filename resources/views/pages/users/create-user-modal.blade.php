@@ -176,7 +176,7 @@
 
                                 <!-- 3. حقل الإدخال المرئي (تم ربطه بـ x-model وإزالة name) -->
                                 <input id="phone_number_display" type="tel" x-model="localPhoneNumber"
-                                    placeholder="780236551" required
+                                    placeholder="780236551"
                                     class="flex-grow bg-transparent px-3 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-0 border-none rounded-l-lg text-left"
                                     dir="ltr">
                             </div>
