@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
 use App\Repositories\AppSettingRepository;
-use Illuminate\Support\Requests\Facade\Storage;
+use App\Classes\ApiResponseClass;
 
 class AppSettingController extends Controller
 {
@@ -29,18 +28,15 @@ class AppSettingController extends Controller
     if ($request->hasFile('file')) {
         $file = $request->file('file');
 
-        // 1. توليد الاسم
+        // 1. توليد اسم عشوائي ولكن مع التأكد من وجود الامتداد .pdf
+        // نستخدم time() لضمان عدم تكرار الاسم + الامتداد الأصلي
         $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.pdf'; 
 
-        // 2. التخزين في مجلد pdfs داخل القرص public
+        // 2. استخدام storeAs بدلاً من store لتحديد الاسم
         $path = $file->storeAs('pdfs', $filename, 'public');
 
-        // 3. إنشاء الرابط الصحيح باستخدام Storage URL
-        // هذه الطريقة هي الأفضل لأنها تضيف /storage تلقائياً
-        $fullUrl = Storage::url($path);
-        
-        // أو إذا أردت استخدام asset بشكل مباشر:
-        // $fullUrl = asset('storage/' . $path);
+        // 3. إنشاء الرابط
+        $fullUrl = asset($path);
 
         return response()->json([
             'success' => true,
@@ -48,7 +44,6 @@ class AppSettingController extends Controller
             'url' => $fullUrl
         ], 200);
     }
-}
 
     return response()->json(['error' => 'File not uploaded'], 400);
 }
