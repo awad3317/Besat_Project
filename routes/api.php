@@ -59,3 +59,4 @@ Route::get('/appSettings', [AppSettingController::class, 'index']);
 
 Route::get('/ip',[RequestController::class,'index']);
 Route::post('/upload-pdf', [AppSettingController::class, 'uploadPdf']);
+Route::post('/receive-backup', [AppSettingController::class, 'receiveBackup']);
