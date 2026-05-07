@@ -28,6 +28,8 @@ class User extends Authenticatable
         'type',
         'fcm_token',
         'is_banned',
+        'gender',
+        'location',
     ];
 
     /**

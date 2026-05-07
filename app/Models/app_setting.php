@@ -18,10 +18,12 @@ class app_setting extends Model
         'company_website',
         'whatsapp_support',
         'ref_no',
+        'otp_enabled',
         'maintenance_mode',
     ];
     protected $casts = [
         'auto_assign_to_drivers' => 'boolean',
         'maintenance_mode' => 'boolean',
+        'otp_enabled' => 'boolean',
     ];
 }

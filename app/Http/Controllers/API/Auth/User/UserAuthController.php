@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\API\Auth\User;
 
-use App\Services\OtpService;
-use Illuminate\Http\Request;
-use App\Services\TwilioService;
-use Illuminate\Validation\Rule;
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
-use App\Repositories\UserRepository;
-use Illuminate\Support\Facades\Hash;
-use App\Services\Notifications\FireBase;
+use App\Repositories\AppSettingRepository;
 use App\Repositories\UserDeviceRepository;
+use App\Repositories\UserRepository;
+use App\Services\Notifications\FireBase;
+use App\Services\Evolution\OTPService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserAuthController extends Controller
 {
      /**
      * Create a new class instance.
      */
-    public function __construct(private UserRepository $UserRepository, private OtpService $otpService,private TwilioService $TwilioService,private UserDeviceRepository $userDeviceRepository)
+    public function __construct(private UserRepository $UserRepository, private OtpService $otpService,private UserDeviceRepository $userDeviceRepository,private AppSettingRepository $app_setting_repository)
     {
         //
     }
@@ -29,13 +29,25 @@ class UserAuthController extends Controller
             'whatsapp_number'=>['nullable','string','min:9','max:15'],
             'password' => ['required','string','min:6','confirmed',],
             'name'=>['required','string','max:100'],
+            'gender'=>['required',Rule::in(['female', 'male'])]
         ]);
         
         // $user=$this->UserRepository->store($fields);
+        $appSettings = $this->app_setting_repository->getSetting();
+        $isOtpEnabled = $appSettings ? $appSettings->otp_enabled : true;
+        if (!$isOtpEnabled){
+            $fields['phone_verified_at'] = now();
+            $user = $this->UserRepository->store($fields);
+            $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
+            return ApiResponseClass::sendResponse([
+            'user' => $user,
+            'token' => $token,
+            'token_type' => 'Bearer'
+            ], 'تم إنشاء الحساب وتفعيله مباشرة');
+        }
         $otp=$this->otpService->generateOTP($fields['phone'],'account_creation');
-        // $this->HypersenderService->sendTextMessage($fields['phone'],strval($otp));
-
-        return ApiResponseClass::sendResponse($fields['phone'],'تم إرسال رمز التحقق الى رقم الهاتف :'. $fields['phone']);
+        $this->otpService->sendOtp($fields['phone'],$otp);
+        return ApiResponseClass::sendResponse($fields['phone'],'تم إرسال رمز التحقق الى تطبيق الواتس اب للرقم الهاتف :'. $fields['phone']);
     }
 
     public function login(Request $request)

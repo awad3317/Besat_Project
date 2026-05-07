@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('commission_rate')->nullable();
             $table->boolean('auto_assign_to_drivers')->default(false);
             $table->string('version');
+            $table->boolean('otp_enabled')->default(true);
             $table->string('update_url');
             $table->string('company_website')->nullable();
             $table->string('company_whatsapp');

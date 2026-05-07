@@ -17,10 +17,12 @@ return new class extends Migration
             $table->string('phone');
             $table->string('image')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
-             $table->text('fcm_token')->nullable();
+            $table->text('fcm_token')->nullable();
             // $table->string('email')->unique();
             $table->string('whatsapp_number')->nullable();
             $table->enum('type',['user','admin','superAdmin'])->default('user');
+            $table->enum('gender', ['female', 'male']);
+            $table->string('location')->nullable();
             $table->boolean('is_banned')->default(false);
             // $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
