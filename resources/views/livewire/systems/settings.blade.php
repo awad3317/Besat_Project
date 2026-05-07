@@ -505,6 +505,37 @@
                                 </div>
                             </label>
                         </div>
+                        
+                        <!-- OTP Enabled Toggle -->
+                        <div class="px-6 py-5 flex items-center justify-between text-right">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
+                                    <!-- أيقونة قفل الحماية للـ OTP -->
+                                    <svg class="h-6 w-6 text-warning-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white">التحقق برمز الـ OTP
+                                    </h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">تفعيل أو إيقاف التحقق من أرقام
+                                        الهواتف (للطوارئ)</p>
+                                </div>
+                            </div>
+                            <label class="flex cursor-pointer items-center gap-3">
+                                <div class="relative">
+                                    <input type="checkbox" class="sr-only" wire:model.live="settings.otp_enabled">
+                                    <div class="block h-6 w-11 rounded-full transition-colors duration-300"
+                                        :class="$wire.settings.otp_enabled ? 'bg-success-500' : 'bg-gray-200 dark:bg-gray-700'">
+                                    </div>
+                                    <div class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-300"
+                                        :class="{ 'translate-x-full': $wire.settings.otp_enabled }"></div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
                 </div>
             @endif
@@ -559,20 +590,20 @@
                         </div>
 
                         @if($isTimeEditable)
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">من
-                                    الساعة</label>
-                                <input type="time" wire:model="surchargeForm.time_from"
-                                    class="h-11 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">من
+                                        الساعة</label>
+                                    <input type="time" wire:model="surchargeForm.time_from"
+                                        class="h-11 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">إلى
+                                        الساعة</label>
+                                    <input type="time" wire:model="surchargeForm.time_to"
+                                        class="h-11 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none">
+                                </div>
                             </div>
-                            <div>
-                                <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">إلى
-                                    الساعة</label>
-                                <input type="time" wire:model="surchargeForm.time_to"
-                                    class="h-11 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white outline-none">
-                            </div>
-                        </div>
                         @endif
 
                         <div class="grid grid-cols-2 gap-4">

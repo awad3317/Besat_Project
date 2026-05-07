@@ -48,6 +48,7 @@ class Settings extends Component
             'update_url'       => $app_settings->update_url,
             'company_website'  => $app_settings->company_website,
             'ref_no'           => $app_settings->ref_no,
+            'otp_enabled'      => (bool) $app_settings->otp_enabled,
         ];
         $this->surcharges = Surcharge::all();
     }
@@ -120,6 +121,7 @@ class Settings extends Component
         $db_key = match($key) {
             'auto_assign' => 'auto_assign_to_drivers',
             'maintenance_mode' => 'maintenance_mode',
+            'otp_enabled'      => 'otp_enabled',
             default => null
         };
         
