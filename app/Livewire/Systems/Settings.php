@@ -3,6 +3,7 @@
 namespace App\Livewire\Systems;
 
 use App\Models\app_setting;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Surcharge;
 use Livewire\Component;
 
@@ -109,6 +110,7 @@ class Settings extends Component
                 Surcharge::create($this->surchargeForm);
             }
         }
+        Cache::forget('app_settings');
         
         $this->dispatch('notify', ['message' => 'تم حفظ التغييرات بنجاح']);
         $this->loadData(); // إعادة تحميل البيانات لعرضها محدثة
@@ -127,6 +129,7 @@ class Settings extends Component
         
         if ($db_key) {
             app_setting::firstOrFail()->update([$db_key => $value]);
+            Cache::forget('app_settings');
             $this->dispatch('notify', ['message' => 'تم التحديث']);
             $this->loadData();
         }
@@ -154,3 +157,5 @@ class Settings extends Component
         return view('livewire.systems.settings');
     }
 }
+
+

@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use App\Repositories\AppSettingRepository;
 
 class AppSettingController extends Controller
@@ -18,7 +17,9 @@ class AppSettingController extends Controller
     public function index()
     {
         try {
-            $settings = $this->appSettingRepository->getSetting();
+            $settings = Cache::rememberForever('app_settings', function () {
+                return $this->appSettingRepository->getSetting();
+            });
             return ApiResponseClass::sendResponse($settings, 'App settings retrieved successfully');
         } catch (\Exception $e) {
             return ApiResponseClass::sendError('Failed to retrieve app settings', $e->getMessage(), 500);
