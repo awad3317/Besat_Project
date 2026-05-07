@@ -40,14 +40,14 @@ class UserAuthController extends Controller
             $user = $this->UserRepository->store($fields);
             $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
             return ApiResponseClass::sendResponse([
-            'user' => $user,
-            'token' => $token,
-            'token_type' => 'Bearer'
-            ], 'تم إنشاء الحساب وتفعيله مباشرة');
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'Bearer'
+            ], 'Account created and activated immediately.');
         }
         $otp=$this->otpService->generateOTP($fields['phone'],'account_creation');
         $this->otpService->sendOtp($fields['phone'],$otp);
-        return ApiResponseClass::sendResponse($fields['phone'],'تم إرسال رمز التحقق الى تطبيق الواتس اب للرقم الهاتف :'. $fields['phone']);
+       return ApiResponseClass::sendResponse($fields['phone'], 'The verification code has been sent to WhatsApp for the phone number: ' . $fields['phone']);
     }
 
     public function login(Request $request)
@@ -65,10 +65,10 @@ class UserAuthController extends Controller
         $user=$this->UserRepository->findByPhone($fields['phone']);
         $user_admin=$this->UserRepository->getById(2);
         FireBase::send(
-    'Hello User!',
-    'This is your Laravel Firebase push notification awad',
-    [$user_admin->fcm_token],
-    ['customKey' => 'customValue']
+                'Hello User!',
+                'This is your Laravel Firebase push notification awad',
+                [$user_admin->fcm_token],
+                ['customKey' => 'customValue']
         );
         if ($user && $user->type == 'admin') {
             return ApiResponseClass::sendError('لا يمكن للمشرفين تسجيل الدخول من خلال هذا التطبيق', null, 403);
@@ -76,12 +76,15 @@ class UserAuthController extends Controller
         if($user && Hash::check($fields['password'], $user->password)){
 
             if (is_null($user->phone_verified_at)) {
-                
-                $otp=$this->otpService->generateOTP($user->phone,'account_creation');
-
-                // $this->HypersenderService->sendTextMessage($user->phone,strval($otp));
-        
-                return ApiResponseClass::sendError("حسابك غير مفعل بعد. تم إرسال رمز تحقق جديد إليك.", null, 403);
+                $appSettings = $this->app_setting_repository->getSetting();
+                $isOtpEnabled = $appSettings ? $appSettings->otp_enabled : true;
+                if (!$isOtpEnabled){
+                    $user->update(['phone_verified_at' => now()]);
+                }else{
+                    $otp = $this->otpService->generateOTP($user->phone, 'account_creation');
+                    $this->otpService->sendOtp($user->phone, $otp);
+                    return ApiResponseClass::sendError("حسابك غير مفعل بعد. تم إرسال رمز تحقق جديد إليك.", ['otp_required' => true], 403);
+                }
             }
             if($user->is_banned){
                 return ApiResponseClass::sendError('الحساب محظور', null, 401);
