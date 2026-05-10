@@ -64,7 +64,8 @@ class UserAuthController extends Controller
     }
 
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $appSettings = Cache::rememberForever('app_settings', function () {
             return $this->appSettingRepository->getSetting();
         });

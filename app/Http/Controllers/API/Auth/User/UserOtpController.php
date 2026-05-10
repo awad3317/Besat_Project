@@ -2,37 +2,45 @@
 
 namespace App\Http\Controllers\API\Auth\User;
 
-use Exception;
-use App\Services\OtpService;
-use Illuminate\Http\Request;
-use App\Services\TwilioService;
-use Illuminate\Validation\Rule;
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
+use App\Repositories\AppSettingRepository;
 use App\Repositories\UserRepository;
+use App\Services\Evolution\OTPService;
+use Illuminate\Support\Facades\Cache; 
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class UserOtpController extends Controller
 {
-    public function __construct(private OtpService $otpService,private UserRepository $userRepository,private TwilioService $twilioService)
+    public function __construct(private OtpService $otpService,private UserRepository $userRepository,private AppSettingRepository $appSettingRepository)
     {
         
     }
 
     public function resendOTP(Request $request) {
-        $fields=$request->validate([
-            'phone'=>['required','string','min:9','max:15',Rule::exists('users','phone')],
-        ]);
-        try {
-            $otp=$this->otpService->generateOTP($fields['phone'],'account_creation');
-            // Send the OTP via Twilio WhatsApp
-            $this->twilioService->sendOTP($fields['phone'], $otp);
-            // $this->HypersenderService->sendTextMessage($fields['phone'],strval($otp));
-            return ApiResponseClass::sendResponse(null,'Verification code has been sent to: ' . $fields['phone']);
-        } catch (Exception $e) {
-            return ApiResponseClass::sendError(null,'Failed to resend OTP. ' . $e->getMessage());
-        }
+    $fields = $request->validate([
+        'phone' => ['required', 'string', 'min:9', 'max:15', Rule::exists('users', 'phone')],
+    ]);
+
+    try {
+        $appSettings = Cache::rememberForever('app_settings', function () {
+            return $this->appSettingRepository->getSetting();
+        });
         
+        if ($appSettings && !$appSettings->otp_enabled) {
+            return ApiResponseClass::sendError('خدمة التحقق معطلة حالياً، يرجى تسجيل الدخول مباشرة.', null, 400);
+        }
+        $otp = $this->otpService->generateOTP($fields['phone'], 'account_creation');
+        $this->otpService->sendOtp($fields['phone'], $otp);
+        
+        return ApiResponseClass::sendResponse(null, 'Verification code has been sent to: ' . $fields['phone']);
+        
+    } catch (Exception $e) {
+        return ApiResponseClass::sendError('Failed to resend OTP.', $e->getMessage(), 500);
     }
+}
 
     public function verifyOtpAndLogin(Request $request) {
         $fields = $request->validate([
