@@ -74,7 +74,7 @@ class UserForgetPasswordController extends Controller
         $user = $this->UserRepository->findByPhone($fields['phone']);
         
         $this->UserRepository->update([
-            'password' => $fields['new_password']
+            'password' => $fields['password']
         ], $user->id);
 
         $user->tokens()->delete();
