@@ -35,16 +35,13 @@ class UserOtpController extends Controller
     }
 
     public function verifyOtpAndLogin(Request $request) {
-        $fields=$request->validate([
-            'phone'=>['required',Rule::exists('otps', 'phone'),Rule::unique('users')],
-            'whatsapp_number'=>['nullable','string','min:9','max:15'],
-            'otp' => ['required','numeric'],
-            'password' => ['required','string','min:6','confirmed',],
-            'name'=>['required','string','max:100'],
+        $fields = $request->validate([
+            'phone' => ['required', 'string', Rule::exists('users', 'phone')],
+            'otp'   => ['required', 'numeric'],
         ]);
+
         try {
-            // Verify the provided OTP using the OTP service
-            if(!$this->otpService->verifyOTP($fields['phone'],$fields['otp'])){
+            if(!$this->otpService->verifyOTP($fields['phone'], $fields['otp'])){
                 return ApiResponseClass::sendError(
                     'Invalid or expired verification code',
                     [],
@@ -52,18 +49,22 @@ class UserOtpController extends Controller
                 );
             }
 
-            $fields['phone_verified_at'] = now(); 
-            $user=$this->userRepository->store($fields);
-            // Create a new authentication token for the user
+            $user = $this->userRepository->findByPhone($fields['phone']);
+
+            $user->update([
+                'phone_verified_at' => now()
+            ]);
+
             $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
+
             return ApiResponseClass::sendResponse([
                 'user' => $user,
                 'token' => $token,
                 'token_type' => 'Bearer'
             ],'OTP verified successfully. You are now logged in.');
+
         } catch (Exception $e) {
-         return ApiResponseClass::sendError(null,'Authentication failed. Please try again. ' . $e->getMessage());
+            return ApiResponseClass::sendError('Authentication failed. Please try again.', $e->getMessage(), 500);
         }
-        
     }
 }
