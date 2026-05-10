@@ -55,7 +55,7 @@ class UserForgetPasswordController extends Controller
     $fields = $request->validate([
         'phone'        => ['required', 'string', Rule::exists('users', 'phone')],
         'otp'          => ['required', 'numeric'],
-        'new_password' => ['required', 'string', 'min:6', 'confirmed'], 
+        'password' => ['required', 'string', 'min:6', 'confirmed'], 
     ]);
 
     try {
