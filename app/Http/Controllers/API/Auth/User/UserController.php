@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\API\Auth\User;
 
-use Exception;
-use Illuminate\Http\Request;
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -31,5 +32,20 @@ class UserController extends Controller
             return ApiResponseClass::sendError('Error updated token.');
         }
         
+    }
+
+    public function index()
+    {
+        try {
+            $userId = auth('sanctum')->id();
+            $userProfile = $this->UserRepository->getById($userId);
+            if (!$userProfile) {
+                return ApiResponseClass::sendError('المستخدم غير موجود', [], 404);
+            }
+            return ApiResponseClass::sendResponse($userProfile, 'تم جلب بيانات الملف الشخصي بنجاح.');
+        } catch (Exception $e) {
+            Log::error('Error fetching user profile: ' . $e->getMessage());
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب بيانات الملف الشخصي.', $e->getMessage(), 500);
+        }
     }
 }

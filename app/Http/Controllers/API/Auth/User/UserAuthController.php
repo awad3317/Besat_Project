@@ -149,12 +149,12 @@ class UserAuthController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'phone_number' => ['required', 'string', 'max:20']
+                'phone' => ['required', 'string', 'max:20']
             ]);
             if ($validator->fails()) {
                 return ApiResponseClass::sendValidationError('فشل التحقق من البيانات', $validator->errors(), 422);
             }
-            $userExists = $this->UserRepository->findByPhone($request->phone_number);
+            $userExists = $this->UserRepository->findByPhone($request->phone);
             if ($userExists) {
                 return ApiResponseClass::sendResponse(['is_exists' => true], 'المستخدم موجود في النظام', 200);
             }

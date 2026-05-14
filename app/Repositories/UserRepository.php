@@ -21,7 +21,7 @@ class UserRepository implements RepositoriesInterface
 
     public function getById($id): User
     {
-        return User::with(['requests'])->findOrFail($id);
+        return User::with(['requests'])->find($id);
     }
 
     public function store(array $data): User
