@@ -7,11 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Repositories\AppSettingRepository;
 use App\Repositories\UserDeviceRepository;
 use App\Repositories\UserRepository;
-use App\Services\Notifications\FireBase;
 use App\Services\Evolution\OTPService;
+use App\Services\Notifications\FireBase;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
- use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 class UserAuthController extends Controller
@@ -140,6 +143,26 @@ class UserAuthController extends Controller
             $currentToken->delete();
         }
         return ApiResponseClass::sendResponse(null, 'تم تسجيل الخروج بنجاح');
+    }
+
+   public function checkUserExistence(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'phone_number' => ['required', 'string', 'max:20']
+            ]);
+            if ($validator->fails()) {
+                return ApiResponseClass::sendValidationError('فشل التحقق من البيانات', $validator->errors(), 422);
+            }
+            $userExists = $this->UserRepository->findByPhone($request->phone_number);
+            if ($userExists) {
+                return ApiResponseClass::sendResponse(['is_exists' => true], 'المستخدم موجود في النظام', 200);
+            }
+            return ApiResponseClass::sendResponse(['is_exists' => false], 'المستخدم غير موجود', 200);
+        } catch (Exception $e) {
+            Log::error('Error context description: ' . $e->getMessage());
+            return ApiResponseClass::sendError('Failed to process the request. Please try again later.', $e->getMessage(), 500);
+        }
     }
 
     

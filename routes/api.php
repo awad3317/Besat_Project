@@ -43,6 +43,7 @@ Route::post('/user/register',[UserAuthController::class,'register']);
 Route::post('/user/login',[UserAuthController::class,'login']);
 Route::post('/user/verifyOtpAndLogin',[UserOtpController::class,'verifyOtpAndLogin']);
 Route::post('/user/resendOTP',[UserOtpController::class,'resendOTP']);
+Route::post('/users/check-existence', [UserAuthController::class, 'checkUserExistence']);
         //           Auth Route For Driver         //
 Route::post('/driver/register',[DriverAuthController::class,'register']);
 Route::post('/driver/login',[DriverAuthController::class,'login']);
