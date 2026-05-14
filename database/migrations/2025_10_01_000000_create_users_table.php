@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->boolean('is_banned')->default(false);
             // $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

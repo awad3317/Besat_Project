@@ -27,44 +27,48 @@ class UserAuthController extends Controller
         //
     }
 
-    public function register(Request $request){
-        $fields=$request->validate([
-            'phone'=>['required','string','min:9','max:15',Rule::unique('users','phone')],
-            'whatsapp_number'=>['nullable','string','min:9','max:15'],
-            'password' => ['required','string','min:6','confirmed'],
-            'name'=>['required','string','max:100'],
-            'gender'=>['required',Rule::in(['female', 'male'])]
+    public function register(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'phone'           => ['required', 'string', 'min:9', 'max:15', Rule::unique('users', 'phone')],
+            'whatsapp_number' => ['nullable', 'string', 'min:9', 'max:15'],
+            'name'            => ['required', 'string', 'max:100'],
+            'gender'          => ['required', Rule::in(['female', 'male'])]
         ]);
-        
+        if ($validator->fails()) {
+            return ApiResponseClass::sendValidationError('فشل التحقق من البيانات', $validator->errors(), 422);
+        }
+        $fields = $validator->validated();
         $appSettings = Cache::rememberForever('app_settings', function () {
             return $this->appSettingRepository->getSetting();
         });
         $isOtpEnabled = $appSettings ? $appSettings->otp_enabled : true;
-
-        if (!$isOtpEnabled){
+        if (!$isOtpEnabled) {
             $fields['phone_verified_at'] = now();
         }
-
         $user = $this->UserRepository->store($fields);
-
-        if (!$isOtpEnabled){
+        if (!$isOtpEnabled) {
             $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
             return ApiResponseClass::sendResponse([
-                'user' => $user,
-                'token' => $token,
-                'token_type' => 'Bearer',
+                'user'         => $user,
+                'token'        => $token,
+                'token_type'   => 'Bearer',
                 'otp_required' => false
-            ], 'Account created and activated immediately.');
+            ], 'تم إنشاء الحساب وتفعيله مباشرة لعدم تفعيل نظام التحقق.');
         }
-
-        $otp=$this->otpService->generateOTP($fields['phone'],'account_creation');
-        $this->otpService->sendOtp($fields['phone'],$otp);
-        
+        $otp = $this->otpService->generateOTP($fields['phone'], 'account_creation');
+        $this->otpService->sendOtp($fields['phone'], $otp);
         return ApiResponseClass::sendResponse([
-            'phone' => $fields['phone'],
+            'phone'        => $fields['phone'],
             'otp_required' => true 
-        ], 'The verification code has been sent to WhatsApp for the phone number: ' . $fields['phone']);
+        ], 'تم إرسال رمز التحقق إلى الواتساب للرقم: ' . $fields['phone']);
+
+    } catch (Exception $e) {
+        Log::error('Error in user registration: ' . $e->getMessage());
+        return ApiResponseClass::sendError('حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة لاحقاً.', $e->getMessage(), 500);
     }
+}
 
 
     public function login(Request $request)
