@@ -8,13 +8,11 @@ use App\Repositories\AppSettingRepository;
 use App\Repositories\UserDeviceRepository;
 use App\Repositories\UserRepository;
 use App\Services\Evolution\OTPService;
-use App\Services\Notifications\FireBase;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class UserAuthController extends Controller
@@ -73,42 +71,37 @@ class UserAuthController extends Controller
 
     public function login(Request $request)
     {
+        try {
+        $validator = Validator::make($request->all(), [
+            'phone' => ['required', 'string'],
+        ], [
+            'phone.required' => 'حقل رقم الهاتف مطلوب.',
+            'phone.string'   => 'يجب أن يكون رقم الهاتف نصًا صالحًا.',
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponseClass::sendValidationError('فشل التحقق من البيانات', $validator->errors(), 422);
+        }
+        $fields = $validator->validated();
+
         $appSettings = Cache::rememberForever('app_settings', function () {
             return $this->appSettingRepository->getSetting();
         });
+        
         $isOtpEnabled = $appSettings ? $appSettings->otp_enabled : true;
-        $rules = [
-            'phone' => ['required', 'string'],
-        ];
-        $messages = [
-            'phone.required' => 'حقل رقم الهاتف مطلوب.',
-            'phone.string'   => 'يجب أن يكون رقم الهاتف نصًا صالحًا.',
-        ];
-
-        if (!$isOtpEnabled) {
-            $rules['password'] = ['required', 'string'];
-            $messages['password.required'] = 'حقل كلمة المرور مطلوب.';
-            $messages['password.string']   = 'يجب أن تكون كلمة المرور نصًا صالحًا.';
-        }
-
-        $fields = $request->validate($rules, $messages);
-
         $user = $this->UserRepository->findByPhone($fields['phone']);
 
         if (!$user) {
-            return ApiResponseClass::sendError('البيانات المدخلة غير صحيحة', ['error' => 'رقم الهاتف غير مسجل لدينا'], 401);
+            return ApiResponseClass::sendError('البيانات المدخلة غير صحيحة', 'رقم الهاتف غير مسجل لدينا', 401);
         }
-
-        if ($user->type == 'admin') {
+        if ($user->type === 'admin') {
             return ApiResponseClass::sendError('لا يمكن للمشرفين تسجيل الدخول من خلال هذا التطبيق', null, 403);
         }
-
         if ($user->is_banned) {
             return ApiResponseClass::sendError('الحساب محظور', null, 401);
         }
-
         if ($isOtpEnabled) {
-        
+            
             $otp = $this->otpService->generateOTP($user->phone, 'login_verification');
             $this->otpService->sendOtp($user->phone, $otp);
 
@@ -117,25 +110,23 @@ class UserAuthController extends Controller
                 'otp_required' => true 
             ], 'تم إرسال رمز التحقق (OTP) إلى رقمك.');
 
-        } else {
+        } 
         
-            if (!Hash::check($fields['password'], $user->password)) {
-                return ApiResponseClass::sendError('البيانات المدخلة غير صحيحة', ['error' => 'كلمة المرور غير صحيحة'], 401);
-            }
-
-            if (is_null($user->phone_verified_at)) {
-                $user->update(['phone_verified_at' => now()]);
-            }
-
-            $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
-        
-            return ApiResponseClass::sendResponse([
-                'user'       => $user,
-                'token'      => $token,
-                'token_type' => 'Bearer',
-                'otp_required' => false 
-            ], 'تم تسجيل الدخول بنجاح');
+        if (is_null($user->phone_verified_at)) {
+            $user->update(['phone_verified_at' => now()]);
         }
+        $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
+        return ApiResponseClass::sendResponse([
+            'user'         => $user,
+            'token'        => $token,
+            'token_type'   => 'Bearer',
+            'otp_required' => false 
+        ], 'تم تسجيل الدخول بنجاح');
+
+    } catch (Exception $e) {
+        Log::error('Error in user login process: ' . $e->getMessage());
+        return ApiResponseClass::sendError('حدث خطأ أثناء محاولة تسجيل الدخول. يرجى المحاولة لاحقاً.', $e->getMessage(), 500);
+    }
     }
 
     public function logout(Request $request)
