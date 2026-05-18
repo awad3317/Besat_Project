@@ -20,7 +20,7 @@ class VehicleController extends Controller
     public function index()
     {
         try {
-            $vehicles = $this->vehicleRepository->index();
+            $vehicles = $this->vehicleRepository->getAllVehiclesCached();
             return ApiResponseClass::sendResponse($vehicles, 'Vehicles retrieved successfully.');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('Failed to retrieve vehicles. ' . $e->getMessage());

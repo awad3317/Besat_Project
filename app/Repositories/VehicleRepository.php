@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\RepositoriesInterface;
 use App\Models\Vehicle;
+use Illuminate\Support\Facades\Cache;
 
 class VehicleRepository implements RepositoriesInterface
 {
@@ -14,9 +15,26 @@ class VehicleRepository implements RepositoriesInterface
     {
         //
     }
+    public function restore($id)
+    {
+        $vehicle = Vehicle::withTrashed()->findOrFail($id);
+        $vehicle->restore();
+        return $vehicle;
+    }
+    public function indexWithTrashed()
+    {
+        return Vehicle::withTrashed()->paginate(10);
+    }
+    public function getAllVehiclesCached()
+    {
+        
+        return Cache::rememberForever('vehicles_list', function () {
+            return Vehicle::select(['id', 'type', 'image', 'max_passengers'])->get();
+        });
+    }
     public function index()
     {
-        return Vehicle::paginate(10);
+        return Vehicle::select(['id', 'type', 'image', 'max_passengers'])->get();
     }
 
     public function getById($id): Vehicle

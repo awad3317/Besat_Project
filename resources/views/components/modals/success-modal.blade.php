@@ -23,10 +23,10 @@
                 </div>
 
                 <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90 sm:text-title-sm">
-                    {{session('success_title')  ?? 'نجاح!' }}
+                    {{session('success_title') ?? 'نجاح!' }}
                 </h4>
                 <p class="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                    {{session('success_message')  ?? 'تمت العملية بنجاح.' }}
+                    {{session('success_message') ?? 'تمت العملية بنجاح.' }}
                 </p>
 
                 <div class="flex justify-center mt-6">

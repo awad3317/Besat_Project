@@ -10,6 +10,7 @@ use App\Services\ActivityLog;
 use App\Services\ImageService;
 use Illuminate\Validation\Rule;
 use GPBMetadata\Google\Api\Auth;
+use Illuminate\Support\Facades\Cache;
 use App\Classes\WebResponseClass;
 use App\Repositories\VehicleRepository;
 use App\Services\Notifications\FireBase;
@@ -26,8 +27,12 @@ class VehicleController extends Controller
      */
     public function index()
     {
-        $vehicles = $this->vehicleRepository->index();
-        return view('pages.Vehicles.index', compact('vehicles'));
+       try {
+            $vehicles = $this->vehicleRepository->indexWithTrashed();
+            return view('pages.Vehicles.index', compact('vehicles'));
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 
     /**
@@ -61,6 +66,7 @@ class VehicleController extends Controller
             $validatData['image'] = $image_path;
         }        
         $vehicleData = $this->vehicleRepository->store($validatData);
+        Cache::forget('vehicles_list');
         ActivityLog::log('create','Vehicle','تمت إضافة مركبه جديده');
         return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة المركبة بنجاح');
         }
@@ -125,6 +131,7 @@ class VehicleController extends Controller
                 $data['image'] = $image_path;
             }
             $this->vehicleRepository->update($data,$id);
+            Cache::forget('vehicles_list');
             ActivityLog::log('update','Vehicle','تم تحديث مركبة ');
             return WebResponseClass::sendResponse( 'تم التحديث!', 'تم تحديث بيانات المركبة بنجاح');
 
@@ -138,6 +145,26 @@ class VehicleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $this->vehicleRepository->delete($id);
+            Cache::forget('vehicles_list');
+            ActivityLog::log('delete', 'Vehicle', 'تم حذف مركبة');
+            return WebResponseClass::sendResponse('تم الحذف!', 'تم حذف المركبة بنجاح');
+
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
+    }
+
+    public function restore(string $id)
+    {
+        try {
+            $this->vehicleRepository->restore($id);
+            Cache::forget('vehicles_list');
+            ActivityLog::log('restore', 'Vehicle', 'تم استعادة مركبة');
+            return WebResponseClass::sendResponse('تم الاستعادة!', 'تم استعادة المركبة للعمل بنجاح');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 }

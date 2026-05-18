@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('ads',AdsController::class)->only(['index']);
     Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');
+    Route::post('/Vehicle/{id}/restore', [VehicleController::class, 'restore'])->name('Vehicle.restore');
 
         
 Route::post('/calculate-price', [SpecialOrderController::class, 'calculatePrice'])->name('trip.calculatePrice');
