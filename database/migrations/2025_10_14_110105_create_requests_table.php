@@ -26,7 +26,7 @@ return new class extends Migration
             $table->decimal('end_latitude', 10, 8);
             $table->decimal('end_longitude', 10, 8);
             $table->string('end_address');
-            $table->enum('status', ['pending', 'searching_driver', 'paused', 'in_progress', 'completed', 'cancelled'])->default('searching_driver');
+            $table->enum('status', ['pending', 'searching_driver', 'accepted', 'on_trip', 'completed', 'cancelled'])->default('searching_driver');
             $table->decimal('original_price', 10, 2);
             $table->decimal('discount_amount', 10, 2)->default(0);
             $table->decimal('surcharge_amount', 10, 2)->default(0);
