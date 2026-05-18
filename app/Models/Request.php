@@ -44,6 +44,10 @@ class Request extends Model
                     ->withPivot('amount')
                     ->withTimestamps();
     }
+    public function stops()
+    {
+        return $this->hasMany(RequestStop::class, 'request_id')->orderBy('stop_order', 'asc');
+    }
 
     public static function statusConfig()
     {
