@@ -232,7 +232,6 @@ class RequestController extends Controller
 
         return ApiResponseClass::sendResponse($responseData, 'تم حساب السعر بنجاح.');
         }catch (Exception $e) {
-            // 5. التقاط الأخطاء وتسجيلها
             Log::error('Error calculating price: ' . $e->getMessage());
             return ApiResponseClass::sendError('حدث خطأ أثناء حساب السعر.', $e->getMessage(), 500);
         }

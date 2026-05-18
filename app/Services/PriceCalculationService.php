@@ -50,7 +50,8 @@ class PriceCalculationService{
         //     'duration_mins' => $element['duration']['value'] / 60,   // الوقت بالدقائق
         //     'duration_text' => $element['duration']['text'],       // نص الوقت (e.g., "12 mins")
         // ];
-            return floatval($element['distance']['text']);
+            $distanceInMeters = $element['distance']['value'];
+            return (float) ($distanceInMeters / 1000);
         }
         Log::warning('Google Distance Matrix API returned status: ' . $data['status']);
         return null;
