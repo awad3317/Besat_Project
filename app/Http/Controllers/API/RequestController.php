@@ -95,6 +95,7 @@ class RequestController extends Controller
             $validated['surcharge_amount']      = $priceDetails['total_surcharges']; 
             $validated['ac_cost']               = $priceDetails['ac_cost']; 
             $validated['app_commission_amount'] = $priceDetails['app_commission_amount'];
+            $validated['status'] = $priceDetails['pending'];
             DB::beginTransaction();
             $requestModel = $this->requestRepository->store($validated);
             if (!empty($stopsData)) {
