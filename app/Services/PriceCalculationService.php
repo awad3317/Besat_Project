@@ -80,7 +80,7 @@ class PriceCalculationService{
     public function calculateCommission($orginal_price){
         $commission_rate=$this->appSettingRepository->getSetting()->commission_rate;
         $commission_amount = $orginal_price * ($commission_rate / 100);
-        return round($commission_amount);
+        return round($commission_amount, 2);
     }
 
     public function calculateSurcharges($tripDatetime)
@@ -190,6 +190,8 @@ class PriceCalculationService{
             $final_price = $original_price - $discount_amount;
         }
 
+        $app_commission_amount = $this->calculateCommission($final_price);
+
         return [
             'distance_in_km'     => (float) $distanceInKm,
             'final_price'        => (float) $final_price,
@@ -200,7 +202,8 @@ class PriceCalculationService{
             'total_surcharges'   => (float) $total_surcharge_amount,
             'surcharges_details' => $surcharges_details,
             'discount_amount'    => (float) $discount_amount,
-            'original_price'     => (float) $original_price
+            'original_price'     => (float) $original_price,
+            'app_commission_amount' => (float) $app_commission_amount
         ];
     }
 }
