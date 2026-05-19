@@ -16,7 +16,17 @@ class Request extends Model
         'created_by','title', 'surcharge_amount',
         'end_latitude', 'end_longitude', 'end_address', 'status',
         'original_price', 'discount_amount', 'final_price',
-        'distance_km', 'notes', 'payment_method'
+        'distance_km', 'notes', 'payment_method',
+        'trip_datetime', 'wants_ac', 'ac_cost'
+    ];
+
+    protected $casts = [
+        'wants_ac'      => 'boolean',
+        'trip_datetime' => 'datetime',
+        'original_price'=> 'float',
+        'final_price'   => 'float',
+        'distance_km'   => 'float',
+        'ac_cost'       => 'float', 
     ];
 
     public function user()

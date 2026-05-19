@@ -33,6 +33,9 @@ return new class extends Migration
             $table->decimal('app_commission_amount', 10, 2);
             $table->decimal('final_price', 10, 2);
             $table->enum('payment_method', ['cash', 'deposit'])->default('cash');
+            $table->dateTime('trip_datetime');
+            $table->boolean('wants_ac')->default(false);
+            $table->decimal('ac_cost', 10, 2)->default(0);
             $table->decimal('distance_km', 5, 2);
             $table->text('notes')->nullable();
             $table->timestamps();

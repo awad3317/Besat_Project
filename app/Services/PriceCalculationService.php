@@ -83,50 +83,57 @@ class PriceCalculationService{
         return round($commission_amount);
     }
 
-    public function getApplicableSurcharges()
+    public function calculateSurcharges($tripDatetime)
     {
+        $tripTime = Carbon::parse($tripDatetime);
+        $currentTimeString = $tripTime->format('H:i');
+
         $activeSurcharges = Surcharge::where('is_active', true)->get();
-        $applicableSurcharges = collect();
-        $now = Carbon::now();
+
+        $total_amount = 0;
+        $details = [];
 
         foreach ($activeSurcharges as $surcharge) {
-            $isApplicable = false;
+            $applyThisSurcharge = false;
 
-            // Check if time range is set
-            if ($surcharge->time_from && $surcharge->time_to) {
-                // Parse time_from and time_to
-                $startTime = Carbon::parse($surcharge->time_from->format('H:i'));
-                $endTime = Carbon::parse($surcharge->time_to->format('H:i'));
-                $currentTime = Carbon::parse($now->format('H:i'));
+            if ($surcharge->type === 'time_based' && $surcharge->time_from && $surcharge->time_to) {
+                $from = Carbon::parse($surcharge->time_from)->format('H:i');
+                $to = Carbon::parse($surcharge->time_to)->format('H:i');
 
-                // Handle overnight ranges (e.g., 22:00 to 05:00)
-                if ($startTime->gt($endTime)) {
-                    if ($currentTime->gte($startTime) || $currentTime->lte($endTime)) {
-                        $isApplicable = true;
+                if ($from > $to) { // عبور منتصف الليل
+                    if ($currentTimeString >= $from || $currentTimeString <= $to) {
+                        $applyThisSurcharge = true;
                     }
-                } else {
-                    // Normal range (e.g., 08:00 to 17:00)
-                    if ($currentTime->between($startTime, $endTime)) {
-                        $isApplicable = true;
+                } else { // وقت عادي
+                    if ($currentTimeString >= $from && $currentTimeString <= $to) {
+                        $applyThisSurcharge = true;
                     }
                 }
-            } else {
-                // If no specific time range, applying it assuming it always applies if active
-                 $isApplicable = true;
+            } elseif ($surcharge->type === 'conditional') {
+                $applyThisSurcharge = true;
             }
 
-            if ($isApplicable) {
-                $applicableSurcharges->push($surcharge);
+            if ($applyThisSurcharge) {
+                $total_amount += $surcharge->amount;
+                $details[] = [
+                    'id'     => $surcharge->id,
+                    'name'   => $surcharge->name,
+                    'amount' => (float) $surcharge->amount
+                ];
             }
         }
-        return $applicableSurcharges;
+
+        return [
+            'total_amount' => (float) $total_amount,
+            'details'      => $details
+        ];
     }
 
-    public function attachSurcharges(Request $request, $surcharges)
+    public function attachSurcharges(Request $request, $surchargesDetailsArray)
     {
         $surchargesToAttach = [];
-        foreach ($surcharges as $surcharge) {
-            $surchargesToAttach[$surcharge->id] = ['amount' => $surcharge->amount];
+        foreach ($surchargesDetailsArray as $surcharge) {
+            $surchargesToAttach[$surcharge['id']] = ['amount' => $surcharge['amount']]; 
         }
         
         if (!empty($surchargesToAttach)) {
@@ -134,15 +141,66 @@ class PriceCalculationService{
         }
     }
 
-    // public function calculateTotalSurcharge(?Request $request = null)
-    // {
-    //     $applicableSurcharges = $this->getApplicableSurcharges();
-    //     $totalSurcharge = $applicableSurcharges->sum('amount');
+    public function getFullPriceDetails(array $validatedData, $vehicle, $couponObject = null)
+    {
+        // 1. حساب المسافة
+        $distanceInKm = $this->getdistanceInKm(
+            $validatedData['start_latitude'],
+            $validatedData['start_longitude'],
+            $validatedData['end_latitude'],
+            $validatedData['end_longitude']
+        );
 
-    //     if ($request) {
-    //         $this->attachSurcharges($request, $applicableSurcharges);
-    //     }
+        if ($distanceInKm === null) {
+            throw new \Exception("فشل في حساب المسافة من خرائط جوجل.");
+        }
 
-    //     return $totalSurcharge;
-    // }
+        // 2. حساب السعر الأساسي للمسافة
+        $price_per_km = $this->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
+        $base_price = $this->calculatePrice($distanceInKm, $price_per_km, $vehicle->min_price);
+
+        // 3. حساب التكييف
+        $ac_cost = 0;
+        $ac_applied = false;
+        $wants_ac = $validatedData['wants_ac'] ?? false;
+        
+        if ($wants_ac && $vehicle->has_ac_option) {
+            $ac_cost = $distanceInKm * $vehicle->ac_price_per_km;
+            $ac_applied = true;
+        }
+
+        // 4. حساب الرسوم الإضافية
+        $tripDatetime = $validatedData['trip_datetime'] ?? now()->format('Y-m-d H:i:s');
+        $surchargesData = $this->calculateSurcharges($tripDatetime);
+        $total_surcharge_amount = $surchargesData['total_amount'];
+        $surcharges_details = $surchargesData['details'];
+        
+
+        // 5. تجميع السعر الأصلي
+        $original_price = $base_price + $ac_cost + $total_surcharge_amount;
+        $final_price = $original_price;
+
+        $discount_amount = 0;
+        $coupon_for_response = null;
+
+        if ($couponObject) {
+            $coupon_rate = $couponObject->discount_rate;
+            $coupon_for_response = number_format($coupon_rate * 100, 2);
+            $discount_amount = $original_price * $coupon_rate;
+            $final_price = $original_price - $discount_amount;
+        }
+
+        return [
+            'distance_in_km'     => (float) $distanceInKm,
+            'final_price'        => (float) $final_price,
+            'vehicle'            => $vehicle->type,
+            'coupon'             => $coupon_for_response,
+            'ac_applied'         => $ac_applied,
+            'ac_cost'            => (float) $ac_cost,
+            'total_surcharges'   => (float) $total_surcharge_amount,
+            'surcharges_details' => $surcharges_details,
+            'discount_amount'    => (float) $discount_amount,
+            'original_price'     => (float) $original_price
+        ];
+    }
 }

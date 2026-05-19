@@ -9,12 +9,10 @@ use App\Repositories\DiscountCodeRepository;
 use App\Repositories\RequestRepository;
 use App\Repositories\RequestStopRepository;
 use App\Repositories\VehicleRepository;
-use App\Services\CommissionCalculationService;
 use App\Services\DiscountCodeService;
 use App\Services\DriverLocationService;
 use App\Services\FirebaseService;
 use App\Services\PriceCalculationService;
-use App\Services\SurchargeService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -34,7 +32,6 @@ class RequestController extends Controller
         private RequestStopRepository $requestStopRepository,
         private DiscountCodeService $discountCodeService,
         private VehicleRepository $vehicleRepository,
-        private SurchargeService $surchargeService
 )
     {
         //
@@ -49,7 +46,7 @@ class RequestController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'service_id' => ['required', Rule::exists('services', 'id')],
+            'vehicle_id' => ['required', Rule::exists('vehicles', 'id')],
             'discount_code' => ['nullable', Rule::exists('discount_codes', 'code')],
             'start_latitude' => 'required|numeric',
             'start_longitude' => 'required|numeric',
@@ -63,90 +60,85 @@ class RequestController extends Controller
             'stops'  => ['nullable', 'array'],
             'stops.*.latitude'  => ['required_with:stops', 'numeric', 'between:-90,90'],
             'stops.*.longitude' => ['required_with:stops', 'numeric', 'between:-180,180'],
-            'stops.*.address'   => ['required_with:stops', 'string', 'max:255'],
+            'wants_ac'        => ['nullable', 'boolean'],
+            'trip_datetime'   => ['required', 'date_format:Y-m-d H:i:s'],
         ]);
 
         try {
             $stopsData = $validated['stops'] ?? [];
             unset($validated['stops']);
-            // إضافة معرف المستخدم المصادق عليه
             $validated['user_id'] = auth('sanctum')->id();
             $validated['created_by'] = 'APP';
-            // حساب السعر الأصلي والنهائي مع تطبيق الخصم إذا وجد
-            if(isset($validated['discount_code'])){
-                if($coupon=$this->discountCodeRepository->getDiscountCodeByCode($validated['discount_code'])){
-                    if(!$this->discountCodeRepository->isCouponActive($coupon)){
-                        return ApiResponseClass::sendError('كود الخصم غير نشط.');
-                    }
-                    if(!$this->discountCodeRepository->hasUsageLimitAvailable($coupon)){
-                        return ApiResponseClass::sendError('تم الوصول إلى الحد الأقصى لاستخدام كود الخصم.');
-                    }
-                    $result=$this->priceCalculationService->calculatePriceWithDiscount($validated['service_id'], $validated['distance_km'],$coupon);
+            $vehicle = $this->vehicleRepository->getById($validated['vehicle_id']);
+            $coupon_object = null;
+            if(isset($validated['discount_code']) && !empty($validated['discount_code'])){
+                $coupon_object  = $this->discountCodeService->getDiscountCode($validated['discount_code']);
+                if (!$coupon_object) {
+                return ApiResponseClass::sendError('كود الخصم الذي أدخلته غير صحيح.', null, 422);
                 }
-                else{
-                    return ApiResponseClass::sendError('كود الخصم غير صالح.');
+                if(!$this->discountCodeService->checkIsActive($coupon_object)){
+                    return ApiResponseClass::sendError('كود الخصم غير متاح', null, 400);
+                }   
+                if(!$this->discountCodeService->checkGlobalUsage($coupon_object)){
+                    return ApiResponseClass::sendError('كود الخصم تجاوز الاستخدام المسموح به', null, 400);
                 }
+                if(!$this->discountCodeService->checkUserEligibility($coupon_object,$validated['user_id'])){
+                    return ApiResponseClass::sendError('كود الخصم تم استخدامه من قبل هذا المستخدم مسبقاً.', null, 400);
+                }
+                $validated['discount_code_id'] = $coupon_object->id;
+                unset($validated['discount_code']);
             }
-            else{
-                $result=$this->priceCalculationService->calculateBasePrice($validated['service_id'], $validated['distance_km']);
-            }
-            $validated['original_price']=$result['original_price'];
-            $validated['final_price']=$result['final_price'];
-            if($result['discount_applied'] && isset($validated['discount_code'])){
-                
-                $coupon = $this->discountCodeRepository->getDiscountCodeByCode($validated['discount_code']);
-                $validated['discount_code_id'] = $coupon->id;
-                $validated['discount_amount'] = $result['discount_amount'];
-                // زيادة عدد الاستخدامات لكود الخصم
-                $this->discountCodeRepository->incrementUsage($coupon);
-            }
-            else{
-                $validated['discount_amount']=0;
-            }
-            unset($validated['discount_code']);
-            // حساب عمولة التطبيق
-            $appCommissionAmount = $this->priceCalculationService->calculateCommission($validated['final_price']);
-            $validated['app_commission_amount'] = $appCommissionAmount;
+            $priceDetails = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
+            $validated['original_price']        = $priceDetails['original_price'];
+            $validated['final_price']           = $priceDetails['final_price'];
+            $validated['discount_amount']       = $priceDetails['discount_amount'];
+            $validated['surcharge_amount']      = $priceDetails['total_surcharges']; 
+            $validated['ac_cost']               = $priceDetails['ac_cost']; 
+            $validated['app_commission_amount'] = $this->priceCalculationService->calculateCommission($priceDetails['final_price']);
             DB::beginTransaction();
-            // تخزين الطلب
             $requestModel = $this->requestRepository->store($validated);
             if (!empty($stopsData)) {
                 $this->requestStopRepository->store($requestModel->id, $stopsData);
             }
+            if (!empty($priceDetails['surcharges_details'])) {
+                $surchargesToAttach = [];
+                foreach ($priceDetails['surcharges_details'] as $surcharge) {
+                    $surchargesToAttach[$surcharge['id']] = ['amount' => $surcharge['amount']];
+                }
+                $requestModel->surcharges()->attach($surchargesToAttach);
+            }
+            if ($coupon_object && $priceDetails['discount_amount'] > 0) {
+                $this->discountCodeRepository->incrementUsage($coupon_object);
+            }
             DB::commit();
-            
             $appSettings = Cache::rememberForever('app_settings', function () {
                 return $this->appSettingRepository->getSetting();
             });
             if ($appSettings && $appSettings->auto_assign_to_drivers) {
-                // جلب أقرب السائقين الاقرب للزبون            
-                $nearestDrivers =$this->driverLocationService->getNearestDrivers($validated['start_latitude'], $validated['start_longitude'], 8,20);
-                if ($nearestDrivers === null) {
-                    // لا يوجد سائقين متاحين في المنطقة
-                }
-                $title = 'طلب جديد';
-                $body = 'يوجد طلب جديد في منطقتك، اضغط لقبول الطلب';
-                $data = [
-                    'request_id' => $requestModel->id,
-                    'start_latitude' => $validated['start_latitude'],
-                    'start_longitude' => $validated['start_longitude'],
-                    'start_address' => $validated['start_address'],
-                ];
-                foreach ($nearestDrivers as $driver) {
-                    if (isset($driver['device_token']) && !empty($driver['device_token'])) {
-                        $this->firebaseService->sendNotification(
-                            $driver['device_token'],
-                            $title,
-                            $body,
-                            $data
-                        );
+                $nearestDrivers = $this->driverLocationService->getNearestDrivers($validated['start_latitude'], $validated['start_longitude'], 8, 20);
+                
+                if ($nearestDrivers) {
+                    $title = 'طلب جديد';
+                    $body = 'يوجد طلب جديد في منطقتك، اضغط لقبول الطلب';
+                    $data = [
+                        'request_id'      => $requestModel->id,
+                        'start_latitude'  => $validated['start_latitude'],
+                        'start_longitude' => $validated['start_longitude'],
+                        'start_address'   => $validated['start_address'],
+                    ];
+
+                    foreach ($nearestDrivers as $driver) {
+                        if (!empty($driver['device_token'])) {
+                            $this->firebaseService->sendNotification($driver['device_token'], $title, $body, $data);
+                        }
                     }
                 }
-            }else {
+            } else {
                 // النظام اليدوي - إرسال الطلب للداشبورد
             }
             return ApiResponseClass::sendResponse($requestModel, 'Request created successfully.');
-        } catch (Exception $e) {
+        }catch (Exception $e) {
+            DB::rollBack();
             return apiResponseClass::sendError('Failed to create request.'.$e->getMessage());
         }
     }
@@ -177,82 +169,41 @@ class RequestController extends Controller
 
     public function calculatePrice(Request $request)
     {
-
         $validated = $request->validate([
-            'start_latitude' => ['required','numeric'],
-            'start_longitude' => ['required','numeric'],
-            'end_latitude' => ['required','numeric'],
-            'end_longitude' => ['required','numeric'],
-            'vehicle_id'=>['required','integer'],
-            'discount_code'=> ['nullable','string'],
-            'wants_ac' => ['nullable', 'boolean'],
+            'start_latitude'  => ['required', 'numeric'],
+            'start_longitude' => ['required', 'numeric'],
+            'end_latitude'    => ['required', 'numeric'],
+            'end_longitude'   => ['required', 'numeric'],
+            'vehicle_id'      => ['required', 'integer'],
+            'discount_code'   => ['nullable', 'string'],
+            'wants_ac'        => ['nullable', 'boolean'],
             'trip_datetime'   => ['required', 'date_format:Y-m-d H:i:s'],
         ]);
+
         try {
             $validated['user_id'] = auth('sanctum')->id();
-        $distanceInKm = $this->priceCalculationService->getdistanceInKm(
-            $validated['start_latitude'],
-            $validated['start_longitude'],
-            $validated['end_latitude'],
-            $validated['end_longitude']
-        );
-        $wants_ac = $validated['wants_ac'] ?? false;
-        $ac_applied = false;
-        $ac_cost = 0;
-        $vehicle=$this->vehicleRepository->getById($validated['vehicle_id']);
-        if ($wants_ac && $vehicle->has_ac_option) {
-            $ac_cost = $distanceInKm * $vehicle->ac_price_per_km;
-            $ac_applied = true;
-        }
-        $price_per_km = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
-        $price_orginal = $this->priceCalculationService->calculatePrice($distanceInKm,$price_per_km,$vehicle->min_price);
-        $surchargesData = $this->surchargeService->calculateSurcharges($validated['trip_datetime']);
-        $total_surcharge_amount = $surchargesData['total_amount'];
-        $applied_surcharges_details = $surchargesData['details'];
-        $price_orginal = $price_orginal + $ac_cost + $total_surcharge_amount;
-        $price_final = $price_orginal;
-        $vehicle_type = $vehicle->type;
-        $coupon_rate = 0;
-        $coupon_for_response = null;
-        $discount_amount = 0;
-        if(isset($validated['discount_code']) && !empty($validated['discount_code'])){
-            $coupon_object  = $this->discountCodeService->getDiscountCode($validated['discount_code']);
-            if (!$coupon_object) {
-               return ApiResponseClass::sendError('كود الخصم الذي أدخلته غير صحيح.', null, 422);
+            $vehicle = $this->vehicleRepository->getById($validated['vehicle_id']);
+            $coupon_object = null;
+            if (!empty($validated['discount_code'])) {
+                $coupon_object = $this->discountCodeService->getDiscountCode($validated['discount_code']);
+                if (!$coupon_object) {
+                   return ApiResponseClass::sendError('كود الخصم الذي أدخلته غير صحيح.', null, 422);
+                }
+                if (!$this->discountCodeService->checkIsActive($coupon_object)) {
+                    return ApiResponseClass::sendError('كود الخصم غير متاح', null, 400);
+                }
+                if (!$this->discountCodeService->checkGlobalUsage($coupon_object)) {
+                    return ApiResponseClass::sendError('كود الخصم تجاوز الاستخدام المسموح به', null, 400);
+                }
+                if (!$this->discountCodeService->checkUserEligibility($coupon_object, $validated['user_id'])) {
+                    return ApiResponseClass::sendError('كود الخصم تم استخدامه من قبل هذا المستخدم مسبقاً.', null, 400);
+                }
             }
-            if(!$this->discountCodeService->checkIsActive($coupon_object)){
-                return ApiResponseClass::sendError('كود الخصم غير متاح', null, 400);
-            }
-            if(!$this->discountCodeService->checkGlobalUsage($coupon_object)){
-                return ApiResponseClass::sendError('كود الخصم تجاوز الاستخدام المسموح به', null, 400);
-            }
-            if(!$this->discountCodeService->checkUserEligibility($coupon_object,$validated['user_id'])){
-                return ApiResponseClass::sendError('كود الخصم تم استخدامه من قبل هذا المستخدم مسبقاً.', null, 400);
-            }
-            $coupon_rate = $coupon_object->discount_rate;
-            $coupon_for_response = number_format($coupon_rate * 100, 2);
-            $discount_amount = $price_orginal * ($coupon_rate);
-            $price_final = $price_orginal - $discount_amount;
-
-        }
-        $responseData = [
-                'distance_in_km' =>(float) $distanceInKm, 
-                'price' => (float) $price_final, 
-                'vehicle' => $vehicle_type, 
-                'coupon' => $coupon_for_response, 
-                'ac_applied'=> $ac_applied,       
-                'ac_cost'=> (float) $ac_cost,
-                'total_surcharges'   => $total_surcharge_amount,
-                'surcharges_details' => $applied_surcharges_details,
-                'discount_amount' => (float) $discount_amount, 
-                'original_price' => (float) $price_orginal
-            ];
-
-        return ApiResponseClass::sendResponse($responseData, 'تم حساب السعر بنجاح.');
-        }catch (Exception $e) {
+            $responseData = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
+            return ApiResponseClass::sendResponse($responseData, 'تم حساب السعر بنجاح.');
+        } catch (Exception $e) {
             Log::error('Error calculating price: ' . $e->getMessage());
             return ApiResponseClass::sendError('حدث خطأ أثناء حساب السعر.', $e->getMessage(), 500);
         }
-        
     }
 }
