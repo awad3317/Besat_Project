@@ -193,17 +193,17 @@ class PriceCalculationService{
         $app_commission_amount = $this->calculateCommission($final_price);
 
         return [
-            'distance_in_km'     => (float) $distanceInKm,
-            'final_price'        => (float) $final_price,
-            'vehicle'            => $vehicle->type,
-            'coupon'             => $coupon_for_response,
-            'ac_applied'         => $ac_applied,
-            'ac_cost'            => (float) $ac_cost,
-            'total_surcharges'   => (float) $total_surcharge_amount,
-            'surcharges_details' => $surcharges_details,
-            'discount_amount'    => (float) $discount_amount,
-            'original_price'     => (float) $original_price,
-            'app_commission_amount' => (float) $app_commission_amount
+            'distance_in_km'        => round((float) $distanceInKm, 2),
+            'final_price'           => round((float) $final_price, 2),
+            'vehicle'               => $vehicle->type,
+            'coupon'                => $coupon_for_response,
+            'ac_applied'            => $ac_applied,
+            'ac_cost'               => round((float) $ac_cost, 2),
+            'total_surcharges'      => round((float) $total_surcharge_amount, 2),
+            'surcharges_details'    => $surcharges_details,
+            'discount_amount'       => round((float) $discount_amount, 2),
+            'original_price'        => round((float) $original_price, 2),
+            'app_commission_amount' => round((float) $app_commission_amount, 2)
         ];
     }
 }
