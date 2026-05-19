@@ -136,6 +136,7 @@ class RequestController extends Controller
             } else {
                 // النظام اليدوي - إرسال الطلب للداشبورد
             }
+            $requestModel->refresh();
             return ApiResponseClass::sendResponse($requestModel, 'Request created successfully.');
         }catch (Exception $e) {
             DB::rollBack();
