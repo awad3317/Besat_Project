@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('max_passengers');
             $table->decimal('min_price', 10, 2)->nullable();
+            $table->decimal('ac_price_per_km', 10, 2)->default(0);
+            $table->boolean('has_ac_option')->default(true);
             $table->softDeletes();
             $table->timestamps();
             

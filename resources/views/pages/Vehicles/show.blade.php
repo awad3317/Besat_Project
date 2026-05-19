@@ -50,8 +50,35 @@
       </div>
 
       <div
-        class="flex m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+          <svg fill="#dc6803" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M11 2v4.26l-2.12-2.12-1.42 1.42L11 9.1V11H9.1L5.56 7.46 4.14 8.88 6.26 11H2v2h4.26l-2.12 2.12 1.42 1.42L9.1 13H11v1.9l-3.54 3.54 1.42 1.42L11 17.74V22h2v-4.26l2.12 2.12 1.42-1.42L13 14.9V13h1.9l3.54 3.54 1.42-1.42L17.74 13H22v-2h-4.26l2.12-2.12-1.42-1.42L14.9 11H13V9.1l3.54-3.54-1.42-1.42L13 6.26V2h-2z" />
+          </svg>
+        </div>
+        <div class="mt-3 w-full">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-500 dark:text-gray-400">التكييف (AC)</span>
+            @if($vehicle->has_ac_option)
+              <span
+                class="inline-flex rounded-full bg-success-50 px-2 py-0.5 text-[10px] font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">مفعل</span>
+            @else
+              <span
+                class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">لا
+                يدعم</span>
+            @endif
+          </div>
 
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+            @if($vehicle->has_ac_option)
+              {{ $vehicle->ac_price_per_km }} {{ config('app.currency_symbol', 'ر.ي') }}
+              <span class="text-sm font-normal text-gray-500 dark:text-gray-400">/كم</span>
+            @else
+              -
+            @endif
+          </h4>
+        </div>
       </div>
 
       <div
@@ -60,7 +87,8 @@
       </div>
     </div>
   </div>
-  <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 mb-4">
+  <div
+    class="overflow-hidden rounded-2xl border border-gray-200 bg-white pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 mb-4">
     <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -172,7 +200,9 @@
                     </button>
 
                     @if($loop->last)
-                      <button @click="$dispatch('open-delete-modal', { action: '{{ route('vehiclePricing.destroy', $price->id) }}' })" type="button"
+                      <button
+                        @click="$dispatch('open-delete-modal', { action: '{{ route('vehiclePricing.destroy', $price->id) }}' })"
+                        type="button"
                         class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -191,7 +221,7 @@
       </table>
       <!-- table end -->
     </div>
-    
+
   </div>
   <div class="space-y-5 sm:space-y-6">
     <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">

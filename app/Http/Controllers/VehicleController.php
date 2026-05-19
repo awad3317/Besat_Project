@@ -53,7 +53,9 @@ class VehicleController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
             'max_passengers' => ['required', 'integer', 'min:1'],
             'min_price'=>['required','min:0'],
-            'image' => ['nullable', 'image', 'max:2048']
+            'image' => ['nullable', 'image', 'max:2048'],
+            'has_ac_option'   => ['required', 'boolean'],
+            'ac_price_per_km' => ['required_if:has_ac_option,1', 'nullable', 'numeric', 'min:0'],
         ]);
 
         if ($validator->fails()) {
@@ -61,6 +63,9 @@ class VehicleController extends Controller
         }
     try {
         $validatData = $validator->validated();
+        if (empty($validatData['has_ac_option'])) {
+            $validatData['ac_price_per_km'] = 0;
+        }
         if($request->hasFile('image')){
             $image_path=$this->imageService->saveImage($request->file('image'),'vehicles');
             $validatData['image'] = $image_path;
@@ -110,18 +115,23 @@ class VehicleController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
             'max_passengers' => ['required', 'integer', 'min:1'],
             'min_price'=>['required','min:0'],
-            'image' => ['nullable', 'image', 'max:2048']
+            'image' => ['nullable', 'image', 'max:2048'],
+            'has_ac_option'   => ['required', 'boolean'],
+            'ac_price_per_km' => ['required_if:has_ac_option,1', 'nullable', 'numeric', 'min:0'],
         ]);
         if ($validator->fails()) {
             return WebResponseClass::sendValidationError($validator);
         }
         try {
             $vehicle = $this->vehicleRepository->getById($id);
+            $hasAc = $request->boolean('has_ac_option');
             $data = [
                 'type' => $request->type,
                 'description' => $request->description,
                 'max_passengers' => $request->max_passengers,
                 'min_price'=>$request->min_price,
+                'has_ac_option'   => $hasAc,
+                'ac_price_per_km' => $hasAc ? $request->ac_price_per_km : 0,
             ];
             if ($request->hasFile('image')) {
                 if ($vehicle->image) {

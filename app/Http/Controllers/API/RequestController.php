@@ -14,6 +14,7 @@ use App\Services\DiscountCodeService;
 use App\Services\DriverLocationService;
 use App\Services\FirebaseService;
 use App\Services\PriceCalculationService;
+use App\Services\SurchargeService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -32,7 +33,8 @@ class RequestController extends Controller
         private FirebaseService $firebaseService,
         private RequestStopRepository $requestStopRepository,
         private DiscountCodeService $discountCodeService,
-        private VehicleRepository $vehicleRepository
+        private VehicleRepository $vehicleRepository,
+        private SurchargeService $surchargeService
 )
     {
         //
@@ -183,6 +185,8 @@ class RequestController extends Controller
             'end_longitude' => ['required','numeric'],
             'vehicle_id'=>['required','integer'],
             'discount_code'=> ['nullable','string'],
+            'wants_ac' => ['nullable', 'boolean'],
+            'trip_datetime'   => ['required', 'date_format:Y-m-d H:i:s'],
         ]);
         try {
             $validated['user_id'] = auth('sanctum')->id();
@@ -192,10 +196,20 @@ class RequestController extends Controller
             $validated['end_latitude'],
             $validated['end_longitude']
         );
+        $wants_ac = $validated['wants_ac'] ?? false;
+        $ac_applied = false;
+        $ac_cost = 0;
         $vehicle=$this->vehicleRepository->getById($validated['vehicle_id']);
+        if ($wants_ac && $vehicle->has_ac_option) {
+            $ac_cost = $distanceInKm * $vehicle->ac_price_per_km;
+            $ac_applied = true;
+        }
         $price_per_km = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
         $price_orginal = $this->priceCalculationService->calculatePrice($distanceInKm,$price_per_km,$vehicle->min_price);
-
+        $surchargesData = $this->surchargeService->calculateSurcharges($validated['trip_datetime']);
+        $total_surcharge_amount = $surchargesData['total_amount'];
+        $applied_surcharges_details = $surchargesData['details'];
+        $price_orginal = $price_orginal + $ac_cost + $total_surcharge_amount;
         $price_final = $price_orginal;
         $vehicle_type = $vehicle->type;
         $coupon_rate = 0;
@@ -222,12 +236,16 @@ class RequestController extends Controller
 
         }
         $responseData = [
-                'distanceInKm' => $distanceInKm, 
-                'price' => $price_final, 
+                'distance_in_km' =>(float) $distanceInKm, 
+                'price' => (float) $price_final, 
                 'vehicle' => $vehicle_type, 
                 'coupon' => $coupon_for_response, 
-                'discount_amount' => $discount_amount, 
-                'original_price' => $price_orginal
+                'ac_applied'=> $ac_applied,       
+                'ac_cost'=> (float) $ac_cost,
+                'total_surcharges'   => $total_surcharge_amount,
+                'surcharges_details' => $applied_surcharges_details,
+                'discount_amount' => (float) $discount_amount, 
+                'original_price' => (float) $price_orginal
             ];
 
         return ApiResponseClass::sendResponse($responseData, 'تم حساب السعر بنجاح.');

@@ -11,7 +11,12 @@ class Vehicle extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'type', 'description', 'max_passengers','image','min_price'
+        'type', 'description', 'max_passengers','image','min_price', 'ac_price_per_km', 'has_ac_option'
+    ];
+    protected $casts = [
+        'has_ac_option' => 'boolean',
+        'min_price' => 'float',
+        'ac_price_per_km' => 'float',
     ];
     public function drivers()
     {

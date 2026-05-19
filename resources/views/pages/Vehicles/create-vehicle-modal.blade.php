@@ -1,8 +1,9 @@
-<div x-data="{ isModalOpen: false, isLoading: false }">
+<div x-data="{ isModalOpen: false, isLoading: false, hasAc: '1' }">
   <button @click="isModalOpen = true"
     class="bg-brand-500 hover:bg-brand-600 h-10 rounded-lg px-6 py-2 text-sm font-medium text-white min-w-[100px]">
     إضافة مركبه
   </button>
+  
   <div x-show="isModalOpen" class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto modal z-99999"
     style="display: none;">
 
@@ -18,6 +19,7 @@
           إضافة مركبه جديدة
         </h4>
         <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
+          
           <div class="col-span-1">
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
               النوع<span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
@@ -36,11 +38,47 @@
             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
               أقل سعر للمركبة ({{ config('app.currency_symbol', 'ر.ي') }})
               <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
-            <input type="number" step="0.01" min="0" placeholder="مثال: 25.00" name="min_price"
+            <input type="number" step="0.01" min="0" placeholder="مثال: 600.00" name="min_price" required
               class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
-            <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
-              السعر الأساسي للمركبة
-            </p>
+          </div>
+
+          {{-- <div class="col-span-1">
+            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              سعر الكيلومتر الأساسي ({{ config('app.currency_symbol', 'ر.ي') }})
+              <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
+            <input type="number" step="0.01" min="0" placeholder="مثال: 200.00" name="price_per_km" required
+              class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+          </div> --}}
+
+          <div class="col-span-1">
+            <label class="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              دعم التكييف (AC)<span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>
+            </label>
+            <div class="flex items-center gap-6 h-11">
+              
+              <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 hover:text-yellow-500 dark:text-gray-400 dark:hover:text-yellow-500 transition-colors">
+                <input type="radio" name="has_ac_option" value="1" x-model="hasAc"
+                  class="h-4 w-4 cursor-pointer text-yellow-500 border-gray-300 bg-gray-100 focus:ring-yellow-500 focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:ring-offset-gray-900">
+                <span>نعم، تدعم</span>
+              </label>
+
+              <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 hover:text-yellow-500 dark:text-gray-400 dark:hover:text-yellow-500 transition-colors">
+                <input type="radio" name="has_ac_option" value="0" x-model="hasAc"
+                  class="h-4 w-4 cursor-pointer text-yellow-500 border-gray-300 bg-gray-100 focus:ring-yellow-500 focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:ring-offset-gray-900">
+                <span>لا تدعم</span>
+              </label>
+              
+            </div>
+          </div>
+
+          <div class="col-span-1" x-show="hasAc === '1'">
+            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+              سعر التكييف لكل كم ({{ config('app.currency_symbol', 'ر.ي') }})
+              <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>
+            </label>
+            <input type="number" step="0.01" min="0" placeholder="مثال: 50.00" name="ac_price_per_km" 
+              :required="hasAc === '1'"
+              class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
           </div>
 
           <div class="col-span-1 sm:col-span-2">
@@ -103,7 +141,6 @@
           </button>
           <button type="submit" :disabled="isLoading"
             class="flex items-center justify-center gap-2 hover:bg-brand-600 w-full px-4 py-3 text-sm font-medium text-white rounded-lg bg-brand-500 disabled:opacity-75 disabled:cursor-not-allowed transition-all">
-            <!-- Loading Spinner -->
             <svg x-show="isLoading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
               fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
