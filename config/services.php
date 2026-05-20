@@ -48,5 +48,9 @@ return [
         'vapid_key' => env('FIREBASE_VAPID_KEY'),
     ],
 
+    'google' => [
+        'maps_key' => env('GOOGLE_MAP_KEY'),
+    ],
+
 
 ];

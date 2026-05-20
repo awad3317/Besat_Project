@@ -24,7 +24,7 @@ class PriceCalculationService{
 
     public function getdistanceInKm(float $lat1, float $lon1, float $lat2, float $lon2, array $stops = [])
     {
-        $apiKey = env('GOOGLE_MAP_KEY');
+        $apiKey = config('services.google.maps_key');
         if (!$apiKey) {
             Log::error('Google Maps API Key is not configured.');
             return null;
