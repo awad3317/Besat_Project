@@ -93,6 +93,7 @@ class RequestController extends Controller
             }
             $priceDetails = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
             unset($validated['stops']);
+            $validated['distance_km'] = $priceDetails['distance_in_km'];
             $validated['original_price']        = $priceDetails['original_price'];
             $validated['final_price']           = $priceDetails['final_price'];
             $validated['discount_amount']       = $priceDetails['discount_amount'];
