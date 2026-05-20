@@ -22,39 +22,45 @@ class PriceCalculationService{
     }
 
 
-    public function getdistanceInKm(float $lat1, float $lon1, float $lat2, float $lon2)
+    public function getdistanceInKm(float $lat1, float $lon1, float $lat2, float $lon2, array $stops = [])
     {
         $apiKey = env('GOOGLE_MAP_KEY');
         if (!$apiKey) {
             Log::error('Google Maps API Key is not configured.');
             return null;
         }
-        $url = 'https://maps.googleapis.com/maps/api/distancematrix/json';
-        $response = Http::get($url, [
-            'origins'      => "{$lat1},{$lon1}",
-            'destinations' => "{$lat2},{$lon2}",
-            'mode'         => 'driving',
-            'key'          => $apiKey,
-        ]);
-        if ($response->failed()) {
-            Log::error('Google Distance Matrix API request failed: ' . $response->body());
-            return null;
-        }
-        $data = $response->json();
-        if ($data['status'] == 'OK' && $data['rows'][0]['elements'][0]['status'] == 'OK') {
+        $points = [];
+        $points[] = "{$lat1},{$lon1}"; 
 
-            $element = $data['rows'][0]['elements'][0];
-        // return [
-        //     'distance_km'   => $element['distance']['value'] / 1000, // المسافة بالكيلومتر
-        //     'distance_text' => $element['distance']['text'],       // نص المسافة (e.g., "5.4 km")
-        //     'duration_mins' => $element['duration']['value'] / 60,   // الوقت بالدقائق
-        //     'duration_text' => $element['duration']['text'],       // نص الوقت (e.g., "12 mins")
-        // ];
-            $distanceInMeters = $element['distance']['value'];
-            return (float) ($distanceInMeters / 1000);
+        foreach ($stops as $stop) {
+            $points[] = "{$stop['latitude']},{$stop['longitude']}";
         }
-        Log::warning('Google Distance Matrix API returned status: ' . $data['status']);
-        return null;
+        $points[] = "{$lat2},{$lon2}"; 
+        $totalDistanceMeters = 0;
+        $url = 'https://maps.googleapis.com/maps/api/distancematrix/json';
+        for ($i = 0; $i < count($points) - 1; $i++) {
+            $response = Http::get($url, [
+                'origins'      => $points[$i],
+                'destinations' => $points[$i + 1],
+                'mode'         => 'driving',
+                'key'          => $apiKey,
+            ]);
+
+            if ($response->failed()) {
+                Log::error('Google Distance Matrix API request failed at segment ' . $i);
+                return null;
+            }
+
+            $data = $response->json();
+
+            if ($data['status'] == 'OK' && $data['rows'][0]['elements'][0]['status'] == 'OK') {
+                $totalDistanceMeters += $data['rows'][0]['elements'][0]['distance']['value'];
+            } else {
+                Log::warning('Google Distance Matrix API error status at segment ' . $i . ': ' . $data['status']);
+                return null;
+            }
+        }
+        return (float) ($totalDistanceMeters / 1000);
     }
     public function getPricePerKmByDistanceAndVehicle($distanceKm, $vehicle): float
     {
@@ -143,20 +149,21 @@ class PriceCalculationService{
 
     public function getFullPriceDetails(array $validatedData, $vehicle, $couponObject = null)
     {
-        // 1. حساب المسافة
+        $stops = $validatedData['stops'] ?? [];
         $distanceInKm = $this->getdistanceInKm(
             $validatedData['start_latitude'],
             $validatedData['start_longitude'],
             $validatedData['end_latitude'],
-            $validatedData['end_longitude']
+            $validatedData['end_longitude'],
+            $stops 
         );
 
         if ($distanceInKm === null) {
-            throw new \Exception("فشل في حساب المسافة من خرائط جوجل.");
+            throw new \Exception("فشل في حساب المسافة الدقيقة من خرائط جوجل.");
         }
-
         $price_per_km = $this->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
         $base_price = $this->calculatePrice($distanceInKm, $price_per_km, $vehicle->min_price);
+        
         $surcharges_details = [];
         $ac_cost = 0;
         $ac_applied = false;
@@ -182,12 +189,12 @@ class PriceCalculationService{
             $surcharges_details = array_merge($surcharges_details, $surchargesData['details']);
         }
 
-        // 5. تجميع السعر الأصلي
         $original_price = $base_price + $ac_cost + $total_surcharge_amount;
         $final_price = $original_price;
 
         $discount_amount = 0;
         $coupon_for_response = null;
+        
         if ($couponObject) {
             $coupon_rate = $couponObject->discount_rate;
             $coupon_for_response = number_format($coupon_rate * 100, 2) . '%';
@@ -201,7 +208,9 @@ class PriceCalculationService{
                 'amount' => -$discount_amount 
             ];
         }
+        
         $app_commission_amount = $this->calculateCommission($final_price);
+        
         return [
             'distance_in_km'        => round((float) $distanceInKm, 2),
             'base_price'            => round((float) $base_price, 2),
