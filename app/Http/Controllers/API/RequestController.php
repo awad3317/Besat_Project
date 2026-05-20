@@ -44,7 +44,7 @@ class RequestController extends Controller
         try {
             $userId = auth('sanctum')->id();
             $perPage = $request->query('per_page', 10);
-            $trips = $this->requestRepository->getByUserIdWithRelations($userId, ['stops', 'surcharges'],$perPage);
+            $trips = $this->requestRepository->getByUserIdWithRelations($userId, [],$perPage);
             return ApiResponseClass::sendResponse($trips, 'تم استرجاع سجل الرحلات بنجاح.');
 
         } catch (Exception $e) {
