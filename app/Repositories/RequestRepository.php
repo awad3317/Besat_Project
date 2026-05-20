@@ -42,7 +42,21 @@ class RequestRepository implements RepositoriesInterface
 
     public function getByUserIdWithRelations(int $userId, array $relations = [], $perPage = 10)
     {
-        $query = Request::where('user_id', $userId)
+        $selectedColumns = [
+            'id', 
+            'user_id', 
+            'start_address', 
+            'end_address', 
+            'status', 
+            'final_price', 
+            'distance_km', 
+            'wants_ac', 
+            'notes', 
+            'created_at'
+        ];
+        
+        $query = Request::select($selectedColumns)
+            ->where('user_id', $userId)
             ->with($relations)
             ->orderBy('id', 'desc');
         if ($perPage === 'all' || empty($perPage) || $perPage <= 0) {
