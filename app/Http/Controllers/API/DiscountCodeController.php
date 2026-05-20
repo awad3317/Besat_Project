@@ -71,7 +71,7 @@ class DiscountCodeController extends Controller
             $responseData = [
                 'id'            => $coupon->id,
                 'code'          => $coupon->code,
-                'discount_rate' => (float) $coupon->discount_rate,
+                'discount_rate' => (float) ($coupon->discount_rate * 100),
                 'message'       => 'كود الخصم فعال وصالح للاستخدام.'
             ];
             return ApiResponseClass::sendResponse($responseData, 'تم التحقق من كود الخصم بنجاح.');
