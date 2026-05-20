@@ -39,6 +39,19 @@ class RequestController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function index(Request $request)
+    {
+        try {
+            $userId = auth('sanctum')->id();
+            $perPage = $request->query('per_page', 10);
+            $trips = $this->requestRepository->getByUserIdWithRelations($userId, ['stops', 'surcharges'],$perPage);
+            return ApiResponseClass::sendResponse($trips, 'تم استرجاع سجل الرحلات بنجاح.');
+
+        } catch (Exception $e) {
+            Log::error('Error fetching trip history: ' . $e->getMessage());
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب سجل الرحلات.', $e->getMessage(), 500);
+        }
+    }
 
     /**
      * Store a newly created resource in storage.

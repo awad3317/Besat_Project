@@ -40,4 +40,15 @@ class RequestRepository implements RepositoriesInterface
         return Request::where('id', $id)->delete() > 0;
     }
 
+    public function getByUserIdWithRelations(int $userId, array $relations = [], $perPage = 10)
+    {
+        $query = Request::where('user_id', $userId)
+            ->with($relations)
+            ->orderBy('id', 'desc');
+        if ($perPage === 'all' || empty($perPage) || $perPage <= 0) {
+            return $query->get(); 
+        }
+        return $query->paginate((int) $perPage);
+    }
+
 }
