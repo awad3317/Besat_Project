@@ -17,7 +17,7 @@ class Request extends Model
         'end_latitude', 'end_longitude', 'end_address', 'status',
         'original_price', 'discount_amount', 'final_price',
         'distance_km', 'notes', 'payment_method',
-        'trip_datetime', 'wants_ac', 'ac_cost'
+        'trip_datetime', 'wants_ac', 'ac_cost' ,'bank_id',
     ];
 
     protected $casts = [
@@ -42,6 +42,10 @@ class Request extends Model
     {
         return $this->belongsTo(Vehicle::class);
     }
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }   
 
     public function discountCode()
     {

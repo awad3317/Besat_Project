@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('driver_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('vehicle_id')->nullable()->constrained()->onDelete('set null');   
+            $table->foreignId('bank_id')->nullable()->constrained('banks')->onDelete('set null');
             $table->foreignId('discount_code_id')->nullable()->references('id')->on('discount_codes')->onDelete('set null');
             $table->foreignId('created_by_user')->nullable()->constrained('users')->onDelete('set null');
             $table->enum('created_by',['APP','Web']);

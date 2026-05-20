@@ -8,13 +8,13 @@ use App\Http\Controllers\API\Auth\User\UserAuthController;
 use App\Http\Controllers\API\Auth\User\UserController;
 use App\Http\Controllers\API\Auth\User\UserForgetPasswordController;
 use App\Http\Controllers\API\Auth\User\UserOtpController;
+use App\Http\Controllers\API\BankController;
 use App\Http\Controllers\API\DiscountCodeController;
 use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
 use App\Http\Controllers\API\SpecialOrderController;
 use App\Http\Controllers\API\VehicleController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -34,6 +34,7 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::post('/user/specialOrder',[SpecialOrderController::class,'store']);
         Route::get('/user/profile', [UserController::class, 'index']);
         Route::post('/user/check-coupon', [DiscountCodeController::class, 'checkCoupon']);
+        Route::get('/user/banks', [BankController::class, 'index']);
 });
 
 // Routes For Drivers only

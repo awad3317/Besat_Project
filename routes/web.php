@@ -9,6 +9,7 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\API\AppSettingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestController;
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\FirebaseController;
 use App\Http\Controllers\DashboardController;
@@ -45,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('admins',AdminController::class)->middleware(['superAdmin']);
     Route::resource('log',ActivityLogController::class)->only(['index']);
     Route::resource('ads',AdsController::class)->only(['index']);
+    Route::resource('Bank', BankController::class);
     Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');
     Route::post('/Vehicle/{id}/restore', [VehicleController::class, 'restore'])->name('Vehicle.restore');
