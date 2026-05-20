@@ -46,7 +46,6 @@ class RequestController extends Controller
             $perPage = $request->query('per_page', 10);
             $trips = $this->requestRepository->getByUserIdWithRelations($userId, [],$perPage);
             return ApiResponseClass::sendResponse($trips, 'تم استرجاع سجل الرحلات بنجاح.');
-
         } catch (Exception $e) {
             Log::error('Error fetching trip history: ' . $e->getMessage());
             return ApiResponseClass::sendError('حدث خطأ أثناء جلب سجل الرحلات.', $e->getMessage(), 500);
@@ -155,7 +154,17 @@ class RequestController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $userId = auth('sanctum')->id();
+            $requestModel = $this->requestRepository->getByIdAndUserId($id, $userId, ['stops', 'surcharges','driver','vehicle']);
+            if (!$requestModel) {
+                return ApiResponseClass::sendError('الطلب غير موجود أو غير مصرح لك بالوصول إليه.', null, 404);
+            }
+            return ApiResponseClass::sendResponse($requestModel, 'تم استرجاع تفاصيل الرحلة بنجاح.');
+        } catch (Exception $e) {
+            Log::error('Error fetching trip details: ' . $e->getMessage());
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب تفاصيل الرحلة.', $e->getMessage(), 500);
+        }
     }
 
     /**

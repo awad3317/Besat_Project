@@ -65,4 +65,12 @@ class RequestRepository implements RepositoriesInterface
         return $query->paginate((int) $perPage);
     }
 
+    public function getByIdAndUserId(int $id, int $userId, array $relations = [])
+    {
+        return Request::where('id', $id)
+            ->where('user_id', $userId)
+            ->with($relations)
+            ->first();
+    }
+
 }
