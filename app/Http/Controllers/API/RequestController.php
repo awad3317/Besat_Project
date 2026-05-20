@@ -72,19 +72,11 @@ class RequestController extends Controller
             $vehicle = $this->vehicleRepository->getById($validated['vehicle_id']);
             $coupon_object = null;
             if(isset($validated['discount_code']) && !empty($validated['discount_code'])){
-                $coupon_object  = $this->discountCodeService->getDiscountCode($validated['discount_code']);
-                if (!$coupon_object) {
-                return ApiResponseClass::sendError('كود الخصم الذي أدخلته غير صحيح.', null, 422);
+                $couponCheck = $this->discountCodeService->validateCoupon($validated['discount_code'], $validated['user_id']);
+                if (!$couponCheck['is_valid']) {
+                    return ApiResponseClass::sendError($couponCheck['message'], null, $couponCheck['status_code']);
                 }
-                if(!$this->discountCodeService->checkIsActive($coupon_object)){
-                    return ApiResponseClass::sendError('كود الخصم غير متاح', null, 400);
-                }   
-                if(!$this->discountCodeService->checkGlobalUsage($coupon_object)){
-                    return ApiResponseClass::sendError('كود الخصم تجاوز الاستخدام المسموح به', null, 400);
-                }
-                if(!$this->discountCodeService->checkUserEligibility($coupon_object,$validated['user_id'])){
-                    return ApiResponseClass::sendError('كود الخصم تم استخدامه من قبل هذا المستخدم مسبقاً.', null, 400);
-                }
+                $coupon_object = $couponCheck['coupon'];
                 $validated['discount_code_id'] = $coupon_object->id;
                 unset($validated['discount_code']);
             }
@@ -109,7 +101,7 @@ class RequestController extends Controller
                 $requestModel->surcharges()->attach($surchargesToAttach);
             }
             if ($coupon_object && $priceDetails['discount_amount'] > 0) {
-                $this->discountCodeRepository->incrementUsage($coupon_object);
+                $this->discountCodeService->recordCouponUsage($coupon_object, $validated['user_id']);
             }
             DB::commit();
             $appSettings = Cache::rememberForever('app_settings', function () {
@@ -176,7 +168,7 @@ class RequestController extends Controller
             'start_longitude' => ['required', 'numeric'],
             'end_latitude'    => ['required', 'numeric'],
             'end_longitude'   => ['required', 'numeric'],
-            'vehicle_id'      => ['required', 'integer'],
+            'vehicle_id' => ['required', Rule::exists('vehicles', 'id')],
             'discount_code'   => ['nullable', 'string'],
             'wants_ac'        => ['nullable', 'boolean'],
             'trip_datetime'   => ['required', 'date_format:Y-m-d H:i:s'],
@@ -187,19 +179,11 @@ class RequestController extends Controller
             $vehicle = $this->vehicleRepository->getById($validated['vehicle_id']);
             $coupon_object = null;
             if (!empty($validated['discount_code'])) {
-                $coupon_object = $this->discountCodeService->getDiscountCode($validated['discount_code']);
-                if (!$coupon_object) {
-                   return ApiResponseClass::sendError('كود الخصم الذي أدخلته غير صحيح.', null, 422);
+                $couponCheck = $this->discountCodeService->validateCoupon($validated['discount_code'], $validated['user_id']);
+                if (!$couponCheck['is_valid']) {
+                    return ApiResponseClass::sendError($couponCheck['message'], null, $couponCheck['status_code']);
                 }
-                if (!$this->discountCodeService->checkIsActive($coupon_object)) {
-                    return ApiResponseClass::sendError('كود الخصم غير متاح', null, 400);
-                }
-                if (!$this->discountCodeService->checkGlobalUsage($coupon_object)) {
-                    return ApiResponseClass::sendError('كود الخصم تجاوز الاستخدام المسموح به', null, 400);
-                }
-                if (!$this->discountCodeService->checkUserEligibility($coupon_object, $validated['user_id'])) {
-                    return ApiResponseClass::sendError('كود الخصم تم استخدامه من قبل هذا المستخدم مسبقاً.', null, 400);
-                }
+                $coupon_object = $couponCheck['coupon'];
             }
             $responseData = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
             return ApiResponseClass::sendResponse($responseData, 'تم حساب السعر بنجاح.');

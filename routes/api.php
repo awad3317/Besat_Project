@@ -8,6 +8,7 @@ use App\Http\Controllers\API\Auth\User\UserAuthController;
 use App\Http\Controllers\API\Auth\User\UserController;
 use App\Http\Controllers\API\Auth\User\UserForgetPasswordController;
 use App\Http\Controllers\API\Auth\User\UserOtpController;
+use App\Http\Controllers\API\DiscountCodeController;
 use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
@@ -31,7 +32,8 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::post('/user/upsertRating',[RatingController::class,'upsertRating']);
         Route::post('/user/calculatePrice',[RequestController::class,'calculatePrice']);
         Route::post('/user/specialOrder',[SpecialOrderController::class,'store']);
-        Route::get('/profile', [UserController::class, 'index']);
+        Route::get('/user/profile', [UserController::class, 'index']);
+        Route::post('/user/check-coupon', [DiscountCodeController::class, 'checkCoupon']);
 });
 
 // Routes For Drivers only

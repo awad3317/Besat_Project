@@ -44,6 +44,25 @@ class DiscountCodeService{
         }
         return true;
     }
+    public function validateCoupon(string $code, int $userId): array
+    {
+        $coupon = $this->getDiscountCode($code);
+
+        if (!$coupon) {
+            return ['is_valid' => false, 'message' => 'كود الخصم الذي أدخلته غير صحيح.', 'status_code' => 422];
+        }
+        if (!$this->checkIsActive($coupon)) {
+            return ['is_valid' => false, 'message' => 'كود الخصم غير متاح', 'status_code' => 400];
+        }   
+        if (!$this->checkGlobalUsage($coupon)) {
+            return ['is_valid' => false, 'message' => 'كود الخصم تجاوز الاستخدام المسموح به', 'status_code' => 400];
+        }
+        if (!$this->checkUserEligibility($coupon, $userId)) {
+            return ['is_valid' => false, 'message' => 'كود الخصم تم استخدامه من قبل هذا المستخدم مسبقاً.', 'status_code' => 400];
+        }
+
+        return ['is_valid' => true, 'coupon' => $coupon];
+    }
 
     
 /**
