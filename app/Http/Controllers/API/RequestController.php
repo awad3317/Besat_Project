@@ -186,6 +186,11 @@ class RequestController extends Controller
                 $coupon_object = $couponCheck['coupon'];
             }
             $responseData = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
+            unset(
+                $responseData['ac_cost'],
+                $responseData['discount_amount'],
+                $responseData['total_surcharges']
+            );
             return ApiResponseClass::sendResponse($responseData, 'تم حساب السعر بنجاح.');
         } catch (Exception $e) {
             Log::error('Error calculating price: ' . $e->getMessage());

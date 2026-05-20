@@ -155,26 +155,32 @@ class PriceCalculationService{
             throw new \Exception("فشل في حساب المسافة من خرائط جوجل.");
         }
 
-        // 2. حساب السعر الأساسي للمسافة
         $price_per_km = $this->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
         $base_price = $this->calculatePrice($distanceInKm, $price_per_km, $vehicle->min_price);
-
-        // 3. حساب التكييف
+        $surcharges_details = [];
         $ac_cost = 0;
         $ac_applied = false;
         $wants_ac = $validatedData['wants_ac'] ?? false;
         
         if ($wants_ac && $vehicle->has_ac_option) {
             $ac_cost = $distanceInKm * $vehicle->ac_price_per_km;
+            $ac_cost = round((float) $ac_cost, 2);
             $ac_applied = true;
+        
+            $surcharges_details[] = [
+                'id'     => 'ac_cost',
+                'name'   => 'رسوم تشغيل التكييف',
+                'amount' => $ac_cost
+            ];
         }
 
-        // 4. حساب الرسوم الإضافية
         $tripDatetime = $validatedData['trip_datetime'] ?? now()->format('Y-m-d H:i:s');
         $surchargesData = $this->calculateSurcharges($tripDatetime);
         $total_surcharge_amount = $surchargesData['total_amount'];
-        $surcharges_details = $surchargesData['details'];
         
+        if (!empty($surchargesData['details'])) {
+            $surcharges_details = array_merge($surcharges_details, $surchargesData['details']);
+        }
 
         // 5. تجميع السعر الأصلي
         $original_price = $base_price + $ac_cost + $total_surcharge_amount;
@@ -182,28 +188,33 @@ class PriceCalculationService{
 
         $discount_amount = 0;
         $coupon_for_response = null;
-
         if ($couponObject) {
             $coupon_rate = $couponObject->discount_rate;
-            $coupon_for_response = number_format($coupon_rate * 100, 2);
+            $coupon_for_response = number_format($coupon_rate * 100, 2) . '%';
             $discount_amount = $original_price * $coupon_rate;
+            $discount_amount = round((float) $discount_amount, 2);
             $final_price = $original_price - $discount_amount;
+
+            $surcharges_details[] = [
+                'id'     => 'discount',
+                'name'   => "خصم قسيمة ({$coupon_for_response})",
+                'amount' => -$discount_amount 
+            ];
         }
-
         $app_commission_amount = $this->calculateCommission($final_price);
-
         return [
             'distance_in_km'        => round((float) $distanceInKm, 2),
+            'base_price'            => round((float) $base_price, 2),
+            'original_price'        => round((float) $original_price, 2),
             'final_price'           => round((float) $final_price, 2),
             'vehicle'               => $vehicle->type,
             'coupon'                => $coupon_for_response,
             'ac_applied'            => $ac_applied,
             'ac_cost'               => round((float) $ac_cost, 2),
             'total_surcharges'      => round((float) $total_surcharge_amount, 2),
-            'surcharges_details'    => $surcharges_details,
             'discount_amount'       => round((float) $discount_amount, 2),
-            'original_price'        => round((float) $original_price, 2),
-            'app_commission_amount' => round((float) $app_commission_amount, 2)
+            'app_commission_amount' => round((float) $app_commission_amount, 2),
+            'surcharges_details'    => $surcharges_details 
         ];
     }
 }
