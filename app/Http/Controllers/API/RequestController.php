@@ -78,7 +78,6 @@ class RequestController extends Controller
 
         try {
             $stopsData = $validated['stops'] ?? [];
-            unset($validated['stops']);
             $validated['user_id'] = auth('sanctum')->id();
             $validated['created_by'] = 'APP';
             $vehicle = $this->vehicleRepository->getById($validated['vehicle_id']);
@@ -93,6 +92,7 @@ class RequestController extends Controller
                 unset($validated['discount_code']);
             }
             $priceDetails = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
+            unset($validated['stops']);
             $validated['original_price']        = $priceDetails['original_price'];
             $validated['final_price']           = $priceDetails['final_price'];
             $validated['discount_amount']       = $priceDetails['discount_amount'];
@@ -108,9 +108,13 @@ class RequestController extends Controller
             if (!empty($priceDetails['surcharges_details'])) {
                 $surchargesToAttach = [];
                 foreach ($priceDetails['surcharges_details'] as $surcharge) {
-                    $surchargesToAttach[$surcharge['id']] = ['amount' => $surcharge['amount']];
+                    if (is_numeric($surcharge['id'])) {
+                        $surchargesToAttach[$surcharge['id']] = ['amount' => $surcharge['amount']];
+                    }
                 }
-                $requestModel->surcharges()->attach($surchargesToAttach);
+                if (!empty($surchargesToAttach)) {
+                    $requestModel->surcharges()->attach($surchargesToAttach);
+                }
             }
             if ($coupon_object && $priceDetails['discount_amount'] > 0) {
                 $this->discountCodeService->recordCouponUsage($coupon_object, $validated['user_id']);
@@ -145,7 +149,7 @@ class RequestController extends Controller
             return ApiResponseClass::sendResponse($requestModel, 'Request created successfully.');
         }catch (Exception $e) {
             DB::rollBack();
-            return apiResponseClass::sendError('Failed to create request.'.$e->getMessage());
+            return ApiResponseClass::sendError('Failed to create request.'.$e->getMessage());
         }
     }
 
@@ -194,6 +198,9 @@ class RequestController extends Controller
             'discount_code'   => ['nullable', 'string'],
             'wants_ac'        => ['nullable', 'boolean'],
             'trip_datetime'   => ['required', 'date_format:Y-m-d H:i:s'],
+            'stops'             => ['nullable', 'array'],
+            'stops.*.latitude'  => ['required_with:stops', 'numeric', 'between:-90,90'],
+            'stops.*.longitude' => ['required_with:stops', 'numeric', 'between:-180,180'],
         ]);
 
         try {
