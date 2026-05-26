@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('banks', function (Blueprint $table) {
             $table->id();
+            $table->string('method_key')->unique()->nullable();
             $table->string('name'); 
             $table->string('account_name')->nullable(); 
-            $table->string('account_number'); 
+            $table->string('account_number')->nullable();
             $table->string('logo')->nullable();
+            $table->string('color')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

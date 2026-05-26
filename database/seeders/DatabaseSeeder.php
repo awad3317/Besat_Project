@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             SurchargeSeeder::class,
             // VehiclePricingSeeder::class,
             DriversSeeder::class,
+            PaymentMethodsSeeder::class,
             // DiscountCodeSeeder::class,
         ]);
     }

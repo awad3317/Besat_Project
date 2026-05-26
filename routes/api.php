@@ -14,6 +14,7 @@ use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
 use App\Http\Controllers\API\SpecialOrderController;
+use App\Http\Controllers\API\PaymentMethodController;
 use App\Http\Controllers\API\VehicleController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,8 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::get('/user/profile', [UserController::class, 'index']);
         Route::post('/user/check-coupon', [DiscountCodeController::class, 'checkCoupon']);
         Route::get('/user/banks', [BankController::class, 'index']);
+
+        Route::get('/user/digital-payments', [PaymentMethodController::class, 'getDigitalPayments']);
 });
 
 // Routes For Drivers only

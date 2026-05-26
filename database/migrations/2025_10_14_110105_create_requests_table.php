@@ -33,7 +33,9 @@ return new class extends Migration
             $table->decimal('surcharge_amount', 10, 2)->default(0);
             $table->decimal('app_commission_amount', 10, 2);
             $table->decimal('final_price', 10, 2);
-            $table->enum('payment_method', ['cash', 'deposit'])->default('cash');
+            $table->string('payment_method')->default('cash');
+            $table->enum('payment_status', ['unpaid', 'paid', 'failed', 'refunded'])->default('unpaid');
+            $table->string('transaction_id')->nullable();
             $table->dateTime('trip_datetime');
             $table->boolean('wants_ac')->default(false);
             $table->decimal('ac_cost', 10, 2)->default(0);
