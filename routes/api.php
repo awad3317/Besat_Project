@@ -38,6 +38,8 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::get('/user/banks', [BankController::class, 'index']);
 
         Route::get('/user/digital-payments', [PaymentMethodController::class, 'getDigitalPayments']);
+                // مسار معالجة الدفع: يستقبل نوع الإجراء (action) واسم البنك (method_key)
+        Route::post('/user/payment/{action}/{method_key}', [PaymentMethodController::class, 'processPayment']);
 });
 
 // Routes For Drivers only

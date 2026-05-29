@@ -10,28 +10,23 @@ class PaymentMethodsSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. إنشاء العملات الأساسية
         $yer = Currency::firstOrCreate(['code' => 'YER'], ['name' => 'ريال يمني']);
         $usd = Currency::firstOrCreate(['code' => 'USD'], ['name' => 'دولار أمريكي']);
         $sar = Currency::firstOrCreate(['code' => 'SAR'], ['name' => 'ريال سعودي']);
 
-        // 2. إنشاء بوابة بنك القطيبي
         $qutaibi = Bank::create([
-            'method_key' => 'qutaibi_e_payment',
+            'method_key' => 'qutaibi_pay',
             'name' => 'بنك القطيبي الإسلامي',
             'logo' => 'https://safirapps.com/storage/digital-methods/qutaibi.webp',
             'color' => '#AEC737',
             'is_active' => true,
         ]);
-
-        // ربط البنك بالعملات الثلاث
         $qutaibi->currencies()->attach([$yer->id, $usd->id, $sar->id]);
 
-        // 3. إنشاء الخطوة الأولى للقطيبي (طلب الـ OTP)
         $step1 = $qutaibi->steps()->create([
             'step_key' => 'request_otp',
             'action_text' => 'التالي',
-            'action_url' => '/api/v2/customer/payment/request_otp/qutaibi_e_payment',
+            'action_url' => '/api/user/payment/request_otp/qutaibi_pay', 
             'sort_order' => 1
         ]);
 
@@ -65,7 +60,7 @@ class PaymentMethodsSeeder extends Seeder
         $step2 = $qutaibi->steps()->create([
             'step_key' => 'submit',
             'action_text' => 'إكمال الدفع',
-            'action_url' => '/api/v2/customer/payment/submit/qutaibi_e_payment',
+            'action_url' => '/api/user/payment/submit/qutaibi_pay', 
             'sort_order' => 2
         ]);
 
@@ -79,7 +74,5 @@ class PaymentMethodsSeeder extends Seeder
             'max_length' => 8,
             'is_hidden' => false
         ]);
-        
-        // (يمكنك بنفس الطريقة كتابة كود عدن كاش هنا)
     }
 }

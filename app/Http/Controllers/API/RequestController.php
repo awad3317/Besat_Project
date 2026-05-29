@@ -13,6 +13,7 @@ use App\Services\DiscountCodeService;
 use App\Services\DriverLocationService;
 use App\Services\FirebaseService;
 use App\Services\PriceCalculationService;
+use App\Services\TripDispatchService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -32,6 +33,7 @@ class RequestController extends Controller
         private RequestStopRepository $requestStopRepository,
         private DiscountCodeService $discountCodeService,
         private VehicleRepository $vehicleRepository,
+        private TripDispatchService $tripDispatchService,
 )
     {
         //
@@ -67,8 +69,7 @@ class RequestController extends Controller
             'end_longitude' => 'required|numeric',
             'end_address' => 'required|string|max:255',
             'distance_km' => 'required|numeric|min:0',
-            'payment_method'=>['required',Rule::in(['cash','deposit'])],
-            'bank_id'=> ['required_if:payment_method,deposit', 'nullable', Rule::exists('banks', 'id')->where('is_active', true)],
+            'payment_method'=>['required',Rule::in(['cash', 'digital_payment'])],
             'notes' => 'nullable|string|max:500',
             'stops'  => ['nullable', 'array'],
             'stops.*.latitude'  => ['required_with:stops', 'numeric', 'between:-90,90'],
@@ -122,30 +123,8 @@ class RequestController extends Controller
                 $this->discountCodeService->recordCouponUsage($coupon_object, $validated['user_id']);
             }
             DB::commit();
-            $appSettings = Cache::rememberForever('app_settings', function () {
-                return $this->appSettingRepository->getSetting();
-            });
-            if ($appSettings && $appSettings->auto_assign_to_drivers) {
-                $nearestDrivers = $this->driverLocationService->getNearestDrivers($validated['start_latitude'], $validated['start_longitude'], 8, 20);
-                
-                if ($nearestDrivers) {
-                    $title = 'طلب جديد';
-                    $body = 'يوجد طلب جديد في منطقتك، اضغط لقبول الطلب';
-                    $data = [
-                        'request_id'      => $requestModel->id,
-                        'start_latitude'  => $validated['start_latitude'],
-                        'start_longitude' => $validated['start_longitude'],
-                        'start_address'   => $validated['start_address'],
-                    ];
-
-                    foreach ($nearestDrivers as $driver) {
-                        if (!empty($driver['device_token'])) {
-                            $this->firebaseService->sendNotification($driver['device_token'], $title, $body, $data);
-                        }
-                    }
-                }
-            } else {
-                // النظام اليدوي - إرسال الطلب للداشبورد
+            if (in_array($validated['payment_method'], ['cash'])){
+                $this->tripDispatchService->dispatchToDrivers($requestModel);
             }
             $requestModel->refresh();
             return ApiResponseClass::sendResponse($requestModel, 'Request created successfully.');
