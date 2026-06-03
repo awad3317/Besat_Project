@@ -37,8 +37,7 @@ class PaymentMethodController extends Controller
                 },
                 
                 // إذا كانت العلاقة هنا One-to-Many، سيبقى step_id كما هو
-                'steps.fields:id,step_id,field_key,default_value,label,hint,description,type,is_hidden,is_required,min_length,max_length'
-            ])
+'steps.fields:id,payment_step_id,field_key,default_value,label,hint,description,type,is_hidden,is_required,min_length,max_length'            ])
             ->where('is_active', true)
             ->get();
 
