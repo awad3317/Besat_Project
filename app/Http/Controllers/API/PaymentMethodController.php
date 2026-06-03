@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Classes\ApiResponseClass; // لا تنسَ استدعاء الكلاس هنا
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
-use App\Services\TripDispatchService;
 use App\Models\Request as TripRequest;
 use App\Services\Payment\PaymentFactory;
+use App\Services\TripDispatchService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -20,15 +21,22 @@ class PaymentMethodController extends Controller
     }
 
     public function getDigitalPayments()
-    {
-        try {
-            $banks = Bank::with([
-                'currencies', 
-                'steps' => function($query) {
-                    $query->orderBy('sort_order');
-                }, 
-                'steps.fields'
-            ])->where('is_active', true)->get();
+{
+    try {
+        
+        $resultData = Cache::remember('digital_payments_active', 60 * 60 * 24, function () {
+            $banks = Bank::select('id', 'name', 'logo', 'color')
+                ->with([
+                    'currencies:id,name,bank_id', 
+                    'steps' => function($query) {
+                        $query->select('id', 'bank_id', 'step_key', 'action_text', 'action_url', 'sort_order')
+                              ->orderBy('sort_order');
+                    },
+                    
+                    'steps.fields:id,step_id,field_key,default_value,label,hint,description,type,is_hidden,is_required,min_length,max_length'
+                ])
+                ->where('is_active', true)
+                ->get();
 
             $formattedBanks = $banks->map(function ($bank) {
                 return [
@@ -71,24 +79,25 @@ class PaymentMethodController extends Controller
                 ];
             });
 
-            $resultData = [
+            return [
                 'digital_payment' => [
                     'method_key' => 'digital_payment',
                     'method_name' => 'الدفع الإلكتروني',
                     'banks' => $formattedBanks
                 ]
             ];
+        });
 
-            return ApiResponseClass::sendResponse(
-                $resultData, 
-                'تم جلب بوابات الدفع بنجاح', 
-                200
-            );
+        return ApiResponseClass::sendResponse(
+            $resultData, 
+            'تم جلب بوابات الدفع بنجاح', 
+            200
+        );
 
-        } catch (Exception $e) {
-            return ApiResponseClass::throw($e, 'حدث خطأ أثناء جلب بوابات الدفع');
-        }
+    } catch (\Exception $e) {
+        return ApiResponseClass::throw($e, 'حدث خطأ أثناء جلب بوابات الدفع');
     }
+}
 
     public function processPayment(Request $request, $action, $method_key)
     {
