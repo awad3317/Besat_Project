@@ -95,7 +95,7 @@ class PaymentMethodController extends Controller
         );
 
     } catch (\Exception $e) {
-        return ApiResponseClass::throw($e, 'حدث خطأ أثناء جلب بوابات الدفع');
+        return ApiResponseClass::throw($e, 'Error: ' . $e->getMessage() . ' in line: ' . $e->getLine());
     }
 }
 
