@@ -59,6 +59,7 @@ class PaymentMethodController extends Controller
                                     'description' => $field->description ?? "",
                                     'type' => $field->type,
                                     'is_hidden' => $field->is_hidden,
+                                    'is_required' => $field->is_required,
                                     'min' => $field->min_length,
                                     'max' => $field->max_length,
                                 ], function($val) { 
