@@ -26,17 +26,21 @@ class PaymentMethodController extends Controller
         
         $resultData = Cache::remember('digital_payments_active', 60 * 60 * 24, function () {
             $banks = Bank::select('id', 'name', 'logo', 'color')
-                ->with([
-                    'currencies:id,name,bank_id', 
-                    'steps' => function($query) {
-                        $query->select('id', 'bank_id', 'step_key', 'action_text', 'action_url', 'sort_order')
-                              ->orderBy('sort_order');
-                    },
-                    
-                    'steps.fields:id,step_id,field_key,default_value,label,hint,description,type,is_hidden,is_required,min_length,max_length'
-                ])
-                ->where('is_active', true)
-                ->get();
+            ->with([
+                // التعديل هنا: إزالة bank_id والاحتفاء بـ id و name فقط
+                'currencies:id,name', 
+                
+                'steps' => function($query) {
+                    // إذا كانت العلاقة هنا One-to-Many، سيبقى bank_id كما هو
+                    $query->select('id', 'bank_id', 'step_key', 'action_text', 'action_url', 'sort_order')
+                          ->orderBy('sort_order');
+                },
+                
+                // إذا كانت العلاقة هنا One-to-Many، سيبقى step_id كما هو
+                'steps.fields:id,step_id,field_key,default_value,label,hint,description,type,is_hidden,is_required,min_length,max_length'
+            ])
+            ->where('is_active', true)
+            ->get();
 
             $formattedBanks = $banks->map(function ($bank) {
                 return [
