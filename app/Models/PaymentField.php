@@ -12,7 +12,7 @@ class PaymentField extends Model
     protected $fillable = [
         'payment_step_id', 'field_key', 'label', 'hint', 
         'description', 'type', 'min_length', 'max_length', 
-        'is_hidden', 'default_value'
+        'is_hidden', 'default_value','is_required'
     ];
 
     protected $casts = [
