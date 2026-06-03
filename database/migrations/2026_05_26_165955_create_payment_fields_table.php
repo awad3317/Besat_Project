@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('min_length')->nullable();
             $table->integer('max_length')->nullable();
             $table->boolean('is_hidden')->default(false);
+            $table->boolean('is_required')->default(true);
             $table->string('default_value')->nullable();
             $table->timestamps();
         });

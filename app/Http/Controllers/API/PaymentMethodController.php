@@ -11,6 +11,7 @@ use App\Services\Payment\PaymentFactory;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class PaymentMethodController extends Controller
 {
@@ -93,18 +94,11 @@ class PaymentMethodController extends Controller
         $validated = $request->validate([
             'request_id' => 'required|exists:requests,id',
         ]);
-
-        // 2. حماية قاعدة البيانات (Transaction)
         DB::beginTransaction();
 
         try {
-            // جلب طلب الرحلة المطلوب دفعها
             $tripRequest = TripRequest::findOrFail($request->request_id);
-
-            // استدعاء كلاس البنك المناسب ديناميكياً عبر الـ Factory
             $bankStrategy = PaymentFactory::make($method_key);
-
-            // توجيه العملية بناءً على الـ action
             if ($action === 'request_otp') {
                 
                 $response = $bankStrategy->requestOtp($request->all());
@@ -113,11 +107,9 @@ class PaymentMethodController extends Controller
 
             } elseif ($action === 'submit') {
                 
-                // تنفيذ عملية الخصم
                 $response = $bankStrategy->submitPayment($request->all());
 
                 if ($response['status'] === 'success') {
-                    // التحديث المالي لجدول الطلبات
                     $tripRequest->update([
                         'payment_method' => 'digital_payment',
                         'payment_status' => 'paid',
@@ -135,12 +127,16 @@ class PaymentMethodController extends Controller
                     ], $response['message']);
                 }
 
-                throw new Exception("فشلت عملية الدفع من خلال البنك");
+                throw new \Exception("فشلت عملية الدفع من خلال البنك");
             }
 
-            throw new Exception("الإجراء المطلوب غير مدعوم في النظام");
+            throw new \Exception("الإجراء المطلوب غير مدعوم في النظام");
 
-        } catch (Exception $e) {
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return ApiResponseClass::sendValidationError('بيانات الإدخال غير صالحة', $e->errors());
+
+        } catch (\Exception $e) {
             return ApiResponseClass::rollback($e, 'حدث خطأ أثناء معالجة العملية المالية: ' . $e->getMessage());
         }
     }

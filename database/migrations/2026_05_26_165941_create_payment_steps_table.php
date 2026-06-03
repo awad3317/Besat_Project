@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('payment_steps', function (Blueprint $table) {
             $table->id();
             $table->foreignId('bank_id')->constrained()->cascadeOnDelete();
-            $table->string('step_key'); 
+            $table->string('step_key')->index();; 
             $table->string('action_text');
             $table->string('action_url')->nullable();
             $table->integer('sort_order')->default(1);
