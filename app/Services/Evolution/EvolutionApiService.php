@@ -2,7 +2,6 @@
 
 namespace App\Services\Evolution;
 
-use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -41,17 +40,17 @@ class EvolutionApiService
     public function sendText(string $number, string $text, ?string $instanceName = null): array|bool
 {
     $instance = $instanceName ?? $this->defaultInstance;
-    $url = "{$this->baseUrl}/message/sendText/{$instance}";
+    $url = "{$this->baseUrl}/send/text";
 
-    $randomDelay = rand(1500, 3500);
+    $randomDelay = rand(1500, 2000);
 
     try {
         $response = Http::withHeaders($this->getHeaders())->post($url, [
             'number' => $number,
             'text' => $text,
+            'delay' => $randomDelay,
             'options' => [
-                'delay' => $randomDelay,
-                'presence' => 'composing',
+                'presence' => 'composing', // إظهار حالة "يكتب..." للمستلم
             ]
         ]);
 
@@ -62,7 +61,7 @@ class EvolutionApiService
         Log::error("WhatsApp SendText Error: " . $response->body());
         return false;
 
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         Log::error("WhatsApp SendText Exception: " . $e->getMessage());
         return false;
     }
@@ -72,15 +71,16 @@ class EvolutionApiService
     public function checkNumberExists(string $number, ?string $instanceName = null): bool
     {
         $instance = $instanceName ?? $this->defaultInstance;
-        $url = "{$this->baseUrl}/chat/whatsappNumbers/{$instance}";
+        $url = "{$this->baseUrl}/user/check";
 
         $response = Http::withHeaders($this->getHeaders())->post($url, [
-            'numbers' => [$number]
+            'number' => [$number]
         ]);
 
         if ($response->successful()) {
             $data = $response->json();
-            return isset($data[0]['exists']) && $data[0]['exists'] === true;
+            return isset($data['data']['Users'][0]['IsInWhatsapp']) && 
+                       $data['data']['Users'][0]['IsInWhatsapp'] === true;
         }
 
         return false;
