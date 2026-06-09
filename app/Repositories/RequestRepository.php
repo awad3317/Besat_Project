@@ -44,7 +44,8 @@ class RequestRepository implements RepositoriesInterface
     {
         $selectedColumns = [
             'id', 
-            'user_id', 
+            'user_id',
+            'vehicle_id',
             'start_address', 
             'end_address', 
             'status', 

@@ -46,7 +46,12 @@ class RequestController extends Controller
         try {
             $userId = auth('sanctum')->id();
             $perPage = $request->query('per_page', 10);
-            $trips = $this->requestRepository->getByUserIdWithRelations($userId, [],$perPage);
+            $relations = [
+            'vehicle' => function($query) {
+                $query->select('id', 'type'); 
+            }
+        ];
+            $trips = $this->requestRepository->getByUserIdWithRelations($userId, ['vehicle'],$perPage);
             return ApiResponseClass::sendResponse($trips, 'تم استرجاع سجل الرحلات بنجاح.');
         } catch (Exception $e) {
             Log::error('Error fetching trip history: ' . $e->getMessage());
