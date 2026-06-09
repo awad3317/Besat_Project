@@ -51,7 +51,7 @@ class RequestController extends Controller
                 $query->select('id', 'type'); 
             }
         ];
-            $trips = $this->requestRepository->getByUserIdWithRelations($userId, ['vehicle'],$perPage);
+            $trips = $this->requestRepository->getByUserIdWithRelations($userId, $relations,$perPage);
             return ApiResponseClass::sendResponse($trips, 'تم استرجاع سجل الرحلات بنجاح.');
         } catch (Exception $e) {
             Log::error('Error fetching trip history: ' . $e->getMessage());
