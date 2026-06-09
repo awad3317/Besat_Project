@@ -30,7 +30,7 @@ class LoyaltyWalletService
         $minPoints = 100;
 
         if ($user->loyalty_points < $minPoints) {
-            throw new Exception('عذراً، لا تمتلك الحد الأدنى من النقاط للتحويل.');
+            throw new Exception('عذراً، لا تمتلك الحد الأدنى من النقاط للتحويل.', 422);
         }
 
         // العمليات الحسابية
