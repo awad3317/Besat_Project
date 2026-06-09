@@ -11,10 +11,11 @@ use App\Http\Controllers\API\Auth\User\UserOtpController;
 use App\Http\Controllers\API\BankController;
 use App\Http\Controllers\API\DiscountCodeController;
 use App\Http\Controllers\API\DriverController;
+use App\Http\Controllers\API\LoyaltyWalletController;
+use App\Http\Controllers\API\PaymentMethodController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
 use App\Http\Controllers\API\SpecialOrderController;
-use App\Http\Controllers\API\PaymentMethodController;
 use App\Http\Controllers\API\VehicleController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,8 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::get('/user/profile', [UserController::class, 'index']);
         Route::post('/user/check-coupon', [DiscountCodeController::class, 'checkCoupon']);
         Route::get('/user/banks', [BankController::class, 'index']);
+        Route::get('/user/wallet-balance', [LoyaltyWalletController::class, 'getBalance']);
+        Route::post('/user/convert-points', [LoyaltyWalletController::class, 'convertPoints']);
 
         Route::get('/user/digital-payments', [PaymentMethodController::class, 'getDigitalPayments']);
                 // مسار معالجة الدفع: يستقبل نوع الإجراء (action) واسم البنك (method_key)

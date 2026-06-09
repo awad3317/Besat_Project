@@ -65,6 +65,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Request::class);
     }
+    public function loyaltyTransactions()
+    {
+        return $this->hasMany(LoyaltyPointTransaction::class);
+    }
+    public function walletTransactions()
+    {
+        return $this->hasMany(WalletTransaction::class);
+    }
     
     public function usedDiscountCodes()
     {

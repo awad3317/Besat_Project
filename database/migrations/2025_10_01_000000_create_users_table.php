@@ -20,6 +20,8 @@ return new class extends Migration
             $table->text('fcm_token')->nullable();
             // $table->string('email')->unique();
             $table->string('whatsapp_number')->nullable();
+            $table->integer('loyalty_points')->default(0);
+            $table->decimal('wallet_balance', 10, 2)->default(0.00);
             $table->enum('type',['user','admin','superAdmin'])->default('user');
             $table->enum('gender', ['female', 'male']);
             $table->string('location')->nullable();

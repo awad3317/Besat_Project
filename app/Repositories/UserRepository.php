@@ -54,9 +54,17 @@ class UserRepository implements RepositoriesInterface
         return $query->paginate(10);
     }
 
-     public function getUsers()
+    public function getUsers()
     {
         return User::where('type','user')->with(['requests'])->paginate(10);
+    }
+
+    public function updateBalances(int $id, int $points, float $amount)
+    {
+        $user = $this->getById($id);
+        $user->increment('loyalty_points', $points);
+        $user->increment('wallet_balance', $amount);
+        return $user;
     }
 
 }
