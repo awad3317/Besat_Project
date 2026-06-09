@@ -34,7 +34,7 @@ class LoyaltyWalletController extends Controller
             return ApiResponseClass::sendResponse($result, 'تم تحويل النقاط إلى رصيد في المحفظة بنجاح.');
         } catch (Exception $e) {
             if ($e->getCode() === 422) {
-                return ApiResponseClass::sendResponse(null, $e->getMessage(), 422);
+                return ApiResponseClass::sendValidationError($e->getMessage(), $e->getMessage(), 422);
             }
             $statusCode = ($e->getCode() >= 400 && $e->getCode() < 600) ? $e->getCode() : 500;
             return ApiResponseClass::sendError('حدث خطأ أثناء تحويل النقاط.', $e->getMessage(), $statusCode);
