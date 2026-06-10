@@ -25,13 +25,35 @@
       </div>
 
       <div
-        class=" flex  m:hidden flex-col items-start justify-between rounded-xl p-4  transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-
+        class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+          <svg fill="none" stroke="#d97706" stroke-width="1.5" width="20" height="20" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192z" />
+          </svg>
+        </div>
+        <div class="mt-3 w-full">
+          <span class="text-xs text-gray-500 dark:text-gray-400">نقاط الولاء</span>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+            {{ $user->loyalty_points ?? 0 }}
+          </h4>
+        </div>
       </div>
-
       <div
-        class="flex m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-
+        class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+          <svg fill="#d97706" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M21 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 12H3V9h18v10zm-4-4c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+          </svg>
+        </div>
+        <div class="mt-3 w-full">
+          <span class="text-xs text-gray-500 dark:text-gray-400">رصيد المحفظة</span>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+            {{ number_format($user->wallet_balance ?? 0, 2) }}
+          </h4>
+        </div>
       </div>
 
       <div
@@ -39,6 +61,96 @@
 
       </div>
     </div>
+    <div x-data="{ currentTab: null }" class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
+        
+    {{-- كرت حركات المحفظة --}}
+    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden transition-all duration-300">
+        <button @click="currentTab = currentTab === 'wallet' ? null : 'wallet'" class="w-full flex items-center justify-between p-5 lg:p-6 bg-gray-50/50 dark:bg-gray-800/20 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors text-right">
+            <div class="flex items-center gap-3">
+                <span class="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <svg class="w-5 h-5" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+</svg>
+                </span>
+                <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">حركات المحفظة الأخيرة</h3>
+            </div>
+            <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200" :class="currentTab === 'wallet' ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+        
+        <div x-show="currentTab === 'wallet'" x-collapse x-cloak class="border-t border-gray-100 dark:border-gray-800 p-4 lg:p-5 overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="border-b border-gray-100 dark:border-gray-800">
+                        <th class="pb-3 text-right font-medium text-gray-500 text-theme-xs dark:text-gray-400">النوع</th>
+                        <th class="pb-3 text-right font-medium text-gray-500 text-theme-xs dark:text-gray-400">المبلغ</th>
+                        <th class="pb-3 text-right font-medium text-gray-500 text-theme-xs dark:text-gray-400">التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @forelse($user->walletTransactions ?? [] as $transaction)
+                        <tr>
+                            <td class="py-3 text-theme-sm text-gray-600 dark:text-gray-400">{{ $transaction->type_text }}</td>
+                            <td class="py-3 text-theme-sm font-semibold {{ $transaction->amount > 0 ? 'text-emerald-600' : 'text-error-600' }}">
+                                {{ number_format($transaction->amount, 2) }}
+                            </td>
+                            <td class="py-3 text-theme-sm text-gray-400">{{ $transaction->created_at->format('Y/m/d') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="py-4 text-center text-theme-sm text-gray-400">لا توجد عمليات محفظة حالياً.</td>
+                        </tr>
+                    @endempty
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{-- كرت حركات نقاط الولاء --}}
+    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden transition-all duration-300">
+        <button @click="currentTab = currentTab === 'points' ? null : 'points'" class="w-full flex items-center justify-between p-5 lg:p-6 bg-gray-50/50 dark:bg-gray-800/20 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors text-right">
+            <div class="flex items-center gap-3">
+                <span class="p-2 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                    <svg class="w-5 h-5" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.151-.316.63-.316.78 0l2.316 4.67 5.143.747c.348.05.488.48.236.726l-3.721 3.626 1.057 5.123c.072.348-.29.612-.598.448L12 16.591l-4.591 2.413c-.309.163-.671-.1-.599-.448l1.057-5.122-3.721-3.627c-.252-.246-.112-.676.236-.726l5.143-.747 2.316-4.67z"/>
+</svg>
+                </span>
+                <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">سجل نقاط الولاء</h3>
+            </div>
+            <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200" :class="currentTab === 'points' ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+        
+        <div x-show="currentTab === 'points'" x-collapse x-cloak class="border-t border-gray-100 dark:border-gray-800 p-4 lg:p-5 overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="border-b border-gray-100 dark:border-gray-800">
+                        <th class="pb-3 text-right font-medium text-gray-500 text-theme-xs dark:text-gray-400">الحدث / السبب</th>
+                        <th class="pb-3 text-right font-medium text-gray-500 text-theme-xs dark:text-gray-400">النقاط</th>
+                        <th class="pb-3 text-right font-medium text-gray-500 text-theme-xs dark:text-gray-400">التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    @forelse($user->pointsTransactions ?? [] as $point)
+                        <tr>
+                            <td class="py-3 text-theme-sm text-gray-600 dark:text-gray-400">{{ $point->description }}</td>
+                            <td class="py-3 text-theme-sm font-semibold {{ $point->points > 0 ? 'text-amber-600' : 'text-gray-500' }}">
+                                {{ $point->points > 0 ? '+' : '' }}{{ $point->points }}
+                            </td>
+                            <td class="py-3 text-theme-sm text-gray-400">{{ $point->created_at->format('Y/m/d') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="py-4 text-center text-theme-sm text-gray-400">لا توجد نقاط مسجلة حالياً.</td>
+                        </tr>
+                    @endempty
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
     <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
       <div class="mb-6 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
 
@@ -216,10 +328,9 @@
                   </td>
                   <td class="py-3">
                     <div class="flex items-center justify-center">
-                      <a href="{{ route('request.show', $request->id) }}"
-                        class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs
-                        font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800
-                        dark:text-white">
+                      <a href="{{ route('request.show', $request->id) }}" class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs
+                                                        font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800
+                                                        dark:text-white">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -507,7 +618,6 @@
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   </div>
