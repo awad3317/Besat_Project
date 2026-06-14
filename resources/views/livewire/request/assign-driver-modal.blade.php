@@ -1,9 +1,9 @@
 <div x-data="{ show: false, isLoading: false, isSuccess: false }" 
-    x-on:open-modal.window="$event.detail == 'assign-driver-modal' ? (show = true; isLoading = false; isSuccess = false) : null"
-    x-on:close-modal.window="$event.detail == 'assign-driver-modal' ? show = false : null"
+    x-on:open-modal.window="if ($event.detail == 'assign-driver-modal') { show = true; isLoading = false; isSuccess = false; }"
+    x-on:close-modal.window="if ($event.detail == 'assign-driver-modal') { show = false; }"
     x-on:driver-assigned.window="isLoading = false; isSuccess = true; setTimeout(() => { show = false; isSuccess = false; $wire.clearSelectedRequest(); }, 2000)"
-    x-on:close.stop="!isLoading && !isSuccess ? show = false : null" 
-    x-on:keydown.escape.window="!isLoading && !isSuccess ? show = false : null" 
+    x-on:close.stop="if (!isLoading && !isSuccess) { show = false; }" 
+    x-on:keydown.escape.window="if (!isLoading && !isSuccess) { show = false; }" 
     x-show="show" 
     class="relative z-99999"
     style="display: none;">
