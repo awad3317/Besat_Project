@@ -243,7 +243,7 @@
                   </td>
                   <td class="py-3">
                     <div class="flex items-center justify-center">
-                      <a href="{{ route('requests.show', $request->id) }}">
+                      <a href="{{ route('request.show', $request->id) }}"
                         class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs
                         font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800
                         dark:text-white">
