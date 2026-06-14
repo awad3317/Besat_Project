@@ -31,7 +31,7 @@ class Index extends Component
     {
         return [
             'total' => RequestModel::count(),
-            'in_progress' => RequestModel::whereIn('status', ['pending', 'searching_driver', 'paused', 'in_progress'])->count(),
+            'in_progress' => RequestModel::whereIn('status', ['pending', 'searching_driver', 'paused', 'in_progress', 'accepted', 'on_trip'])->count(),
             'completed' => RequestModel::where('status', 'completed')->count(),
             'cancelled' => RequestModel::where('status', 'cancelled')->count(),
         ];
@@ -72,7 +72,7 @@ class Index extends Component
             ->when($this->activeFilter !== 'all', function ($query) {
                 
                 if ($this->activeFilter === 'in_progress') {
-                    return $query->whereIn('status', ['pending', 'searching_driver', 'paused', 'in_progress']);
+                    return $query->whereIn('status', ['pending', 'searching_driver', 'paused', 'in_progress', 'accepted', 'on_trip']);
                 }
                 return $query->where('status', $this->activeFilter);
             })
@@ -117,7 +117,7 @@ class Index extends Component
         if ($request) {
             $request->update([
                 'driver_id' => $driverId,
-                'status' => 'in_progress' // Or keep current status depending on logic, but usually assignment implies progress
+                'status' => 'accepted' // 'accepted' is the correct database enum value for requests
             ]);
             
             // Generate notification logic if needed (optional for now as per plan)

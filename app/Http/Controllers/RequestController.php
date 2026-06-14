@@ -68,7 +68,7 @@ class RequestController extends Controller
 
             // Check for existing active request
             $existingRequest = RequestModel::where('user_id', $validatData['user_id'])
-                ->whereIn('status', ['searching_driver', 'in_progress', 'pending', 'paused'])
+                ->whereIn('status', ['searching_driver', 'in_progress', 'pending', 'paused', 'accepted', 'on_trip'])
                 ->exists();
 
             if ($existingRequest) {
