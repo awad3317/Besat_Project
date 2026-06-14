@@ -17,4 +17,9 @@ class WalletTransaction extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getTypeTextAttribute()
+    {
+        return $this->type === 'deposit' ? 'شحن / إيداع' : 'خصم / دفع';
+    }
 }

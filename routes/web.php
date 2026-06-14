@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::resource('users', UserController::class);
+    Route::post('users/{id}/add-balance', [UserController::class, 'addBalance'])->name('users.add-balance');
     Route::resource('drivers', DriverController::class);
     Route::resource('request',RequestController::class);
     Route::resource('Coupon',CouponController::class);

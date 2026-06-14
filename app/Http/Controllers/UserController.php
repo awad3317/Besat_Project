@@ -89,4 +89,39 @@ class UserController extends Controller
     {
         //
     }
+
+    /**
+     * Add balance to the user's wallet.
+     */
+    public function addBalance(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => ['required', 'numeric', 'min:0.01'],
+        ]);
+
+        if ($validator->fails()) {
+            return WebResponseClass::sendValidationError($validator);
+        }
+
+        try {
+            $amount = floatval($request->input('amount'));
+            
+            \Illuminate\Support\Facades\DB::transaction(function () use ($id, $amount) {
+                $user = $this->userRepository->getById($id);
+                $user->increment('wallet_balance', $amount);
+
+                \App\Models\WalletTransaction::create([
+                    'user_id' => $user->id,
+                    'amount' => $amount,
+                    'type' => 'deposit',
+                ]);
+                
+                ActivityLog::log('update', 'User', "تم إضافة رصيد {$amount} إلى محفظة المستخدم {$user->name}");
+            });
+
+            return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة الرصيد إلى محفظة المستخدم بنجاح');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
+    }
 }
