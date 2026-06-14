@@ -348,7 +348,50 @@
                             </div>
                         </div>
 
-                        <!-- Update URL -->
+                        <!-- Company Email -->
+                        <div class="px-6 py-5 flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
+                                    <svg class="h-6 w-6 text-warning-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white">البريد الإلكتروني للشركة</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">البريد الإلكتروني الرسمي للشركة</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-sm font-medium text-gray-800 dark:text-white truncate max-w-[200px]"
+                                    dir="ltr">{{ $settings['company_email'] }}</span>
+                                <button
+                                    wire:click="openSimpleModal('تعديل البريد الإلكتروني', 'يرجى إدخال البريد الإلكتروني للشركة', 'البريد الإلكتروني', 'company_email', 'email')"
+                                    wire:loading.attr="disabled"
+                                    wire:target="openSimpleModal('تعديل البريد الإلكتروني', 'يرجى إدخال البريد الإلكتروني للشركة', 'البريد الإلكتروني', 'company_email', 'email')"
+                                    class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
+                                    <svg wire:loading.remove
+                                        wire:target="openSimpleModal('تعديل البريد الإلكتروني', 'يرجى إدخال البريد الإلكتروني للشركة', 'البريد الإلكتروني', 'company_email', 'email')"
+                                        class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    <svg wire:loading
+                                        wire:target="openSimpleModal('تعديل البريد الإلكتروني', 'يرجى إدخال البريد الإلكتروني للشركة', 'البريد الإلكتروني', 'company_email', 'email')"
+                                        class="animate-spin h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Android Update URL -->
                         <div class="px-6 py-5 flex items-center justify-between">
                             <div class="flex items-center gap-4">
                                 <div
@@ -360,26 +403,69 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white">رابط التحديث</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">الرابط المباشر لتحديث التطبيق</p>
+                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white">رابط تحديث أندرويد</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">الرابط المباشر لتحديث تطبيق أندرويد</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-4">
                                 <span class="text-sm font-medium text-gray-800 dark:text-white truncate max-w-[200px]"
-                                    dir="ltr">{{ $settings['update_url'] }}</span>
+                                    dir="ltr">{{ $settings['android_update_url'] }}</span>
                                 <button
-                                    wire:click="openSimpleModal('تعديل رابط التحديث', 'يرجى إدخال الرابط المباشر لتحديث التطبيق', 'رابط التحديث', 'update_url', 'url')"
+                                    wire:click="openSimpleModal('تعديل رابط تحديث أندرويد', 'يرجى إدخال الرابط المباشر لتحديث تطبيق أندرويد', 'رابط تحديث أندرويد', 'android_update_url', 'url')"
                                     wire:loading.attr="disabled"
-                                    wire:target="openSimpleModal('تعديل رابط التحديث', 'يرجى إدخال الرابط المباشر لتحديث التطبيق', 'رابط التحديث', 'update_url', 'url')"
+                                    wire:target="openSimpleModal('تعديل رابط تحديث أندرويد', 'يرجى إدخال الرابط المباشر لتحديث تطبيق أندرويد', 'رابط تحديث أندرويد', 'android_update_url', 'url')"
                                     class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
                                     <svg wire:loading.remove
-                                        wire:target="openSimpleModal('تعديل رابط التحديث', 'يرجى إدخال الرابط المباشر لتحديث التطبيق', 'رابط التحديث', 'update_url', 'url')"
+                                        wire:target="openSimpleModal('تعديل رابط تحديث أندرويد', 'يرجى إدخال الرابط المباشر لتحديث تطبيق أندرويد', 'رابط تحديث أندرويد', 'android_update_url', 'url')"
                                         class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                     <svg wire:loading
-                                        wire:target="openSimpleModal('تعديل رابط التحديث', 'يرجى إدخال الرابط المباشر لتحديث التطبيق', 'رابط التحديث', 'update_url', 'url')"
+                                        wire:target="openSimpleModal('تعديل رابط تحديث أندرويد', 'يرجى إدخال الرابط المباشر لتحديث تطبيق أندرويد', 'رابط تحديث أندرويد', 'android_update_url', 'url')"
+                                        class="animate-spin h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- iOS Update URL -->
+                        <div class="px-6 py-5 flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
+                                    <svg class="h-6 w-6 text-warning-500" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white">رابط تحديث iOS</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">الرابط المباشر لتحديث تطبيق iOS</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-sm font-medium text-gray-800 dark:text-white truncate max-w-[200px]"
+                                    dir="ltr">{{ $settings['ios_update_url'] }}</span>
+                                <button
+                                    wire:click="openSimpleModal('تعديل رابط تحديث iOS', 'يرجى إدخال الرابط المباشر لتحديث تطبيق iOS', 'رابط تحديث iOS', 'ios_update_url', 'url')"
+                                    wire:loading.attr="disabled"
+                                    wire:target="openSimpleModal('تعديل رابط تحديث iOS', 'يرجى إدخال الرابط المباشر لتحديث تطبيق iOS', 'رابط تحديث iOS', 'ios_update_url', 'url')"
+                                    class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
+                                    <svg wire:loading.remove
+                                        wire:target="openSimpleModal('تعديل رابط تحديث iOS', 'يرجى إدخال الرابط المباشر لتحديث تطبيق iOS', 'رابط تحديث iOS', 'ios_update_url', 'url')"
+                                        class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    <svg wire:loading
+                                        wire:target="openSimpleModal('تعديل رابط تحديث iOS', 'يرجى إدخال الرابط المباشر لتحديث تطبيق iOS', 'رابط تحديث iOS', 'ios_update_url', 'url')"
                                         class="animate-spin h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                             stroke-width="4"></circle>

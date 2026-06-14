@@ -41,15 +41,17 @@ class Settings extends Component
         // استخدم firstOrFail لضمان وجود سجل إعدادات
         $app_settings = app_setting::firstOrFail(); 
         $this->settings = [
-            'commission_rate'  => $app_settings->commission_rate,
-            'auto_assign'      => (bool) $app_settings->auto_assign_to_drivers,
-            'whatsapp_support' => $app_settings->company_whatsapp,
-            'maintenance_mode' => (bool) $app_settings->maintenance_mode,
-            'app_version'      => $app_settings->version,
-            'update_url'       => $app_settings->update_url,
-            'company_website'  => $app_settings->company_website,
-            'ref_no'           => $app_settings->ref_no,
-            'otp_enabled'      => (bool) $app_settings->otp_enabled,
+            'commission_rate'    => $app_settings->commission_rate,
+            'auto_assign'        => (bool) $app_settings->auto_assign_to_drivers,
+            'whatsapp_support'   => $app_settings->company_whatsapp,
+            'maintenance_mode'   => (bool) $app_settings->maintenance_mode,
+            'app_version'        => $app_settings->version,
+            'android_update_url' => $app_settings->android_update_url,
+            'ios_update_url'     => $app_settings->ios_update_url,
+            'company_website'    => $app_settings->company_website,
+            'company_email'      => $app_settings->company_email,
+            'ref_no'             => $app_settings->ref_no,
+            'otp_enabled'        => (bool) $app_settings->otp_enabled,
         ];
         $this->surcharges = Surcharge::all();
     }

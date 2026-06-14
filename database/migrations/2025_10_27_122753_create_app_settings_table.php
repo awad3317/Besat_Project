@@ -17,9 +17,11 @@ return new class extends Migration
             $table->boolean('auto_assign_to_drivers')->default(false);
             $table->string('version');
             $table->boolean('otp_enabled')->default(true);
-            $table->string('update_url');
+            $table->string('android_update_url');
+            $table->string('ios_update_url');
             $table->string('company_website')->nullable();
             $table->string('company_whatsapp');
+            $table->string('company_email')->nullable();
             $table->string('ref_no');
             $table->boolean('maintenance_mode')->default(false);
             $table->timestamps();
