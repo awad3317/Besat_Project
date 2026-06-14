@@ -216,8 +216,8 @@
                   <td class="py-3">
                     <div class="flex items-center">
                       <p
-                        class="rounded-full bg-error-50 px-2 py-0.5 text-theme-xs font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500">
-                        {{ $request->status }}
+                        class="rounded-full px-2 py-0.5 text-theme-xs font-medium {{ $request->status_class }}">
+                        {{ $request->status_text }}
                       </p>
                     </div>
                   </td>

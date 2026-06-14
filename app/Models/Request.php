@@ -67,9 +67,21 @@ class Request extends Model
     public static function statusConfig()
     {
         return [
+            'pending' => [
+                'text' => 'قيد الانتظار',
+                'class' => 'text-gray-600 bg-gray-50 dark:bg-gray-500/15 dark:text-gray-400',
+            ],
             'searching_driver' => [
                 'text' => 'جاري البحث عن سائق',
                 'class' => 'text-warning-600 bg-warning-50 dark:bg-warning-500/15 dark:text-warning-500',
+            ],
+            'accepted' => [
+                'text' => 'مقبول',
+                'class' => 'bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500',
+            ],
+            'on_trip' => [
+                'text' => 'في الطريق',
+                'class' => 'bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500',
             ],
             'in_progress' => [
                 'text' => 'قيد التنفيذ',
@@ -88,7 +100,10 @@ class Request extends Model
     public function getStatusInfo()
     {
         $config = self::statusConfig();
-        return $config[$this->status] ?? $config['pending'];
+        return $config[$this->status] ?? ($config['pending'] ?? [
+            'text' => $this->status,
+            'class' => 'bg-gray-50 text-gray-600 dark:bg-gray-500/15 dark:text-gray-400'
+        ]);
     }
     public function getStatusTextAttribute()
     {

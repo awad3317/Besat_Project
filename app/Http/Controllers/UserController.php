@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\WebResponseClass;
+use App\Models\WalletTransaction;
+use App\Repositories\UserRepository;
+use App\Services\ActivityLog;
 use Exception;
 use Illuminate\Http\Request;
-use App\Services\ActivityLog;
-use Illuminate\Validation\Rule;
-use App\Classes\WebResponseClass;
-use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -106,11 +108,11 @@ class UserController extends Controller
         try {
             $amount = floatval($request->input('amount'));
             
-            \Illuminate\Support\Facades\DB::transaction(function () use ($id, $amount) {
+            DB::transaction(function () use ($id, $amount) {
                 $user = $this->userRepository->getById($id);
                 $user->increment('wallet_balance', $amount);
 
-                \App\Models\WalletTransaction::create([
+                WalletTransaction::create([
                     'user_id' => $user->id,
                     'amount' => $amount,
                     'type' => 'deposit',
