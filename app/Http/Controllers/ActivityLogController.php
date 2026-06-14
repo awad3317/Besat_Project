@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\activity_log;
-use Illuminate\Http\Request;
 use App\Repositories\ActivityLogRepository;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class ActivityLogController extends Controller
 {
@@ -16,16 +17,21 @@ class ActivityLogController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $logs=$this->activityLogRepository->index();
-        $stats = [
-            'total' => activity_log::count(),
-            'today' => activity_log::whereDate('created_at', \Carbon\Carbon::today())->count(),
-            'yesterday' => activity_log::whereDate('created_at', \Carbon\Carbon::yesterday())->count(),
-            'last_week' => activity_log::where('created_at', '>=', \Carbon\Carbon::now()->subDays(7))->count(),
-        ];
-        return view('pages.ActivityLog.index', compact('logs', 'stats'));
-    }
+{
+    $logs = $this->activityLogRepository->index();
+
+    $today = Carbon::today()->toDateString();
+    $yesterday = Carbon::yesterday()->toDateString();
+    $lastWeek = Carbon::now()->subDays(7)->toDateTimeString();
+    $stats = activity_log::selectRaw("
+        COUNT(*) as total,
+        COUNT(CASE WHEN DATE(created_at) = ? THEN 1 END) as today,
+        COUNT(CASE WHEN DATE(created_at) = ? THEN 1 END) as yesterday,
+        COUNT(CASE WHEN created_at >= ? THEN 1 END) as last_week
+    ", [$today, $yesterday, $lastWeek])->first()->toArray();
+
+    return view('pages.ActivityLog.index', compact('logs', 'stats'));
+}
 
     /**
      * Show the form for creating a new resource.
