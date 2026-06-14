@@ -18,7 +18,13 @@ class ActivityLogController extends Controller
     public function index()
     {
         $logs=$this->activityLogRepository->index();
-        return view('pages.ActivityLog.index',compact('logs'));
+        $stats = [
+            'total' => activity_log::count(),
+            'today' => activity_log::whereDate('created_at', \Carbon\Carbon::today())->count(),
+            'yesterday' => activity_log::whereDate('created_at', \Carbon\Carbon::yesterday())->count(),
+            'last_week' => activity_log::where('created_at', '>=', \Carbon\Carbon::now()->subDays(7))->count(),
+        ];
+        return view('pages.ActivityLog.index', compact('logs', 'stats'));
     }
 
     /**

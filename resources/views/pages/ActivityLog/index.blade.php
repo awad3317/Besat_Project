@@ -8,6 +8,61 @@
 
 @endsection
 @section('content')
+    {{-- كروت الإحصائيات --}}
+    <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-6">
+      {{-- إجمالي النشاطات --}}
+      <div class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 dark:bg-gray-800">
+          <svg class="w-5 h-5 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <div class="mt-3 w-full text-right">
+          <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي النشاطات</span>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ number_format($stats['total'] ?? 0) }}</h4>
+        </div>
+      </div>
+
+      {{-- نشاطات اليوم --}}
+      <div class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-success-50 dark:bg-gray-800">
+          <svg class="w-5 h-5 text-success-600 dark:text-success-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="mt-3 w-full text-right">
+          <span class="text-xs text-gray-500 dark:text-gray-400">نشاطات اليوم</span>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ number_format($stats['today'] ?? 0) }}</h4>
+        </div>
+      </div>
+
+      {{-- نشاطات أمس --}}
+      <div class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
+          <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="mt-3 w-full text-right">
+          <span class="text-xs text-gray-500 dark:text-gray-400">نشاطات أمس</span>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ number_format($stats['yesterday'] ?? 0) }}</h4>
+        </div>
+      </div>
+
+      {{-- نشاطات الأسبوع الماضي --}}
+      <div class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-light-50 dark:bg-gray-800">
+          <svg class="w-5 h-5 text-blue-light-600 dark:text-blue-light-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+        </div>
+        <div class="mt-3 w-full text-right">
+          <span class="text-xs text-gray-500 dark:text-gray-400">نشاطات آخر 7 أيام</span>
+          <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ number_format($stats['last_week'] ?? 0) }}</h4>
+        </div>
+      </div>
+    </div>
+
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
         <div class="overflow-x-auto">
             <table class="min-w-full">
