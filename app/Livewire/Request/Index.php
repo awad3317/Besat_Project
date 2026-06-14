@@ -119,13 +119,14 @@ class Index extends Component
                 'driver_id' => $driverId,
                 'status' => 'accepted' // 'accepted' is the correct database enum value for requests
             ]);
-            
-            // Generate notification logic if needed (optional for now as per plan)
         }
 
-        $this->dispatch('close-modal', 'assign-driver-modal');
+        $this->dispatch('driver-assigned');
+    }
+
+    public function clearSelectedRequest()
+    {
         $this->selectedRequestId = null;
-        $this->dispatch('notify', message: 'تم تعيين السائق بنجاح', type: 'success');
     }
 
     public function render()

@@ -1,19 +1,42 @@
-<div x-data="{ show: false }" x-on:open-modal.window="$event.detail == 'assign-driver-modal' ? show = true : null"
+<div x-data="{ show: false, isLoading: false, isSuccess: false }" 
+    x-on:open-modal.window="$event.detail == 'assign-driver-modal' ? (show = true; isLoading = false; isSuccess = false) : null"
     x-on:close-modal.window="$event.detail == 'assign-driver-modal' ? show = false : null"
-    x-on:close.stop="show = false" x-on:keydown.escape.window="show = false" x-show="show" class="relative z-99999"
+    x-on:driver-assigned.window="isLoading = false; isSuccess = true; setTimeout(() => { show = false; isSuccess = false; $wire.clearSelectedRequest(); }, 2000)"
+    x-on:close.stop="!isLoading && !isSuccess ? show = false : null" 
+    x-on:keydown.escape.window="!isLoading && !isSuccess ? show = false : null" 
+    x-show="show" 
+    class="relative z-99999"
     style="display: none;">
     {{-- Backdrop --}}
     <div x-show="show" x-transition.opacity class="fixed inset-0 bg-gray-400/50 backdrop-blur-[32px]"></div>
 
     {{-- Modal Panel --}}
     <div class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto">
-        <div x-show="show" x-transition @click.outside="show = false"
-            class="relative w-full max-w-[630px] rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-10">
+        <div x-show="show" x-transition @click.outside="!isLoading && !isSuccess ? show = false : null"
+            class="relative w-full max-w-[630px] rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-10 overflow-hidden shadow-xl">
+            
+            {{-- Loading Overlay --}}
+            <div x-show="isLoading" x-transition.opacity class="absolute inset-0 bg-white/85 dark:bg-gray-900/85 backdrop-blur-xs flex flex-col items-center justify-center z-50">
+                <div class="h-12 w-12 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent mb-4"></div>
+                <p class="text-gray-700 dark:text-gray-300 font-semibold text-base">جاري تعيين السائق للطلب...</p>
+            </div>
+
+            {{-- Success Overlay --}}
+            <div x-show="isSuccess" x-transition.opacity class="absolute inset-0 bg-white dark:bg-gray-900 flex flex-col items-center justify-center z-50">
+                <div class="h-16 w-16 bg-success-50 dark:bg-success-500/10 text-success-500 rounded-full flex items-center justify-center mb-4 transition-transform duration-500">
+                    <svg class="w-10 h-10 animate-bounce" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                </div>
+                <h4 class="text-xl font-bold text-gray-800 dark:text-white mb-2">تم تعيين السائق بنجاح!</h4>
+                <p class="text-gray-500 dark:text-gray-400 text-sm">تم تحديث حالة الطلب وإرسال الإشعار بنجاح...</p>
+            </div>
+
             <div class="mb-6 flex items-center justify-between">
                 <h4 class="text-lg font-bold text-gray-800 dark:text-white/90">
                     تعيين سائق للطلب #{{ $selectedRequestId }}
                 </h4>
-                <button x-on:click="show = false" class="text-gray-400 hover:text-gray-500 transition">
+                <button x-on:click="!isLoading && !isSuccess ? show = false : null" class="text-gray-400 hover:text-gray-500 transition">
                     <span class="sr-only">Close</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,7 +86,7 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ $driver->phone }}</p>
                                 </div>
                             </div>
-                            <button wire:click="assignDriver({{ $driver->id }})" wire:loading.attr="disabled"
+                            <button @click="isLoading = true" wire:click="assignDriver({{ $driver->id }})" wire:loading.attr="disabled"
                                 class="px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md hover:shadow-lg">
                                 <span wire:loading.remove wire:target="assignDriver({{ $driver->id }})">تعيين</span>
                                 <span wire:loading wire:target="assignDriver({{ $driver->id }})">...</span>
@@ -87,7 +110,7 @@
             </div>
 
             <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 flex justify-end">
-                <button x-on:click="show = false" type="button"
+                <button x-on:click="!isLoading && !isSuccess ? show = false : null" type="button"
                     class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition">
                     إلغاء
                 </button>
