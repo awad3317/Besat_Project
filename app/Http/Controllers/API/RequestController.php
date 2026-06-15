@@ -13,6 +13,7 @@ use App\Services\DiscountCodeService;
 use App\Services\DriverLocationService;
 use App\Services\FirebaseService;
 use App\Services\PriceCalculationService;
+use App\Services\RatingService;
 use App\Services\TripDispatchService;
 use Exception;
 use Illuminate\Http\Request;
@@ -34,6 +35,7 @@ class RequestController extends Controller
         private DiscountCodeService $discountCodeService,
         private VehicleRepository $vehicleRepository,
         private TripDispatchService $tripDispatchService,
+        private RatingService $ratingService,
 )
     {
         //
@@ -154,6 +156,10 @@ class RequestController extends Controller
             ]);
             if (!$requestModel) {
                 return ApiResponseClass::sendError('الطلب غير موجود أو غير مصرح لك بالوصول إليه.', null, 404);
+            }
+            if ($requestModel->driver) {
+                $ratingStats = $this->ratingService->getDriverAverageRating($requestModel->driver->id);
+                $requestModel->driver->setAttribute('rating_stats', $ratingStats);
             }
             return ApiResponseClass::sendResponse($requestModel, 'تم استرجاع تفاصيل الرحلة بنجاح.');
         } catch (Exception $e) {

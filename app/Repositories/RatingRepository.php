@@ -51,5 +51,11 @@ class RatingRepository implements RepositoriesInterface
     {
         return Rating::where('request_id', $requestId)->first();
     }
+    public function getDriverStats($driverId)
+    {
+        return Rating::where('driver_id', $driverId)
+            ->selectRaw('COUNT(id) as count, AVG(rating_value) as average')
+            ->first();
+    }
 
 }
