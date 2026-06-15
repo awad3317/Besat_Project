@@ -147,8 +147,8 @@ class RequestController extends Controller
         try {
             $userId = auth('sanctum')->id();
             $requestModel = $this->requestRepository->getByIdAndUserId($id, $userId, [
-                'stops',
-                'surcharges',
+                'stops:id,request_id,latitude,longitude,stop_order',
+                'surcharges:id,name,amount',
                 'driver:id,vehicle_id,name,phone,vehicle_image,driver_image,city,plate_number,whatsapp_number,latitude,longitude,is_online',
                 'vehicle:id,type'
             ]);
