@@ -11,7 +11,7 @@
     </title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('tailadmin/build/favicon.ico') }}">
-    <link href="{{ asset('tailadmin/build/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('tailadmin/build/style.css') }}?v=1.0.1" rel="stylesheet">
     @livewireStyles
     @yield('style')
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
