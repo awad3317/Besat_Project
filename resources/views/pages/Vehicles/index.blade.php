@@ -51,7 +51,7 @@
     </div>
   </div>
   <div
-    class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+    class="rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
     <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <div class="w-full overflow-x-auto">
+    <div class="w-full overflow-x-auto table-responsive-container">
       <!-- table start -->
       <table class="min-w-full">
         <!-- table header start -->
@@ -221,65 +221,79 @@
                 </div>
               </td>
 
-              <td class="py-3">
-                <div class="flex items-center justify-center gap-2">
+              <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
+                <div class="flex relative justify-center items-center">
+                  <button @click="openOptions = !openOptions" @click.away="openOptions = false"
+                    class="actions-trigger-btn">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="5" r="2"></circle>
+                      <circle cx="12" cy="12" r="2"></circle>
+                      <circle cx="12" cy="19" r="2"></circle>
+                    </svg>
+                  </button>
 
-                  @if(!$vehicle->trashed())
-                    <button type="button" onclick="window.location.href='{{ route('Vehicle.show', $vehicle->id) }}'"
-                      class="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-500 transition-all hover:border-blue-500 hover:text-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-blue-400 dark:hover:text-blue-400 dark:hover:bg-gray-700">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </button>
+                  <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
+                    class="actions-dropdown-menu">
 
-                    <div x-data="{ isLoading: false }">
-                      <button @click="isLoading = true; window.location.href='{{ route('Vehicle.edit', $vehicle->id) }}'"
-                        :disabled="isLoading"
-                        class="relative flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-500 transition-all hover:border-green-500 hover:text-green-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-green-400 dark:hover:text-green-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <svg x-show="isLoading" class="animate-spin w-4 h-4 text-green-500" xmlns="http://www.w3.org/2000/svg"
-                          fill="none" viewBox="0 0 24 24">
-                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                          <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                          </path>
+                    @if(!$vehicle->trashed())
+                      <!-- عرض التفاصيل -->
+                      <a href="{{ route('Vehicle.show', $vehicle->id) }}"
+                        class="actions-dropdown-item">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
-                        <svg x-show="!isLoading" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        عرض التفاصيل
+                      </a>
+
+                      <!-- تعديل البيانات -->
+                      <a href="{{ route('Vehicle.edit', $vehicle->id) }}"
+                        class="actions-dropdown-item edit-data">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round"
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
-                      </button>
-                    </div>
+                        تعديل البيانات
+                      </a>
 
-                    <button type="button"
-                      @click="$dispatch('open-delete-modal', { action: '{{ route('Vehicle.destroy', $vehicle->id) }}' })"
-                      class="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-500 transition-all hover:border-red-500 hover:text-red-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-red-400 dark:hover:text-red-400 dark:hover:bg-gray-700">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
+                      <div class="actions-dropdown-divider"></div>
 
-                  @else
-                    <form action="{{ route('Vehicle.restore', $vehicle->id) }}" method="POST" class="m-0"
-                      onsubmit="return confirm('هل أنت متأكد من استعادة هذه المركبة للعمل؟');">
-                      @csrf
-                      <button type="submit"
-                        class="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-2 text-gray-500 transition-all hover:border-emerald-500 hover:text-emerald-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-emerald-400 dark:hover:text-emerald-400 dark:hover:bg-gray-700">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      <!-- حذف المركبة -->
+                      <button type="button"
+                        @click="$dispatch('open-delete-modal', { action: '{{ route('Vehicle.destroy', $vehicle->id) }}' }); openOptions = false"
+                        class="actions-dropdown-item delete-data">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
+                        حذف المركبة
                       </button>
-                    </form>
-                  @endif
 
+                    @else
+                      <!-- استعادة المركبة -->
+                      <form action="{{ route('Vehicle.restore', $vehicle->id) }}" method="POST" class="m-0"
+                        onsubmit="return confirm('هل أنت متأكد من استعادة هذه المركبة للعمل؟');">
+                        @csrf
+                        <button type="submit" @click="openOptions = false"
+                          class="actions-dropdown-item restore-data">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          استعادة المركبة
+                        </button>
+                      </form>
+                    @endif
+
+                  </div>
                 </div>
               </td>
             </tr>
           @empty
             <tr>
-              <td colspan="6" class="p-2">
+              <td colspan="9" class="p-2">
                 <div class="flex flex-col items-center justify-center text-center">
                   <div class="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
                     <svg class="w-8 h-8 text-gray-400 dark:text-gray-500" width="24" height="24" viewBox="0 0 24 24"

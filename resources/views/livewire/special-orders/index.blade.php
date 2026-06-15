@@ -104,7 +104,7 @@
             </div>
         </div>
 
-        <div wire:loading.class="opacity-50" wire:target="search,applyFilter" class="overflow-x-auto">
+        <div wire:loading.class="opacity-50" wire:target="search,applyFilter" class="max-w-full overflow-x-auto table-responsive-container">
             <table class="min-w-full">
                 <thead>
                     <tr class="border-y border-gray-100 dark:border-gray-800">
@@ -186,17 +186,33 @@
                                         {{ $order->end_address }}</p>
                                 </div>
                             </td>
-                            <td class="py-3">
-                                <div class="flex items-center justify-center">
-                                    {{-- Assuming you have a route for showing special order details --}}
-                                    <a href="{{-- route('specialOrder.show', $order->id) --}}"
-                                        class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
+                                <div class="flex relative justify-center items-center">
+                                    <button @click="openOptions = !openOptions" @click.away="openOptions = false"
+                                        class="actions-trigger-btn">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="5" r="2"></circle>
+                                            <circle cx="12" cy="12" r="2"></circle>
+                                            <circle cx="12" cy="19" r="2"></circle>
                                         </svg>
-                                        تفاصيل
-                                    </a>
+                                    </button>
+
+                                    <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
+                                        class="actions-dropdown-menu">
+
+                                        <!-- عرض التفاصيل -->
+                                        <a href="{{-- route('specialOrder.show', $order->id) --}}"
+                                            class="actions-dropdown-item">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            عرض التفاصيل
+                                        </a>
+
+                                    </div>
                                 </div>
                             </td>
                         </tr>

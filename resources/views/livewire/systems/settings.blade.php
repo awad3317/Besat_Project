@@ -1,4 +1,53 @@
-<div x-data="{ activeSection: 'general' }">
+<div x-data="{
+        activeSection: 'general',
+        modalOpen: @entangle('modalOpen'),
+        isSuccessModalOpen: false,
+        successMessage: ''
+    }"
+    x-on:notify.window="
+        successMessage = $event.detail.message || $event.detail[0]?.message || 'تمت العملية بنجاح';
+        isSuccessModalOpen = true;
+    ">
+
+    <!-- Success Modal (Same design as x-modals.success-modal) -->
+    <div x-show="isSuccessModalOpen" x-cloak class="fixed inset-0 flex items-center justify-center p-5 z-99999"
+        x-transition>
+        <div class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
+
+        <div class="relative w-full max-w-md rounded-2xl bg-white p-6 dark:bg-gray-900 shadow-xl">
+            <div class="text-center py-4">
+                <div class="relative flex items-center justify-center z-1 mb-7">
+                    <svg style="color:#d1fae5" width="90" height="90" viewBox="0 0 90 90" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M34.364 6.85053C38.6205 -2.28351 51.3795 -2.28351 55.636 6.85053C58.0129 11.951 63.5594 14.6722 68.9556 13.3853C78.6192 11.0807 86.5743 21.2433 82.2185 30.3287C79.7862 35.402 81.1561 41.5165 85.5082 45.0122C93.3019 51.2725 90.4628 63.9451 80.7747 66.1403C75.3648 67.3661 71.5265 72.2695 71.5572 77.9156C71.6123 88.0265 60.1169 93.6664 52.3918 87.3184C48.0781 83.7737 41.9219 83.7737 37.6082 87.3184C29.8831 93.6664 18.3877 88.0266 18.4428 77.9156C18.4735 72.2695 14.6352 67.3661 9.22531 66.1403C-0.462787 63.9451 -3.30193 51.2725 4.49185 45.0122C8.84391 41.5165 10.2138 35.402 7.78151 30.3287C3.42572 21.2433 11.3808 11.0807 21.0444 13.3853C26.4406 14.6722 31.9871 11.951 34.364 6.85053Z"
+                            fill="currentColor" />
+                    </svg>
+
+                    <span class="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
+                        <svg class="text-success-600" width="38" height="38" viewBox="0 0 38 38" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M5.9375 19.0004C5.9375 11.7854 11.7864 5.93652 19.0014 5.93652C26.2164 5.93652 32.0653 11.7854 32.0653 19.0004C32.0653 26.2154 26.2164 32.0643 19.0014 32.0643C11.7864 32.0643 5.9375 26.2154 5.9375 19.0004ZM19.0014 2.93652C10.1296 2.93652 2.9375 10.1286 2.9375 19.0004C2.9375 27.8723 10.1296 35.0643 19.0014 35.0643C27.8733 35.0643 35.0653 27.8723 35.0653 19.0004C35.0653 10.1286 27.8733 2.93652 19.0014 2.93652ZM24.7855 17.0575C25.3713 16.4717 25.3713 15.522 24.7855 14.9362C24.1997 14.3504 23.25 14.3504 22.6642 14.9362L17.7177 19.8827L15.3387 17.5037C14.7529 16.9179 13.8031 16.9179 13.2173 17.5037C12.6316 18.0894 12.6316 19.0392 13.2173 19.625L16.657 23.0647C16.9383 23.346 17.3199 23.504 17.7177 23.504C18.1155 23.504 18.4971 23.346 18.7784 23.0647L24.7855 17.0575Z"
+                                fill="currentColor" />
+                        </svg>
+                    </span>
+                </div>
+
+                <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90 sm:text-title-sm">
+                    نجاح!
+                </h4>
+                <p class="text-sm leading-6 text-gray-500 dark:text-gray-400" x-text="successMessage"></p>
+
+                <div class="flex justify-center mt-6">
+                    <button @click="isSuccessModalOpen = false" type="button"
+                        class="px-6 py-2 text-sm font-medium text-success-500 rounded-lg bg-success-500/[0.08] hover:bg-success-500 hover:text-white transition-colors duration-200">
+                        حسناً
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="flex flex-col md:flex-row items-stretch gap-6">
 
         <!-- Sidebar Navigation (Handled by Alpine.js) -->
@@ -628,19 +677,35 @@
         </div>
     </div>
 
-    <!-- Centralized Modal (Managed by Livewire) -->
-    @if($modalOpen)
-        <div
-            class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm shadow-2xl transition-all duration-300">
-            <div wire:click.outside="$set('modalOpen', false)"
-                class="relative w-full max-w-md p-6 bg-white rounded-2xl shadow-xl dark:bg-gray-900 border border-gray-200 dark:border-gray-800 animate-fadeInScale">
+    <!-- Centralized Modal (Managed by Alpine + Livewire) -->
+        <div x-show="modalOpen" x-cloak
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-99999 flex items-center justify-center p-4 overflow-y-auto modal">
+
+            <div class="modal-close-btn fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]" @click="modalOpen = false">
+            </div>
+
+            <div @click.outside="modalOpen = false"
+                x-show="modalOpen"
+                x-transition:enter="transition ease-out duration-300 delay-75"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="relative w-full max-w-md p-6 bg-white rounded-2xl shadow-xl dark:bg-gray-900 border border-gray-200 dark:border-gray-800 z-10">
 
                 <div class="flex items-center justify-between mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ $modalTitle }}</h3>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $modalDesc }}</p>
                     </div>
-                    <button wire:click="$set('modalOpen', false)"
+                    <button @click="modalOpen = false"
                         class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -705,21 +770,9 @@
 
                 <!-- Modal Footer -->
                 <div class="flex items-center gap-3 pt-6 border-t border-gray-100 dark:border-gray-800 mt-6">
-                    <button wire:click="$set('modalOpen', false)" wire:loading.attr="disabled"
-                        wire:target="$set('modalOpen', false)"
-                        class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white transition-all disabled:opacity-70">
-                        <span wire:loading.remove wire:target="$set('modalOpen', false)">إلغاء</span>
-                        <span wire:loading wire:target="$set('modalOpen', false)"
-                            class="flex items-center justify-center gap-2">
-                            <svg class="animate-spin h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                                </circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            جاري...
-                        </span>
+                    <button @click="modalOpen = false"
+                        class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white transition-all">
+                        إلغاء
                     </button>
                     <button wire:click="saveSettings()" wire:loading.attr="disabled" wire:target="saveSettings"
                         class="flex-1 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 shadow-md shadow-brand-500/20 transition-all disabled:opacity-70">
@@ -738,5 +791,4 @@
                 </div>
             </div>
         </div>
-    @endif
 </div>

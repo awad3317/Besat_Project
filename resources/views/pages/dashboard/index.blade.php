@@ -307,7 +307,7 @@
   <!-- ====== Chart One End -->
 
   <div
-    class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+    class="overflow-visible rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
     <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -321,7 +321,7 @@
       </div>
     </div>
 
-    <div class="w-full overflow-x-auto">
+    <div class="w-full overflow-x-auto table-responsive-container">
       <table class="min-w-full">
         <!-- table header start -->
         <thead>
@@ -459,16 +459,32 @@
                 </p>
               </div>
             </td>
-            <td class="py-3">
-              <div class="flex items-center justify-center">
-                <button
-                  class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
+              <div class="flex relative justify-center items-center">
+                <button @click="openOptions = !openOptions" @click.away="openOptions = false"
+                  class="actions-trigger-btn">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="5" r="2"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <circle cx="12" cy="19" r="2"></circle>
                   </svg>
-                  تفاصيل
                 </button>
+
+                <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
+                  class="actions-dropdown-menu">
+
+                  <!-- عرض التفاصيل -->
+                  <button type="button" class="actions-dropdown-item">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    عرض التفاصيل
+                  </button>
+
+                </div>
               </div>
             </td>
           </tr>
@@ -542,16 +558,32 @@
                 </p>
               </div>
             </td>
-            <td class="py-3">
-              <div class="flex items-center justify-center">
-                <button
-                  class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
+              <div class="flex relative justify-center items-center">
+                <button @click="openOptions = !openOptions" @click.away="openOptions = false"
+                  class="actions-trigger-btn">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="5" r="2"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <circle cx="12" cy="19" r="2"></circle>
                   </svg>
-                  تفاصيل
                 </button>
+
+                <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
+                  class="actions-dropdown-menu">
+
+                  <!-- عرض التفاصيل -->
+                  <button type="button" class="actions-dropdown-item">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    عرض التفاصيل
+                  </button>
+
+                </div>
               </div>
             </td>
           </tr>
@@ -625,16 +657,32 @@
                 </p>
               </div>
             </td>
-            <td class="py-3">
-              <div class="flex items-center justify-center">
-                <button
-                  class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
+              <div class="flex relative justify-center items-center">
+                <button @click="openOptions = !openOptions" @click.away="openOptions = false"
+                  class="actions-trigger-btn">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="5" r="2"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <circle cx="12" cy="19" r="2"></circle>
                   </svg>
-                  تفاصيل
                 </button>
+
+                <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
+                  class="actions-dropdown-menu">
+
+                  <!-- عرض التفاصيل -->
+                  <button type="button" class="actions-dropdown-item">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    عرض التفاصيل
+                  </button>
+
+                </div>
               </div>
             </td>
           </tr>

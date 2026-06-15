@@ -162,8 +162,8 @@
             <div class="p-5 border-t border-gray-100 dark:border-gray-800 sm:p-6">
                 <div wire:loading.class="opacity-50" 
                      wire:target="search,applyFilter,toggleBan"
-                     class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-                    <div class="max-w-full overflow-x-auto">
+                     class="overflow-visible rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div class="max-w-full overflow-x-auto table-responsive-container">
                         <table class="min-w-full">
                             <!-- table header start -->
                             <thead>
@@ -309,26 +309,16 @@
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
-                                            <div x-data="{ isBanned: {{ $driver->is_banned ? 'true' : 'false' }} }"
-                                                 wire:key="toggle-{{ $driver->id }}-{{ $driver->is_banned }}">
-                                                <label :for="'toggle_{{ $driver->id }}'"
-                                                    class="flex cursor-pointer items-center gap-3 text-sm font-medium text-gray-700 select-none dark:text-gray-400">
-                                                    <div class="relative">
-                                                        <input type="checkbox" 
-                                                               :id="'toggle_{{ $driver->id }}'"
-                                                               class="sr-only" 
-                                                               x-model="isBanned"
-                                                               @change="$wire.toggleBan({{ $driver->id }})"
-                                                                />
-                                                        
-                                                        <div class="block h-6 w-11 rounded-full"
-                                                            :class="isBanned ? 'bg-success-500' : 'bg-error-500'">
-                                                        </div>
-                                                        <div :class="isBanned ? 'translate-x-full' : 'translate-x-0'"
-                                                            class="shadow-theme-sm absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white duration-300 ease-linear">
-                                                        </div>
-                                                    </div>
-                                                </label>
+                                            <div class="flex items-center">
+                                                @if ($driver->is_banned)
+                                                    <span class="rounded-full px-2.5 py-0.5 text-theme-xs font-medium bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
+                                                        محظور
+                                                    </span>
+                                                @else
+                                                    <span class="rounded-full px-2.5 py-0.5 text-theme-xs font-medium bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500">
+                                                        نشط
+                                                    </span>
+                                                @endif
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
@@ -338,18 +328,54 @@
                                                 </p>
                                             </div>
                                         </td>
-                                        <td class="px-5 py-4 sm:px-6">
-                                            <div class="flex items-center justify-center">
-                                                <a href="{{ route('drivers.show', $driver->id) }}"
-                                                   class="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
+                                            <div class="flex relative justify-center items-center">
+                                                <button @click="openOptions = !openOptions" @click.away="openOptions = false"
+                                                    class="actions-trigger-btn">
+                                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                        <circle cx="12" cy="5" r="2"></circle>
+                                                        <circle cx="12" cy="12" r="2"></circle>
+                                                        <circle cx="12" cy="19" r="2"></circle>
                                                     </svg>
-                                                    تفاصيل
-                                                </a>
+                                                </button>
+
+                                                <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
+                                                    class="actions-dropdown-menu">
+
+                                                    <!-- عرض التفاصيل -->
+                                                    <a href="{{ route('drivers.show', $driver->id) }}"
+                                                        class="actions-dropdown-item">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                        عرض التفاصيل
+                                                    </a>
+
+                                                    <!-- الحظر / فك الحظر -->
+                                                    @if($driver->is_banned)
+                                                        <button type="button" wire:click="toggleBan({{ $driver->id }})"
+                                                            class="actions-dropdown-item text-success-600 dark:text-success-500 hover:bg-success-50 dark:hover:bg-success-950/20">
+                                                            <svg class="w-4 h-4 text-success-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                            </svg>
+                                                            فك الحظر
+                                                        </button>
+                                                    @else
+                                                        <button type="button" wire:click="toggleBan({{ $driver->id }})"
+                                                            class="actions-dropdown-item text-error-600 dark:text-error-500 hover:bg-error-50 dark:hover:bg-error-950/20">
+                                                            <svg class="w-4 h-4 text-error-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                            </svg>
+                                                            حظر
+                                                        </button>
+                                                    @endif
+
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>

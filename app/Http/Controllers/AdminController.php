@@ -70,7 +70,12 @@ class AdminController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $admin = $this->userRepository->getById($id);
+            return view('pages.admin.show', compact('admin'));
+        } catch (Exception $e) {
+            return WebResponseClass::sendError($e);
+        }
     }
 
     /**
@@ -116,6 +121,23 @@ class AdminController extends Controller
             $this->userRepository->update($validatData,$id);
             ActivityLog::log('update','User','تم تحديث بيانات المسئول ');
             return WebResponseClass::sendResponse( 'تم التحديث!', 'تم تحديث بيانات المسئول بنجاح');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
+    }
+
+    public function toggleBan($id)
+    {
+        try {
+            $admin = $this->userRepository->getById($id);
+            if ($admin->type === 'superAdmin') {
+                return WebResponseClass::sendError('لا يمكن حظر المسؤول الأساسي');
+            }
+            $this->userRepository->update([
+                'is_banned' => !$admin->is_banned
+            ], $id);
+            ActivityLog::log('update', 'User', 'تم تغيير حالة حظر المسؤول ' . $admin->name);
+            return WebResponseClass::sendResponse('تم تعديل الحالة!', 'تم تغيير حالة حظر المسؤول بنجاح');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
         }

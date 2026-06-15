@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('specialOrder',SpecialOrderController::class);
     Route::resource('systems',SystemSettingsController::class);
     Route::resource('notifications',NotificationController::class);
+    Route::post('admins/{id}/toggle-ban', [AdminController::class, 'toggleBan'])->name('admins.toggle-ban')->middleware(['superAdmin']);
     Route::resource('admins',AdminController::class)->middleware(['superAdmin']);
     Route::resource('log',ActivityLogController::class)->only(['index']);
     Route::resource('ads',AdsController::class)->only(['index']);

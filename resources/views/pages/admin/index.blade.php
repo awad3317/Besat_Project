@@ -74,7 +74,7 @@
         </div>
     </div>
     <div
-        class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+        class="rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
         <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -83,7 +83,7 @@
             </div>
         </div>
 
-        <div class="w-full overflow-x-auto">
+        <div class="w-full overflow-x-auto table-responsive-container">
             <!-- table start -->
             <table class="min-w-full">
                 <!-- table header start -->
@@ -194,43 +194,78 @@
                                 </div>
                             </td>
                             <td class="px-5 py-4 sm:px-6">
-                                <div x-data="{ switcherToggle: {{$admin->is_banned}} }">
-                                    <label for="toggle2"
-                                        class="flex cursor-pointer items-center gap-3 text-sm font-medium text-gray-700 select-none dark:text-gray-400">
-                                        <div class="relative">
-                                            <input type="checkbox" id="toggle2" class="sr-only"
-                                                @change="switcherToggle = !switcherToggle" />
-                                            <div class="block h-6 w-11 rounded-full"
-                                                :class="switcherToggle ?  'bg-error-500' : 'bg-success-500 '"></div>
-                                            <div :class="switcherToggle ? 'translate-x-0' : 'translate-x-full'"
-                                                class="shadow-theme-sm absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white duration-300 ease-linear">
-                                            </div>
-                                        </div>
-                                    </label>
+                                <div class="flex items-center">
+                                    @if ($admin->is_banned)
+                                        <span class="rounded-full px-2.5 py-0.5 text-theme-xs font-medium bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
+                                            محظور
+                                        </span>
+                                    @else
+                                        <span class="rounded-full px-2.5 py-0.5 text-theme-xs font-medium bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500">
+                                            نشط
+                                        </span>
+                                    @endif
                                 </div>
                             </td>
-                            <td class="py-3">
-                                <div class="flex items-center justify-center" x-data="{ isLoading: false }">
-                                    <button
-                                        @click="isLoading = true; window.location.href='{{ route('admins.edit', $admin->id) }}'"
-                                        :disabled="isLoading"
-                                        class="relative flex mx-2 items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-theme-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white disabled:opacity-75 disabled:cursor-not-allowed">
-                                        <!-- Loading Spinner -->
-                                        <svg x-show="isLoading" class="animate-spin w-4 h-4 text-gray-700 dark:text-white"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                        <!-- Edit Icon -->
-                                        <svg x-show="!isLoading" class="w-4 h-4" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
+                                <div class="flex relative justify-center items-center">
+                                    <button @click="openOptions = !openOptions" @click.away="openOptions = false"
+                                        class="actions-trigger-btn">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="5" r="2"></circle>
+                                            <circle cx="12" cy="12" r="2"></circle>
+                                            <circle cx="12" cy="19" r="2"></circle>
                                         </svg>
                                     </button>
+
+                                    <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
+                                        class="actions-dropdown-menu">
+
+                                        <!-- عرض التفاصيل -->
+                                        <a href="{{ route('admins.show', $admin->id) }}"
+                                            class="actions-dropdown-item">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            عرض التفاصيل
+                                        </a>
+
+                                        <!-- تعديل البيانات -->
+                                        <a href="{{ route('admins.edit', $admin->id) }}"
+                                            class="actions-dropdown-item edit-data">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            تعديل البيانات
+                                        </a>
+
+                                        <!-- الحظر / فك الحظر -->
+                                        @if($admin->is_banned)
+                                            <form action="{{ route('admins.toggle-ban', $admin->id) }}" method="POST" class="w-full">
+                                                @csrf
+                                                <button type="submit" class="actions-dropdown-item text-success-600 dark:text-success-500 hover:bg-success-50 dark:hover:bg-success-950/20">
+                                                    <svg class="w-4 h-4 text-success-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                    </svg>
+                                                    فك الحظر
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('admins.toggle-ban', $admin->id) }}" method="POST" class="w-full">
+                                                @csrf
+                                                <button type="submit" class="actions-dropdown-item text-error-600 dark:text-error-500 hover:bg-error-50 dark:hover:bg-error-950/20">
+                                                    <svg class="w-4 h-4 text-error-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                    </svg>
+                                                    حظر
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                    </div>
                                 </div>
                             </td>
                         </tr>
