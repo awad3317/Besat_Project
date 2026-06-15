@@ -80,8 +80,8 @@ class RatingController extends Controller
         if ($ride->user_id !== $userId) {
             return ApiResponseClass::sendError('غير مصرح لك بتقييم هذه الرحلة.', 403);
         }
-        if (!$ride->driver_id) {
-            return ApiResponseClass::sendError('لا يمكن تقييم رحلة لم يتم قبولها من سائق.', 400);
+        if ($ride->status !== 'completed') {
+            return ApiResponseClass::sendError('لا يمكن تقييم الرحلة إلا بعد اكتمالها بنجاح.', 400);
         }
         $ratingData = [
             'request_id'   => $ride->id,
