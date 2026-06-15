@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Rating;
-use Illuminate\Http\Request;
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
+use App\Models\Rating;
 use App\Repositories\RatingRepository;
+use App\Repositories\RequestRepository;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class RatingController extends Controller
 {
 
-    public function __construct(private RatingRepository $ratingRepository)
+    public function __construct(private RatingRepository $ratingRepository,private RequestRepository $requestRepository)
     {
         //
     }
@@ -59,23 +60,42 @@ class RatingController extends Controller
     public function upsertRating(Request $request)
     {
         $fields=$request->validate([
-            'driver_id' =>['required',Rule::exists('drivers', 'id')],
-            'rating' =>['required','integer','min:1','max:5'], 
+            'request_id' => ['required', Rule::exists('requests', 'id')],
+            'rating' =>['required','integer','min:1','max:5'],
+            'comment'    => ['nullable', 'string', 'max:500'], 
         ], [
-            'driver_id.required' => 'يجب اختيار السائق.',
-            'driver_id.exists' => 'السائق غير موجودة.',
-            'rating.required' => 'يجب إدخال التقييم.',
-            'rating.integer' => 'يجب أن يكون التقييم رقمًا صحيحًا.',
-            'rating.min' => 'يجب أن يكون التقييم على الأقل 1.',
-            'rating.max' => 'يجب أن لا يتجاوز التقييم 5.',
+            'request_id.required' => 'يجب تحديد الرحلة المراد تقييمها.',
+            'request_id.exists'   => 'الرحلة المحددة غير موجودة.',
+            'rating.required'     => 'يجب إدخال قيمة التقييم.',
+            'rating.integer'      => 'يجب أن يكون التقييم رقمًا صحيحًا.',
+            'rating.min'          => 'يجب أن يكون التقييم على الأقل 1.',
+            'rating.max'          => 'يجب أن لا يتجاوز التقييم 5.',
+            'comment.max'         => 'يجب أن لا يتجاوز التعليق 500 حرف.',
         ]);
-        $fields['user_id'] = auth('sanctum')->id();
-        $rating=$this->ratingRepository->getByUserIdAndDriverId($fields['user_id'], $fields['driver_id']);
-        if($rating){
-            $rating=$this->ratingRepository->update($fields, $rating->id);
-            return ApiResponseClass::sendResponse($rating, 'تم تحديث التقييم بنجاح.');
+        $userId = auth('sanctum')->id();
+        $ride = $this->requestRepository->getById($fields['request_id']);
+        if (!$ride) {
+            return ApiResponseClass::sendError('الرحلة المحددة غير موجودة.', 404);
         }
-        $rating = $this->ratingRepository->store($fields);
-        return ApiResponseClass::sendResponse($rating, 'تم إنشاء التقييم بنجاح.');
+        if ($ride->user_id !== $userId) {
+            return ApiResponseClass::sendError('غير مصرح لك بتقييم هذه الرحلة.', 403);
+        }
+        if (!$ride->driver_id) {
+            return ApiResponseClass::sendError('لا يمكن تقييم رحلة لم يتم قبولها من سائق.', 400);
+        }
+        $ratingData = [
+            'request_id'   => $ride->id,
+            'driver_id'    => $ride->driver_id,
+            'user_id'      => $userId,
+            'rating_value' => $fields['rating'],
+            'comment'      => $request->comment,
+        ];
+        $rating = $this->ratingRepository->getByRequestId($ride->id);
+        if ($rating) {
+            $updatedRating = $this->ratingRepository->update($ratingData, $rating->id);
+            return ApiResponseClass::sendResponse($updatedRating, 'تم تحديث التقييم بنجاح.');
+        }
+        $newRating = $this->ratingRepository->store($ratingData);
+        return ApiResponseClass::sendResponse($newRating, 'تم إنشاء التقييم بنجاح.');
     }
 }

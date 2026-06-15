@@ -47,4 +47,9 @@ class RatingRepository implements RepositoriesInterface
             ->first();
     }
 
+    public function getByRequestId($requestId): ?Rating
+    {
+        return Rating::where('request_id', $requestId)->first();
+    }
+
 }

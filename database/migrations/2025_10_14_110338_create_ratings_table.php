@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('ratings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('request_id')->constrained('requests')->onDelete('cascade');
             $table->foreignId('driver_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('rating_value');
+            $table->string('comment', 500)->nullable();
             $table->timestamps();
-
-            $table->unique(['driver_id', 'user_id']);
+            $table->unique(['request_id', 'user_id']);
         });
     }
 
