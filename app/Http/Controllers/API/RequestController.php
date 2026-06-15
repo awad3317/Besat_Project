@@ -159,7 +159,7 @@ class RequestController extends Controller
             }
             if ($requestModel->driver) {
                 $ratingStats = $this->ratingService->getDriverAverageRating($requestModel->driver->id);
-                $requestModel->driver->setAttribute('rating_stats', $ratingStats);
+                $requestModel->driver->setAttribute('rating', $ratingStats);
             }
             return ApiResponseClass::sendResponse($requestModel, 'تم استرجاع تفاصيل الرحلة بنجاح.');
         } catch (Exception $e) {
