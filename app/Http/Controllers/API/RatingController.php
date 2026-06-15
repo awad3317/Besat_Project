@@ -105,7 +105,7 @@ class RatingController extends Controller
     {
         try {
             $rating = $this->ratingService->getDriverAverageRating((int)$driverId);
-            return ApiResponseClass::sendResponse($rating, 'Driver rating fetched successfully.');
+            return ApiResponseClass::sendResponse(['rating'=>$rating, 'driver_id'=>$driverId], 'Driver rating fetched successfully.');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('An error occurred while fetching driver rating:'.$e->getMessage(), 500);
         }
