@@ -17,22 +17,22 @@ class ActivityLogController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    $logs = $this->activityLogRepository->index();
+    {
+        $logs = $this->activityLogRepository->index();
 
-    $today = Carbon::today()->toDateString();
-    $yesterday = Carbon::yesterday()->toDateString();
-    $lastWeek = Carbon::now()->subDays(7)->toDateTimeString();
-    $stats = activity_log::selectRaw("
-        COUNT(*) as total,
-        COUNT(CASE WHEN DATE(created_at) = ? THEN 1 END) as today,
-        COUNT(CASE WHEN DATE(created_at) = ? THEN 1 END) as yesterday,
-        COUNT(CASE WHEN created_at >= ? THEN 1 END) as last_week
-    ", [$today, $yesterday, $lastWeek])->first()->toArray();
+        $today = Carbon::today()->toDateString();
+        $yesterday = Carbon::yesterday()->toDateString();
+        $lastWeek = Carbon::now()->subDays(7)->toDateTimeString();
+        $stats = activity_log::selectRaw("
+            COUNT(*) as total,
+            COUNT(CASE WHEN DATE(created_at) = ? THEN 1 END) as today,
+            COUNT(CASE WHEN DATE(created_at) = ? THEN 1 END) as yesterday,
+            COUNT(CASE WHEN created_at >= ? THEN 1 END) as last_week
+        ", [$today, $yesterday, $lastWeek])->first()->toArray();
 
-    return view('pages.ActivityLog.index', compact('logs', 'stats'));
-}
-
+        return view('pages.ActivityLog.index', compact('logs', 'stats'));
+    }
+public function store(Request $request)
     /**
      * Show the form for creating a new resource.
      */

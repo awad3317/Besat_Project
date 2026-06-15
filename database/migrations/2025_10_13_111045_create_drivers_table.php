@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone');
             $table->string('vehicle_image')->nullable();
-            $table->timestamp('phone_verified_at')->nullable();
             $table->string('driver_image')->nullable();
             $table->boolean('is_banned')->default(false);
             $table->string('city')->nullable();

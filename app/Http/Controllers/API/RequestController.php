@@ -146,7 +146,12 @@ class RequestController extends Controller
     {
         try {
             $userId = auth('sanctum')->id();
-            $requestModel = $this->requestRepository->getByIdAndUserId($id, $userId, ['stops', 'surcharges','driver','vehicle']);
+            $requestModel = $this->requestRepository->getByIdAndUserId($id, $userId, [
+                'stops',
+                'surcharges',
+                'driver:id,vehicle_id,name,phone,vehicle_image,driver_image,city,plate_number,whatsapp_number,latitude,longitude,is_online',
+                'vehicle:id,type'
+            ]);
             if (!$requestModel) {
                 return ApiResponseClass::sendError('الطلب غير موجود أو غير مصرح لك بالوصول إليه.', null, 404);
             }
