@@ -23,6 +23,7 @@ class Surcharge extends Model
         'time_from' => 'datetime:H:i',
         'time_to' => 'datetime:H:i',
     ];
+    protected $hidden = ['pivot'];
 
     public function requests()
     {
