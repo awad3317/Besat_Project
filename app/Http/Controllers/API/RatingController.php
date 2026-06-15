@@ -7,13 +7,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Rating;
 use App\Repositories\RatingRepository;
 use App\Repositories\RequestRepository;
+use App\Services\RatingService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class RatingController extends Controller
 {
 
-    public function __construct(private RatingRepository $ratingRepository,private RequestRepository $requestRepository)
+    public function __construct(private RatingRepository $ratingRepository,private RatingService $ratingService,private RequestRepository $requestRepository)
     {
         //
     }
@@ -98,4 +100,14 @@ class RatingController extends Controller
         $newRating = $this->ratingRepository->store($ratingData);
         return ApiResponseClass::sendResponse($newRating, 'تم إنشاء التقييم بنجاح.');
     }
+
+    public function getDriverRating(Request $request, $driverId)
+    {
+        try {
+            $rating = $this->ratingService->getDriverAverageRating((int)$driverId);
+            return ApiResponseClass::sendResponse($rating, 'Driver rating fetched successfully.');
+        } catch (Exception $e) {
+            return ApiResponseClass::sendError('An error occurred while fetching driver rating:'.$e->getMessage(), 500);
+        }
+    }   
 }

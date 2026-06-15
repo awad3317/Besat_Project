@@ -35,6 +35,7 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::post('/user/calculatePrice',[RequestController::class,'calculatePrice']);
         Route::post('/user/specialOrder',[SpecialOrderController::class,'store']);
         Route::get('/user/profile', [UserController::class, 'index']);
+        Route::get('/user/getDriverRating/{driverId}', [RatingController::class, 'getDriverRating']);
         Route::post('/user/check-coupon', [DiscountCodeController::class, 'checkCoupon']);
         Route::get('/user/banks', [BankController::class, 'index']);
         Route::get('/user/wallet-balance', [LoyaltyWalletController::class, 'getBalance']);
