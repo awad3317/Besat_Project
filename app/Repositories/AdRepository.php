@@ -26,11 +26,7 @@ class AdRepository implements RepositoriesInterface
             return ads::where('is_active', true)
                 ->select('id', 'image_path')
                 ->latest()
-                ->get()
-                ->map(function($ad) {
-                    $ad->image_url = asset($ad->image_path);
-                    return $ad;
-                });
+                ->get();
         });
     }
 
