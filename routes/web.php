@@ -1,23 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AdsController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\AdController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CouponController;
-use App\Http\Controllers\DriverController;
 use App\Http\Controllers\API\AppSettingController;
+use App\Http\Controllers\BankController;
+use App\Http\Controllers\CouponController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DriverController;
+use App\Http\Controllers\FirebaseController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestController;
-use App\Http\Controllers\BankController;
-use App\Http\Controllers\VehicleController;
-use App\Http\Controllers\FirebaseController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ActivityLogController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SpecialOrderController;
 use App\Http\Controllers\SystemSettingsController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\vehiclePricingController;
+use Illuminate\Support\Facades\Route;
 
 
 // Route::get('/', function () {
@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::post('admins/{id}/toggle-ban', [AdminController::class, 'toggleBan'])->name('admins.toggle-ban')->middleware(['superAdmin']);
     Route::resource('admins',AdminController::class)->middleware(['superAdmin']);
     Route::resource('log',ActivityLogController::class)->only(['index']);
-    Route::resource('ads',AdsController::class)->only(['index']);
+    Route::resource('ads',AdController::class);
     Route::resource('Bank', BankController::class);
     Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');

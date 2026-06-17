@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AdController;
 use App\Http\Controllers\API\AppSettingController;
 use App\Http\Controllers\API\Auth\Driver\DriverAuthController;
 use App\Http\Controllers\API\Auth\Driver\DriverForgetPasswordController;
@@ -71,6 +72,8 @@ Route::post('/user/resetPassword', [UserForgetPasswordController::class,'resetPa
 Route::post('/driver/forgetPassword', [DriverForgetPasswordController::class,'forgetPassword']);
 Route::post('/driver/resetPassword', [DriverForgetPasswordController::class,'resetPassword']);
         //       App Settings Route    //  
-Route::get('/appSettings', [AppSettingController::class, 'index']); 
+Route::get('/appSettings', [AppSettingController::class, 'index']);
+        //       Ads Route For Mobile    //  
+Route::get('/ads', [AdController::class, 'getAds']);
 
 
