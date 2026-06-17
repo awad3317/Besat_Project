@@ -1,4 +1,3 @@
-// app/Http/Controllers/API/AdApiController.php
 <?php
 
 namespace App\Http\Controllers\API;
