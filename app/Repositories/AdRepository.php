@@ -24,7 +24,7 @@ class AdRepository implements RepositoriesInterface
     {
         return Cache::rememberForever(self::CACHE_KEY, function () {
             return ads::where('is_active', true)
-                ->select('id', 'image_path')
+                ->select('id', 'image')
                 ->latest()
                 ->get();
         });

@@ -10,7 +10,7 @@ class ads extends Model
     use HasFactory;
 
     protected $fillable = [
-        'image_path',
+        'image',
         'is_active',
     ];
 }

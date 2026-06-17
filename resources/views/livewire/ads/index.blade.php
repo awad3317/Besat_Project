@@ -111,7 +111,7 @@
                         class="group bg-white dark:bg-gray-dark rounded-xl border border-gray-200 dark:border-gray-700 shadow-theme-sm hover:shadow-theme-md transition-all duration-300 overflow-visible flex flex-col">
 
                         <div class="relative w-full h-44 overflow-hidden rounded-t-xl bg-gray-100 dark:bg-gray-800">
-                            <img src="{{ asset($ad->image_path) }}" alt="إعلان" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <img src="{{ asset($ad->image) }}" alt="إعلان" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
 
                            
                         </div>

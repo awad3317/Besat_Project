@@ -24,7 +24,7 @@
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                 الصورة الحالية
                             </label>
-                            <img src="{{ asset($Ad->image_path) }}" class="rounded-lg mb-3 object-cover w-full h-32 border border-gray-200 dark:border-gray-700">
+                            <img src="{{ asset($Ad->image) }}" class="rounded-lg mb-3 object-cover w-full h-32 border border-gray-200 dark:border-gray-700">
                             
                             <label for="edit_image" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                 تحديث الصورة <span class="mt-1 text-xs text-gray-500 dark:text-gray-400">(اختياري)</span>

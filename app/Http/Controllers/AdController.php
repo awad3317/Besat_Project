@@ -41,7 +41,7 @@ class AdController extends Controller
         try {
             $data = $validator->validated();
             if ($request->hasFile('image')) {
-                $data['image_path'] = $this->imageService->saveImage($request->file('image'), 'ads');
+                $data['image'] = $this->imageService->saveImage($request->file('image'), 'ads');
             }
             $data['is_active'] = $request->input('is_active', 0) == 1 ? true : false;
             $this->adRepository->store($data);
@@ -85,8 +85,8 @@ class AdController extends Controller
             $data = $validator->validated();
             $ad = $this->adRepository->getById($id);
             if ($request->hasFile('image')) {
-                $this->imageService->deleteImage($ad->image_path);
-                $data['image_path'] = $this->imageService->saveImage($request->file('image'), 'ads');
+                $this->imageService->deleteImage($ad->image);
+                $data['image'] = $this->imageService->saveImage($request->file('image'), 'ads');
             }
             $data['is_active'] = $request->input('is_active', 0) == 1 ? true : false;
             $this->adRepository->update($data, $id);
@@ -104,7 +104,7 @@ class AdController extends Controller
     {
         try {
             $ad = $this->adRepository->getById($id);
-            $this->imageService->deleteImage($ad->image_path);
+            $this->imageService->deleteImage($ad->image);
             $this->adRepository->delete($id);
             ActivityLog::log('delete', 'Ad', 'تم حذف الإعلان');
             return WebResponseClass::sendResponse('تم الحذف!', 'تم حذف الإعلان وتنظيف الكاش.');
