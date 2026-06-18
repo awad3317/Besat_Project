@@ -26,7 +26,7 @@ class UserDeviceController extends Controller
             'device_token' => 'required|string',
             'device_type'  => 'nullable|string',
         ]);
-        $user = $request->user();
+        $user = auth('sanctum')->user();
         $currentSessionTokenId = $user->currentAccessToken()->id;
         $device = $user->devices()->updateOrCreate(
             [
