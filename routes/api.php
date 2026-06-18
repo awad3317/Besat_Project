@@ -17,6 +17,7 @@ use App\Http\Controllers\API\PaymentMethodController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
 use App\Http\Controllers\API\SpecialOrderController;
+use App\Http\Controllers\API\UserDeviceController;
 use App\Http\Controllers\API\VehicleController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,7 @@ Route::middleware(['auth.sanctum.api'])->group(function () {
 Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::apiResource('/user/requests', RequestController::class);
         Route::post('/user/logout',[UserAuthController::class,'logout']);
+        Route::post('/user/updateDeviceToken',[UserDeviceController::class,'updateDeviceToken']);
         Route::post('/user/upsertRating',[RatingController::class,'upsertRating']);
         Route::post('/user/calculatePrice',[RequestController::class,'calculatePrice']);
         Route::post('/user/specialOrder',[SpecialOrderController::class,'store']);
