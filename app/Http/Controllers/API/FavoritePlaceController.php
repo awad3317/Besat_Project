@@ -35,11 +35,10 @@ class FavoritePlaceController extends Controller
     public function store(Request $request)
     {
          $fields=$request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
             'latitude'    => ['required','numeric'], 
             'longitude'    => ['required','numeric'], 
         ], [
-            'name.required' => 'يجب تحديد الرحلة المراد تقييمها.',
             'latitude.required'     => 'يجب إدخال خط العرض.',
             'longitude.required'     => 'يجب إدخال خط الطول.',
         ]);
