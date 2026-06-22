@@ -13,9 +13,9 @@ class FavoritePlaceRepository implements RepositoriesInterface
         return FavoritePlace::latest()->paginate(10);
     }
 
-    public function getById($userId): FavoritePlace
+    public function getById($id): FavoritePlace
     {
-        return FavoritePlace::where('user_id', $userId)->get();
+        return FavoritePlace::findOrFail($id);
     }
 
     public function store(array $data): FavoritePlace
@@ -35,5 +35,9 @@ class FavoritePlaceRepository implements RepositoriesInterface
     {
         $deleted = FavoritePlace::where('id', $id)->delete() > 0;
         return $deleted;
+    }
+    public function getByUserId($userId): FavoritePlace
+    {
+        return FavoritePlace::where('user_id', $userId)->get();
     }
 }

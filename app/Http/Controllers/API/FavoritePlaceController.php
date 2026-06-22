@@ -21,7 +21,7 @@ class FavoritePlaceController extends Controller
     {
         try {
             $userId = auth('sanctum')->id();
-            $places = $this->favoritePlaceRepository->getById($userId);
+            $places = $this->favoritePlaceRepository->getByUserId($userId);
             return ApiResponseClass::sendResponse($places, 'تم استرجاع الأماكن المفضلة بنجاح.');
         } catch (Exception $e) {
             Log::error('Error fetching favorite places: ' . $e->getMessage());
