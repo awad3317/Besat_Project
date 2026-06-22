@@ -61,6 +61,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserDevice::class);
     }
+    public function favoritePlaces()
+    {
+        return $this->hasMany(FavoritePlace::class);
+    }
 
     public function requests()
     {

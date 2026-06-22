@@ -12,6 +12,7 @@ use App\Http\Controllers\API\Auth\User\UserOtpController;
 use App\Http\Controllers\API\BankController;
 use App\Http\Controllers\API\DiscountCodeController;
 use App\Http\Controllers\API\DriverController;
+use App\Http\Controllers\API\FavoritePlaceController;
 use App\Http\Controllers\API\LoyaltyWalletController;
 use App\Http\Controllers\API\PaymentMethodController;
 use App\Http\Controllers\API\RatingController;
@@ -32,6 +33,7 @@ Route::middleware(['auth.sanctum.api'])->group(function () {
 // Routes For Users only
 Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::apiResource('/user/requests', RequestController::class);
+        Route::apiResource('/user/favorite-places', FavoritePlaceController::class);
         Route::post('/user/logout',[UserAuthController::class,'logout']);
         Route::post('/user/updateDeviceToken',[UserDeviceController::class,'updateDeviceToken']);
         Route::post('/user/upsertRating',[RatingController::class,'upsertRating']);
