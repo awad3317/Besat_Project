@@ -20,6 +20,7 @@ class FavoritePlaceController extends Controller
     public function index()
     {
         try {
+            return "Awad";
             $userId = auth('sanctum')->id();
             $places = $this->favoritePlaceRepository->getByUserId($userId);
             return ApiResponseClass::sendResponse($places, 'تم استرجاع الأماكن المفضلة بنجاح.');
