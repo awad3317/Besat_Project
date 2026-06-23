@@ -36,7 +36,7 @@ class FavoritePlaceRepository implements RepositoriesInterface
         $deleted = FavoritePlace::where('id', $id)->delete() > 0;
         return $deleted;
     }
-    public function getByUserId($userId): FavoritePlace
+    public function getByUserId($userId)
     {
         return FavoritePlace::where('user_id', $userId)->get();
     }
