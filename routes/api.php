@@ -14,6 +14,7 @@ use App\Http\Controllers\API\DiscountCodeController;
 use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\FavoritePlaceController;
 use App\Http\Controllers\API\LoyaltyWalletController;
+use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\PaymentMethodController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
@@ -28,6 +29,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth.sanctum.api'])->group(function () {
         Route::apiResource('vehicles', VehicleController::class)->only(['index']);
+        Route::get('notifications', [NotificationController::class, 'index']);
+        Route::post('notifications/{id}/markAsRead', [NotificationController::class, 'markAsRead']);
+        Route::post('notifications/markAllAsRead', [NotificationController::class, 'markAllAsRead']);
 });
 
 // Routes For Users only
