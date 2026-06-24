@@ -143,7 +143,7 @@ class Index extends Component
         }
 
         $this->dispatch('driver-assigned');
-    }
+    }}
 
     public function clearSelectedRequest()
     {
