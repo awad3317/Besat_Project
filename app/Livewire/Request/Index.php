@@ -7,6 +7,7 @@ use App\Models\Driver;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
+use App\Notifications\DriverAssignedNotification;
 
 class Index extends Component
 {
@@ -119,6 +120,9 @@ class Index extends Component
                 'driver_id' => $driverId,
                 'status' => 'accepted' // 'accepted' is the correct database enum value for requests
             ]);
+            if ($request->user) {
+                $request->user->notify(new DriverAssignedNotification($request));
+            }
         }
 
         $this->dispatch('driver-assigned');
