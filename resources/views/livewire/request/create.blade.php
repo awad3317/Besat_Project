@@ -97,16 +97,13 @@
     </div>
     <input type="hidden" name="user_id" id="user_id" value="{{$selected_customer_id}}">
     <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-         اختيار المركبة <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>
-        </label>
+        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">اختيار المركبة <span
+                class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span></label>
         <select id="vehicle_id" name="vehicle_id"
-            class="hover:border-brand-500 h-11 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-dark-900 dark:text-white">
-            <option value='' class="bg-white text-gray-800 dark:bg-dark-900 dark:text-white">اختر المركبه</option>
+            class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+            <option value=''>اختر المركبه</option>
             @foreach ($this->vehicles as $vehicle)
-                <option value="{{ $vehicle->id }}" class="bg-white text-gray-800 dark:bg-dark-900 dark:text-white">
-                    {{ $vehicle->type }}
-                </option>
+                <option class="" value="{{ $vehicle->id }}">{{ $vehicle->type }}</option>
             @endforeach
         </select>
     </div>
