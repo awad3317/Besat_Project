@@ -5,7 +5,26 @@
 
 @endsection
 @section('style')
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
 
+        #map, #favMap {
+            height: 450px;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .dark #map, .dark #favMap {
+            border-color: #4b5563;
+        }
+
+        .map-container {
+            position: relative;
+        }
+    </style>
 @endsection
 @section('content')
   <x-modals.success-modal />
@@ -91,6 +110,36 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- خريطة الأماكن المفضلة -->
+      @php
+          $favPlaces = $user->favoritePlaces->filter(function($place) {
+              return $place->latitude && $place->longitude;
+          })->map(function($place) {
+              return [
+                  'id' => $place->id,
+                  'name' => $place->name,
+                  'lat' => (float)$place->latitude,
+                  'lng' => (float)$place->longitude
+              ];
+          })->values();
+      @endphp
+
+      <div class="mb-6 p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6 bg-white dark:bg-white/[0.03]">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+            <span class="text-warning-500 dark:text-warning/90">خريطة الأماكن المفضلة</span>
+          </h3>
+          @if($favPlaces->isNotEmpty())
+            <span class="text-xs text-gray-500 dark:text-gray-400">تم تحديد {{ $favPlaces->count() }} مكان مفضل على الخريطة</span>
+          @else
+            <span class="text-xs text-gray-500 dark:text-gray-400">لا توجد أماكن مفضلة مسجلة</span>
+          @endif
+        </div>
+        <div class="map-container">
+          <div id="favMap"></div>
         </div>
       </div>
 
@@ -225,7 +274,7 @@
                     <div class="flex items-center">
                       <p
                         class="rounded-full bg-error-50 px-2 py-0.5 text-theme-xs font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500">
-                        {{ $request->created_at->format('Y/m/d') }}
+                        {{ $request->created_at?->format('Y/m/d') }}
                       </p>
                     </div>
                   </td>
@@ -575,7 +624,7 @@
                                 <td class="py-3 text-theme-sm font-semibold {{ $transaction->amount > 0 ? 'text-success-600' : 'text-error-600' }}">
                                     {{ number_format($transaction->amount, 2) }}
                                 </td>
-                                <td class="py-3 text-theme-sm text-gray-400">{{ $transaction->created_at->format('Y/m/d') }}</td>
+                                <td class="py-3 text-theme-sm text-gray-400">{{ $transaction->created_at?->format('Y/m/d') }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -619,7 +668,7 @@
                                 <td class="py-3 text-theme-sm font-semibold {{ $point->points > 0 ? 'text-warning-600' : 'text-gray-500' }}">
                                     {{ $point->points > 0 ? '+' : '' }}{{ $point->points }}
                                 </td>
-                                <td class="py-3 text-theme-sm text-gray-400">{{ $point->created_at->format('Y/m/d') }}</td>
+                                <td class="py-3 text-theme-sm text-gray-400">{{ $point->created_at?->format('Y/m/d') }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -692,6 +741,75 @@
     </div>
   </div>
 @endsection
-@section('script')
 
-@endsection
+@section('script')
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAP_KEY') }}&libraries=places&language=ar&region=YE"
+        async defer></script>
+    <script>
+        let favMap;
+        let favMarkers = [];
+        
+        function initializeMaps() {
+            // Safety check in case maps script hasn't loaded or fails
+            if (typeof google === 'undefined' || !google.maps) return;
+            
+            const favPlaces = @json($favPlaces);
+            const favMapEl = document.getElementById('favMap');
+            
+            if (favMapEl) {
+                let center = { lat: 12.7773, lng: 45.0336 }; // Aden
+                if (favPlaces.length > 0) {
+                    center = { lat: favPlaces[0].lat, lng: favPlaces[0].lng };
+                }
+                
+                favMap = new google.maps.Map(favMapEl, {
+                    center: center,
+                    zoom: 13
+                });
+                
+                const bounds = new google.maps.LatLngBounds();
+                const infoWindow = new google.maps.InfoWindow();
+                
+                favPlaces.forEach(place => {
+                    const marker = new google.maps.Marker({
+                        position: { lat: place.lat, lng: place.lng },
+                        map: favMap,
+                        title: place.name,
+                        icon: {
+                            url: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+                            scaledSize: new google.maps.Size(40, 40)
+                        }
+                    });
+                    
+                    marker.addListener('click', () => {
+                        infoWindow.setContent(`
+                            <div class="p-2 text-right">
+                                <h4 class="font-bold text-gray-800 mb-1">${place.name}</h4>
+                                <p class="text-xs text-gray-500 font-mono">Lat: ${place.lat.toFixed(6)}</p>
+                                <p class="text-xs text-gray-500 font-mono">Lng: ${place.lng.toFixed(6)}</p>
+                            </div>
+                        `);
+                        infoWindow.open(favMap, marker);
+                    });
+                    
+                    favMarkers.push(marker);
+                    bounds.extend(marker.getPosition());
+                });
+                
+                if (favPlaces.length > 1) {
+                    favMap.fitBounds(bounds);
+                } else if (favPlaces.length === 1) {
+                    favMap.setCenter({ lat: favPlaces[0].lat, lng: favPlaces[0].lng });
+                    favMap.setZoom(15);
+                }
+            }
+        }
+        
+        if (window.google && window.google.maps) {
+            initializeMaps();
+        } else {
+            window.addEventListener('load', initializeMaps);
+        }
+    </script>
+@endsection

@@ -31,6 +31,16 @@
         background-color: #1f2937;
         border-color: var(--brand-500);
     }
+    #map {
+        height: 350px;
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        margin-top: 1.5rem;
+    }
+    .dark #map {
+        border-color: #4b5563;
+    }
 </style>
 @endsection
 
@@ -121,6 +131,37 @@
         <div class="lg:col-span-2 space-y-6">
             
             <!-- Route Info -->
+            @php
+                $routePoints = [];
+                if ($request->start_latitude && $request->start_longitude) {
+                    $routePoints[] = [
+                        'lat' => (float)$request->start_latitude,
+                        'lng' => (float)$request->start_longitude,
+                        'type' => 'start',
+                        'name' => 'نقطة الانطلاق: ' . $request->start_address
+                    ];
+                }
+                
+                foreach ($request->stops ?? [] as $index => $stop) {
+                    if ($stop->latitude && $stop->longitude) {
+                        $routePoints[] = [
+                            'lat' => (float)$stop->latitude,
+                            'lng' => (float)$stop->longitude,
+                            'type' => 'stop',
+                            'name' => 'نقطة توقف ' . ($index + 1)
+                        ];
+                    }
+                }
+                
+                if ($request->end_latitude && $request->end_longitude) {
+                    $routePoints[] = [
+                        'lat' => (float)$request->end_latitude,
+                        'lng' => (float)$request->end_longitude,
+                        'type' => 'end',
+                        'name' => 'نقطة الوصول: ' . $request->end_address
+                    ];
+                }
+            @endphp
             <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-6">مسار الرحلة</h3>
                 <div class="relative px-2">
@@ -138,6 +179,23 @@
                             @endif
                         </div>
                     </div>
+
+                    <!-- Stops Points -->
+                    @foreach($request->stops ?? [] as $index => $stop)
+                        @if($stop->latitude && $stop->longitude)
+                            <div class="timeline-item pb-8">
+                                <div class="timeline-dot border-blue-500"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-gray-500 mb-1">نقطة توقف {{ $index + 1 }}</span>
+                                    <p class="font-medium text-gray-800 dark:text-white">خط عرض: {{ $stop->latitude }}، خط طول: {{ $stop->longitude }}</p>
+                                    <a href="https://maps.google.com/?q={{$stop->latitude}},{{$stop->longitude}}" target="_blank" class="text-xs text-brand-500 hover:underline mt-1 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        عرض في الخريطة
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
                     
                     <!-- End Point -->
                     <div class="timeline-item border-none pb-0">
@@ -154,6 +212,9 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Google Map Container -->
+                <div id="map"></div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -282,4 +343,92 @@
 
 </div>
 
+@endsection
+
+@section('script')
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAP_KEY') }}&libraries=places&language=ar&region=YE"
+        async defer></script>
+    <script>
+        let map;
+        const routePoints = @json($routePoints);
+        
+        function initializeMap() {
+            // Safety check in case maps script hasn't loaded or fails
+            if (typeof google === 'undefined' || !google.maps) return;
+            
+            const mapEl = document.getElementById('map');
+            if (mapEl) {
+                let center = { lat: 12.7773, lng: 45.0336 }; // Aden
+                if (routePoints.length > 0) {
+                    center = { lat: routePoints[0].lat, lng: routePoints[0].lng };
+                }
+                
+                map = new google.maps.Map(mapEl, {
+                    center: center,
+                    zoom: 13
+                });
+                
+                const bounds = new google.maps.LatLngBounds();
+                const pathCoordinates = [];
+                const infoWindow = new google.maps.InfoWindow();
+                
+                routePoints.forEach((point, index) => {
+                    const latLng = { lat: point.lat, lng: point.lng };
+                    pathCoordinates.push(latLng);
+                    bounds.extend(latLng);
+                    
+                    let iconUrl = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+                    if (point.type === 'start') {
+                        iconUrl = 'https://maps.google.com/mapfiles/ms/icons/green-dot.png';
+                    } else if (point.type === 'end') {
+                        iconUrl = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                    }
+                    
+                    const marker = new google.maps.Marker({
+                        position: latLng,
+                        map: map,
+                        title: point.name,
+                        icon: {
+                            url: iconUrl,
+                            scaledSize: new google.maps.Size(40, 40)
+                        }
+                    });
+                    
+                    marker.addListener('click', () => {
+                        infoWindow.setContent(`
+                            <div class="p-2 text-right">
+                                <h4 class="font-bold text-gray-800 mb-1">${point.name}</h4>
+                                <p class="text-xs text-gray-500 font-mono">Lat: ${point.lat.toFixed(6)}</p>
+                                <p class="text-xs text-gray-500 font-mono">Lng: ${point.lng.toFixed(6)}</p>
+                            </div>
+                        `);
+                        infoWindow.open(map, marker);
+                    });
+                });
+                
+                if (pathCoordinates.length > 1) {
+                    const polyline = new google.maps.Polyline({
+                        path: pathCoordinates,
+                        geodesic: true,
+                        strokeColor: '#dc6803', // brand color
+                        strokeOpacity: 0.8,
+                        strokeWeight: 4,
+                        map: map
+                    });
+                    
+                    map.fitBounds(bounds);
+                } else if (pathCoordinates.length === 1) {
+                    map.setCenter(pathCoordinates[0]);
+                    map.setZoom(15);
+                }
+            }
+        }
+        
+        if (window.google && window.google.maps) {
+            initializeMap();
+        } else {
+            window.addEventListener('load', initializeMap);
+        }
+    </script>
 @endsection

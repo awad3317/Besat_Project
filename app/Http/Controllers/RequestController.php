@@ -140,7 +140,7 @@ class RequestController extends Controller
     public function show(string $id)
     {
         $request = $this->requestRepository->getById($id);
-        $request->load(['user', 'driver', 'vehicle', 'surcharges', 'discountCode']);
+        $request->load(['user', 'driver', 'vehicle', 'surcharges', 'discountCode', 'stops']);
         return view('pages.request.show', compact('request'));
     }
 

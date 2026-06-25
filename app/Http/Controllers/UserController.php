@@ -65,6 +65,7 @@ class UserController extends Controller
     public function show($id)
     {
         $user = $this->userRepository->getById($id);
+        $user->load('favoritePlaces');
         return view('pages.users.show', compact('user'));
     }
 
