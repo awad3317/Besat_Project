@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
+use App\Notifications\TripCancelledNotification;
 use App\Repositories\AppSettingRepository;
 use App\Repositories\DiscountCodeRepository;
 use App\Repositories\RequestRepository;
@@ -182,6 +183,55 @@ class RequestController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Cancel a specific trip/request resource.
+     */
+    public function cancel(Request $request, $id){
+        try {
+            $userId = auth('sanctum')->id();
+            $requestModel = $this->requestRepository->getByIdAndUserId($id, $userId);
+            if (!$requestModel) {
+                return ApiResponseClass::sendError('الطلب غير موجود أو غير مصرح لك بإلغائه.', null, 404);
+            }
+            if (in_array($requestModel->status, ['completed', 'cancelled'])) {
+                return ApiResponseClass::sendError('لا يمكن إلغاء هذه الرحلة لأنها منتهية أو ملغية بالفعل.', null, 422);
+            }
+            DB::beginTransaction();
+            $updated = $this->requestRepository->update([
+                'status' => 'cancelled',
+                'cancelled_by' => $userId,
+            ], $id);
+            DB::commit();
+            $user = $updated->user;
+            if ($user) {
+                $user->notify(new TripCancelledNotification($requestModel));
+                $deviceTokens = $requestModel->user->devices->pluck('device_token')->filter()->toArray();
+                if (!empty($deviceTokens)) {
+                    $title = 'تم إلغاء الرحلة!';
+                    $body = 'تم إلغاء طلب الرحلة الخاص بك بنجاح.';
+                    $data = [
+                        'request_id'   => (string) $requestModel->id,
+                        'status'       => 'cancelled',
+                        'cancelled_by' => 'USER',
+                        'click_action' => 'FLUTTER_NOTIFICATION_CLICK'
+                    ];
+                    foreach ($deviceTokens as $token) {
+                        try {
+                            $this->firebaseService->sendNotification($token, $title, $body, $data);
+                        } catch (Exception $e) {
+                            \Log::error("Failed to send Cancellation FCM to token: {$token}. Error: " . $e->getMessage());
+                        }
+                    }
+    }
+            }
+            return ApiResponseClass::sendResponse($requestModel, 'تم إلغاء الرحلة بنجاح.');
+        }catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Error cancelling trip: ' . $e->getMessage());
+            return ApiResponseClass::sendError('حدث خطأ أثناء محاولة إلغاء الرحلة.', $e->getMessage(), 500);
+        }
     }
 
     public function calculatePrice(Request $request)

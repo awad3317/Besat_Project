@@ -37,6 +37,7 @@ Route::middleware(['auth.sanctum.api'])->group(function () {
 // Routes For Users only
 Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::apiResource('/user/requests', RequestController::class);
+        Route::post('/user/requests/{id}/cancel', [RequestController::class, 'cancel']);
         Route::apiResource('/user/favorite-places', FavoritePlaceController::class);
         Route::post('/user/logout',[UserAuthController::class,'logout']);
         Route::post('/user/updateDeviceToken',[UserDeviceController::class,'updateDeviceToken']);

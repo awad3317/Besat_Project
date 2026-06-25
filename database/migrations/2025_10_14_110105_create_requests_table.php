@@ -41,6 +41,7 @@ return new class extends Migration
             $table->decimal('ac_cost', 10, 2)->default(0);
             $table->decimal('distance_km', 5, 2);
             $table->text('notes')->nullable();
+            $table->foreignId('cancelled_by')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
     }
