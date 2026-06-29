@@ -118,6 +118,16 @@ class Index extends Component
     public function assignDriver($driverId, FirebaseService $firebaseService)
     {
         $request = RequestModel::find($this->selectedRequestId);
+        if (!$request) {
+            return;
+        }
+
+        if ($request->status === 'cancelled') {
+            $this->dispatch('close-modal', 'assign-driver-modal');
+            session()->flash('error', 'لا يمكن تعيين سائق لطلب ملغي.');
+            return;
+        }
+
         if ($request) {
             $request->update([
                 'driver_id' => $driverId,
