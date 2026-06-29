@@ -48,4 +48,28 @@ class UserController extends Controller
             return ApiResponseClass::sendError('حدث خطأ أثناء جلب بيانات الملف الشخصي.', $e->getMessage(), 500);
         }
     }
+
+    public function updateProfile(Request $request)
+{
+    $fields = $request->validate([
+        'name'            => 'sometimes|required|string|max:255',
+        'whatsapp_number' => 'sometimes|nullable|string',
+        'gender'          => 'sometimes|required|in:male,female',
+        'location'        => 'sometimes|nullable|string',
+        // 'image'           => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+    ]);
+
+    try {
+        $userId = auth('sanctum')->id();
+        // if ($request->hasFile('image')) {
+        //     $fields['image'] = $request->file('image')->store('users', 'public');
+        // }
+        $updatedUser = $this->UserRepository->update($fields, $userId);
+        return ApiResponseClass::sendResponse($updatedUser, 'تم تحديث بيانات الملف الشخصي بنجاح.');
+        
+    } catch (Exception $e) {
+        Log::error('Error updating user profile: ' . $e->getMessage());
+        return ApiResponseClass::sendError('حدث خطأ أثناء تحديث البيانات.', $e->getMessage(), 500);
+    }
+}
 }
