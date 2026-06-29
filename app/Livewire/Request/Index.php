@@ -92,16 +92,18 @@ class Index extends Component
     {
         $request = $this->selectedRequestId ? RequestModel::find($this->selectedRequestId) : null;
 
-        return Driver::where('is_active', true)
-            ->where('is_online', true)
-            ->where('is_banned', false)
+        return Driver::where('is_banned', false)
             ->when($request, function ($query) use ($request) {
                 $query->where('vehicle_id', $request->vehicle_id);
             })
             ->when($this->driverSearch, function ($query) {
-                $query->where('name', 'like', '%' . $this->driverSearch . '%')
+                $query->where(function ($q) {
+                    $q->where('name', 'like', '%' . $this->driverSearch . '%')
                       ->orWhere('phone', 'like', '%' . $this->driverSearch . '%');
+                });
             })
+            ->orderByDesc('is_online')
+            ->orderByDesc('is_active')
             ->limit(10)
             ->get();
     }
