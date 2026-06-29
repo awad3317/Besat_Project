@@ -20,8 +20,7 @@ class UserController extends Controller
         //
     }
 
-    public function updateDeviceToken(Request $request)
-    {
+    public function updateDeviceToken(Request $request){
         $fields=$request->validate([
             'device_token' => 'required',
         ]);
@@ -35,8 +34,7 @@ class UserController extends Controller
         
     }
 
-    public function index()
-    {
+    public function index(){
         try {
             $userId = auth('sanctum')->id();
             $userProfile = $this->UserRepository->getById($userId);
