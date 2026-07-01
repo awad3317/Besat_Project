@@ -3,7 +3,10 @@
 namespace App\Livewire\Systems;
 
 use App\Models\app_setting;
+use App\Services\Evolution\EvolutionApiService;
 use Illuminate\Support\Facades\Cache;
+
+use Illuminate\Support\Facades\Log;
 use App\Models\Surcharge;
 use Livewire\Component;
 
@@ -29,10 +32,17 @@ class Settings extends Component
     public array $surchargeForm = [];
     public $isTimeEditable = true;
 
+    // خصائص إدارة اتصال WhatsApp
+    public string $whatsappStatus = 'close';
+    public ?string $whatsappQrCode = null;
+    public bool $whatsappLoading = false;
+    public ?string $whatsappError = null;
+
     // يتم استدعاؤها عند تحميل المكون لأول مرة
     public function mount()
     {
         $this->loadData();
+        $this->loadWhatsAppStatus();
     }
 
     // دالة لتحميل/إعادة تحميل البيانات من قاعدة البيانات
@@ -152,6 +162,80 @@ class Settings extends Component
         $this->loadData();
         $this->dispatch('notify', ['message' => 'تم حذف القاعدة بنجاح']);
     }
+
+    // ─── WhatsApp Connection Management ───────────────────────────────
+
+    /**
+     * تحميل حالة اتصال WhatsApp من Evolution API
+     * تُستدعى عند mount وعند الضغط على زر التحديث
+     */
+    public function loadWhatsAppStatus(): void
+    {
+        $this->whatsappLoading = true;
+        $this->whatsappError = null;
+
+        try {
+            $apiService = app(EvolutionApiService::class);
+            $stateResponse = $apiService->checkConnectionState();
+            $this->whatsappStatus = $stateResponse['instance']['state'] ?? 'close';
+
+            // حفظ الحالة في الكاش
+            Cache::put('whatsapp_status', $this->whatsappStatus, now()->addDays(7));
+
+            // جلب QR Code فقط إذا كان الحساب غير متصل
+            if ($this->whatsappStatus !== 'open') {
+                $qrResponse = $apiService->getQrCode();
+                $this->whatsappQrCode = $qrResponse['base64'] ?? null;
+            } else {
+                $this->whatsappQrCode = null;
+            }
+        } catch (\Exception $e) {
+            Log::error('WhatsApp Status Check Error: ' . $e->getMessage());
+            $this->whatsappStatus = Cache::get('whatsapp_status', 'close');
+            $this->whatsappError = 'تعذر الاتصال بسيرفر WhatsApp. يرجى التحقق من إعدادات السيرفر.';
+        }
+
+        $this->whatsappLoading = false;
+    }
+
+    /**
+     * تحديث حالة الاتصال - تُستدعى من الواجهة وعبر wire:poll
+     */
+    public function refreshWhatsAppStatus(): void
+    {
+        $this->loadWhatsAppStatus();
+    }
+
+    /**
+     * قطع اتصال WhatsApp عبر Evolution API
+     */
+    public function disconnectWhatsApp(EvolutionApiService $apiService)
+{
+    try {
+        // 1. إرسال طلب الفصل للسيرفر
+        $success = $apiService->logoutInstance();
+
+        if ($success) {
+            // 2. مسح الكاش المحلي فوراً
+            Cache::forget('whatsapp_status');
+            $this->whatsappStatus = 'close';
+
+            // 3. الانتظار ثانية واحدة ليتنفس السيرفر بعد الفصل
+            sleep(1);
+
+            // 4. استدعاء دالة التحديث لإجبار السيرفر على توليد QR جديد وحفظه في المتغير
+            $this->refreshWhatsAppStatus($apiService);
+
+            // إرسال تنبيه نجاح للواجهة
+            $this->dispatch('notify', ['type' => 'success', 'message' => 'تم قطع اتصال الحساب بنجاح، وجاري تجهيز كود جديد.']);
+        } else {
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'فشل في قطع الاتصال من السيرفر.']);
+        }
+    } catch (\Exception $e) {
+        \Log::error("WhatsApp Disconnect Error: " . $e->getMessage());
+        $this->dispatch('notify', ['type' => 'error', 'message' => 'حدث خطأ أثناء محاولة فصل الحساب.']);
+    }
+}
 
     public function render()
     {

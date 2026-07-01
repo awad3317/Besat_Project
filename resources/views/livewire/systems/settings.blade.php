@@ -88,6 +88,24 @@
                             </svg>
                             الإعدادات الخاصة
                         </button>
+
+                        {{-- زر تبويب اتصال واتساب --}}
+                        <button @click="activeSection = 'whatsapp'"
+                            :class="activeSection === 'whatsapp' ? 'menu-item-active' : 'menu-item-inactive'"
+                            class="flex w-auto md:w-full flex-shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-colors whitespace-nowrap">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            اتصال واتساب
+                            {{-- مؤشر صغير للحالة بجانب النص --}}
+                            @if($whatsappStatus === 'open')
+                                <span class="h-2.5 w-2.5 rounded-full bg-success-500 animate-pulse"></span>
+                            @elseif($whatsappStatus === 'connecting')
+                                <span class="h-2.5 w-2.5 rounded-full bg-warning-500 animate-pulse"></span>
+                            @else
+                                <span class="h-2.5 w-2.5 rounded-full bg-error-500"></span>
+                            @endif
+                        </button>
                     @endif
                 </nav>
             </div>
@@ -301,6 +319,7 @@
                     </div>
                 </div>
             </div>
+            
             @if (Auth::user()->type == 'superAdmin')
                 <!-- Special Settings Section -->
                 <div x-show="activeSection === 'special'" x-transition
@@ -670,6 +689,285 @@
                                         :class="{ 'translate-x-full': $wire.settings.otp_enabled }"></div>
                                 </div>
                             </label>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{--  قسم إدارة اتصال WhatsApp (متاح فقط لـ superAdmin)               --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            @if (Auth::user()->type == 'superAdmin')
+                <div x-show="activeSection === 'whatsapp'" x-transition
+                    {{-- Auto-refresh كل 10 ثوانٍ فقط عندما تكون الحالة غير متصلة --}}
+                    @if($whatsappStatus !== 'open')
+                        wire:poll.10s="refreshWhatsAppStatus"
+                    @endif
+                    class="space-y-6">
+
+                    {{-- ─── البطاقة الرئيسية ─────────────────────────────────────── --}}
+                    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] shadow-theme-xs overflow-hidden">
+
+                        {{-- Header مع مؤشر الحالة --}}
+                        <div class="border-b border-gray-200 dark:border-gray-800 px-6 py-5">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">إدارة اتصال واتساب</h2>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">ربط وإدارة حساب الواتساب لإرسال رسائل OTP</p>
+                                </div>
+
+                                {{-- شارة الحالة (Status Badge) --}}
+                                <div>
+                                    @if($whatsappStatus === 'open')
+                                        <span class="inline-flex items-center gap-2 rounded-full bg-success-50 dark:bg-success-500/10 px-4 py-2 text-sm font-semibold text-success-600 dark:text-success-400 ring-1 ring-inset ring-success-200 dark:ring-success-500/20">
+                                            <span class="relative flex h-2.5 w-2.5">
+                                                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success-400 opacity-75"></span>
+                                                <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-success-500"></span>
+                                            </span>
+                                            متصل
+                                        </span>
+                                    @elseif($whatsappStatus === 'connecting')
+                                        <span class="inline-flex items-center gap-2 rounded-full bg-warning-50 dark:bg-warning-500/10 px-4 py-2 text-sm font-semibold text-warning-600 dark:text-warning-400 ring-1 ring-inset ring-warning-200 dark:ring-warning-500/20">
+                                            <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            جاري الاتصال...
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-2 rounded-full bg-error-50 dark:bg-error-500/10 px-4 py-2 text-sm font-semibold text-error-600 dark:text-error-400 ring-1 ring-inset ring-error-200 dark:ring-error-500/20">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                            غير متصل
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- ─── رسالة الخطأ (إن وجدت) ────────────────────────────── --}}
+                        @if($whatsappError)
+                            <div class="mx-6 mt-5 flex items-center gap-3 rounded-xl border border-error-200 dark:border-error-500/20 bg-error-50 dark:bg-error-500/5 p-4">
+                                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-error-100 dark:bg-error-500/10">
+                                    <svg class="h-5 w-5 text-error-600 dark:text-error-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-error-800 dark:text-error-300">خطأ في الاتصال</h4>
+                                    <p class="text-sm text-error-600 dark:text-error-400">{{ $whatsappError }}</p>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="p-6">
+                            {{-- ═══════ حالة: متصل (open) ═══════════════════════════ --}}
+                            @if($whatsappStatus === 'open')
+                                <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-success-500/5 via-success-500/10 to-emerald-500/5 dark:from-success-500/10 dark:via-success-500/5 dark:to-emerald-500/10 border border-success-200/60 dark:border-success-500/20 p-8">
+                                    {{-- خلفية زخرفية --}}
+                                    <div class="absolute top-0 left-0 w-full h-full opacity-[0.03] dark:opacity-[0.02]">
+                                        <svg class="w-full h-full" viewBox="0 0 400 400" fill="none">
+                                            <circle cx="200" cy="200" r="150" stroke="currentColor" stroke-width="0.5" class="text-success-500"/>
+                                            <circle cx="200" cy="200" r="100" stroke="currentColor" stroke-width="0.5" class="text-success-500"/>
+                                            <circle cx="200" cy="200" r="50" stroke="currentColor" stroke-width="0.5" class="text-success-500"/>
+                                        </svg>
+                                    </div>
+
+                                    <div class="relative flex flex-col items-center text-center space-y-6">
+                                        {{-- أيقونة WhatsApp كبيرة مع تأثير نبض --}}
+                                        <div class="relative">
+                                            <div class="absolute inset-0 rounded-full bg-success-500/20 animate-ping"></div>
+                                            <div class="relative flex h-20 w-20 items-center justify-center rounded-full bg-success-500 shadow-lg shadow-success-500/30">
+                                                <svg class="h-10 w-10 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                        {{-- رسالة التأكيد --}}
+                                        <div class="space-y-2">
+                                            <h3 class="text-xl font-bold text-success-700 dark:text-success-400">
+                                                الحساب متصل ويعمل بنجاح
+                                            </h3>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 max-w-md leading-relaxed">
+                                                النظام يعمل الآن بكفاءة ويقوم بإرسال رسائل الـ OTP تلقائياً عبر واتساب.
+                                                <br>جميع الرسائل يتم تسليمها بشكل طبيعي.
+                                            </p>
+                                        </div>
+
+                                        {{-- مؤشرات الحالة --}}
+                                        <div class="flex items-center gap-6 text-sm">
+                                            <div class="flex items-center gap-2 text-success-600 dark:text-success-400">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                إرسال OTP نشط
+                                            </div>
+                                            <div class="flex items-center gap-2 text-success-600 dark:text-success-400">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                الاتصال مستقر
+                                            </div>
+                                        </div>
+
+                                        {{-- خط فاصل --}}
+                                        <div class="w-full border-t border-success-200/50 dark:border-success-500/10 pt-6">
+                                            {{-- زر قطع الاتصال --}}
+                                            <button
+                                                x-data="{ confirming: false }"
+                                                x-on:click="
+                                                    if (!confirming) {
+                                                        confirming = true;
+                                                        setTimeout(() => confirming = false, 4000);
+                                                    } else {
+                                                        $wire.disconnectWhatsApp();
+                                                        confirming = false;
+                                                    }
+                                                "
+                                                wire:loading.attr="disabled"
+                                                wire:target="disconnectWhatsApp"
+                                                class="group relative inline-flex items-center gap-2.5 rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-300"
+                                                :class="confirming
+                                                    ? 'bg-error-600 text-white shadow-lg shadow-error-500/30 scale-105'
+                                                    : 'bg-white dark:bg-gray-800 text-error-600 dark:text-error-400 border border-error-200 dark:border-error-500/30 hover:bg-error-50 dark:hover:bg-error-500/10 hover:border-error-300 dark:hover:border-error-500/40 hover:shadow-md'
+                                                ">
+                                                {{-- أيقونة التحميل --}}
+                                                <svg wire:loading wire:target="disconnectWhatsApp" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                {{-- أيقونة القطع --}}
+                                                <svg wire:loading.remove wire:target="disconnectWhatsApp" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                </svg>
+                                                <span wire:loading.remove wire:target="disconnectWhatsApp" x-text="confirming ? 'اضغط مرة أخرى للتأكيد' : 'قطع اتصال الرقم الحالي'"></span>
+                                                <span wire:loading wire:target="disconnectWhatsApp">جاري قطع الاتصال...</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {{-- ═══════ حالة: غير متصل / جاري الاتصال ═══════════════ --}}
+                            @else
+                                <div class="flex flex-col lg:flex-row gap-8 items-start">
+
+                                    {{-- ─── عمود الـ QR Code ─────────────────────────── --}}
+<div class="w-full lg:w-auto flex-shrink-0 flex justify-center">
+    <div class="relative group">
+        {{-- إطار الـ QR --}}
+        <div class="relative rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-3 bg-white dark:bg-gray-800 transition-all duration-300 group-hover:border-brand-400 dark:group-hover:border-brand-500 group-hover:shadow-lg group-hover:shadow-brand-500/10">
+            {{-- زخرفة الزوايا --}}
+            <div class="absolute top-0 left-0 w-6 h-6 border-t-3 border-l-3 border-brand-500 rounded-tl-lg -translate-x-0.5 -translate-y-0.5"></div>
+            <div class="absolute top-0 right-0 w-6 h-6 border-t-3 border-r-3 border-brand-500 rounded-tr-lg translate-x-0.5 -translate-y-0.5"></div>
+            <div class="absolute bottom-0 left-0 w-6 h-6 border-b-3 border-l-3 border-brand-500 rounded-bl-lg -translate-x-0.5 translate-y-0.5"></div>
+            <div class="absolute bottom-0 right-0 w-6 h-6 border-b-3 border-r-3 border-brand-500 rounded-br-lg translate-x-0.5 translate-y-0.5"></div>
+
+            @if($whatsappQrCode)
+                {{-- التعديل هنا: فحص وعرض الـ base64 مباشرة بدون تكرار الـ Header --}}
+                <img src="{{ str_starts_with($whatsappQrCode, 'data:image') ? $whatsappQrCode : 'data:image/png;base64,' . $whatsappQrCode }}"
+                     alt="WhatsApp QR Code"
+                     class="w-64 h-64 rounded-xl"
+                     style="image-rendering: pixelated;">
+            @else
+                {{-- حالة عدم توفر QR --}}
+                <div class="w-64 h-64 rounded-xl bg-gray-100 dark:bg-gray-700 flex flex-col items-center justify-center gap-3">
+                    <svg class="h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                    </svg>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">جاري تحميل الـ QR...</p>
+                </div>
+            @endif
+        </div>
+
+        {{-- مؤشر التحديث التلقائي --}}
+        <div class="mt-3 flex items-center justify-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+            <div class="h-1.5 w-1.5 rounded-full bg-brand-500 animate-pulse"></div>
+            يتم التحديث تلقائياً كل 10 ثوانٍ
+        </div>
+    </div>
+</div>
+
+                                    {{-- ─── عمود الإرشادات والإجراءات ─────────────────── --}}
+                                    <div class="flex-1 space-y-6">
+
+                                        {{-- عنوان الإرشادات --}}
+                                        <div>
+                                            <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-1">ربط حساب واتساب</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">اتبع الخطوات التالية لربط رقم الواتساب بالنظام</p>
+                                        </div>
+
+                                        {{-- خطوات الربط --}}
+                                        <div class="space-y-4">
+                                            {{-- خطوة 1 --}}
+                                            <div class="flex items-start gap-4">
+                                                <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-500/10 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 text-sm font-bold">
+                                                    1
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-semibold text-gray-800 dark:text-white">افتح تطبيق واتساب</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">افتح تطبيق واتساب على الهاتف المراد ربطه بالنظام</p>
+                                                </div>
+                                            </div>
+
+                                            {{-- خطوة 2 --}}
+                                            <div class="flex items-start gap-4">
+                                                <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-500/10 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 text-sm font-bold">
+                                                    2
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-semibold text-gray-800 dark:text-white">اذهب إلى "الأجهزة المرتبطة"</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                                                        اضغط على <span class="font-medium text-gray-700 dark:text-gray-300">⋮ القائمة</span> ← <span class="font-medium text-gray-700 dark:text-gray-300">الأجهزة المرتبطة</span> ← <span class="font-medium text-gray-700 dark:text-gray-300">ربط جهاز</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {{-- خطوة 3 --}}
+                                            <div class="flex items-start gap-4">
+                                                <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-500/10 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 text-sm font-bold">
+                                                    3
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-sm font-semibold text-gray-800 dark:text-white">امسح رمز الـ QR</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">وجّه كاميرا الهاتف نحو رمز الـ QR الظاهر على الشاشة وانتظر الربط</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- ملاحظة --}}
+                                        <div class="rounded-xl bg-warning-50 dark:bg-warning-500/5 border border-warning-200/60 dark:border-warning-500/15 p-4">
+                                            <div class="flex items-start gap-3">
+                                                <svg class="h-5 w-5 flex-shrink-0 text-warning-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <div class="text-sm">
+                                                    <p class="font-semibold text-warning-800 dark:text-warning-300">ملاحظة مهمة</p>
+                                                    <p class="text-warning-700 dark:text-warning-400 mt-0.5">يجب أن يبقى الهاتف متصلاً بالإنترنت ليعمل الإرسال. إذا انتهت صلاحية الـ QR، سيتم تحديثه تلقائياً.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- زر التحديث اليدوي --}}
+                                        <button
+                                            wire:click="refreshWhatsAppStatus"
+                                            wire:loading.attr="disabled"
+                                            wire:target="refreshWhatsAppStatus"
+                                            class="inline-flex items-center gap-2.5 rounded-xl bg-brand-500 px-5 py-3 text-sm font-semibold text-white hover:bg-brand-600 shadow-md shadow-brand-500/20 transition-all duration-200 disabled:opacity-70 hover:shadow-lg hover:shadow-brand-500/30">
+                                            <svg wire:loading.remove wire:target="refreshWhatsAppStatus" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <svg wire:loading wire:target="refreshWhatsAppStatus" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span wire:loading.remove wire:target="refreshWhatsAppStatus">تحديث حالة الاتصال</span>
+                                            <span wire:loading wire:target="refreshWhatsAppStatus">جاري الفحص...</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
