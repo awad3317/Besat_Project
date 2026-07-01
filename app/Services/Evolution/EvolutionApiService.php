@@ -83,27 +83,40 @@ class EvolutionApiService
 }
 
 
-/**
- * عمل تسجيل خروج وفصل الرقم بإرسال الـ Instance داخل الـ Body (JSON)
- */
-public function logoutInstance(?string $instanceName = null): bool
+public function logoutInstance(?string $instanceApiKey = null): bool
 {
-    $instance = $instanceName ?? $this->defaultInstance;
-    $url = "{$this->baseUrl}/instance/disconnect";
+    $url = "{$this->baseUrl}/instance/logout"; 
 
     try {
-        // تمرير البيانات مباشرة داخل الـ post لترسل كـ JSON Body طبقاً للتوثيق في الصورة
-        $response = Http::withHeaders($this->getHeaders())->post($url, [
-            'instance' => $instance
-        ]);
+        $key = '14171417Nn';
+
+        $headers = [
+            'apikey'       => $key,
+            'Content-Type' => 'application/json',
+        ];
+
+        $response = Http::withHeaders($headers)->delete($url);
+
         if ($response->successful()) {
             return true;
+            
         }
 
-        Log::error("WhatsApp Disconnect/Logout Error - Response: " . $response->body());
+        // 🔴 هنا يتم تسجيل الخطأ إذا كان السيرفر هو من رفض الطلب (مثلاً 400 أو 401 أو 404)
+        Log::error("================ WA_LOGOUT_API_ERROR ================");
+        Log::error("URL: " . $url);
+        Log::error("HTTP Status: " . $response->status());
+        Log::error("Server Response: " . $response->body());
+        Log::error("====================================================");
+        
         return false;
     } catch (\Exception $e) {
-        Log::error("WhatsApp Disconnect/Logout Exception: " . $e->getMessage());
+        // 🔴 هنا يتم تسجيل الخطأ إذا حدثت مشكلة في الاتصال أو كود لارافل نفسه (مثل Timeout أو خطأ كود)
+        Log::error("============== WA_LOGOUT_EXCEPTION ==============");
+        Log::error("Message: " . $e->getMessage());
+        Log::error("File: " . $e->getFile() . " Line: " . $e->getLine());
+        Log::error("=================================================");
+        
         return false;
     }
 }

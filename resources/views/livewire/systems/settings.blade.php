@@ -766,13 +766,7 @@
                             @if($whatsappStatus === 'open')
                                 <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-success-500/5 via-success-500/10 to-emerald-500/5 dark:from-success-500/10 dark:via-success-500/5 dark:to-emerald-500/10 border border-success-200/60 dark:border-success-500/20 p-8">
                                     {{-- خلفية زخرفية --}}
-                                    <div class="absolute top-0 left-0 w-full h-full opacity-[0.03] dark:opacity-[0.02]">
-                                        <svg class="w-full h-full" viewBox="0 0 400 400" fill="none">
-                                            <circle cx="200" cy="200" r="150" stroke="currentColor" stroke-width="0.5" class="text-success-500"/>
-                                            <circle cx="200" cy="200" r="100" stroke="currentColor" stroke-width="0.5" class="text-success-500"/>
-                                            <circle cx="200" cy="200" r="50" stroke="currentColor" stroke-width="0.5" class="text-success-500"/>
-                                        </svg>
-                                    </div>
+                                    
 
                                     <div class="relative flex flex-col items-center text-center space-y-6">
                                         {{-- أيقونة WhatsApp كبيرة مع تأثير نبض --}}
@@ -790,30 +784,10 @@
                                             <h3 class="text-xl font-bold text-success-700 dark:text-success-400">
                                                 الحساب متصل ويعمل بنجاح
                                             </h3>
-                                            <p class="text-sm text-gray-600 dark:text-gray-400 max-w-md leading-relaxed">
-                                                النظام يعمل الآن بكفاءة ويقوم بإرسال رسائل الـ OTP تلقائياً عبر واتساب.
-                                                <br>جميع الرسائل يتم تسليمها بشكل طبيعي.
-                                            </p>
-                                        </div>
-
-                                        {{-- مؤشرات الحالة --}}
-                                        <div class="flex items-center gap-6 text-sm">
-                                            <div class="flex items-center gap-2 text-success-600 dark:text-success-400">
-                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                إرسال OTP نشط
-                                            </div>
-                                            <div class="flex items-center gap-2 text-success-600 dark:text-success-400">
-                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                الاتصال مستقر
-                                            </div>
                                         </div>
 
                                         {{-- خط فاصل --}}
-                                        <div class="w-full border-t border-success-200/50 dark:border-success-500/10 pt-6">
+                                        <!-- <div class="w-full border-t border-success-200/50 dark:border-success-500/10 pt-6">
                                             {{-- زر قطع الاتصال --}}
                                             <button
                                                 x-data="{ confirming: false }"
@@ -845,7 +819,7 @@
                                                 <span wire:loading.remove wire:target="disconnectWhatsApp" x-text="confirming ? 'اضغط مرة أخرى للتأكيد' : 'قطع اتصال الرقم الحالي'"></span>
                                                 <span wire:loading wire:target="disconnectWhatsApp">جاري قطع الاتصال...</span>
                                             </button>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
 
@@ -936,18 +910,6 @@
                                             </div>
                                         </div>
 
-                                        {{-- ملاحظة --}}
-                                        <div class="rounded-xl bg-warning-50 dark:bg-warning-500/5 border border-warning-200/60 dark:border-warning-500/15 p-4">
-                                            <div class="flex items-start gap-3">
-                                                <svg class="h-5 w-5 flex-shrink-0 text-warning-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                <div class="text-sm">
-                                                    <p class="font-semibold text-warning-800 dark:text-warning-300">ملاحظة مهمة</p>
-                                                    <p class="text-warning-700 dark:text-warning-400 mt-0.5">يجب أن يبقى الهاتف متصلاً بالإنترنت ليعمل الإرسال. إذا انتهت صلاحية الـ QR، سيتم تحديثه تلقائياً.</p>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         {{-- زر التحديث اليدوي --}}
                                         <button
