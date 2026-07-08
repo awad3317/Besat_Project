@@ -27,6 +27,7 @@ class User extends Authenticatable
         'phone', 
         'whatsapp_number', 
         'type',
+        'is_notifications_enabled',
         'fcm_token',
         'is_banned',
         'gender',

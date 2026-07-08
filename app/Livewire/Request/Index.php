@@ -133,7 +133,7 @@ class Index extends Component
                 'driver_id' => $driverId,
                 'status' => 'accepted' // 'accepted' is the correct database enum value for requests
             ]);
-            if ($request->user) {
+            if ($request->user && $request->user->is_notifications_enabled) {
                 $request->user->notify(new DriverAssignedNotification($request));
                 $deviceTokens = $request->user->devices->pluck('device_token')->filter()->toArray();
                 if (!empty($deviceTokens)) {

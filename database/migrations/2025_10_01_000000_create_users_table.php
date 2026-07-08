@@ -26,6 +26,7 @@ return new class extends Migration
             $table->enum('gender', ['female', 'male']);
             $table->string('location')->nullable();
             $table->boolean('is_banned')->default(false);
+            $table->boolean('is_notifications_enabled')->default(true);
             // $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->rememberToken();

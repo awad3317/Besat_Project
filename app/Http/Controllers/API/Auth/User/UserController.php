@@ -54,6 +54,7 @@ class UserController extends Controller
             'whatsapp_number' => ['sometimes', 'nullable', 'string'],
             'gender'          => ['sometimes', 'required', Rule::in(['female', 'male'])],
             'location'        => ['sometimes', 'nullable', 'string'],
+            'is_notifications_enabled'=> ['sometimes', 'nullable', 'boolean'],
             // 'image'           => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
 

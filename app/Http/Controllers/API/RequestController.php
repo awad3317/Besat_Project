@@ -205,7 +205,7 @@ class RequestController extends Controller
             ], $id);
             DB::commit();
             $user = $updated->user;
-            if ($user) {
+            if ($user && $user->is_notifications_enabled) {
                 $user->notify(new TripCancelledNotification($requestModel));
                 $deviceTokens = $requestModel->user->devices->pluck('device_token')->filter()->toArray();
                 if (!empty($deviceTokens)) {
