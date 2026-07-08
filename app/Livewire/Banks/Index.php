@@ -22,9 +22,6 @@ class Index extends Component
         'page' => ['except' => 1],
     ];
     
-    /**
-     * حساب إحصائيات البنوك بشكل كاش تزامني سريع
-     */
     #[Computed(cache: true)]
     public function stats()
     {
@@ -45,22 +42,15 @@ class Index extends Component
         $this->resetPage();
     }
     
-    /**
-     * تبديل حالة تفعيل البنك (نشط / متوقف) فورياً
-     */
     public function toggleStatus($bankId)
     {
         $bank = Bank::findOrFail($bankId);
         $bank->is_active = !$bank->is_active;
         $bank->save();
         Cache::forget('active_banks_list');
-        // إجبار الكاش على التحديث عند تغيير الحالة
         unset($this->stats);
     }
     
-    /**
-     * استعلام جلب البنوك مع محرك البحث المتقدم والتصفية
-     */
     #[Computed]
     public function banks()
     {
@@ -68,8 +58,7 @@ class Index extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('account_name', 'like', '%' . $this->search . '%')
-                      ->orWhere('account_number', 'like', '%' . $this->search . '%');
+                      ->orWhere('method_key', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->activeFilter === 'stopped', fn($q) => $q->where('is_active', false))
