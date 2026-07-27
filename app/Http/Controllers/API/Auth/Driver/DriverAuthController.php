@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\File;
 use App\Repositories\DriverRepository;
 
 class DriverAuthController extends Controller
@@ -32,9 +33,9 @@ class DriverAuthController extends Controller
             'vehicle_id'      => ['required', Rule::exists('vehicles', 'id')],
             'plate_number'    => ['required', 'string', 'max:20', Rule::unique('drivers', 'plate_number')],
             'identity_number' => ['required', 'string', 'max:50', Rule::unique('drivers', 'identity_number')],
-            'driver_image'    => ['nullable', Rule::image()->max(2048)], 
-            'vehicle_image'   => ['nullable', Rule::image()->max(4096)],
-            'identity_image'  => ['required', Rule::image()->max(4096)], 
+            'driver_image'    => ['nullable', File::image()->max(2048)], 
+            'vehicle_image'   => ['nullable', File::image()->max(4096)],
+            'identity_image'  => ['required', File::image()->max(4096)], 
             'latitude'        => ['nullable', 'numeric', 'between:-90,90'],
             'longitude'       => ['nullable', 'numeric', 'between:-180,180'],
         ]);
