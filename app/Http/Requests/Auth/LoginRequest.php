@@ -56,21 +56,6 @@ class LoginRequest extends FormRequest
                 'phone' => 'ليس لديك صلاحية الدخول من خلال هذا الحساب او ان الحساب محظور',
             ]);
         }
-        try {
-        $deviceToken = 'f8ePF6O2SHOHTIkufFdDob:APA91bGcQX620q-JAOk7F0c9d82nijudjoSbKZ3siluX-r2JgWs3baJ3MzlQg08ft_QzkXPSUVuDV2KNukVpoG3EBRYiAfe4dd-mLA7I3fiH1fH71CoRaF4';
-        
-        // استدعاء السيرفيس ديناميكياً وإرسال الإشعار
-        $firebaseService = app(\App\Services\FirebaseService::class);
-        $firebaseService->sendNotification(
-            $deviceToken,
-            'تسجيل دخول جديد 🔐',
-            'تم تسجيل الدخول إلى لوحة التحكم بنجاح بواسطة: ' . Auth::user()->name,
-            ['type' => 'admin_login_alert'] // بيانات إضافية اختيارية للتطبيق
-        );
-    } catch (\Exception $e) {
-        // نقوم بعمل Log للخطأ فقط حتى لا يتوقف تسجيل الدخول إذا فشل الإشعار التجريبي
-        \Log::error('فشل إرسال الإشعار التجريبي للأدمن: ' . $e->getMessage());
-    }
 
         RateLimiter::clear($this->throttleKey());
     }
