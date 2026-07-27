@@ -16,8 +16,16 @@ class DriverMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $Driver = auth('sanctum')->user();
-        if ($Driver && $Driver instanceof Driver) {
+        /** @var \App\Models\Driver $driver */
+        $driver = auth('sanctum')->user();
+        if ($driver && $driver instanceof Driver) {
+            if ($driver->is_banned) {
+                $driver->currentAccessToken()->delete(); 
+                return response()->json(['message' => 'تم حظر حسابك من قبل الإدارة.'], 403);
+            }
+            if (!$driver->is_active) {
+                return response()->json(['message' => 'حسابك غير نشط أو قيد المراجعة.'], 401);
+            }
             return $next($request);
         }
 

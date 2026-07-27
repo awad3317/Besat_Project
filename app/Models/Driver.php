@@ -5,16 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
 
 class Driver extends Model
 {
     
     use HasFactory, HasApiTokens;
     protected $fillable = [
-        'vehicle_id', 'name', 'phone', 'vehicle_image', 'driver_image',
-        'city', 'plate_number', 'whatsapp_number','is_banned',
-        'device_token', 'latitude', 'longitude', 'is_active', 'is_online'
+        'vehicle_id', 'name', 'phone','whatsapp_number','password',
+        'city', 'district',
+        'vehicle_image', 'driver_image', 'identity_image', 'identity_number','plate_number',
+        'is_banned', 'is_online', 'is_active', 'device_token', 'latitude', 'longitude', 
     ];
+    protected $hidden = [
+        'password',
+    ];
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed', 
+        ];
+    }
 
     public function vehicle()
     {

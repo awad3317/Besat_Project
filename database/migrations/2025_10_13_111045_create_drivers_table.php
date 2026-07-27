@@ -14,19 +14,28 @@ return new class extends Migration
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('vehicle_id')->constrained()->onDelete('cascade');
+
             $table->string('name');
             $table->string('phone');
-            $table->string('vehicle_image')->nullable();
-            $table->string('driver_image')->nullable();
-            $table->boolean('is_banned')->default(false);
-            $table->string('city')->nullable();
-            $table->string('plate_number');
             $table->string('whatsapp_number')->nullable();
-            $table->string('device_token')->nullable();
-            $table->decimal('latitude', 10, 8)->nullable();
-            $table->decimal('longitude', 10, 8)->nullable();
+            $table->string('password');
+            
+            $table->string('city')->nullable();
+            $table->string('district');
+
+            $table->string('vehicle_image')->nullable();
+            $table->string('plate_number');
+
+            $table->string('driver_image')->nullable();
+            $table->string('identity_image');
+            $table->string('identity_number');
+
+            $table->boolean('is_banned')->default(false);
             $table->boolean('is_online')->default(false);
             $table->boolean('is_active')->default(false);
+            $table->string('device_token')->nullable();
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 10, 8)->nullable(); 
             $table->timestamps();
             $table->index(['is_online', 'is_banned', 'is_active']);
         });
