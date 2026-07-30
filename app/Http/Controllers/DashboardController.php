@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\UserDevice;
+use App\Services\FirebaseService;
 use App\Repositories\UserRepository;
 use App\Repositories\DriverRepository;
 use App\Repositories\RequestRepository;
@@ -18,6 +20,65 @@ class DashboardController extends Controller
         )
     {
         
+    }
+
+    /**
+     * إرسال إشعار ترحيبي تجريبي لجميع الأجهزة المسجلة (للاختبار فقط)
+     */
+    public function sendTestNotification(FirebaseService $firebaseService)
+    {
+        try {
+            $deviceTokens = UserDevice::whereNotNull('device_token')
+                ->where('device_token', '!=', '')
+                ->pluck('device_token')
+                ->unique()
+                ->values()
+                ->toArray();
+
+            if (empty($deviceTokens)) {
+                return redirect()->back()->with([
+                    'error' => true,
+                    'error_message' => 'لا توجد أجهزة مسجلة لإرسال الإشعار إليها.',
+                ]);
+            }
+
+            $title = '🎉 مرحباً بك في بيسات!';
+            $body = 'هذا إشعار تجريبي للترحيب بك. شكراً لاستخدامك تطبيقنا!';
+            $data = [
+                'type' => 'test_welcome',
+                'timestamp' => now()->toIso8601String(),
+            ];
+
+            $successCount = 0;
+            $failCount = 0;
+
+            foreach ($deviceTokens as $token) {
+                try {
+                    $firebaseService->sendNotification($token, $title, $body, $data);
+                    $successCount++;
+                } catch (\Exception $e) {
+                    $failCount++;
+                    \Log::warning("Failed to send test notification to token: {$token}", [
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            return redirect()->back()->with([
+                'success' => true,
+                'success_title' => 'تم الإرسال!',
+                'success_message' => "تم إرسال الإشعار التجريبي بنجاح إلى {$successCount} جهاز." 
+                    . ($failCount > 0 ? " (فشل: {$failCount})" : ''),
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Test notification failed: ' . $e->getMessage());
+
+            return redirect()->back()->with([
+                'error' => true,
+                'error_message' => 'حدث خطأ أثناء إرسال الإشعار: ' . $e->getMessage(),
+            ]);
+        }
     }
     
     public function index()

@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::post('/dashboard/send-test-notification', [DashboardController::class, 'sendTestNotification'])->name('dashboard.send-test-notification');
     Route::resource('users', UserController::class);
     Route::post('users/{id}/add-balance', [UserController::class, 'addBalance'])->name('users.add-balance');
     Route::resource('drivers', DriverController::class);
