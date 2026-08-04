@@ -18,6 +18,7 @@ use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\PaymentMethodController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
+use App\Http\Controllers\API\ServiceBookingController;
 use App\Http\Controllers\API\SpecialOrderController;
 use App\Http\Controllers\API\UserDeviceController;
 use App\Http\Controllers\API\VehicleController;
@@ -55,6 +56,10 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::get('/user/digital-payments', [PaymentMethodController::class, 'getDigitalPayments']);
                 // مسار معالجة الدفع: يستقبل نوع الإجراء (action) واسم البنك (method_key)
         Route::post('/user/payment/{action}/{method_key}', [PaymentMethodController::class, 'processPayment']);
+
+        // Service Booking Routes - حجوزات الخدمات
+        Route::apiResource('/user/service-bookings', ServiceBookingController::class);
+        Route::post('/user/service-bookings/{id}/cancel', [ServiceBookingController::class, 'cancel']);
 });
 
 // Routes For Drivers only
