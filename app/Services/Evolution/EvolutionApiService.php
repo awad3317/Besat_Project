@@ -48,77 +48,78 @@ class EvolutionApiService
         return ['instance' => ['state' => 'close']];
     }
 
-   public function getQrCode(?string $instanceName = null): array|bool
+   public function getQrCode(?string $instanceName = null)
 {
-    $instance = $instanceName ?? $this->defaultInstance;
-    $url = "{$this->baseUrl}/instance/qr";
+    // $instance = $instanceName ?? $this->defaultInstance;
+    // $url = "{$this->baseUrl}/instance/qr";
 
-    try {
-        $response = Http::withHeaders($this->getHeaders())->get($url, [
-            'instance' => $instance
-        ]);
+    // try {
+    //     $response = Http::withHeaders($this->getHeaders())->get($url, [
+    //         'instance' => $instance
+    //     ]);
 
-        if ($response->successful() && !is_null($response->json())) {
-            $resData = $response->json();
+    //     if ($response->successful() && !is_null($response->json())) {
+    //         $resData = $response->json();
             
-            // قراءة الحقل بدقة كما ظهر في الـ dd(): data.Qrcode
-            $base64 = $resData['data']['Qrcode'] ?? null;
-            $code = $resData['data']['Code'] ?? null;
+    //         // قراءة الحقل بدقة كما ظهر في الـ dd(): data.Qrcode
+    //         $base64 = $resData['data']['Qrcode'] ?? null;
+    //         $code = $resData['data']['Code'] ?? null;
             
-            if ($base64) {
-                return [
-                    'base64' => $base64,
-                    'code' => $code
-                ];
-            }
-        }
+    //         if ($base64) {
+    //             return [
+    //                 'base64' => $base64,
+    //                 'code' => $code
+    //             ];
+    //         }
+    //     }
 
-        Log::error("WhatsApp Get QR Error - Response: " . $response->body());
-        return false;
+    //     Log::error("WhatsApp Get QR Error - Response: " . $response->body());
+    //     return false;
 
-    } catch (\Exception $e) {
-        Log::error("WhatsApp Get QR Exception: " . $e->getMessage());
-        return false;
-    }
+    // } catch (\Exception $e) {
+    //     Log::error("WhatsApp Get QR Exception: " . $e->getMessage());
+    //     return false;
+    // }
 }
 
 
 public function logoutInstance(?string $instanceApiKey = null): bool
 {
-    $url = "{$this->baseUrl}/instance/logout"; 
+    // $url = "{$this->baseUrl}/instance/logout"; 
 
-    try {
-        $key = '14171417Nn';
+    // try {
+    //     $key = '14171417Nn';
 
-        $headers = [
-            'apikey'       => $key,
-            'Content-Type' => 'application/json',
-        ];
+    //     $headers = [
+    //         'apikey'       => $key,
+    //         'Content-Type' => 'application/json',
+    //     ];
 
-        $response = Http::withHeaders($headers)->delete($url);
+    //     $response = Http::withHeaders($headers)->delete($url);
 
-        if ($response->successful()) {
-            return true;
+    //     if ($response->successful()) {
+    //         return true;
             
-        }
+    //     }
 
-        // 🔴 هنا يتم تسجيل الخطأ إذا كان السيرفر هو من رفض الطلب (مثلاً 400 أو 401 أو 404)
-        Log::error("================ WA_LOGOUT_API_ERROR ================");
-        Log::error("URL: " . $url);
-        Log::error("HTTP Status: " . $response->status());
-        Log::error("Server Response: " . $response->body());
-        Log::error("====================================================");
+    //     // 🔴 هنا يتم تسجيل الخطأ إذا كان السيرفر هو من رفض الطلب (مثلاً 400 أو 401 أو 404)
+    //     Log::error("================ WA_LOGOUT_API_ERROR ================");
+    //     Log::error("URL: " . $url);
+    //     Log::error("HTTP Status: " . $response->status());
+    //     Log::error("Server Response: " . $response->body());
+    //     Log::error("====================================================");
         
-        return false;
-    } catch (\Exception $e) {
-        // 🔴 هنا يتم تسجيل الخطأ إذا حدثت مشكلة في الاتصال أو كود لارافل نفسه (مثل Timeout أو خطأ كود)
-        Log::error("============== WA_LOGOUT_EXCEPTION ==============");
-        Log::error("Message: " . $e->getMessage());
-        Log::error("File: " . $e->getFile() . " Line: " . $e->getLine());
-        Log::error("=================================================");
+    //     return false;
+    // } catch (\Exception $e) {
+    //     // 🔴 هنا يتم تسجيل الخطأ إذا حدثت مشكلة في الاتصال أو كود لارافل نفسه (مثل Timeout أو خطأ كود)
+    //     Log::error("============== WA_LOGOUT_EXCEPTION ==============");
+    //     Log::error("Message: " . $e->getMessage());
+    //     Log::error("File: " . $e->getFile() . " Line: " . $e->getLine());
+    //     Log::error("=================================================");
         
-        return false;
-    }
+    //     return false;
+    // }
+    return false;
 }
 
     
