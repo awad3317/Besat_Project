@@ -487,13 +487,12 @@
     </script>
 </body>
 <script>
-    // ========== 1. تهيئة Pusher المباشرة لتفادي مشاكل تسمية Events في Echo ==========
-    window.Pusher = Pusher;
-
-    // تشغيل وضع الـ Debug للـ Pusher لكي يعرض كافة تفاصيل الاتصال والأخطاء في الكونسول
+    // ========== 1. إظهار سجّلات Pusher في الكونسول للمتابعة ==========
     Pusher.logToConsole = true;
 
+    // ========== 2. تهيئة الاتصال مع إضافة خاصية cluster لتفادي الخطأ ==========
     const pusher = new Pusher('bsk_live_9f8a7b6c5d4e3f2a', {
+        cluster: 'mt1', // إجباري لمكتبة Pusher JS
         wsHost: 'besat.tiyar.cc',
         wsPort: 443,
         wssPort: 443,
@@ -501,12 +500,12 @@
         enabledTransports: ['ws', 'wss']
     });
 
-    // ========== 2. الاشتراك في القناة ==========
-    const channel = pusher.subscribe('chat.support.1');
-
     console.log('📡 جاري الاستماع للقناة: chat.support.1 ...');
 
-    // ========== 3. الاستماع لجميع الأحداث المبثوثة على القناة فوراً ==========
+    // ========== 3. الاشتراك في القناة ==========
+    const channel = pusher.subscribe('chat.support.1');
+
+    // ========== 4. الاستماع لجميع الأحداث المبثوثة على القناة ==========
     channel.bind_global(function(eventName, data) {
         console.log('📩 [حدث جديد وصل]:', eventName, data);
     });
