@@ -14,6 +14,8 @@
     <link href="{{ asset('tailadmin/build/style.css') }}?v=1.0.1" rel="stylesheet">
     @livewireStyles
     @yield('style')
+    <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
 
@@ -484,5 +486,30 @@
 
     </script>
 </body>
+<script>
+    // ========== تهيئة Laravel Echo والاتصال بسيرفر Reverb ==========
+    window.Pusher = Pusher;
+
+    window.Echo = new Echo({
+        broadcaster: 'reverb',
+        key: 'bsk_live_9f8a7b6c5d4e3f2a',
+        wsHost: 'besat.tiyar.cc',
+        wsPort: 443,
+        wssPort: 443,
+        forceTLS: true,
+        enabledTransports: ['ws', 'wss'],
+    });
+
+    console.log('📡 جاري الاستماع للرسائل عبر Reverb...');
+
+    // ========== الاستماع لقناة محادثات الدعم (المحادثة رقم 1 كمثال) ==========
+    window.Echo.channel('chat.support.1')
+        .listen('message.sent', (e) => {
+            console.log('📩 [رسالة جديدة من الـ WebSocket]:', e);
+        })
+        .listen('.message.sent', (e) => {
+            console.log('📩 [رسالة جديدة من الـ WebSocket]:', e);
+        });
+</script>
 
 </html>
