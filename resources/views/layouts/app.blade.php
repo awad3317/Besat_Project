@@ -487,28 +487,28 @@
     </script>
 </body>
 <script>
-    // ========== تهيئة Laravel Echo الصحيحة لـ Reverb ==========
+    // ========== 1. تهيئة Pusher المباشرة لتفادي مشاكل تسمية Events في Echo ==========
     window.Pusher = Pusher;
 
-    window.Echo = new Echo({
-        broadcaster: 'reverb',
-        key: 'bsk_live_9f8a7b6c5d4e3f2a',
+    // تشغيل وضع الـ Debug للـ Pusher لكي يعرض كافة تفاصيل الاتصال والأخطاء في الكونسول
+    Pusher.logToConsole = true;
+
+    const pusher = new Pusher('bsk_live_9f8a7b6c5d4e3f2a', {
         wsHost: 'besat.tiyar.cc',
-        wsPort: 80,
+        wsPort: 443,
         wssPort: 443,
         forceTLS: true,
-        enabledTransports: ['ws', 'wss'],
+        enabledTransports: ['ws', 'wss']
     });
 
-    console.log('📡 جاري الاستماع للرسائل عبر Reverb...');
+    // ========== 2. الاشتراك في القناة ==========
+    const channel = pusher.subscribe('chat.support.1');
 
-    // ========== الاستماع للمحادثة رقم 1 ==========
-    window.Echo.channel('chat.support.1')
-        .listen('MessageSent', (e) => {
-            console.log('📩 [رسالة جديدة من الـ WebSocket]:', e);
-        })
-        .listen('.message.sent', (e) => {
-            console.log('📩 [رسالة جديدة من الـ WebSocket]:', e);
-        });
+    console.log('📡 جاري الاستماع للقناة: chat.support.1 ...');
+
+    // ========== 3. الاستماع لجميع الأحداث المبثوثة على القناة فوراً ==========
+    channel.bind_global(function(eventName, data) {
+        console.log('📩 [حدث جديد وصل]:', eventName, data);
+    });
 </script>
 </html>
