@@ -487,10 +487,10 @@
     </script>
 </body>
 <script>
-    // 1. تفعيل اللوج لمعاينة التفاصيل
+    // 1. تفعيل السجلات للتأكد
     Pusher.logToConsole = true;
 
-    // 2. تهيئة الاتصال
+    // 2. إنشاء الاتصال
     const pusher = new Pusher('bsk_live_9f8a7b6c5d4e3f2a', {
         cluster: 'mt1',
         wsHost: 'besat.tiyar.cc',
@@ -503,11 +503,15 @@
     // 3. الاشتراك في القناة
     const channel = pusher.subscribe('chat.support.1');
 
-    console.log('📡 جاري الاستماع للقناة: chat.support.1 ...');
+    console.log('📡 جاري الاستماع لقناة chat.support.1...');
 
-    // 4. الاستماع الفعلي للحدث بالاسم الصحيح المكتوب في الباك إند
+    // 4. الربط مع الحدث باسمه الصريح مع نقطة أو بدون نقطة لضمان الاستقبال
     channel.bind('message.sent', function(data) {
-        console.log('🎉 [وصلت الرسالة في الداشبورد بنجاح!]:', data);
+        console.log('🎉 [نجاح - وصلت الرسالة بالاسم الأول!]:', data);
+    });
+
+    channel.bind('App\\Events\\MessageSent', function(data) {
+        console.log('🎉 [نجاح - وصلت الرسالة بالاسم الكامل!]:', data);
     });
 </script>
 </html>
