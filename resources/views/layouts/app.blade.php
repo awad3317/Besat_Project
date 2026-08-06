@@ -487,14 +487,14 @@
     </script>
 </body>
 <script>
-    // ========== تهيئة Laravel Echo والاتصال بسيرفر Reverb ==========
+    // ========== تهيئة Laravel Echo الصحيحة لـ Reverb ==========
     window.Pusher = Pusher;
 
     window.Echo = new Echo({
         broadcaster: 'reverb',
         key: 'bsk_live_9f8a7b6c5d4e3f2a',
         wsHost: 'besat.tiyar.cc',
-        wsPort: 443,
+        wsPort: 80,
         wssPort: 443,
         forceTLS: true,
         enabledTransports: ['ws', 'wss'],
@@ -502,14 +502,13 @@
 
     console.log('📡 جاري الاستماع للرسائل عبر Reverb...');
 
-    // ========== الاستماع لقناة محادثات الدعم (المحادثة رقم 1 كمثال) ==========
+    // ========== الاستماع للمحادثة رقم 1 ==========
     window.Echo.channel('chat.support.1')
-        .listen('message.sent', (e) => {
+        .listen('MessageSent', (e) => {
             console.log('📩 [رسالة جديدة من الـ WebSocket]:', e);
         })
         .listen('.message.sent', (e) => {
             console.log('📩 [رسالة جديدة من الـ WebSocket]:', e);
         });
 </script>
-
 </html>
