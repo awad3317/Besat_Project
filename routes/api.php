@@ -10,6 +10,7 @@ use App\Http\Controllers\API\Auth\User\UserController;
 use App\Http\Controllers\API\Auth\User\UserForgetPasswordController;
 use App\Http\Controllers\API\Auth\User\UserOtpController;
 use App\Http\Controllers\API\BankController;
+use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\DiscountCodeController;
 use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\FavoritePlaceController;
@@ -20,10 +21,10 @@ use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
 use App\Http\Controllers\API\ServiceBookingController;
 use App\Http\Controllers\API\SpecialOrderController;
+use App\Http\Controllers\API\TiyarAiController;
 use App\Http\Controllers\API\UserDeviceController;
-use App\Http\Controllers\API\ChatController;
-use Illuminate\Support\Facades\Broadcast;
 use App\Http\Controllers\API\VehicleController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -96,5 +97,7 @@ Route::post('/driver/resetPassword', [DriverForgetPasswordController::class,'res
 Route::get('/appSettings', [AppSettingController::class, 'index']);
         //       Ads Route For Mobile    //  
 Route::get('/ads', [AdController::class, 'getAds']);
+
+Route::post('/whatsapp/webhook', [TiyarAiController::class, 'handleWebhook']);
 
 
