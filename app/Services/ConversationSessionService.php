@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Cache;
 
 class ConversationSessionService
 {
-    protected int $ttlMinutes = 30; // مدة الاحتفاظ بالجلسة
-    protected int $maxHistory = 6;  // الاحتفاظ بآخر 6 رسائل فقط
+    protected int $ttlMinutes = 30;
+    protected int $maxHistory = 6;
 
     public function getHistory(string $phone): array
     {
@@ -18,7 +18,7 @@ class ConversationSessionService
     {
         $history = $this->getHistory($phone);
         $history[] = [
-            'role' => $role, // 'user' أو 'assistant'
+            'role' => $role,
             'content' => $content
         ];
 
@@ -32,5 +32,25 @@ class ConversationSessionService
     public function clearHistory(string $phone): void
     {
         Cache::forget("chat_history:{$phone}");
+    }
+
+    // --- إضافات التحويل للدعم الفني (Human Support Handoff) ---
+
+    // 1. الفحص هل العميل محول للدعم الفني حالياً؟
+    public function isHumanSupportActive(string $phone): bool
+    {
+        return Cache::has("human_support:{$phone}");
+    }
+
+    // 2. تفعيل التحويل للدعم الفني وإيقاف الـ AI (لمدة 24 ساعة مثلاً)
+    public function enableHumanSupport(string $phone, int $hours = 24): void
+    {
+        Cache::put("human_support:{$phone}", true, now()->addHours($hours));
+    }
+
+    // 3. إعادة تفعيل الـ AI للعميل (إذا انتهى الدعم الفني)
+    public function disableHumanSupport(string $phone): void
+    {
+        Cache::forget("human_support:{$phone}");
     }
 }

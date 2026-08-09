@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Services\ConversationSessionService;
+use Illuminate\Support\Str;
 
 class TiyarAiController extends Controller
 {
@@ -17,53 +18,114 @@ class TiyarAiController extends Controller
         $this->sessionService = $sessionService;
     }
 
-   public function handleWebhook(Request $request)
-{
-    try {
-        $data = $request->all();
+    public function handleWebhook(Request $request)
+    {
+        try {
+            $data = $request->all();
 
-        Log::info("WhatsApp Webhook Received", $data);
+            Log::info("WhatsApp Webhook Received", $data);
 
-        // 1. تجنب الرسائل الصادرة من البوت نفسه (IsFromMe)
-        $isFromMe = $data['data']['Info']['IsFromMe'] ?? false;
-        if ($isFromMe) {
-            return response()->json(['status' => 'ignored_from_me']);
+            // 1. استخراج نص الرسالة ورقم العميل
+            $messageText = $data['data']['Message']['conversation'] 
+                ?? $data['data']['Message']['extendedTextMessage']['text'] 
+                ?? null;
+
+            $sender = $data['data']['Info']['Sender'] 
+                ?? $data['data']['Info']['Chat'] 
+                ?? null;
+
+            if (!$sender || !$messageText) {
+                return response()->json(['status' => 'ignored_empty']);
+            }
+
+            // تنظيف رقم الهاتف وإزالة النطاق
+            $phone = explode('@', $sender)[0];
+
+            // 2. تجنب الرسائل الصادرة من البوت/الموظف (IsFromMe) مع إمكانية التفعيل بكلمة السر
+            $isFromMe = $data['data']['Info']['IsFromMe'] ?? false;
+            if ($isFromMe) {
+                // إذا كتب الموظف "تيار احبك" في الشات لإعادة الـ AI
+                if (Str::contains(mb_strtolower($messageText), 'تيار احبك')) {
+                    $this->sessionService->disableHumanSupport($phone);
+                    Log::info("AI reactivated by agent sending secret phrase for phone: {$phone}");
+                }
+                return response()->json(['status' => 'ignored_from_me']);
+            }
+
+            // 3. فحص هل أرسل العميل كلمة "تيار احبك" لإعادة تفعيل الـ AI؟
+            if (Str::contains(mb_strtolower($messageText), 'تيار احبك')) {
+                $this->sessionService->disableHumanSupport($phone);
+                
+                $welcomeBackMsg = "أهلاً بك مجدداً! ❤️ تم إعادة تفعيل المساعد الذكي لشركة تيار. كيف يمكننا مساعدتك اليوم؟";
+                $this->sendWhatsAppMessage($phone, $welcomeBackMsg);
+
+                Log::info("AI reactivated by customer secret phrase for phone: {$phone}");
+                return response()->json(['status' => 'ai_reactivated']);
+            }
+
+            // 4. الفحص هل الرقم محوّل للدعم الفني البشري حالياً؟
+            if ($this->sessionService->isHumanSupportActive($phone)) {
+                Log::info("AI bypassed for {$phone}: Human support is active.");
+                return response()->json(['status' => 'ignored_human_support_active']);
+            }
+
+            // 5. الفحص هل طلب العميل التحويل للدعم الفني؟ (إيقاف صامت بدون رسالة تلقائية)
+            if ($this->isRequestingHumanSupport($messageText)) {
+                // تفعيل حالة الدعم الفني للرقم (إيقاف الـ AI)
+                $this->sessionService->enableHumanSupport($phone);
+
+                Log::info("Human support enabled silently for phone: {$phone}");
+                return response()->json(['status' => 'transferred_to_human_silently']);
+            }
+
+            // 6. جلب سياق المحادثة لمعالجة الذكاء الاصطناعي
+            $history = $this->sessionService->getHistory($phone);
+            $aiResponse = $this->processWithAi($messageText, $history);
+
+            // 7. حفظ المحادثة وإرسال الرد عبر الواتساب
+            $this->sessionService->addMessage($phone, 'user', $messageText);
+            $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
+
+            $this->sendWhatsAppMessage($phone, $aiResponse);
+
+            return response()->json(['status' => 'success']);
+
+        } catch (\Exception $e) {
+            Log::error("Tiyar AI Webhook Error: " . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
-
-        // 2. استخراج رقم العميل
-        $sender = $data['data']['Info']['Sender'] 
-            ?? $data['data']['Info']['Chat'] 
-            ?? null;
-
-        // 3. استخراج نص الرسالة
-        $messageText = $data['data']['Message']['conversation'] 
-            ?? $data['data']['Message']['extendedTextMessage']['text'] 
-            ?? null;
-
-        if (!$sender || !$messageText) {
-            return response()->json(['status' => 'ignored_empty']);
-        }
-
-        // تنظيف رقم الهاتف وإزالة النطاق
-        $phone = explode('@', $sender)[0];
-
-        // 4. جلب سياق المحادثة لمعالجة الذكاء الاصطناعي
-        $history = $this->sessionService->getHistory($phone);
-        $aiResponse = $this->processWithAi($messageText, $history);
-
-        // 5. حفظ المحادثة وإرسال الرد عبر الواتساب
-        $this->sessionService->addMessage($phone, 'user', $messageText);
-        $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
-
-        $this->sendWhatsAppMessage($phone, $aiResponse);
-
-        return response()->json(['status' => 'success']);
-
-    } catch (\Exception $e) {
-        Log::error("Tiyar AI Webhook Error: " . $e->getMessage());
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
-}
+
+    /**
+     * فحص ما إذا كان نص الرسالة يحتوي على طلب تحويل للدعم الفني
+     */
+    private function isRequestingHumanSupport(string $text): bool
+    {
+        $keywords = [
+            'دعم فني',
+            'الدعم الفني',
+            'خدمة العملاء',
+            'خدمه العملاء',
+            'تحدث مع موظف',
+            'تكلم مع موظف',
+            'تحويل لموظف',
+            'تحويل للدعم',
+            'اريد موظف',
+            'أريد موظف',
+            'كلمني موظف',
+            'انساني',
+            'شخص حقيقي',
+            'مبيعات'
+        ];
+
+        foreach ($keywords as $keyword) {
+            if (Str::contains($text, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private function processWithAi(string $userMessage, array $history): string
     {
