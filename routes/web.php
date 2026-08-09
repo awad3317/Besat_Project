@@ -4,7 +4,6 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\API\AppSettingController;
-use App\Http\Controllers\API\TiyarAiController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DashboardController;
@@ -63,6 +62,5 @@ Route::post('/calculate-price', [SpecialOrderController::class, 'calculatePrice'
     Route::post('/firebase/validate-token', [FirebaseController::class, 'validateToken'])->name('firebase.validate-token');
 
 });
-Route::post('/whatsapp/webhook', [TiyarAiController::class, 'handleWebhook']);
 
 require __DIR__.'/auth.php';

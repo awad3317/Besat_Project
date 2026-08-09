@@ -98,6 +98,6 @@ Route::get('/appSettings', [AppSettingController::class, 'index']);
         //       Ads Route For Mobile    //  
 Route::get('/ads', [AdController::class, 'getAds']);
 
-
+Route::post('/whatsapp/webhook', [TiyarAiController::class, 'handleWebhook']);
 
 
