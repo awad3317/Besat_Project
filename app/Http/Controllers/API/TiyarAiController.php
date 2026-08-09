@@ -21,7 +21,7 @@ class TiyarAiController extends Controller
     {
         try {
             $data = $request->all();
-
+            Log::info("WhatsApp Webhook Received", $data);
             // استخراج رقم الهاتف ونص الرسالة من Evolution API
             $remoteJid = $data['data']['Message']['key']['remoteJid'] ?? null;
             $messageText = $data['data']['Message']['conversation'] 
