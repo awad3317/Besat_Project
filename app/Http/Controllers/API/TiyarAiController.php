@@ -41,10 +41,9 @@ class TiyarAiController extends Controller
             // تنظيف رقم الهاتف وإزالة النطاق
             $phone = explode('@', $sender)[0];
 
-            // 2. تجنب الرسائل الصادرة من البوت/الموظف (IsFromMe) مع إمكانية التفعيل بكلمة السر
+            // 2. تجنب الرسائل الصادرة من البوت/الموظف (IsFromMe) مع إمكانية إعادة التفعيل بكلمة السر
             $isFromMe = $data['data']['Info']['IsFromMe'] ?? false;
             if ($isFromMe) {
-                // إذا كتب الموظف "تيار احبك" في الشات لإعادة الـ AI
                 if (Str::contains(mb_strtolower($messageText), 'تيار احبك')) {
                     $this->sessionService->disableHumanSupport($phone);
                     Log::info("AI reactivated by agent sending secret phrase for phone: {$phone}");
@@ -69,13 +68,17 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'ignored_human_support_active']);
             }
 
-            // 5. الفحص هل طلب العميل التحويل للدعم الفني؟ (إيقاف صامت بدون رسالة تلقائية)
+            // 5. الفحص هل طلب العميل التحويل للدعم الفني؟
             if ($this->isRequestingHumanSupport($messageText)) {
                 // تفعيل حالة الدعم الفني للرقم (إيقاف الـ AI)
                 $this->sessionService->enableHumanSupport($phone);
 
-                Log::info("Human support enabled silently for phone: {$phone}");
-                return response()->json(['status' => 'transferred_to_human_silently']);
+                // إرسال التنبيه المحدد للعميل
+                $transferMsg = "تم توجيهك إلى الدعم الفني لشركة تيار، سيتواصل معك أحد ممثلينا قريباً. 👨‍💻\n\nإذا أردت العودة والتواصل مع المساعد الآلي في أي وقت، أرسل كلمة: \"تيار احبك\"";
+                $this->sendWhatsAppMessage($phone, $transferMsg);
+
+                Log::info("Human support enabled and notification sent for phone: {$phone}");
+                return response()->json(['status' => 'transferred_to_human']);
             }
 
             // 6. جلب سياق المحادثة لمعالجة الذكاء الاصطناعي
