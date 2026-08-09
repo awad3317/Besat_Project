@@ -17,44 +17,53 @@ class TiyarAiController extends Controller
         $this->sessionService = $sessionService;
     }
 
-    public function handleWebhook(Request $request)
-    {
-        try {
-            $data = $request->all();
-            Log::info("WhatsApp Webhook Received", $data);
-            // استخراج رقم الهاتف ونص الرسالة من Evolution API
-            $remoteJid = $data['data']['Message']['key']['remoteJid'] ?? null;
-            $messageText = $data['data']['Message']['conversation'] 
-                ?? $data['data']['Message']['extendedTextMessage']['text'] 
-                ?? null;
+   public function handleWebhook(Request $request)
+{
+    try {
+        $data = $request->all();
 
-            if (!$remoteJid || !$messageText) {
-                return response()->json(['status' => 'ignored']);
-            }
+        Log::info("WhatsApp Webhook Received", $data);
 
-            // تنظيف رقم الهاتف وإزالة النطاق
-            $phone = explode('@', $remoteJid)[0];
-
-            // 1. استرجاع سياق المحادثة السابق
-            $history = $this->sessionService->getHistory($phone);
-
-            // 2. معالجة النص بواسطة الذكاء الاصطناعي
-            $aiResponse = $this->processWithAi($messageText, $history);
-
-            // 3. تحديث سياق المحادثة
-            $this->sessionService->addMessage($phone, 'user', $messageText);
-            $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
-
-            // 4. إرسال الرسالة إلى العميل عبر الواتساب
-            $this->sendWhatsAppMessage($phone, $aiResponse);
-
-            return response()->json(['status' => 'success']);
-
-        } catch (\Exception $e) {
-            Log::error("Tiyar AI Webhook Error: " . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        // 1. تجنب الرسائل الصادرة من البوت نفسه (IsFromMe)
+        $isFromMe = $data['data']['Info']['IsFromMe'] ?? false;
+        if ($isFromMe) {
+            return response()->json(['status' => 'ignored_from_me']);
         }
+
+        // 2. استخراج رقم العميل
+        $sender = $data['data']['Info']['Sender'] 
+            ?? $data['data']['Info']['Chat'] 
+            ?? null;
+
+        // 3. استخراج نص الرسالة
+        $messageText = $data['data']['Message']['conversation'] 
+            ?? $data['data']['Message']['extendedTextMessage']['text'] 
+            ?? null;
+
+        if (!$sender || !$messageText) {
+            return response()->json(['status' => 'ignored_empty']);
+        }
+
+        // تنظيف رقم الهاتف وإزالة النطاق
+        $phone = explode('@', $sender)[0];
+
+        // 4. جلب سياق المحادثة لمعالجة الذكاء الاصطناعي
+        $history = $this->sessionService->getHistory($phone);
+        $aiResponse = $this->processWithAi($messageText, $history);
+
+        // 5. حفظ المحادثة وإرسال الرد عبر الواتساب
+        $this->sessionService->addMessage($phone, 'user', $messageText);
+        $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
+
+        $this->sendWhatsAppMessage($phone, $aiResponse);
+
+        return response()->json(['status' => 'success']);
+
+    } catch (\Exception $e) {
+        Log::error("Tiyar AI Webhook Error: " . $e->getMessage());
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
+}
 
     private function processWithAi(string $userMessage, array $history): string
     {
