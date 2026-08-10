@@ -6,86 +6,34 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Events\MessageSent;
 use Livewire\Component;
-use Livewire\WithPagination; // 1. استدعاء الموديول
+use Livewire\WithPagination;
 use Livewire\Attributes\Url;
-use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
 
 class Index extends Component
 {
-    use WithPagination; // 2. إضافة التريت هنا داخل الكلاس
+    use WithPagination;
 
     #[Url(except: 'all')]
-    public $filter = 'all';
+    public $filter = 'all'; // all, support, request
 
+    public $search = '';
     public $selectedConversationId = null;
     public $newMessage = '';
 
     public function applyFilter(string $filter): void
     {
         $this->filter = $filter;
-        unset($this->stats, $this->conversations);
-        
-        if (method_exists($this, 'resetPage')) {
-            $this->resetPage();
-        }
     }
 
-    #[Computed(cache: true)]
-    public function stats()
+    public function selectConversation($id): void
     {
-        return [
-            'total'    => Conversation::count(),
-            'support'  => Conversation::where('type', 'support')->count(),
-            'request'  => Conversation::where('type', 'request')->count(),
-        ];
-    }
+        $this->selectedConversationId = (int) $id;
 
-    #[Computed]
-    public function conversations()
-    {
-        return Conversation::query()
-            ->with(['user', 'driver', 'lastMessage'])
-            ->when($this->filter !== 'all', function ($query) {
-                $query->where('type', $this->filter);
-            })
-            ->orderBy('updated_at', 'desc')
-            ->get();
-    }
-
-    #[Computed]
-    public function selectedConversation()
-    {
-        if (!$this->selectedConversationId) {
-            return null;
-        }
-
-        return Conversation::with(['user', 'driver', 'admin'])->find($this->selectedConversationId);
-    }
-
-    #[Computed]
-    public function messages()
-    {
-        if (!$this->selectedConversationId) {
-            return [];
-        }
-
-        return Message::where('conversation_id', $this->selectedConversationId)
-            ->with('sender:id,name')
-            ->orderBy('created_at', 'asc')
-            ->get();
-    }
-
-    public function selectConversation(int $id): void
-    {
-        $this->selectedConversationId = $id;
-        
-        unset($this->selectedConversation, $this->messages);
-
-        $conversation = $this->selectedConversation;
+        $conversation = Conversation::find($id);
         if ($conversation) {
             $conversation->update(['participant_unread_count' => 0]);
-            
+
             $this->dispatch('subscribe-to-channel', conversationId: $id, type: $conversation->type ?? 'support');
             $this->dispatch('scroll-to-bottom');
         }
@@ -107,11 +55,11 @@ class Index extends Component
             'body'            => $this->newMessage,
         ]);
 
-        $conversation = $this->selectedConversation;
+        $conversation = Conversation::find($this->selectedConversationId);
         if ($conversation) {
             $conversation->update([
-                'last_message_id' => $message->id,
-                'last_message_at' => now(),
+                'last_message_id'   => $message->id,
+                'last_message_at'   => now(),
                 'user_unread_count' => $conversation->user_unread_count + 1,
             ]);
         }
@@ -119,19 +67,63 @@ class Index extends Component
         broadcast(new MessageSent($message))->toOthers();
 
         $this->newMessage = '';
-        unset($this->stats, $this->conversations, $this->messages, $this->selectedConversation);
-        
         $this->dispatch('scroll-to-bottom');
+    }
+
+    public function closeConversation(): void
+    {
+        if (!$this->selectedConversationId) return;
+
+        $conversation = Conversation::find($this->selectedConversationId);
+        if ($conversation) {
+            $conversation->update(['status' => 'closed']);
+        }
+
+        $this->selectedConversationId = null;
     }
 
     public function handleIncomingMessage(): void
     {
-        unset($this->messages, $this->conversations, $this->selectedConversation);
         $this->dispatch('scroll-to-bottom');
     }
 
     public function render()
     {
-        return view('livewire.chat.index');
+        $conversations = Conversation::query()
+            ->with(['user', 'driver', 'lastMessage'])
+            ->when($this->filter !== 'all', function ($query) {
+                $query->where('type', $this->filter);
+            })
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->whereHas('user', function ($u) {
+                        $u->where('name', 'like', '%' . $this->search . '%')
+                          ->orWhere('phone', 'like', '%' . $this->search . '%');
+                    })->orWhereHas('driver', function ($d) {
+                        $d->where('name', 'like', '%' . $this->search . '%')
+                          ->orWhere('phone', 'like', '%' . $this->search . '%');
+                    });
+                });
+            })
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        $selectedConversation = $this->selectedConversationId 
+            ? Conversation::with(['user', 'driver', 'admin'])->find($this->selectedConversationId) 
+            : null;
+
+        $messages = $this->selectedConversationId 
+            ? Message::where('conversation_id', $this->selectedConversationId)
+                ->with('sender:id,name')
+                ->orderBy('created_at', 'asc')
+                ->get() 
+            : [];
+
+        return view('livewire.chat.index', [
+            'conversations'        => $conversations,
+            'selectedConversation' => $selectedConversation,
+            'messages'             => $messages,
+            'totalCount'           => Conversation::count(),
+        ]);
     }
 }
