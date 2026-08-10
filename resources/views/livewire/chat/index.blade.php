@@ -53,43 +53,62 @@
         </div>
 
         <!-- قائمة المحادثات -->
-        <div class="flex-1 overflow-y-auto p-2 chat-custom-scroll space-y-1">
-            @forelse($conversations as $conv)
-                @php
-                    $participantName = $conv->user?->name ?? $conv->driver?->name ?? 'مستخدم غير معروف';
-                    $unreadCount = $conv->participant_unread_count ?? 0;
-                @endphp
-                
-                <div wire:key="conv-{{ $conv->id }}"
-                     wire:click="selectConversation({{ $conv->id }})"
-                     class="chat-user-card {{ $selectedConversationId == $conv->id ? 'active' : '' }}">
-                    
-                    <div class="relative h-10 w-10 flex-shrink-0">
-                        <div class="flex h-full w-full items-center justify-center rounded-full bg-brand-500/10 font-bold text-brand-500 border border-brand-500/20 text-xs">
-                            {{ mb_substr($participantName, 0, 1) }}
-                        </div>
-                        @if($conv->type === 'request')
-                            <span class="bg-amber-500 absolute -bottom-1 -left-1 block rounded px-1 text-[8px] font-bold text-white">طلب</span>
+        <div class="flex-1 overflow-y-auto p-2 chat-custom-scroll space-y-1.5">
+    @forelse($conversations as $conv)
+        @php
+            $participantName = $conv->user?->name ?? $conv->driver?->name ?? 'مستخدم غير معروف';
+            $unreadCount = $conv->participant_unread_count ?? 0;
+            $isRequest = $conv->type === 'request';
+        @endphp
+        
+        <div wire:key="conv-{{ $conv->id }}"
+             wire:click="selectConversation({{ $conv->id }})"
+             class="chat-user-card {{ $selectedConversationId == $conv->id ? 'active' : '' }}">
+            
+            <!-- صورة / رمز العميل -->
+            <div class="relative h-11 w-11 flex-shrink-0">
+                <div class="flex h-full w-full items-center justify-center rounded-full bg-brand-500/10 font-bold text-brand-500 border border-brand-500/20 text-xs shadow-xs">
+                    {{ mb_substr($participantName, 0, 1) }}
+                </div>
+               
+            </div>
+
+            <!-- تفاصيل المحادثة -->
+            <div class="flex-1 min-w-0 pr-1">
+                <!-- السطر العلوي: الاسم + بادج عدد الرسائل غير المقروءة + الوقت -->
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-1.5 min-w-0">
+                        <h5 class="text-xs font-bold text-gray-800 truncate dark:text-white/90 leading-tight">
+                            {{ $participantName }}
+                        </h5>
+                        
+                        <!-- بادج عدد الرسائل غير المقروءة بجانب الاسم مباشرة -->
+                        @if($unreadCount > 0)
+                            <span class="flex h-4 min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white flex-shrink-0 shadow-xs animate-pulse">
+                                {{ $unreadCount }}
+                            </span>
                         @endif
                     </div>
 
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between mb-0.5">
-                            <h5 class="text-xs font-bold text-gray-800 truncate dark:text-white/90">{{ $participantName }}</h5>
-                            <span class="text-[10px] text-gray-400 flex-shrink-0">{{ $conv->last_message_at ? $conv->last_message_at->format('H:i') : '' }}</span>
-                        </div>
-                        <div class="flex items-center justify-between gap-1">
-                            <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 flex-1">{{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}</p>
-                            @if($unreadCount > 0)
-                                <span class="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-extrabold text-white flex-shrink-0">{{ $unreadCount }}</span>
-                            @endif
-                        </div>
-                    </div>
+                    <!-- الوقت -->
+                    <span class="text-[10px] text-gray-400 font-medium flex-shrink-0">
+                        {{ $conv->last_message_at ? $conv->last_message_at->format('H:i') : '' }}
+                    </span>
                 </div>
-            @empty
-                <div class="p-6 text-center text-xs text-gray-400">لا توجد محادثات متاحة.</div>
-            @endforelse
+                <!-- السطر السفلي: نص آخر رسالة -->
+                <div class="flex items-center justify-between gap-1.5">
+                    <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 flex-1 leading-normal">
+                        {{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}
+                    </p>
+                </div>
+            </div>
         </div>
+    @empty
+        <div class="p-8 text-center text-xs text-gray-400">
+            لا توجد محادثات متاحة.
+        </div>
+    @endforelse
+</div>
     </div>
 
     <!-- ====== 2. صندوق الشات الرئيسي (جهة اليسار) ====== -->

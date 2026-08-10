@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('title', 'المحادثات والمراسلة')
-@section('Breadcrumb', 'إدارة المحادثات المباشرة')
 
 @section('style')
 <style>
