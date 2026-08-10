@@ -15,13 +15,13 @@
     @livewireStyles
     @yield('style')
     
-    <!-- مكتبات Pusher و Firebase -->
+    <!-- مكتبات Pusher و Laravel Echo و Firebase -->
     <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
 
-    <!-- كود Firebase -->
+    <!-- كود Firebase الإشعارات -->
     <script>
         // ========== إعدادات Firebase ==========
         const firebaseConfig = {
@@ -38,10 +38,7 @@
         const TOKEN_STORAGE_KEY = 'fcm_token_stored';
 
         function isFirebaseLoaded() {
-            if (typeof firebase === 'undefined' || typeof firebase.initializeApp === 'undefined' || typeof firebase.messaging === 'undefined') {
-                return false;
-            }
-            return true;
+            return (typeof firebase !== 'undefined' && typeof firebase.initializeApp !== 'undefined' && typeof firebase.messaging !== 'undefined');
         }
 
         function initializeFirebase() {
@@ -224,6 +221,7 @@
     @livewireScripts
     @yield('script')
 
+    <!-- دالة الإسناد التلقائي الآمنة لـ Alpine.js -->
     <script>
         function autoAssignSystem() {
             return {
@@ -284,13 +282,12 @@
         }
     </script>
 
-    <!-- ========== كود استقبال الـ WebSockets (Reverb / Pusher) النظيف والمعتمد ========== -->
+    <!-- ========== تهيئة Pusher و Laravel Echo عالمياً بشكل آمن وتوافقي ========== -->
     <script>
-        // 1. تفعيل السجلات في الكونسول للمتابعة
-        Pusher.logToConsole = true;
+        Pusher.logToConsole = false;
 
-        // 2. إنشاء الاتصال بسيرفر Reverb
-        const pusher = new Pusher('bsk_live_9f8a7b6c5d4e3f2a', {
+        // 1. إنشاء الاتصال بسيرفر Reverb بشكل عالمي
+        window.pusher = new Pusher('bsk_live_9f8a7b6c5d4e3f2a', {
             cluster: 'mt1',
             wsHost: 'besat.tiyar.cc',
             wsPort: 443,
@@ -299,25 +296,21 @@
             enabledTransports: ['ws', 'wss']
         });
 
-        // 3. الاشتراك في القناة
-        const channel = pusher.subscribe('chat.support.1');
+        // 2. تهيئة Echo بشكل صحيح لمنع خطأ TypeError: window.Echo.socketId is not a function
+        if (typeof window.Echo === 'function') {
+            window.Echo = new Echo({
+                broadcaster: 'pusher',
+                client: window.pusher
+            });
+        } else {
+            window.Echo = {
+                socketId: function() {
+                    return window.pusher && window.pusher.connection ? window.pusher.connection.socket_id : null;
+                }
+            };
+        }
 
-        console.log('📡 تم إعداد المستمع لقناة chat.support.1');
-
-        // 4. تأكيد نجاح الاشتراك في القناة
-        channel.bind('pusher:subscription_succeeded', function() {
-            console.log('✅ تم الاشتراك بنجاح في القناة وجاهز لاستقبال الرسائل!');
-        });
-
-        // 5. الاستماع للحدث المباشر واستقبال الرسائل
-        channel.bind('message.sent', function(data) {
-            console.log('🎉 [وصلت الرسالة بنجاح!]:', data);
-        });
-
-        // 6. خطة بديلة للربط بالاسم الكامل للكلاس
-        channel.bind('App\\Events\\MessageSent', function(data) {
-            console.log('🎉 [وصلت الرسالة عبر الكلاس الكامل!]:', data);
-        });
+        console.log('📡 تم تجهيز اتصالات WebSockets و Echo بنجاح بدون تعارض مع Livewire');
     </script>
 </body>
 </html>

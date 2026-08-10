@@ -1,8 +1,8 @@
 <div>
 
-    <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
+   <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
         
-    {{-- Total Users Card --}}
+    {{-- كارت إجمالي المستخدمين --}}
     <div wire:click="applyFilter('all')"
          wire:loading.class="opacity-50"
          wire:target="applyFilter('all')"
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    {{-- Banned Users Card --}}
+    {{-- كارت المحظورين --}}
     <div wire:click="applyFilter('banned')"
          wire:loading.class="opacity-50"
          wire:target="applyFilter('banned')"

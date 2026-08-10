@@ -6,14 +6,17 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Events\MessageSent;
 use Livewire\Component;
+use Livewire\WithPagination; // 1. استدعاء الموديول
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
 
 class Index extends Component
 {
+    use WithPagination; // 2. إضافة التريت هنا داخل الكلاس
+
     #[Url(except: 'all')]
-    public $filter = 'all'; // all, support, request
+    public $filter = 'all';
 
     public $selectedConversationId = null;
     public $newMessage = '';
@@ -21,8 +24,11 @@ class Index extends Component
     public function applyFilter(string $filter): void
     {
         $this->filter = $filter;
-        unset($this->users);
-        $this->resetPage();
+        unset($this->stats, $this->conversations);
+        
+        if (method_exists($this, 'resetPage')) {
+            $this->resetPage();
+        }
     }
 
     #[Computed(cache: true)]
@@ -73,13 +79,13 @@ class Index extends Component
     public function selectConversation(int $id): void
     {
         $this->selectedConversationId = $id;
-        unset($this->selectedConversation, $this->messages);
-        $conversation = Conversation::find($id);
-        if ($conversation) {
-        // صفر العداد للمحادثات غير المقروءة
-            $conversation->update(['participant_unread_count' => 0]);
         
-        // إطلاق حدث للـ Frontend للاشتراك في القناة وإعادة التمرير للأسفل
+        unset($this->selectedConversation, $this->messages);
+
+        $conversation = $this->selectedConversation;
+        if ($conversation) {
+            $conversation->update(['participant_unread_count' => 0]);
+            
             $this->dispatch('subscribe-to-channel', conversationId: $id, type: $conversation->type ?? 'support');
             $this->dispatch('scroll-to-bottom');
         }
@@ -110,7 +116,6 @@ class Index extends Component
             ]);
         }
 
-        // بث الحدث عبر Reverb / Pusher
         broadcast(new MessageSent($message))->toOthers();
 
         $this->newMessage = '';
@@ -119,7 +124,6 @@ class Index extends Component
         $this->dispatch('scroll-to-bottom');
     }
 
-    // تستدعى من Alpine عند وصول أي رسالة عبر الـ WebSocket
     public function handleIncomingMessage(): void
     {
         unset($this->messages, $this->conversations, $this->selectedConversation);
