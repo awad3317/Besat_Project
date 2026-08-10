@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class DiscountCodeController extends Controller
 {
-      public function __construct(private DiscountCodeService $discountCodeService)
+    public function __construct(private DiscountCodeService $discountCodeService)
     {
         //
     }

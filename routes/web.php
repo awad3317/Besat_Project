@@ -53,7 +53,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');
     Route::post('/Vehicle/{id}/restore', [VehicleController::class, 'restore'])->name('Vehicle.restore');
-
+    Route::get('/chats', function () {
+        return view('pages.chat.index');
+    })->name('chats.index');
         
 Route::post('/calculate-price', [SpecialOrderController::class, 'calculatePrice'])->name('trip.calculatePrice');
     Route::get('/system-settings/auto-assign', [SystemSettingsController::class, 'getAutoAssignSetting'])
