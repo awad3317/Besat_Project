@@ -6,13 +6,13 @@ use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
 use App\Models\DiscountCode;
 use App\Services\DiscountCodeService;
-use Exception; 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class DiscountCodeController extends Controller
 {
-     public function __construct(private DiscountCodeService $discountCodeService)
+      public function __construct(private DiscountCodeService $discountCodeService)
     {
         //
     }
