@@ -21,22 +21,29 @@ class Index extends Component
     public $selectedConversationId = null;
     public $newMessage = '';
 
+    // إعادة ضبط الترقيم الصفحي عند البحث أو الفلترة
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+
     public function applyFilter(string $filter): void
     {
         $this->filter = $filter;
+        $this->resetPage();
     }
 
     public function selectConversation($id): void
     {
         $this->selectedConversationId = (int) $id;
 
-        $conversation = Conversation::find($id);
-        if ($conversation) {
-            $conversation->update(['participant_unread_count' => 0]);
+        // تحديث مباشر بدون جلب السجل كاملاً
+        Conversation::where('id', $id)->update(['participant_unread_count' => 0]);
 
-            $this->dispatch('subscribe-to-channel', conversationId: $id, type: $conversation->type ?? 'support');
-            $this->dispatch('scroll-to-bottom');
-        }
+        $conversationType = Conversation::where('id', $id)->value('type') ?? 'support';
+
+        $this->dispatch('subscribe-to-channel', conversationId: $id, type: $conversationType);
+        $this->dispatch('scroll-to-bottom');
     }
 
     public function sendMessage(): void
@@ -55,14 +62,10 @@ class Index extends Component
             'body'            => $this->newMessage,
         ]);
 
-        $conversation = Conversation::find($this->selectedConversationId);
-        if ($conversation) {
-            $conversation->update([
-                'last_message_id'   => $message->id,
-                'last_message_at'   => now(),
-                'user_unread_count' => $conversation->user_unread_count + 1,
-            ]);
-        }
+        Conversation::where('id', $this->selectedConversationId)->increment('user_unread_count', 1, [
+            'last_message_id' => $message->id,
+            'last_message_at' => now(),
+        ]);
 
         broadcast(new MessageSent($message))->toOthers();
 
@@ -74,10 +77,7 @@ class Index extends Component
     {
         if (!$this->selectedConversationId) return;
 
-        $conversation = Conversation::find($this->selectedConversationId);
-        if ($conversation) {
-            $conversation->update(['status' => 'closed']);
-        }
+        Conversation::where('id', $this->selectedConversationId)->update(['status' => 'closed']);
 
         $this->selectedConversationId = null;
     }
@@ -89,41 +89,46 @@ class Index extends Component
 
     public function render()
     {
+        // 1. جلب المحادثات بتقسيم الصفحات لتوفير الذاكرة
         $conversations = Conversation::query()
-            ->with(['user', 'driver', 'lastMessage'])
-            ->when($this->filter !== 'all', function ($query) {
-                $query->where('type', $this->filter);
-            })
+            ->select(['id', 'user_id', 'driver_id', 'type', 'last_message_id', 'last_message_at', 'participant_unread_count', 'updated_at'])
+            ->with([
+                'user:id,name,phone',
+                'driver:id,name,phone',
+                'lastMessage:id,body,created_at'
+            ])
+            ->when($this->filter !== 'all', fn($q) => $q->where('type', $this->filter))
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->whereHas('user', function ($u) {
-                        $u->where('name', 'like', '%' . $this->search . '%')
-                          ->orWhere('phone', 'like', '%' . $this->search . '%');
-                    })->orWhereHas('driver', function ($d) {
-                        $d->where('name', 'like', '%' . $this->search . '%')
-                          ->orWhere('phone', 'like', '%' . $this->search . '%');
-                    });
+                $term = '%' . $this->search . '%';
+                $query->where(function ($q) use ($term) {
+                    $q->whereHas('user', fn($u) => $u->where('name', 'like', $term)->orWhere('phone', 'like', $term))
+                      ->orWhereHas('driver', fn($d) => $d->where('name', 'like', $term)->orWhere('phone', 'like', $term));
                 });
             })
             ->orderBy('updated_at', 'desc')
-            ->get();
+            ->paginate(25); // جلب 25 محادثة فقط لكل صفحة بدلاً من جلب 2000 محادثة دفعة واحدة
 
-        $selectedConversation = $this->selectedConversationId 
-            ? Conversation::with(['user', 'driver', 'admin'])->find($this->selectedConversationId) 
-            : null;
+        // 2. جلب المحادثة المحددة والرسائل الخاصة بها بشكل منفصل
+        $selectedConversation = null;
+        $messages = [];
 
-        $messages = $this->selectedConversationId 
-            ? Message::where('conversation_id', $this->selectedConversationId)
+        if ($this->selectedConversationId) {
+            $selectedConversation = Conversation::select(['id', 'user_id', 'driver_id', 'type'])
+                ->with(['user:id,name', 'driver:id,name'])
+                ->find($this->selectedConversationId);
+
+            $messages = Message::where('conversation_id', $this->selectedConversationId)
+                ->select(['id', 'conversation_id', 'sender_type', 'sender_id', 'body', 'created_at'])
                 ->with('sender:id,name')
                 ->orderBy('created_at', 'asc')
-                ->get() 
-            : [];
+                ->get();
+        }
 
         return view('livewire.chat.index', [
             'conversations'        => $conversations,
             'selectedConversation' => $selectedConversation,
             'messages'             => $messages,
-            'totalCount'           => Conversation::count(),
+            'totalCount'           => $conversations->total(), // استخدام العداد المباشر من الترقيم بدلاً من Count منفصل
         ]);
     }
 }

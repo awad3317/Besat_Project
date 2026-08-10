@@ -131,9 +131,7 @@
             <h5 class="text-xs font-bold text-gray-800 dark:text-white/90 truncate">
                 {{ $selectedConversation->user?->name ?? $selectedConversation->driver?->name }}
             </h5>
-            <span class="text-[10px] text-gray-400 truncate">
-                محادثة #{{ $selectedConversation->id }} — {{ $selectedConversation->type == 'request' ? 'طلب' : 'دعم فني' }}
-            </span>
+           
         </div>
     </div>
 
