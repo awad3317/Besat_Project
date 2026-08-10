@@ -21,6 +21,8 @@ class Index extends Component
     public function applyFilter(string $filter): void
     {
         $this->filter = $filter;
+        unset($this->users);
+        $this->resetPage();
     }
 
     #[Computed(cache: true)]

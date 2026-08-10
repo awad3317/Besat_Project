@@ -2,72 +2,57 @@
 
     <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
         
-        <div wire:click.debounce.150ms="applyFilter('all')"
-             wire:loading.class="opacity-50"
-             wire:target="applyFilter"
-             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] 
-                    @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @endif">
-            
-            <div wire:loading wire:target="applyFilter('all')" 
-                 class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
-                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
-            </div>
-            
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                <svg fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
-                </svg>
-            </div>
-            <div class="mt-3 w-full">
-                <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي المستخدمين</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
-                    {{ $this->stats['total'] ?? 0 }}
-                </h4>
-            </div>
+    {{-- Total Users Card --}}
+    <div wire:click="applyFilter('all')"
+         wire:loading.class="opacity-50"
+         wire:target="applyFilter('all')"
+         class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] 
+                @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+        
+        <div wire:loading wire:target="applyFilter('all')" 
+             class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
+            <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
         </div>
-
-        <div wire:click.debounce.150ms="applyFilter('banned')"
-             wire:loading.class="opacity-50"
-             wire:target="applyFilter"
-             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] 
-                    @if ($activeFilter == 'banned') border border-brand-500 dark:border-brand-500 @endif">
-            <div wire:loading wire:target="applyFilter('banned')" 
-                 class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
-                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
-            </div>
-            
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                <svg width="30" height="30" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink" fill="#dc6803" stroke="#dc6803">
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                    <g id="SVGRepo_iconCarrier">
-                        <title>cancelled</title>
-                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                            <g id="add" fill="#dc6803" transform="translate(42.666667, 42.666667)">
-                                <path
-                                    d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z"
-                                    id="Combined-Shape"> </path>
-                            </g>
-                        </g>
-                    </g>
-                </svg>
-            </div>
-            <div class="mt-3 w-full">
-                <span class="text-xs text-gray-500 dark:text-gray-400">المحظورين</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
-                    {{ $this->stats['banned'] ?? 0 }}
-                </h4>
-            </div>
+        
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+            <svg fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
+            </svg>
         </div>
-
-        <div class="flex m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-
-        </div>
-        <div class="flex m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-
+        <div class="mt-3 w-full">
+            <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي المستخدمين</span>
+            <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                {{ $this->stats['total'] ?? 0 }}
+            </h4>
         </div>
     </div>
+
+    {{-- Banned Users Card --}}
+    <div wire:click="applyFilter('banned')"
+         wire:loading.class="opacity-50"
+         wire:target="applyFilter('banned')"
+         class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] 
+                @if ($activeFilter == 'banned') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+        
+        <div wire:loading wire:target="applyFilter('banned')" 
+             class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
+            <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+        </div>
+        
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+            <svg width="30" height="30" viewBox="0 0 512 512" fill="#dc6803">
+                <path d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z"></path>
+            </svg>
+        </div>
+        <div class="mt-3 w-full">
+            <span class="text-xs text-gray-500 dark:text-gray-400">المحظورين</span>
+            <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                {{ $this->stats['banned'] ?? 0 }}
+            </h4>
+        </div>
+    </div>
+
+</div>
 
     <div class="space-y-5 sm:space-y-6">
         <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
