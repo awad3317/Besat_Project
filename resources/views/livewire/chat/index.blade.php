@@ -91,7 +91,7 @@
                     </div>
 
                     <!-- الوقت -->
-                    <span class="text-[9px] text-gray-400/70 font-normal flex-shrink-0">
+                    <span class="text-[10px] text-gray-400 font-medium flex-shrink-0">
                         {{ $conv->last_message_at ? $conv->last_message_at->format('h:i A') : '' }}
                     </span>
                 </div>
