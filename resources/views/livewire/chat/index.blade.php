@@ -53,15 +53,7 @@
         </div>
 
         <!-- قائمة المحادثات -->
-        <div x-ref="sidebarList"
-             x-data="{ scrollPos: 0 }"
-             x-init="
-                 const el = $refs.sidebarList;
-                 el.addEventListener('scroll', () => { scrollPos = el.scrollTop });
-                 const observer = new MutationObserver(() => { el.scrollTop = scrollPos });
-                 observer.observe(el, { childList: true, subtree: true });
-             "
-             class="flex-1 overflow-y-auto p-2 chat-custom-scroll space-y-1.5">
+        <div id="sidebar-scroll" class="flex-1 overflow-y-auto p-2 chat-custom-scroll space-y-1.5">
     @forelse($conversations as $conv)
         @php
             $participantName = $conv->user?->name ?? $conv->driver?->name ?? 'مستخدم غير معروف';
@@ -208,3 +200,26 @@
     </div>
 
 </div>
+
+@script
+<script>
+    let sidebarScrollPos = 0;
+    const sidebarEl = document.getElementById('sidebar-scroll');
+
+    if (sidebarEl) {
+        sidebarEl.addEventListener('scroll', () => {
+            sidebarScrollPos = sidebarEl.scrollTop;
+        });
+    }
+
+    Livewire.hook('commit', ({ succeed }) => {
+        const saved = sidebarScrollPos;
+        succeed(() => {
+            queueMicrotask(() => {
+                const el = document.getElementById('sidebar-scroll');
+                if (el) el.scrollTop = saved;
+            });
+        });
+    });
+</script>
+@endscript
