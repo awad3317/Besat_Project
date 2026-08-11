@@ -33,9 +33,9 @@ class ChatRepository
     {
         return Conversation::firstOrCreate(
             [
-                'type'    => 'support',
-                'user_id' => $userId,
-                'status'  => 'open',
+                'type' => 'support',
+                'user_id'=> $userId,
+                'status' => 'open',
             ]
         );
     }
