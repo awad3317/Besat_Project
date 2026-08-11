@@ -5,6 +5,7 @@ use App\Http\Controllers\AdController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\API\AppSettingController;
 use App\Http\Controllers\BankController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DriverController;
@@ -53,9 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
         ->name('system-settings.auto-assign.update');
     Route::post('/Vehicle/{id}/restore', [VehicleController::class, 'restore'])->name('Vehicle.restore');
-    Route::get('/chats', function () {
-        return view('pages.chat.index');
-    })->name('chats.index');
+    Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
         
 Route::post('/calculate-price', [SpecialOrderController::class, 'calculatePrice'])->name('trip.calculatePrice');
     Route::get('/system-settings/auto-assign', [SystemSettingsController::class, 'getAutoAssignSetting'])
