@@ -69,7 +69,11 @@ class ChatController extends Controller
 
             $user = auth('sanctum')->user();
             $conversation = Conversation::findOrFail($request->conversation_id);
-            if (!$conversation->user_id == $user->id) {
+
+            $isOwner = (get_class($user) === User::class && $conversation->user_id === $user->id)
+                     || (get_class($user) === Driver::class && $conversation->driver_id === $user->id);
+
+            if (!$isOwner) {
                 return ApiResponseClass::sendError('غير مصرح لك بالإرسال في هذه المحادثة', [], 403);
             }
             $data = $validator->validated();
