@@ -82,12 +82,6 @@
                             {{ $participantName }}
                         </h5>
                         
-                        <!-- بادج عدد الرسائل غير المقروءة بجانب الاسم مباشرة -->
-                        @if($unreadCount > 0)
-                            <span class="flex h-4 min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white flex-shrink-0 shadow-xs animate-pulse">
-                                {{ $unreadCount }}
-                            </span>
-                        @endif
                     </div>
 
                     <!-- الوقت -->
@@ -95,11 +89,16 @@
                         {{ $conv->last_message_at ? $conv->last_message_at->format('h:i A') : '' }}
                     </span>
                 </div>
-                <!-- السطر السفلي: نص آخر رسالة -->
+                <!-- السطر السفلي: نص آخر رسالة + بادج غير مقروء -->
                 <div class="flex items-center justify-between gap-1.5">
                     <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 flex-1 leading-normal">
                         {{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}
                     </p>
+                    @if($unreadCount > 0)
+                        <span class="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold text-white flex-shrink-0">
+                            {{ $unreadCount }}
+                        </span>
+                    @endif
                 </div>
             </div>
         </div>
