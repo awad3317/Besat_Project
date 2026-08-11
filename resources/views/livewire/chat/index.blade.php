@@ -76,29 +76,27 @@
             <!-- تفاصيل المحادثة -->
             <div class="flex-1 min-w-0 pr-1">
                 <!-- السطر العلوي: الاسم + بادج عدد الرسائل غير المقروءة + الوقت -->
-                <div class="flex items-center justify-between mb-1">
-                    <div class="flex items-center gap-1.5 min-w-0">
-                        <h5 class="text-xs font-bold text-gray-800 truncate dark:text-white/90 leading-tight">
+                <div class="flex items-start justify-between gap-2">
+                    <!-- النصوص: الاسم + آخر رسالة -->
+                    <div class="flex-1 min-w-0">
+                        <h5 class="text-xs font-bold text-gray-800 truncate dark:text-white/90 leading-tight mb-1">
                             {{ $participantName }}
                         </h5>
-                        
+                        <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 leading-normal">
+                            {{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}
+                        </p>
                     </div>
-
-                    <!-- الوقت -->
-                    <span class="text-[10px] text-gray-400 font-medium flex-shrink-0">
-                        {{ $conv->last_message_at ? $conv->last_message_at->format('h:i A') : '' }}
-                    </span>
-                </div>
-                <!-- السطر السفلي: نص آخر رسالة + بادج غير مقروء -->
-                <div class="flex items-center justify-between gap-1.5">
-                    <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 flex-1 leading-normal">
-                        {{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}
-                    </p>
-                    @if($unreadCount > 0)
-                        <span class="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-bold text-white flex-shrink-0">
-                            {{ $unreadCount }}
+                    <!-- الوقت + بادج -->
+                    <div class="flex flex-col items-end gap-1 flex-shrink-0 pt-0.5">
+                        <span class="text-[10px] text-gray-400 font-medium">
+                            {{ $conv->last_message_at ? $conv->last_message_at->format('h:i A') : '' }}
                         </span>
-                    @endif
+                        @if($unreadCount > 0)
+                            <span class="flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-brand-500 px-1 text-[8px] font-bold text-white">
+                                {{ $unreadCount }}
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
