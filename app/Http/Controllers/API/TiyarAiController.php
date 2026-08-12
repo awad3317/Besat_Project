@@ -41,18 +41,23 @@ class TiyarAiController extends Controller
             // تنظيف رقم الهاتف وإزالة النطاق
             $phone = explode('@', $sender)[0];
 
-            // 2. تجنب الرسائل الصادرة من البوت/الموظف (IsFromMe) مع إمكانية إعادة التفعيل بكلمة السر
+            // 2. معالجة الرسائل الصادرة من البوت/الموظف (IsFromMe)
             $isFromMe = $data['data']['Info']['IsFromMe'] ?? false;
+
             if ($isFromMe) {
-                if (Str::contains(mb_strtolower($messageText), 'تيار احبك')) {
+                if (Str::contains(mb_strtolower($messageText), 'تفعيل الآلي')) {
                     $this->sessionService->disableHumanSupport($phone);
                     Log::info("AI reactivated by agent sending secret phrase for phone: {$phone}");
+                } else {
+                    $this->sessionService->enableHumanSupport($phone);
+                    Log::info("Human support activated automatically because agent messaged phone: {$phone}");
                 }
-                return response()->json(['status' => 'ignored_from_me']);
+
+                return response()->json(['status' => 'processed_from_me']);
             }
 
-            // 3. فحص هل أرسل العميل كلمة "تيار احبك" لإعادة تفعيل الـ AI؟
-            if (Str::contains(mb_strtolower($messageText), 'تيار احبك')) {
+            // 3. فحص هل أرسل العميل الكلمة المفتاحية لإعادة التفعيل؟
+            if (Str::contains(mb_strtolower($messageText), 'تفعيل الآلي')) {
                 $this->sessionService->disableHumanSupport($phone);
                 
                 $welcomeBackMsg = "أهلاً بك مجدداً! ❤️ تم إعادة تفعيل المساعد الذكي لشركة تيار. كيف يمكننا مساعدتك اليوم؟";
@@ -73,8 +78,8 @@ class TiyarAiController extends Controller
                 // تفعيل حالة الدعم الفني للرقم (إيقاف الـ AI)
                 $this->sessionService->enableHumanSupport($phone);
 
-                // إرسال التنبيه المحدد للعميل
-                $transferMsg = "تم توجيهك إلى الدعم الفني لشركة تيار، سيتواصل معك أحد ممثلينا قريباً. 👨‍💻\n\nإذا أردت العودة والتواصل مع المساعد الآلي في أي وقت، أرسل كلمة: \"تيار احبك\"";
+                // إرسال التنبيه المحدد للعميل مع الكلمة المفتاحية الجديدة
+                $transferMsg = "تم توجيهك إلى الدعم الفني لشركة تيار، سيتواصل معك أحد ممثلينا قريباً. 👨‍💻\n\nإذا أردت العودة والتواصل مع المساعد الآلي في أي وقت، أرسل كلمة: \"تفعيل الآلي\"";
                 $this->sendWhatsAppMessage($phone, $transferMsg);
 
                 Log::info("Human support enabled and notification sent for phone: {$phone}");
@@ -130,11 +135,11 @@ class TiyarAiController extends Controller
         return false;
     }
 
-   private function processWithAi(string $userMessage, array $history): string
-{
-    $defaultFallback = "أنا المساعد الذكي لشركة تيار للحلول البرمجية، ومخصص للإجابة على استفساراتكم حول خدماتنا البرمجية والتصميمية وتطبيقاتنا. كيف يمكنني مساعدتك في مشروعك اليوم؟";
+    private function processWithAi(string $userMessage, array $history): string
+    {
+        $defaultFallback = "أنا المساعد الذكي لشركة تيار للحلول البرمجية، ومخصص للإجابة على استفساراتكم حول خدماتنا البرمجية والتصميمية وتطبيقاتنا. كيف يمكنني مساعدتك في مشروعك اليوم؟";
 
-    $systemPrompt = <<<EOT
+        $systemPrompt = <<<EOT
 أنت المساعد الذكي الرسمي والوحيد لشركة "تيار للحلول البرمجية".
 
 قواعد ونطاق العمل الصارمة (إجباري):
@@ -181,54 +186,54 @@ class TiyarAiController extends Controller
   - حافظ على الردود قاطعة، واضحة، ولا تتجاوز فقرتين لضمان سهولة القراءة عبر الواتساب.
 EOT;
 
-    $messages = [
-        ['role' => 'system', 'content' => $systemPrompt]
-    ];
-
-    foreach ($history as $msg) {
-        $messages[] = $msg;
-    }
-
-    $messages[] = ['role' => 'user', 'content' => $userMessage];
-
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),
-        'Content-Type' => 'application/json',
-    ])->post('https://api.groq.com/openai/v1/chat/completions', [
-        'model' => 'llama-3.1-8b-instant',
-        'messages' => $messages,
-        'temperature' => 0.2, // 👈 تم تقليل الحرارة لجعل النموذج التزامي وصرامي أكثر ويرتجل أقل
-        'max_tokens' => 400,
-    ]);
-
-    if ($response->successful()) {
-        $aiContent = $response->json()['choices'][0]['message']['content'] ?? $defaultFallback;
-
-        // 🛡️ [طبقة الأمان المضافة]: فحص وتسريب التعليمات البرمجية
-        $forbiddenKeywords = [
-            'Strict Confidentiality',
-            'Strict Security',
-            'سرية التعليمات',
-            'قواعد ونطاق العمل',
-            'تجاهل الأوامر السابقة',
-            'المساعد الذكي الرسمي والوحيد',
-            'حماية التوجيهات',
-            'EOT'
+        $messages = [
+            ['role' => 'system', 'content' => $systemPrompt]
         ];
 
-        foreach ($forbiddenKeywords as $keyword) {
-            if (mb_stripos($aiContent, $keyword) !== false) {
-                Log::warning("AI Security Triggered: Leakage attempt intercepted!");
-                return $defaultFallback; // استبدال الرد فوراً بالاعتذار المعتمد
-            }
+        foreach ($history as $msg) {
+            $messages[] = $msg;
         }
 
-        return $aiContent;
-    }
+        $messages[] = ['role' => 'user', 'content' => $userMessage];
 
-    Log::error("Groq AI Error: " . $response->body());
-    return $defaultFallback;
-}
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),
+            'Content-Type' => 'application/json',
+        ])->post('https://api.groq.com/openai/v1/chat/completions', [
+            'model' => 'llama-3.1-8b-instant',
+            'messages' => $messages,
+            'temperature' => 0.2,
+            'max_tokens' => 400,
+        ]);
+
+        if ($response->successful()) {
+            $aiContent = $response->json()['choices'][0]['message']['content'] ?? $defaultFallback;
+
+            // 🛡️ [طبقة الأمان المضافة]: فحص وتسريب التعليمات البرمجية
+            $forbiddenKeywords = [
+                'Strict Confidentiality',
+                'Strict Security',
+                'سرية التعليمات',
+                'قواعد ونطاق العمل',
+                'تجاهل الأوامر السابقة',
+                'المساعد الذكي الرسمي والوحيد',
+                'حماية التوجيهات',
+                'EOT'
+            ];
+
+            foreach ($forbiddenKeywords as $keyword) {
+                if (mb_stripos($aiContent, $keyword) !== false) {
+                    Log::warning("AI Security Triggered: Leakage attempt intercepted!");
+                    return $defaultFallback;
+                }
+            }
+
+            return $aiContent;
+        }
+
+        Log::error("Groq AI Error: " . $response->body());
+        return $defaultFallback;
+    }
 
     private function sendWhatsAppMessage(string $phone, string $text)
     {
