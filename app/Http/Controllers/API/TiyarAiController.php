@@ -23,53 +23,47 @@ class TiyarAiController extends Controller
         try {
             $data = $request->all();
 
-            Log::info("WhatsApp Webhook Received", $data);
+            Log::info("Evolution Go Webhook Received", $data);
 
             // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe)
             $isFromMe = filter_var(
-                $data['data']['key']['fromMe'] ?? $data['data']['Info']['IsFromMe'] ?? false, 
+                $data['data']['key']['fromMe'] 
+                ?? $data['data']['isFromMe'] 
+                ?? false, 
                 FILTER_VALIDATE_BOOLEAN
             );
 
-            // 2. استخراج رقم العميل الصحيح (فصل Sender عن Chat في الرسائل الصادرة)
-            if ($isFromMe) {
-                // في الرسائل الصادرة من الموظف، رقم العميل يكون حصراً في Chat أو remoteJid
-                $rawPhone = $data['data']['Info']['Chat'] 
-                    ?? $data['data']['key']['remoteJid'] 
-                    ?? null;
-            } else {
-                // في الرسائل الواردة من العميل، رقم العميل يكون في Sender أو remoteJid أو Chat
-                $rawPhone = $data['data']['Info']['Sender'] 
-                    ?? $data['data']['key']['remoteJid'] 
-                    ?? $data['data']['Info']['Chat'] 
-                    ?? null;
-            }
+            // 2. استخراج رقم العميل من remoteJid بأسلوب Evolution Go
+            $rawPhone = $data['data']['key']['remoteJid'] 
+                ?? $data['data']['remoteJid'] 
+                ?? null;
 
-            // 3. استخراج نص الرسالة
-            $messageText = $data['data']['Message']['conversation'] 
-                ?? $data['data']['Message']['extendedTextMessage']['text'] 
-                ?? $data['data']['message']['conversation'] 
+            // 3. استخراج نص الرسالة (يدعم النص العادي والـ Extended ورد الأزرار)
+            $messageText = $data['data']['message']['conversation'] 
                 ?? $data['data']['message']['extendedTextMessage']['text'] 
+                ?? $data['data']['message']['buttonsResponseMessage']['selectedDisplayText']
+                ?? $data['data']['message']['buttonsResponseMessage']['selectedButtonId']
+                ?? $data['data']['Message']['conversation'] // احتياطي للنسخ المزدوجة
+                ?? $data['data']['Message']['extendedTextMessage']['text']
                 ?? null;
 
             if (!$rawPhone || !$messageText) {
                 return response()->json(['status' => 'ignored_empty']);
             }
 
-            // 4. تنظيف رقم العميل بدقة من الأقسام الإضافية مثل :device_id وأي رمور غير رقمية
-            // مثال: "967771234567:12@s.whatsapp.net" تتحول حصراً إلى "967771234567"
+            // 4. تنقية رقم العميل تماماً (حذف @s.whatsapp.net وتنظيف ومعالجة المعرفات مثل :device_id)
             $cleanJid = explode('@', $rawPhone)[0];
             $cleanJid = explode(':', $cleanJid)[0];
             $phone = preg_replace('/[^0-9]/', '', $cleanJid);
 
-            // 5. معالجة الرسائل الصادرة من الموظف (IsFromMe)
+            // 5. معالجة الرسائل الصادرة من الموظف (IsFromMe = true)
             if ($isFromMe) {
                 $textLower = mb_strtolower($messageText);
 
                 if (Str::contains($textLower, 'تفعيل الآلي')) {
                     $this->sessionService->disableHumanSupport($phone);
                     Log::info("AI reactivated by agent for phone: {$phone}");
-                    $this->sendWhatsAppMessage($phone, "تم إعادة تفعيل المساعد الآلي لخدمتك. 🤖");
+                    $this->sendWhatsAppMessage($phone, "تم إعادة تفعيل المساعد الآلي لخدمتك. 🤖", false);
                 } 
                 elseif (
                     Str::contains($textLower, [
@@ -83,7 +77,7 @@ class TiyarAiController extends Controller
                 ) {
                     $this->sessionService->enableHumanSupport($phone);
                     Log::info("AI stopped by agent using support keyword for phone: {$phone}");
-                    $this->sendWhatsAppMessage($phone, "تم إيقاف المساعد الآلي. يتحدث معك الآن أحد ممثلي الدعم الفني. 👨‍💻");
+                    $this->sendWhatsAppMessage($phone, "تم إيقاف المساعد الآلي. يتحدث معك الآن أحد ممثلي الدعم الفني. 👨‍💻", false);
                 } 
                 else {
                     Log::info("Agent sent regular message for phone: {$phone}. AI remains active.");
@@ -97,7 +91,7 @@ class TiyarAiController extends Controller
                 $this->sessionService->disableHumanSupport($phone);
                 
                 $welcomeBackMsg = "أهلاً بك مجدداً! ❤️ تم إعادة تفعيل المساعد الذكي لشركة تيار. كيف يمكننا مساعدتك اليوم؟";
-                $this->sendWhatsAppMessage($phone, $welcomeBackMsg);
+                $this->sendWhatsAppMessage($phone, $welcomeBackMsg, true);
 
                 Log::info("AI reactivated by customer secret phrase for phone: {$phone}");
                 return response()->json(['status' => 'ai_reactivated']);
@@ -111,26 +105,24 @@ class TiyarAiController extends Controller
 
             // 8. الفحص هل طلب العميل التحويل للدعم الفني؟
             if ($this->isRequestingHumanSupport($messageText)) {
-                // تفعيل حالة الدعم الفني للرقم (إيقاف الـ AI)
                 $this->sessionService->enableHumanSupport($phone);
 
-                // إرسال التنبيه المحدد للعميل
                 $transferMsg = "تم توجيهك إلى الدعم الفني لشركة تيار، سيتواصل معك أحد ممثلينا قريباً. 👨‍💻\n\nإذا أردت العودة والتواصل مع المساعد الآلي في أي وقت، أرسل كلمة: \"تفعيل الآلي\"";
-                $this->sendWhatsAppMessage($phone, $transferMsg);
+                $this->sendWhatsAppMessage($phone, $transferMsg, false);
 
                 Log::info("Human support enabled and notification sent for phone: {$phone}");
                 return response()->json(['status' => 'transferred_to_human']);
             }
 
-            // 9. جلب سياق المحادثة لمعالجة الذكاء الاصطناعي
+            // 9. معالجة الذكاء الاصطناعي
             $history = $this->sessionService->getHistory($phone);
             $aiResponse = $this->processWithAi($messageText, $history);
 
-            // 10. حفظ المحادثة وإرسال الرد عبر الواتساب
+            // 10. حفظ المحادثة وإرسال الرد
             $this->sessionService->addMessage($phone, 'user', $messageText);
             $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
 
-            $this->sendWhatsAppMessage($phone, $aiResponse);
+            $this->sendWhatsAppMessage($phone, $aiResponse, true);
 
             return response()->json(['status' => 'success']);
 
@@ -140,12 +132,11 @@ class TiyarAiController extends Controller
         }
     }
 
-    /**
-     * فحص ما إذا كان نص الرسالة يحتوي على طلب تحويل للدعم الفني
-     */
     private function isRequestingHumanSupport(string $text): bool
     {
         $keywords = [
+            'btn_human_support',
+            'تحدث مع الدعم الفني',
             'دعم فني',
             'الدعم الفني',
             'خدمة العملاء',
@@ -245,7 +236,6 @@ EOT;
         if ($response->successful()) {
             $aiContent = $response->json()['choices'][0]['message']['content'] ?? $defaultFallback;
 
-            // 🛡️ [طبقة الأمان المضافة]: فحص وتسريب التعليمات البرمجية
             $forbiddenKeywords = [
                 'Strict Confidentiality',
                 'Strict Security',
@@ -271,20 +261,45 @@ EOT;
         return $defaultFallback;
     }
 
-    private function sendWhatsAppMessage(string $phone, string $text)
+    /**
+     * دالة الإرسال المتوافقة حصرياً مع Evolution Go
+     */
+    private function sendWhatsAppMessage(string $phone, string $text, bool $showSupportButton = true)
     {
         $baseUrl = rtrim(env('EVOLUTION_API_BASE_URL'), '/');
         $apiKey = env('EVOLUTION_API_KEY');
+        $instance = env('EVOLUTION_INSTANCE', 'tyiar');
 
+        // 1. الإرسال العادي (Text)
+        if (!$showSupportButton) {
+            Http::withHeaders([
+                'apikey' => $apiKey,
+                'Content-Type' => 'application/json',
+            ])->post("{$baseUrl}/message/sendText/{$instance}", [
+                'number' => $phone,
+                'text' => $text,
+                'delay' => 1200,
+                'options' => [
+                    'presence' => 'composing'
+                ]
+            ]);
+            return;
+        }
+
+        // 2. الإرسال مع زر أزرار تفاعلية (Buttons) لـ Evolution Go
         Http::withHeaders([
             'apikey' => $apiKey,
             'Content-Type' => 'application/json',
-        ])->post("{$baseUrl}/send/text", [
+        ])->post("{$baseUrl}/message/sendButtons/{$instance}", [
             'number' => $phone,
-            'text' => $text,
-            'delay' => 1200,
-            'options' => [
-                'presence' => 'composing'
+            'title' => 'شركة تيار للحلول البرمجية',
+            'description' => $text,
+            'footer' => 'يمكنك تحويل المحادثة للدعم الفني مباشرة',
+            'buttons' => [
+                [
+                    'displayText' => '👨‍💻 التحدث مع الدعم الفني',
+                    'id' => 'btn_human_support'
+                ]
             ]
         ]);
     }
