@@ -28,12 +28,10 @@ class TiyarAiController extends Controller
             // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe)
             $isFromMe = filter_var($data['data']['Info']['IsFromMe'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-            // 2. استخراج رقم العميل الصحيح (سواء كانت الرسالة صادرة أم واردة)
+            // 2. استخراج رقم العميل الصحيح
             if ($isFromMe) {
-                // في الرسائل الصادرة، رقم العميل يكون في Chat
                 $rawPhone = $data['data']['Info']['Chat'] ?? $data['data']['Info']['Sender'] ?? null;
             } else {
-                // في الرسائل الواردة، رقم العميل يكون في Sender أو Chat
                 $rawPhone = $data['data']['Info']['Sender'] ?? $data['data']['Info']['Chat'] ?? null;
             }
 
@@ -46,10 +44,10 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'ignored_empty']);
             }
 
-            // تنظيف الرقم لاستخراج الأرقام فقط بدون @s.whatsapp.net
+            // 4. استخراج وتنظيف متغير $phone قبل استخدامه
             $phone = explode('@', $rawPhone)[0];
 
-            // 4. معالجة الرسائل الصادرة من الموظف (IsFromMe)
+            // 5. معالجة الرسائل الصادرة من الموظف (IsFromMe)
             if ($isFromMe) {
                 $textLower = mb_strtolower($messageText);
 
@@ -58,21 +56,28 @@ class TiyarAiController extends Controller
                     Log::info("AI reactivated by agent for phone: {$phone}");
                     $this->sendWhatsAppMessage($phone, "تم إعادة تفعيل المساعد الآلي لخدمتك. 🤖");
                 } 
-                elseif (Str::contains($textLower, 'إيقاف الآلي')) {
+                elseif (
+                    Str::contains($textLower, [
+                        'إيقاف الآلي',
+                        'الدعم الفني',
+                        'دعم فني',
+                        'معك الموظف',
+                        'معك الدعم',
+                        'خدمة العملاء'
+                    ])
+                ) {
                     $this->sessionService->enableHumanSupport($phone);
-                    Log::info("AI stopped manually by agent for phone: {$phone}");
+                    Log::info("AI stopped by agent using support keyword for phone: {$phone}");
                     $this->sendWhatsAppMessage($phone, "تم إيقاف المساعد الآلي. يتحدث معك الآن أحد ممثلي الدعم الفني. 👨‍💻");
                 } 
                 else {
-                    // أي رسالة عادية من الموظف تغلق الـ AI للعميل تلقائياً
-                    $this->sessionService->enableHumanSupport($phone);
-                    Log::info("Human support activated automatically for phone: {$phone} because agent sent a message.");
+                    Log::info("Agent sent regular message for phone: {$phone}. AI remains active.");
                 }
 
                 return response()->json(['status' => 'processed_from_me']);
             }
 
-            // 5. فحص هل أرسل العميل الكلمة المفتاحية لإعادة التفعيل؟
+            // 6. فحص هل أرسل العميل الكلمة المفتاحية لإعادة التفعيل بنفسه؟
             if (Str::contains(mb_strtolower($messageText), 'تفعيل الآلي')) {
                 $this->sessionService->disableHumanSupport($phone);
                 
@@ -83,13 +88,13 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'ai_reactivated']);
             }
 
-            // 6. الفحص هل الرقم محوّل للدعم الفني البشري حالياً؟
+            // 7. الفحص هل الرقم محوّل للدعم الفني البشري حالياً؟
             if ($this->sessionService->isHumanSupportActive($phone)) {
                 Log::info("AI bypassed for {$phone}: Human support is active.");
                 return response()->json(['status' => 'ignored_human_support_active']);
             }
 
-            // 7. الفحص هل طلب العميل التحويل للدعم الفني؟
+            // 8. الفحص هل طلب العميل التحويل للدعم الفني؟
             if ($this->isRequestingHumanSupport($messageText)) {
                 // تفعيل حالة الدعم الفني للرقم (إيقاف الـ AI)
                 $this->sessionService->enableHumanSupport($phone);
@@ -102,11 +107,11 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'transferred_to_human']);
             }
 
-            // 8. جلب سياق المحادثة لمعالجة الذكاء الاصطناعي
+            // 9. جلب سياق المحادثة لمعالجة الذكاء الاصطناعي
             $history = $this->sessionService->getHistory($phone);
             $aiResponse = $this->processWithAi($messageText, $history);
 
-            // 9. حفظ المحادثة وإرسال الرد عبر الواتساب
+            // 10. حفظ المحادثة وإرسال الرد عبر الواتساب
             $this->sessionService->addMessage($phone, 'user', $messageText);
             $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
 
