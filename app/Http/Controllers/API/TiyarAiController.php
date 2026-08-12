@@ -25,26 +25,30 @@ class TiyarAiController extends Controller
 
             Log::info("WhatsApp Webhook Received", $data);
 
-            // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe)
-            $isFromMe = filter_var($data['data']['Info']['IsFromMe'] ?? false, FILTER_VALIDATE_BOOLEAN);
+            // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe) - تم إضافة $ المصححة
+            $isFromMe = filter_var(
+                $data['data']['key']['fromMe'] ?? $data['data']['Info']['IsFromMe'] ?? false, 
+                FILTER_VALIDATE_BOOLEAN
+            );
 
-            // 2. استخراج رقم العميل الصحيح
-            if ($isFromMe) {
-                $rawPhone = $data['data']['Info']['Chat'] ?? $data['data']['Info']['Sender'] ?? null;
-            } else {
-                $rawPhone = $data['data']['Info']['Sender'] ?? $data['data']['Info']['Chat'] ?? null;
-            }
+            // 2. استخراج رقم العميل الصحيح (في الرسائل الصادرة والواردة)
+            $rawPhone = $data['data']['key']['remoteJid'] 
+                ?? $data['data']['Info']['Chat'] 
+                ?? $data['data']['Info']['Sender'] 
+                ?? null;
 
-            // 3. استخراج نص الرسالة
+            // 3. استخراج نص الرسالة (سواء كانت عادية أو Extended)
             $messageText = $data['data']['Message']['conversation'] 
                 ?? $data['data']['Message']['extendedTextMessage']['text'] 
+                ?? $data['data']['message']['conversation'] 
+                ?? $data['data']['message']['extendedTextMessage']['text'] 
                 ?? null;
 
             if (!$rawPhone || !$messageText) {
                 return response()->json(['status' => 'ignored_empty']);
             }
 
-            // 4. استخراج وتنظيف متغير $phone قبل استخدامه
+            // 4. تنظيف الرقم لاستخراج الأرقام فقط بدون @s.whatsapp.net
             $phone = explode('@', $rawPhone)[0];
 
             // 5. معالجة الرسائل الصادرة من الموظف (IsFromMe)
