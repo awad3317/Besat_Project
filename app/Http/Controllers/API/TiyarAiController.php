@@ -283,45 +283,31 @@ EOT;
         return $defaultFallback;
     }
 
-    private function sendWhatsAppMessage(string $phone, string $text, bool $showSupportButton = true)
-    {
-        $baseUrl = rtrim(env('EVOLUTION_API_BASE_URL'), '/');
-        $apiKey = env('EVOLUTION_API_KEY');
-        $instance = env('EVOLUTION_INSTANCE', 'tyiar');
+    private function sendWhatsAppMessage(string $phone, string $text, bool $showSupportOption = true)
+{
+    $baseUrl = rtrim(env('EVOLUTION_API_BASE_URL'), '/');
+    $apiKey = env('EVOLUTION_API_KEY');
+    $instance = env('EVOLUTION_INSTANCE', 'tyiar');
 
-        Log::info("Sending WhatsApp Message", ['phone' => $phone, 'text' => $text, 'instance' => $instance]);
-
-        if (!$showSupportButton) {
-            $res = Http::withHeaders([
-                'apikey' => $apiKey,
-                'Content-Type' => 'application/json',
-            ])->post("{$baseUrl}/message/sendText/{$instance}", [
-                'number' => $phone,
-                'text' => $text,
-                'delay' => 1200,
-                'options' => [
-                    'presence' => 'composing'
-                ]
-            ]);
-            Log::info("Send Text Response: " . $res->body());
-            return;
-        }
-
-        $res = Http::withHeaders([
-            'apikey' => $apiKey,
-            'Content-Type' => 'application/json',
-        ])->post("{$baseUrl}/message/sendButtons/{$instance}", [
-            'number' => $phone,
-            'title' => 'شركة تيار للحلول البرمجية',
-            'description' => $text,
-            'footer' => 'يمكنك تحويل المحادثة للدعم الفني مباشرة',
-            'buttons' => [
-                [
-                    'displayText' => '👨‍💻 التحدث مع الدعم الفني',
-                    'id' => 'btn_human_support'
-                ]
-            ]
-        ]);
-        Log::info("Send Buttons Response: " . $res->body());
+    // إذا كان الخيار مفعلاً، نضيف تنبيه التحويل للدعم الفني في ذيل النص
+    if ($showSupportOption) {
+        $text .= "\n\nـــــــــــــــــــــــــــــــــ\n👨‍💻 للتحويل للدعم الفني البشري، أرسل: \"دعم فني\"";
     }
+
+    Log::info("Sending WhatsApp Message (Text)", ['phone' => $phone, 'instance' => $instance]);
+
+    $res = Http::withHeaders([
+        'apikey' => $apiKey,
+        'Content-Type' => 'application/json',
+    ])->post("{$baseUrl}/message/sendText/{{$instance}}", [
+        'number' => $phone,
+        'text' => $text,
+        'delay' => 1200,
+        'options' => [
+            'presence' => 'composing'
+        ]
+    ]);
+
+    Log::info("Send Text Response: " . $res->body());
+}
 }
