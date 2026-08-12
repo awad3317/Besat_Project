@@ -25,57 +25,54 @@ class TiyarAiController extends Controller
 
             Log::info("WhatsApp Webhook Received", $data);
 
-            // 1. استخراج نص الرسالة ورقم العميل
+            // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe)
+            $isFromMe = filter_var($data['data']['Info']['IsFromMe'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+            // 2. استخراج رقم العميل الصحيح (سواء كانت الرسالة صادرة أم واردة)
+            if ($isFromMe) {
+                // في الرسائل الصادرة، رقم العميل يكون في Chat
+                $rawPhone = $data['data']['Info']['Chat'] ?? $data['data']['Info']['Sender'] ?? null;
+            } else {
+                // في الرسائل الواردة، رقم العميل يكون في Sender أو Chat
+                $rawPhone = $data['data']['Info']['Sender'] ?? $data['data']['Info']['Chat'] ?? null;
+            }
+
+            // 3. استخراج نص الرسالة
             $messageText = $data['data']['Message']['conversation'] 
                 ?? $data['data']['Message']['extendedTextMessage']['text'] 
                 ?? null;
 
-            $sender = $data['data']['Info']['Sender'] 
-                ?? $data['data']['Info']['Chat'] 
-                ?? null;
-
-            if (!$sender || !$messageText) {
+            if (!$rawPhone || !$messageText) {
                 return response()->json(['status' => 'ignored_empty']);
             }
 
-            // تنظيف رقم الهاتف وإزالة النطاق
-            $phone = explode('@', $sender)[0];
+            // تنظيف الرقم لاستخراج الأرقام فقط بدون @s.whatsapp.net
+            $phone = explode('@', $rawPhone)[0];
 
-            // 2. معالجة الرسائل الصادرة من البوت/الموظف (IsFromMe)
-            $isFromMe = $data['data']['Info']['IsFromMe'] ?? false;
+            // 4. معالجة الرسائل الصادرة من الموظف (IsFromMe)
+            if ($isFromMe) {
+                $textLower = mb_strtolower($messageText);
 
-            // 2. معالجة الرسائل الصادرة من البوت/الموظف (IsFromMe)
-$isFromMe = $data['data']['Info']['IsFromMe'] ?? false;
+                if (Str::contains($textLower, 'تفعيل الآلي')) {
+                    $this->sessionService->disableHumanSupport($phone);
+                    Log::info("AI reactivated by agent for phone: {$phone}");
+                    $this->sendWhatsAppMessage($phone, "تم إعادة تفعيل المساعد الآلي لخدمتك. 🤖");
+                } 
+                elseif (Str::contains($textLower, 'إيقاف الآلي')) {
+                    $this->sessionService->enableHumanSupport($phone);
+                    Log::info("AI stopped manually by agent for phone: {$phone}");
+                    $this->sendWhatsAppMessage($phone, "تم إيقاف المساعد الآلي. يتحدث معك الآن أحد ممثلي الدعم الفني. 👨‍💻");
+                } 
+                else {
+                    // أي رسالة عادية من الموظف تغلق الـ AI للعميل تلقائياً
+                    $this->sessionService->enableHumanSupport($phone);
+                    Log::info("Human support activated automatically for phone: {$phone} because agent sent a message.");
+                }
 
-if ($isFromMe) {
-    $textLower = mb_strtolower($messageText);
+                return response()->json(['status' => 'processed_from_me']);
+            }
 
-    // 1️⃣ الموظف يطلب تفعيل الـ AI يدويًا
-    if (Str::contains($textLower, 'تفعيل الآلي')) {
-        $this->sessionService->disableHumanSupport($phone);
-        Log::info("AI reactivated by agent for phone: {$phone}");
-        
-        // (اختياري) إرسال تأكيد للعميل بأن المساعد الآلي عاد للعمل
-        $this->sendWhatsAppMessage($phone, "تم إعادة تفعيل المساعد الآلي لخدمتك. 🤖");
-    } 
-    // 2️⃣ الموظف يطلب إيقاف الـ AI يدويًا
-    elseif (Str::contains($textLower, 'إيقاف الآلي')) {
-        $this->sessionService->enableHumanSupport($phone);
-        Log::info("AI stopped manually by agent for phone: {$phone}");
-        
-        // (اختياري) إرسال تنبيه للعميل
-        $this->sendWhatsAppMessage($phone, "تم إيقاف المساعد الآلي. يتحدث معك الآن أحد ممثلي الدعم الفني. 👨‍💻");
-    } 
-    // 3️⃣ عند إرسال أي رسالة عادية أخرى من الموظف، يتوقف الـ AI تلقائيًا
-    else {
-        $this->sessionService->enableHumanSupport($phone);
-        Log::info("Human support activated automatically because agent messaged phone: {$phone}");
-    }
-
-    return response()->json(['status' => 'processed_from_me']);
-}
-
-            // 3. فحص هل أرسل العميل الكلمة المفتاحية لإعادة التفعيل؟
+            // 5. فحص هل أرسل العميل الكلمة المفتاحية لإعادة التفعيل؟
             if (Str::contains(mb_strtolower($messageText), 'تفعيل الآلي')) {
                 $this->sessionService->disableHumanSupport($phone);
                 
@@ -86,18 +83,18 @@ if ($isFromMe) {
                 return response()->json(['status' => 'ai_reactivated']);
             }
 
-            // 4. الفحص هل الرقم محوّل للدعم الفني البشري حالياً؟
+            // 6. الفحص هل الرقم محوّل للدعم الفني البشري حالياً؟
             if ($this->sessionService->isHumanSupportActive($phone)) {
                 Log::info("AI bypassed for {$phone}: Human support is active.");
                 return response()->json(['status' => 'ignored_human_support_active']);
             }
 
-            // 5. الفحص هل طلب العميل التحويل للدعم الفني؟
+            // 7. الفحص هل طلب العميل التحويل للدعم الفني؟
             if ($this->isRequestingHumanSupport($messageText)) {
                 // تفعيل حالة الدعم الفني للرقم (إيقاف الـ AI)
                 $this->sessionService->enableHumanSupport($phone);
 
-                // إرسال التنبيه المحدد للعميل مع الكلمة المفتاحية الجديدة
+                // إرسال التنبيه المحدد للعميل
                 $transferMsg = "تم توجيهك إلى الدعم الفني لشركة تيار، سيتواصل معك أحد ممثلينا قريباً. 👨‍💻\n\nإذا أردت العودة والتواصل مع المساعد الآلي في أي وقت، أرسل كلمة: \"تفعيل الآلي\"";
                 $this->sendWhatsAppMessage($phone, $transferMsg);
 
@@ -105,11 +102,11 @@ if ($isFromMe) {
                 return response()->json(['status' => 'transferred_to_human']);
             }
 
-            // 6. جلب سياق المحادثة لمعالجة الذكاء الاصطناعي
+            // 8. جلب سياق المحادثة لمعالجة الذكاء الاصطناعي
             $history = $this->sessionService->getHistory($phone);
             $aiResponse = $this->processWithAi($messageText, $history);
 
-            // 7. حفظ المحادثة وإرسال الرد عبر الواتساب
+            // 9. حفظ المحادثة وإرسال الرد عبر الواتساب
             $this->sessionService->addMessage($phone, 'user', $messageText);
             $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
 
