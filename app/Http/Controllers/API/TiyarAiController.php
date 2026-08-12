@@ -21,46 +21,49 @@ class TiyarAiController extends Controller
     public function handleWebhook(Request $request)
 {
     try {
-        $data = $request->all();
+        $payload = $request->all();
 
-        Log::info("Evolution Go Webhook Received", $data);
+        Log::info("Evolution Go Webhook Received", $payload);
+
+        // معالجة احتمالية وجود المفتاح الداخلي data.data أو data مباشرة
+        $data = $payload['data']['data'] ?? $payload['data'] ?? $payload;
 
         // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe)
         $isFromMe = filter_var(
-            $data['data']['Info']['IsFromMe'] 
-            ?? $data['data']['key']['fromMe'] 
-            ?? $data['data']['isFromMe'] 
+            $data['Info']['IsFromMe'] 
+            ?? $data['key']['fromMe'] 
+            ?? $data['isFromMe'] 
             ?? false, 
             FILTER_VALIDATE_BOOLEAN
         );
 
         // 2. استخراج رقم العميل الصحيح من الـ Payload
-        // في الرسائل الصادرة، يكون رقم العميل في Chat، وفي الواردة يكون في Sender أو Chat
         if ($isFromMe) {
-            $rawPhone = $data['data']['Info']['Chat'] 
-                ?? $data['data']['key']['remoteJid'] 
+            $rawPhone = $data['Info']['Chat'] 
+                ?? $data['key']['remoteJid'] 
                 ?? null;
         } else {
-            $rawPhone = $data['data']['Info']['Sender'] 
-                ?? $data['data']['Info']['Chat'] 
-                ?? $data['data']['key']['remoteJid'] 
+            $rawPhone = $data['Info']['Sender'] 
+                ?? $data['Info']['Chat'] 
+                ?? $data['key']['remoteJid'] 
                 ?? null;
         }
 
-        // 3. استخراج نص الرسالة (يدعم جميع الأنواع)
-        $messageText = $data['data']['Message']['conversation'] 
-            ?? $data['data']['Message']['extendedTextMessage']['text'] 
-            ?? $data['data']['Message']['buttonsResponseMessage']['selectedDisplayText']
-            ?? $data['data']['Message']['buttonsResponseMessage']['selectedButtonId']
-            ?? $data['data']['message']['conversation'] 
-            ?? $data['data']['message']['extendedTextMessage']['text'] 
+        // 3. استخراج نص الرسالة
+        $messageText = $data['Message']['conversation'] 
+            ?? $data['Message']['extendedTextMessage']['text'] 
+            ?? $data['Message']['buttonsResponseMessage']['selectedDisplayText']
+            ?? $data['Message']['buttonsResponseMessage']['selectedButtonId']
+            ?? $data['message']['conversation'] 
+            ?? $data['message']['extendedTextMessage']['text'] 
             ?? null;
 
         if (!$rawPhone || !$messageText) {
+            Log::warning("Empty phone or message, ignored.", ['rawPhone' => $rawPhone, 'messageText' => $messageText]);
             return response()->json(['status' => 'ignored_empty']);
         }
 
-        // 4. تنقية رقم العميل بدقة (استخراج الأرقام فقط وتجاهل المعرفات مثل :device_id و @s.whatsapp.net)
+        // 4. تنقية رقم العميل
         $cleanJid = explode('@', $rawPhone)[0];
         $cleanJid = explode(':', $cleanJid)[0];
         $phone = preg_replace('/[^0-9]/', '', $cleanJid);
