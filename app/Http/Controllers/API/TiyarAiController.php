@@ -44,17 +44,36 @@ class TiyarAiController extends Controller
             // 2. معالجة الرسائل الصادرة من البوت/الموظف (IsFromMe)
             $isFromMe = $data['data']['Info']['IsFromMe'] ?? false;
 
-            if ($isFromMe) {
-                if (Str::contains(mb_strtolower($messageText), 'تفعيل الآلي')) {
-                    $this->sessionService->disableHumanSupport($phone);
-                    Log::info("AI reactivated by agent sending secret phrase for phone: {$phone}");
-                } else {
-                    $this->sessionService->enableHumanSupport($phone);
-                    Log::info("Human support activated automatically because agent messaged phone: {$phone}");
-                }
+            // 2. معالجة الرسائل الصادرة من البوت/الموظف (IsFromMe)
+$isFromMe = $data['data']['Info']['IsFromMe'] ?? false;
 
-                return response()->json(['status' => 'processed_from_me']);
-            }
+if ($isFromMe) {
+    $textLower = mb_strtolower($messageText);
+
+    // 1️⃣ الموظف يطلب تفعيل الـ AI يدويًا
+    if (Str::contains($textLower, 'تفعيل الآلي')) {
+        $this->sessionService->disableHumanSupport($phone);
+        Log::info("AI reactivated by agent for phone: {$phone}");
+        
+        // (اختياري) إرسال تأكيد للعميل بأن المساعد الآلي عاد للعمل
+        $this->sendWhatsAppMessage($phone, "تم إعادة تفعيل المساعد الآلي لخدمتك. 🤖");
+    } 
+    // 2️⃣ الموظف يطلب إيقاف الـ AI يدويًا
+    elseif (Str::contains($textLower, 'إيقاف الآلي')) {
+        $this->sessionService->enableHumanSupport($phone);
+        Log::info("AI stopped manually by agent for phone: {$phone}");
+        
+        // (اختياري) إرسال تنبيه للعميل
+        $this->sendWhatsAppMessage($phone, "تم إيقاف المساعد الآلي. يتحدث معك الآن أحد ممثلي الدعم الفني. 👨‍💻");
+    } 
+    // 3️⃣ عند إرسال أي رسالة عادية أخرى من الموظف، يتوقف الـ AI تلقائيًا
+    else {
+        $this->sessionService->enableHumanSupport($phone);
+        Log::info("Human support activated automatically because agent messaged phone: {$phone}");
+    }
+
+    return response()->json(['status' => 'processed_from_me']);
+}
 
             // 3. فحص هل أرسل العميل الكلمة المفتاحية لإعادة التفعيل؟
             if (Str::contains(mb_strtolower($messageText), 'تفعيل الآلي')) {
