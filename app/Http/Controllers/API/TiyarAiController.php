@@ -331,7 +331,7 @@ EOT;
             'buttons' => [
                 [
                     'type' => 'reply',
-                    'displayText' => 'التحدث مع الدعم الفني',
+                    'displayText' => 'التحدث مع الدعم الفني 👨‍💻',
                     'id' => 'btn_human_support'
                 ]
             ]
