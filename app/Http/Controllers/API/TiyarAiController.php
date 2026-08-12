@@ -49,14 +49,18 @@ class TiyarAiController extends Controller
                     ?? null;
             }
 
-            // 3. استخراج نص الرسالة (يدعم النص العادي وردود الأزرار التفاعلية)
-            $messageText = $data['Message']['conversation'] 
-                ?? $data['Message']['extendedTextMessage']['text'] 
-                ?? $data['Message']['buttonsResponseMessage']['selectedButtonId']
-                ?? $data['Message']['buttonsResponseMessage']['selectedDisplayText']
-                ?? $data['message']['conversation'] 
-                ?? $data['message']['extendedTextMessage']['text'] 
-                ?? $data['message']['buttonsResponseMessage']['selectedButtonId']
+            // 3. استخراج نص الرسالة (يدعم النص العادي وجميع أنواع الأزرار التفاعلية)
+            $msgNode = $data['Message'] ?? $data['message'] ?? [];
+            
+            $messageText = $msgNode['conversation'] 
+                ?? $msgNode['extendedTextMessage']['text'] 
+                ?? $msgNode['interactiveResponseMessage']['buttonReply']['id']          // 👈 التقاط معرف الزر
+                ?? $msgNode['interactiveResponseMessage']['buttonReply']['display_text'] // 👈 التقاط نص الزر
+                ?? $msgNode['templateButtonReplyMessage']['selectedId'] 
+                ?? $msgNode['templateButtonReplyMessage']['selectedDisplayText']
+                ?? $msgNode['buttonsResponseMessage']['selectedButtonId']
+                ?? $msgNode['buttonsResponseMessage']['selectedDisplayText']
+                ?? $msgNode['listResponseMessage']['title']
                 ?? null;
 
             if (!$rawPhone || !$messageText) {
@@ -151,7 +155,7 @@ class TiyarAiController extends Controller
     private function isRequestingHumanSupport(string $text): bool
     {
         $keywords = [
-            'btn_human_support',
+            'btn_human_support', // معرف الزر المخفي الذي يتم التقاطه
             'دعم فني',
             'الدعم الفني',
             'خدمة العملاء',
@@ -289,13 +293,14 @@ EOT;
     {
         $baseUrl = rtrim(env('EVOLUTION_API_BASE_URL'), '/');
         $apiKey = env('EVOLUTION_API_KEY');
+        $instance = env('EVOLUTION_INSTANCE', 'tyiar');
 
         // إذا لم نرد إظهار الزر (مثل رسائل التنبيه والرسائل الإدارية)
         if (!$showSupportButton) {
             Http::withHeaders([
                 'apikey' => $apiKey,
                 'Content-Type' => 'application/json',
-            ])->post("{$baseUrl}/send/text", [
+            ])->post("{$baseUrl}/message/sendText/{$instance}", [
                 'number' => $phone,
                 'text' => $text,
                 'delay' => 1200,
@@ -306,11 +311,11 @@ EOT;
             return;
         }
 
-        // إرسال الرسالة مع زر التحويل المباشر المتوافق مع توثيق Evolution Go
+        // إرسال الرسالة مع زر التحويل المباشر المتوافق مع التوثيق المرفق
         Http::withHeaders([
             'apikey' => $apiKey,
             'Content-Type' => 'application/json',
-        ])->post("{$baseUrl}/send/button", [
+        ])->post("{$baseUrl}/message/sendButton/{$instance}", [
             'number' => $phone,
             'title' => 'شركة تيار للحلول البرمجية',
             'description' => $text,
