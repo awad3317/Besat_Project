@@ -25,7 +25,7 @@ class TiyarAiController extends Controller
 
             Log::info("Evolution Go Webhook Received", $payload);
 
-            // الوصول المباشر لجذر البيانات حسب الـ Payload الخاص بـ Evolution Go
+            // الوصول المباشر لجذر البيانات
             $data = $payload['data'] ?? $payload;
 
             // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe)
@@ -49,7 +49,7 @@ class TiyarAiController extends Controller
                     ?? null;
             }
 
-            // 3. استخراج نص الرسالة (يدعم النص العادي والـ Extended ورد الأزرار)
+            // 3. استخراج نص الرسالة
             $messageText = $data['Message']['conversation'] 
                 ?? $data['Message']['extendedTextMessage']['text'] 
                 ?? $data['Message']['buttonsResponseMessage']['selectedDisplayText']
@@ -63,10 +63,12 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'ignored_empty']);
             }
 
-            // 4. تنقية رقم العميل تماماً (استخراج الأرقام فقط)
+            // 4. تنقية رقم العميل
             $cleanJid = explode('@', $rawPhone)[0];
             $cleanJid = explode(':', $cleanJid)[0];
             $phone = preg_replace('/[^0-9]/', '', $cleanJid);
+
+            Log::info("Processing Message", ['phone' => $phone, 'text' => $messageText, 'isFromMe' => $isFromMe]);
 
             // 5. معالجة الرسائل الصادرة من الموظف (IsFromMe = true)
             if ($isFromMe) {
@@ -130,6 +132,8 @@ class TiyarAiController extends Controller
             $history = $this->sessionService->getHistory($phone);
             $aiResponse = $this->processWithAi($messageText, $history);
 
+            Log::info("AI Response Generated", ['phone' => $phone, 'response' => $aiResponse]);
+
             // 10. حفظ المحادثة وإرسال الرد
             $this->sessionService->addMessage($phone, 'user', $messageText);
             $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
@@ -139,7 +143,7 @@ class TiyarAiController extends Controller
             return response()->json(['status' => 'success']);
 
         } catch (\Exception $e) {
-            Log::error("Tiyar AI Webhook Error: " . $e->getMessage());
+            Log::error("Tiyar AI Webhook Error: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
@@ -235,8 +239,14 @@ EOT;
 
         $messages[] = ['role' => 'user', 'content' => $userMessage];
 
+        $groqApiKey = env('GROQ_API_KEY');
+        if (!$groqApiKey) {
+            Log::error("GROQ_API_KEY is missing in .env file!");
+            return $defaultFallback;
+        }
+
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),
+            'Authorization' => 'Bearer ' . $groqApiKey,
             'Content-Type' => 'application/json',
         ])->post('https://api.groq.com/openai/v1/chat/completions', [
             'model' => 'llama-3.1-8b-instant',
@@ -269,7 +279,7 @@ EOT;
             return $aiContent;
         }
 
-        Log::error("Groq AI Error: " . $response->body());
+        Log::error("Groq AI API Call Failed: Status " . $response->status() . " - Body: " . $response->body());
         return $defaultFallback;
     }
 
@@ -279,8 +289,10 @@ EOT;
         $apiKey = env('EVOLUTION_API_KEY');
         $instance = env('EVOLUTION_INSTANCE', 'tyiar');
 
+        Log::info("Sending WhatsApp Message", ['phone' => $phone, 'text' => $text, 'instance' => $instance]);
+
         if (!$showSupportButton) {
-            Http::withHeaders([
+            $res = Http::withHeaders([
                 'apikey' => $apiKey,
                 'Content-Type' => 'application/json',
             ])->post("{$baseUrl}/message/sendText/{$instance}", [
@@ -291,10 +303,11 @@ EOT;
                     'presence' => 'composing'
                 ]
             ]);
+            Log::info("Send Text Response: " . $res->body());
             return;
         }
 
-        Http::withHeaders([
+        $res = Http::withHeaders([
             'apikey' => $apiKey,
             'Content-Type' => 'application/json',
         ])->post("{$baseUrl}/message/sendButtons/{$instance}", [
@@ -309,5 +322,6 @@ EOT;
                 ]
             ]
         ]);
+        Log::info("Send Buttons Response: " . $res->body());
     }
 }
