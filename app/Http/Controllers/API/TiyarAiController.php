@@ -25,19 +25,27 @@ class TiyarAiController extends Controller
 
             Log::info("WhatsApp Webhook Received", $data);
 
-            // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe) - تم إضافة $ المصححة
+            // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe)
             $isFromMe = filter_var(
                 $data['data']['key']['fromMe'] ?? $data['data']['Info']['IsFromMe'] ?? false, 
                 FILTER_VALIDATE_BOOLEAN
             );
 
-            // 2. استخراج رقم العميل الصحيح (في الرسائل الصادرة والواردة)
-            $rawPhone = $data['data']['key']['remoteJid'] 
-                ?? $data['data']['Info']['Chat'] 
-                ?? $data['data']['Info']['Sender'] 
-                ?? null;
+            // 2. استخراج رقم العميل الصحيح (فصل Sender عن Chat في الرسائل الصادرة)
+            if ($isFromMe) {
+                // في الرسائل الصادرة من الموظف، رقم العميل يكون حصراً في Chat أو remoteJid
+                $rawPhone = $data['data']['Info']['Chat'] 
+                    ?? $data['data']['key']['remoteJid'] 
+                    ?? null;
+            } else {
+                // في الرسائل الواردة من العميل، رقم العميل يكون في Sender أو remoteJid أو Chat
+                $rawPhone = $data['data']['Info']['Sender'] 
+                    ?? $data['data']['key']['remoteJid'] 
+                    ?? $data['data']['Info']['Chat'] 
+                    ?? null;
+            }
 
-            // 3. استخراج نص الرسالة (سواء كانت عادية أو Extended)
+            // 3. استخراج نص الرسالة
             $messageText = $data['data']['Message']['conversation'] 
                 ?? $data['data']['Message']['extendedTextMessage']['text'] 
                 ?? $data['data']['message']['conversation'] 
@@ -48,8 +56,11 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'ignored_empty']);
             }
 
-            // 4. تنظيف الرقم لاستخراج الأرقام فقط بدون @s.whatsapp.net
-            $phone = explode('@', $rawPhone)[0];
+            // 4. تنظيف رقم العميل بدقة من الأقسام الإضافية مثل :device_id وأي رمور غير رقمية
+            // مثال: "967771234567:12@s.whatsapp.net" تتحول حصراً إلى "967771234567"
+            $cleanJid = explode('@', $rawPhone)[0];
+            $cleanJid = explode(':', $cleanJid)[0];
+            $phone = preg_replace('/[^0-9]/', '', $cleanJid);
 
             // 5. معالجة الرسائل الصادرة من الموظف (IsFromMe)
             if ($isFromMe) {
