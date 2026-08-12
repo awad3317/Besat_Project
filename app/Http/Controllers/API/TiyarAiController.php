@@ -25,7 +25,7 @@ class TiyarAiController extends Controller
 
             Log::info("Evolution Go Webhook Received", $payload);
 
-            // الوصول المباشر لجذر البيانات
+            // الوصول المباشر لبيانات الـ Webhook
             $data = $payload['data'] ?? $payload;
 
             // 1. تحديد ما إذا كانت الرسالة صادرة من الموظف/البوت (IsFromMe)
@@ -52,8 +52,6 @@ class TiyarAiController extends Controller
             // 3. استخراج نص الرسالة
             $messageText = $data['Message']['conversation'] 
                 ?? $data['Message']['extendedTextMessage']['text'] 
-                ?? $data['Message']['buttonsResponseMessage']['selectedDisplayText']
-                ?? $data['Message']['buttonsResponseMessage']['selectedButtonId']
                 ?? $data['message']['conversation'] 
                 ?? $data['message']['extendedTextMessage']['text'] 
                 ?? null;
@@ -151,7 +149,6 @@ class TiyarAiController extends Controller
     private function isRequestingHumanSupport(string $text): bool
     {
         $keywords = [
-            'btn_human_support',
             'تحدث مع الدعم الفني',
             'دعم فني',
             'الدعم الفني',
@@ -284,30 +281,29 @@ EOT;
     }
 
     private function sendWhatsAppMessage(string $phone, string $text, bool $showSupportOption = true)
-{
-    $baseUrl = rtrim(env('EVOLUTION_API_BASE_URL'), '/');
-    $apiKey = env('EVOLUTION_API_KEY');
-    $instance = env('EVOLUTION_INSTANCE', 'tyiar');
+    {
+        $baseUrl = rtrim(env('EVOLUTION_API_BASE_URL'), '/');
+        $apiKey = env('EVOLUTION_API_KEY');
+        $instance = env('EVOLUTION_INSTANCE', 'tyiar');
 
-    // إذا كان الخيار مفعلاً، نضيف تنبيه التحويل للدعم الفني في ذيل النص
-    if ($showSupportOption) {
-        $text .= "\n\nـــــــــــــــــــــــــــــــــ\n👨‍💻 للتحويل للدعم الفني البشري، أرسل: \"دعم فني\"";
+        if ($showSupportOption) {
+            $text .= "\n\nـــــــــــــــــــــــــــــــــ\n👨‍💻 للتحويل للدعم الفني البشري، أرسل: \"دعم فني\"";
+        }
+
+        Log::info("Sending WhatsApp Message (Text)", ['phone' => $phone, 'instance' => $instance]);
+
+        $res = Http::withHeaders([
+            'apikey' => $apiKey,
+            'Content-Type' => 'application/json',
+        ])->post("{$baseUrl}/message/sendText/{$instance}", [
+            'number' => $phone,
+            'text' => $text,
+            'delay' => 1200,
+            'options' => [
+                'presence' => 'composing'
+            ]
+        ]);
+
+        Log::info("Send Text Response: " . $res->body());
     }
-
-    Log::info("Sending WhatsApp Message (Text)", ['phone' => $phone, 'instance' => $instance]);
-
-    $res = Http::withHeaders([
-        'apikey' => $apiKey,
-        'Content-Type' => 'application/json',
-    ])->post("{$baseUrl}/message/sendText/{{$instance}}", [
-        'number' => $phone,
-        'text' => $text,
-        'delay' => 1200,
-        'options' => [
-            'presence' => 'composing'
-        ]
-    ]);
-
-    Log::info("Send Text Response: " . $res->body());
-}
 }
