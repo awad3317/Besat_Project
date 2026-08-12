@@ -76,28 +76,29 @@ class TiyarAiController extends Controller
                 $messageText = 'دعم فني';
             }
 
-            // 4. تنقية رقم العميل تماماً من أي معرفات مثل :device_id و @s.whatsapp.net
+            // 🌟 تنظيف وتوحيد النص العربي ليتجاهل الفروقات الإملائية والهمزات 🌟
+            $normalizedText = $this->normalizeText($messageText);
+
+            // 4. تنقية رقم العميل تماماً من أي معرفات
             $cleanJid = explode('@', $rawPhone)[0];
             $cleanJid = explode(':', $cleanJid)[0];
             $phone = preg_replace('/[^0-9]/', '', $cleanJid);
 
             // 5. معالجة الرسائل الصادرة من الموظف (IsFromMe)
             if ($isFromMe) {
-                $textLower = mb_strtolower($messageText);
-
-                if (Str::contains($textLower, 'تفعيل الآلي')) {
+                if (Str::contains($normalizedText, 'تفعيل الالي')) {
                     $this->sessionService->disableHumanSupport($phone);
                     Log::info("AI reactivated by agent for phone: {$phone}");
                     $this->sendWhatsAppMessage($phone, "تم إعادة تفعيل المساعد الآلي لخدمتك. 🤖", false);
                 } 
                 elseif (
-                    Str::contains($textLower, [
-                        'إيقاف الآلي',
+                    Str::contains($normalizedText, [
+                        'ايقاف الالي',
                         'الدعم الفني',
                         'دعم فني',
                         'معك الموظف',
                         'معك الدعم',
-                        'خدمة العملاء'
+                        'خدمه العملاء' // مكتوبة بالهاء بناءً على الفلترة
                     ])
                 ) {
                     $this->sessionService->enableHumanSupport($phone);
@@ -112,7 +113,7 @@ class TiyarAiController extends Controller
             }
 
             // 6. فحص هل أرسل العميل الكلمة المفتاحية لإعادة التفعيل بنفسه؟
-            if (Str::contains(mb_strtolower($messageText), 'تفعيل الآلي')) {
+            if (Str::contains($normalizedText, 'تفعيل الالي')) {
                 $this->sessionService->disableHumanSupport($phone);
                 
                 $welcomeBackMsg = "أهلاً بك مجدداً! ❤️ تم إعادة تفعيل المساعد الذكي لشركة تيار. كيف يمكننا مساعدتك اليوم؟";
@@ -128,9 +129,8 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'ignored_human_support_active']);
             }
 
-            // 8. الفحص هل طلب العميل التحويل للدعم الفني؟ (يُفعل حال ضغط الزر)
-            if ($this->isRequestingHumanSupport($messageText)) {
-                // تفعيل حالة الدعم الفني للرقم (إيقاف الـ AI)
+            // 8. الفحص هل طلب العميل التحويل للدعم الفني؟
+            if ($this->isRequestingHumanSupport($normalizedText)) {
                 $this->sessionService->enableHumanSupport($phone);
 
                 $transferMsg = "تم توجيهك إلى الدعم الفني لشركة تيار، سيتواصل معك أحد ممثلينا قريباً. 👨‍💻\n\nإذا أردت العودة والتواصل مع المساعد الآلي في أي وقت، أرسل كلمة: \"تفعيل الآلي\"";
@@ -141,10 +141,11 @@ class TiyarAiController extends Controller
             }
 
             // 9. معالجة الذكاء الاصطناعي
+            // نمرر النص الأصلي للذكاء الاصطناعي وليس المنظف، ليفهم السياق الدقيق
             $history = $this->sessionService->getHistory($phone);
             $aiResponse = $this->processWithAi($messageText, $history);
 
-            // 10. حفظ المحادثة وإرسال الرد المرفق بزر الدعم الفني
+            // 10. حفظ المحادثة وإرسال الرد
             $this->sessionService->addMessage($phone, 'user', $messageText);
             $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
 
@@ -159,21 +160,49 @@ class TiyarAiController extends Controller
     }
 
     /**
-     * فحص ما إذا كان النص يشير لطلب الدعم الفني
+     * دالة لتنظيف النص العربي وتوحيده لتجاهل الفروقات الإملائية
+     */
+    private function normalizeText(string $text): string
+    {
+        if (empty($text)) return '';
+
+        // تحويل الحروف الإنجليزية إلى صغيرة
+        $text = mb_strtolower($text, 'UTF-8');
+
+        // إزالة التشكيل (الفتحة، الضمة، الكسرة، التنوين...)
+        $text = preg_replace('/[\x{0617}-\x{061A}\x{064B}-\x{0652}]/u', '', $text);
+
+        // توحيد أشكال الألف (أ، إ، آ) إلى ألف عادية (ا)
+        $text = preg_replace('/[أإآ]/u', 'ا', $text);
+
+        // توحيد التاء المربوطة (ة) إلى هاء (ه)
+        $text = str_replace('ة', 'ه', $text);
+
+        // توحيد الألف المقصورة (ى) إلى ياء (ي)
+        $text = str_replace('ى', 'ي', $text);
+
+        // إزالة التطويل (ـ)
+        $text = str_replace('ـ', '', $text);
+
+        return $text;
+    }
+
+    /**
+     * فحص ما إذا كان النص يشير لطلب الدعم الفني بناءً على النص المُفلتر
      */
     private function isRequestingHumanSupport(string $text): bool
     {
+        // الكلمات هنا مكتوبة بالصيغة المُفلترة (بدون همزات، بالهاء بدلاً من التاء المربوطة)
         $keywords = [
+            'btn_human_support',
             'دعم فني',
             'الدعم الفني',
-            'خدمة العملاء',
             'خدمه العملاء',
             'تحدث مع موظف',
             'تكلم مع موظف',
             'تحويل لموظف',
             'تحويل للدعم',
             'اريد موظف',
-            'أريد موظف',
             'كلمني موظف',
             'انساني',
             'شخص حقيقي',
@@ -331,7 +360,7 @@ EOT;
             'buttons' => [
                 [
                     'type' => 'reply',
-                    'displayText' => 'التحدث مع الدعم الفني 👨‍💻',
+                    'displayText' => 'التحدث مع الدعم الفني',
                     'id' => 'btn_human_support'
                 ]
             ]
