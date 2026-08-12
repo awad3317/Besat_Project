@@ -54,8 +54,8 @@ class TiyarAiController extends Controller
             
             $messageText = $msgNode['conversation'] 
                 ?? $msgNode['extendedTextMessage']['text'] 
-                ?? $msgNode['interactiveResponseMessage']['buttonReply']['id']          // 👈 التقاط معرف الزر
-                ?? $msgNode['interactiveResponseMessage']['buttonReply']['display_text'] // 👈 التقاط نص الزر
+                ?? $msgNode['interactiveResponseMessage']['buttonReply']['id']
+                ?? $msgNode['interactiveResponseMessage']['buttonReply']['display_text']
                 ?? $msgNode['templateButtonReplyMessage']['selectedId'] 
                 ?? $msgNode['templateButtonReplyMessage']['selectedDisplayText']
                 ?? $msgNode['buttonsResponseMessage']['selectedButtonId']
@@ -67,7 +67,7 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'ignored_empty']);
             }
 
-            // 4. تنقية رقم العميل تماماً من أي معرفات مثل :device_id و @s.whatsapp.net
+            // 4. تنقية رقم العميل تماماً من أي معرفات
             $cleanJid = explode('@', $rawPhone)[0];
             $cleanJid = explode(':', $cleanJid)[0];
             $phone = preg_replace('/[^0-9]/', '', $cleanJid);
@@ -119,9 +119,8 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'ignored_human_support_active']);
             }
 
-            // 8. الفحص هل طلب العميل التحويل للدعم الفني؟ (عبر كتابة النص أو الضغط على الزر)
+            // 8. الفحص هل طلب العميل التحويل للدعم الفني؟
             if ($this->isRequestingHumanSupport($messageText)) {
-                // تفعيل حالة الدعم الفني للرقم (إيقاف الـ AI)
                 $this->sessionService->enableHumanSupport($phone);
 
                 $transferMsg = "تم توجيهك إلى الدعم الفني لشركة تيار، سيتواصل معك أحد ممثلينا قريباً. 👨‍💻\n\nإذا أردت العودة والتواصل مع المساعد الآلي في أي وقت، أرسل كلمة: \"تفعيل الآلي\"";
@@ -135,7 +134,7 @@ class TiyarAiController extends Controller
             $history = $this->sessionService->getHistory($phone);
             $aiResponse = $this->processWithAi($messageText, $history);
 
-            // 10. حفظ المحادثة وإرسال الرد المرفق بزر الدعم الفني
+            // 10. حفظ المحادثة وإرسال الرد
             $this->sessionService->addMessage($phone, 'user', $messageText);
             $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
 
@@ -149,13 +148,10 @@ class TiyarAiController extends Controller
         }
     }
 
-    /**
-     * فحص ما إذا كان النص أو معرف الزر يشير لطلب الدعم الفني
-     */
     private function isRequestingHumanSupport(string $text): bool
     {
         $keywords = [
-            'btn_human_support', // معرف الزر المخفي الذي يتم التقاطه
+            'btn_human_support',
             'دعم فني',
             'الدعم الفني',
             'خدمة العملاء',
@@ -287,20 +283,19 @@ EOT;
     }
 
     /**
-     * إرسال الرسائل باستخدام Endpoint الأزرار الخاص بـ Evolution Go
+     * إرسال الرسائل باستخدام Endpoints الصحيحة والمباشرة
      */
     private function sendWhatsAppMessage(string $phone, string $text, bool $showSupportButton = true)
     {
         $baseUrl = rtrim(env('EVOLUTION_API_BASE_URL'), '/');
         $apiKey = env('EVOLUTION_API_KEY');
-        $instance = env('EVOLUTION_INSTANCE', 'tyiar');
 
-        // إذا لم نرد إظهار الزر (مثل رسائل التنبيه والرسائل الإدارية)
+        // 1. الإرسال العادي بدون زر
         if (!$showSupportButton) {
             Http::withHeaders([
                 'apikey' => $apiKey,
                 'Content-Type' => 'application/json',
-            ])->post("{$baseUrl}/message/sendText/{$instance}", [
+            ])->post("{$baseUrl}/send/text", [
                 'number' => $phone,
                 'text' => $text,
                 'delay' => 1200,
@@ -311,11 +306,11 @@ EOT;
             return;
         }
 
-        // إرسال الرسالة مع زر التحويل المباشر المتوافق مع التوثيق المرفق
+        // 2. إرسال الرسالة مع زر (بناءً على التوثيق الذي أرسلته)
         Http::withHeaders([
             'apikey' => $apiKey,
             'Content-Type' => 'application/json',
-        ])->post("{$baseUrl}/message/sendButton/{$instance}", [
+        ])->post("{$baseUrl}/send/button", [
             'number' => $phone,
             'title' => 'شركة تيار للحلول البرمجية',
             'description' => $text,
@@ -323,9 +318,9 @@ EOT;
             'delay' => 1200,
             'buttons' => [
                 [
-                    'displayText' => 'الدعم الفني',
-                    'id' => 'btn_human_support',
-                    'type' => 'reply'
+                    'type' => 'reply',
+                    'displayText' => 'التحدث مع الدعم الفني ',
+                    'id' => 'btn_human_support'
                 ]
             ]
         ]);
