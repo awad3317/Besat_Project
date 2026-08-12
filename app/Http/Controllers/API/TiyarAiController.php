@@ -151,8 +151,7 @@ class TiyarAiController extends Controller
     private function isRequestingHumanSupport(string $text): bool
     {
         $keywords = [
-            'btn_human_support', // معرف الزر المخصص
-            'التحدث مع الدعم الفني',
+            'btn_human_support',
             'دعم فني',
             'الدعم الفني',
             'خدمة العملاء',
@@ -319,7 +318,7 @@ EOT;
             'delay' => 1200,
             'buttons' => [
                 [
-                    'displayText' => '👨‍💻 التحدث مع الدعم الفني',
+                    'displayText' => 'الدعم الفني',
                     'id' => 'btn_human_support',
                     'type' => 'reply'
                 ]
