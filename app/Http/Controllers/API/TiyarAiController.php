@@ -23,8 +23,6 @@ class TiyarAiController extends Controller
         try {
             $payload = $request->all();
 
-            Log::info("WhatsApp Webhook Received", $payload);
-
             // استخراج جذر البيانات لدعم كافة أشكال الـ Payload
             $data = $payload['data']['data'] ?? $payload['data'] ?? $payload;
 
@@ -49,25 +47,36 @@ class TiyarAiController extends Controller
                     ?? null;
             }
 
-            // 3. استخراج نص الرسالة (يدعم النص العادي وجميع أنواع الأزرار التفاعلية)
+            // 3. استخراج نص الرسالة وضغطة الزر بذكاء شامل
             $msgNode = $data['Message'] ?? $data['message'] ?? [];
             
+            // نسخة من البيانات للبحث العميق (مع إزالة الرسائل المقتبسة لتجنب التفعيل الخاطئ)
+            $msgNodeForSearch = $msgNode;
+            if (isset($msgNodeForSearch['extendedTextMessage']['contextInfo']['quotedMessage'])) {
+                unset($msgNodeForSearch['extendedTextMessage']['contextInfo']['quotedMessage']);
+            }
+            $msgJson = json_encode($msgNodeForSearch, JSON_UNESCAPED_UNICODE);
+
+            // استخراج النص العادي إن وُجد
             $messageText = $msgNode['conversation'] 
                 ?? $msgNode['extendedTextMessage']['text'] 
-                ?? $msgNode['interactiveResponseMessage']['buttonReply']['id']
-                ?? $msgNode['interactiveResponseMessage']['buttonReply']['display_text']
-                ?? $msgNode['templateButtonReplyMessage']['selectedId'] 
-                ?? $msgNode['templateButtonReplyMessage']['selectedDisplayText']
-                ?? $msgNode['buttonsResponseMessage']['selectedButtonId']
                 ?? $msgNode['buttonsResponseMessage']['selectedDisplayText']
-                ?? $msgNode['listResponseMessage']['title']
+                ?? $msgNode['templateButtonReplyMessage']['selectedDisplayText']
                 ?? null;
 
-            if (!$rawPhone || !$messageText) {
+            // فحص قاطع: هل ضغط العميل على زر الدعم الفني؟
+            $isSupportButtonClicked = Str::contains($msgJson, 'btn_human_support');
+
+            if (!$rawPhone || (!$messageText && !$isSupportButtonClicked)) {
                 return response()->json(['status' => 'ignored_empty']);
             }
 
-            // 4. تنقية رقم العميل تماماً من أي معرفات
+            // إذا ضغط العميل على الزر، نُرسل للشرط أمر "دعم فني" مباشرة
+            if ($isSupportButtonClicked) {
+                $messageText = 'دعم فني';
+            }
+
+            // 4. تنقية رقم العميل تماماً من أي معرفات مثل :device_id و @s.whatsapp.net
             $cleanJid = explode('@', $rawPhone)[0];
             $cleanJid = explode(':', $cleanJid)[0];
             $phone = preg_replace('/[^0-9]/', '', $cleanJid);
@@ -119,8 +128,9 @@ class TiyarAiController extends Controller
                 return response()->json(['status' => 'ignored_human_support_active']);
             }
 
-            // 8. الفحص هل طلب العميل التحويل للدعم الفني؟
+            // 8. الفحص هل طلب العميل التحويل للدعم الفني؟ (يُفعل حال ضغط الزر)
             if ($this->isRequestingHumanSupport($messageText)) {
+                // تفعيل حالة الدعم الفني للرقم (إيقاف الـ AI)
                 $this->sessionService->enableHumanSupport($phone);
 
                 $transferMsg = "تم توجيهك إلى الدعم الفني لشركة تيار، سيتواصل معك أحد ممثلينا قريباً. 👨‍💻\n\nإذا أردت العودة والتواصل مع المساعد الآلي في أي وقت، أرسل كلمة: \"تفعيل الآلي\"";
@@ -134,7 +144,7 @@ class TiyarAiController extends Controller
             $history = $this->sessionService->getHistory($phone);
             $aiResponse = $this->processWithAi($messageText, $history);
 
-            // 10. حفظ المحادثة وإرسال الرد
+            // 10. حفظ المحادثة وإرسال الرد المرفق بزر الدعم الفني
             $this->sessionService->addMessage($phone, 'user', $messageText);
             $this->sessionService->addMessage($phone, 'assistant', $aiResponse);
 
@@ -148,10 +158,12 @@ class TiyarAiController extends Controller
         }
     }
 
+    /**
+     * فحص ما إذا كان النص يشير لطلب الدعم الفني
+     */
     private function isRequestingHumanSupport(string $text): bool
     {
         $keywords = [
-            'btn_human_support',
             'دعم فني',
             'الدعم الفني',
             'خدمة العملاء',
@@ -306,7 +318,7 @@ EOT;
             return;
         }
 
-        // 2. إرسال الرسالة مع زر (بناءً على التوثيق الذي أرسلته)
+        // 2. إرسال الرسالة مع زر
         Http::withHeaders([
             'apikey' => $apiKey,
             'Content-Type' => 'application/json',
@@ -319,7 +331,7 @@ EOT;
             'buttons' => [
                 [
                     'type' => 'reply',
-                    'displayText' => 'التحدث مع الدعم الفني ',
+                    'displayText' => 'التحدث مع الدعم الفني',
                     'id' => 'btn_human_support'
                 ]
             ]
