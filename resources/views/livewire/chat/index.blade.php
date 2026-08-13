@@ -88,8 +88,8 @@
                     </div>
                     <!-- الوقت + بادج -->
                     <div class="flex flex-col items-end gap-1 flex-shrink-0 pt-0.5">
-                        <span class="text-[10px] text-gray-400 font-medium">
-                            {{ $conv->last_message_at ? $conv->last_message_at->format('h:i A') : '' }}
+                        <span class="text-[8px] text-gray-400 font-medium">
+                            {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
                         </span>
                         @if($unreadCount > 0)
                             <span class="flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-brand-500 px-1 text-[8px] font-bold text-white">
@@ -155,7 +155,10 @@
 </div>
 
             <!-- سجل الرسائل -->
-            <div x-ref="messageContainer" class="flex-1 p-4 overflow-y-auto space-y-3.5 chat-custom-scroll bg-gray-50/50 dark:bg-gray-900/40">
+            <div x-ref="messageContainer" class="flex-1 p-4 overflow-y-auto space-y-3.5 chat-custom-scroll bg-gray-50/50 dark:bg-gray-900/40"
+                 x-data="{ pendingMessage: null }"
+                 @optimistic-message.window="pendingMessage = $event.detail.body; $nextTick(() => { $el.scrollTop = $el.scrollHeight; })"
+                 @clear-pending.window="pendingMessage = null">
                 @forelse($messages as $msg)
                     @php
                         $isAdmin = ($msg->sender_type === \App\Models\User::class && $msg->sender_id == auth()->id()) || $msg->sender_type === 'admin';
@@ -165,24 +168,53 @@
                         <div class="{{ $isAdmin ? 'chat-bubble-admin' : 'chat-bubble-user' }}">
                             <p class="text-xs leading-relaxed break-words" dir="auto">{{ $msg->body }}</p>
                         </div>
-                        <span class="text-[10px] text-gray-400 mt-1 px-1">
-                            {{ $msg->created_at ? $msg->created_at->format('H:i A') : '' }}
+                        <span class="text-[8px] text-gray-400 mt-0.5 px-1">
+                            {{ $msg->created_at ? $msg->created_at->locale('ar')->translatedFormat('h:i A') : '' }}
                         </span>
                     </div>
                 @empty
-                    <div class="text-center text-xs text-gray-400 py-12">لا توجد رسائل سابقة في هذه المحادثة.</div>
+                    <template x-if="!pendingMessage">
+                        <div class="text-center text-xs text-gray-400 py-12">لا توجد رسائل سابقة في هذه المحادثة.</div>
+                    </template>
                 @endforelse
+
+                <!-- الرسالة المؤقتة (Optimistic) -->
+                <template x-if="pendingMessage">
+                    <div class="flex flex-col items-start animate-fade-in-up" style="opacity: 0.5;">
+                        <div class="chat-bubble-admin">
+                            <p class="text-xs leading-relaxed break-words" dir="auto" x-text="pendingMessage"></p>
+                        </div>
+                        <span class="text-[8px] text-gray-400 mt-0.5 px-1 flex items-center gap-1">
+                            <svg class="w-2.5 h-2.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round"/>
+                            </svg>
+                            جاري الإرسال...
+                        </span>
+                    </div>
+                </template>
             </div>
 
             <!-- حقل الإدخال -->
-            <div class="p-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-                <form wire:submit.prevent="sendMessage" class="flex items-center gap-2">
+            <div class="p-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+                 x-data="{ 
+                    sendOptimistic() {
+                        const input = this.$refs.msgInput;
+                        const text = input.value.trim();
+                        if (!text) return;
+                        window.dispatchEvent(new CustomEvent('optimistic-message', { detail: { body: text } }));
+                    }
+                 }">
+                <form wire:submit.prevent="sendMessage" 
+                      @submit="sendOptimistic()"
+                      class="flex items-center gap-2">
                     <input type="text" 
+                           x-ref="msgInput"
                            wire:model="newMessage"
                            placeholder="اكتب رسالتك للعميل..." 
                            class="h-10 flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:text-white/90" />
                     
-                    <button type="submit" class="h-10 px-5 rounded-xl bg-brand-500 text-xs font-bold text-white hover:bg-brand-600 transition flex-shrink-0 cursor-pointer flex items-center gap-1">
+                    <button type="submit" 
+                            class="h-10 px-5 rounded-xl bg-brand-500 text-xs font-bold text-white hover:bg-brand-600 transition flex-shrink-0 cursor-pointer flex items-center gap-1">
                         <span>إرسال</span>
                     </button>
                 </form>

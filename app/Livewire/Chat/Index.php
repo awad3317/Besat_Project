@@ -51,6 +51,7 @@ class Index extends Component
         broadcast(new MessageSent($message));
 
         $this->newMessage = '';
+        $this->dispatch('clear-pending');
         $this->dispatch('scroll-to-bottom');
     }
 
