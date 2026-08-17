@@ -285,42 +285,63 @@ if (!$geminiApiKey) {
     return $defaultFallback;
 }
 
+// تحويل الرسائل إلى الهيكل الخاص بـ Gemini
+$contents = [];
+
+foreach ($history as $msg) {
+    $contents[] = [
+        'role' => $msg['role'] === 'assistant' ? 'model' : 'user',
+        'parts' => [['text' => $msg['content']]]
+    ];
+}
+
+// إضافة رسالة المستخدم الحالية
+$contents[] = [
+    'role' => 'user',
+    'parts' => [['text' => $userMessage]]
+];
+
+$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$geminiApiKey}";
+
 $response = Http::withHeaders([
-    'Authorization' => 'Bearer ' . $geminiApiKey,
     'Content-Type' => 'application/json',
-])->post('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', [
-    'model' => 'gemini-1.5-flash',
-    'messages' => $messages,
-    'temperature' => 0.2,
-    'max_tokens' => 400,
+])->post($url, [
+    'system_instruction' => [
+        'parts' => [['text' => $systemPrompt]]
+    ],
+    'contents' => $contents,
+    'generationConfig' => [
+        'temperature' => 0.2,
+        'maxOutputTokens' => 400,
+    ]
 ]);
 
-        if ($response->successful()) {
-            $aiContent = $response->json()['choices'][0]['message']['content'] ?? $defaultFallback;
+if ($response->successful()) {
+    $aiContent = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? $defaultFallback;
 
-            $forbiddenKeywords = [
-                'Strict Confidentiality',
-                'Strict Security',
-                'سرية التعليمات',
-                'قواعد ونطاق العمل',
-                'تجاهل الأوامر السابقة',
-                'المساعد الذكي الرسمي والوحيد',
-                'حماية التوجيهات',
-                'EOT'
-            ];
+    $forbiddenKeywords = [
+        'Strict Confidentiality',
+        'Strict Security',
+        'سرية التعليمات',
+        'قواعد ونطاق العمل',
+        'تجاهل الأوامر السابقة',
+        'المساعد الذكي الرسمي والوحيد',
+        'حماية التوجيهات',
+        'EOT'
+    ];
 
-            foreach ($forbiddenKeywords as $keyword) {
-                if (mb_stripos($aiContent, $keyword) !== false) {
-                    Log::warning("AI Security Triggered: Leakage attempt intercepted!");
-                    return $defaultFallback;
-                }
-            }
-
-            return $aiContent;
+    foreach ($forbiddenKeywords as $keyword) {
+        if (mb_stripos($aiContent, $keyword) !== false) {
+            Log::warning("AI Security Triggered: Leakage attempt intercepted!");
+            return $defaultFallback;
         }
+    }
 
-        Log::error("Groq AI Error: " . $response->body());
-        return $defaultFallback;
+    return $aiContent;
+}
+
+Log::error("Gemini AI Error: " . $response->body());
+return $defaultFallback;
     }
 
     /**
