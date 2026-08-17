@@ -297,15 +297,18 @@ EOT;
 
         if ($response->successful()) {
             $aiContent = $response->json()['choices'][0]['message']['content'] ?? $defaultFallback;
-
+            $aiContent = preg_replace('/<think>[\s\S]*?<\/think>/i', '', $aiContent);
+            $aiContent = trim($aiContent);
+            if (empty($aiContent)) {
+                return $defaultFallback;
+            }
             $forbiddenKeywords = [
                 'Strict Confidentiality',
                 'Strict Security',
                 'System Prompt',
                 'system_instruction',
                 'معلومات الشركة وقاعدة المعرفة',
-                'قواعد سلوك الرد والربط الذكي',
-                'EOT'
+                'قواعد سلوك الرد والربط الذكي'
             ];
 
             foreach ($forbiddenKeywords as $keyword) {
