@@ -262,7 +262,7 @@ EOT;
             'Authorization' => 'Bearer ' . $groqApiKey,
             'Content-Type' => 'application/json',
         ])->post('https://api.groq.com/openai/v1/chat/completions', [
-            'model' => 'allam-2-7b',
+            'model' => 'openai/gpt-oss-120b',
             'messages' => $messages,
             'temperature' => 0.3,
             'max_tokens' => 350,
