@@ -289,7 +289,7 @@ EOT;
             'Authorization' => 'Bearer ' . $groqApiKey,
             'Content-Type' => 'application/json',
         ])->post('https://api.groq.com/openai/v1/chat/completions', [
-            'model' => 'llama-3.3-70b-versatile',
+            'model' => 'llama-3.1-8b-instant',
             'messages' => $messages,
             'temperature' => 0.2,
             'max_tokens' => 400,
