@@ -279,7 +279,7 @@ EOT;
 
         $messages[] = ['role' => 'user', 'content' => $userMessage];
 
-        $groqApiKey = config('services.groq.key') ?? env('GROQ_API_KEY');
+        $groqApiKey = env('GROQ_API_KEY', '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');
         if (!$groqApiKey) {
             Log::error("GROQ_API_KEY is missing in .env file!");
             return $defaultFallback;
@@ -327,8 +327,8 @@ EOT;
      */
     private function sendWhatsAppMessage(string $phone, string $text, bool $showSupportButton = true)
     {
-        $baseUrl = rtrim(env('EVOLUTION_API_BASE_URL'), '/');
-        $apiKey = env('EVOLUTION_API_KEY');
+        $baseUrl = rtrim(env('EVOLUTION_API_BASE_URL', 'http://195.35.24.73:4000'), '/');
+        $apiKey = env('EVOLUTION_API_KEY', '5c47fe0b-01b7-4a61-bc09-9ea702f1a550');
 
         // 1. الإرسال العادي بدون زر
         if (!$showSupportButton) {
