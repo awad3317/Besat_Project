@@ -301,7 +301,7 @@ $contents[] = [
     'parts' => [['text' => $userMessage]]
 ];
 
-$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={$geminiApiKey}";
+$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key={$geminiApiKey}";
 $response = Http::withHeaders([
     'Content-Type' => 'application/json',
 ])->post($url, [
