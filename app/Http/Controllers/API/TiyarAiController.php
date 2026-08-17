@@ -279,7 +279,7 @@ EOT;
 
         $messages[] = ['role' => 'user', 'content' => $userMessage];
 
-        $groqApiKey = env('GROQ_API_KEY', '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');
+        $groqApiKey = config('services.groq.key') ?? env('GROQ_API_KEY');
         if (!$groqApiKey) {
             Log::error("GROQ_API_KEY is missing in .env file!");
             return $defaultFallback;
