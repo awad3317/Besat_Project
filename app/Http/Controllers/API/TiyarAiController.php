@@ -279,21 +279,21 @@ EOT;
 
         $messages[] = ['role' => 'user', 'content' => $userMessage];
 
-        $groqApiKey = env('GROQ_API_KEY');
-        if (!$groqApiKey) {
-            Log::error("GROQ_API_KEY is missing in .env file!");
-            return $defaultFallback;
-        }
+        $geminiApiKey = env('GEMINI_API_KEY');
+if (!$geminiApiKey) {
+    Log::error("GEMINI_API_KEY is missing in .env file!");
+    return $defaultFallback;
+}
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $groqApiKey,
-            'Content-Type' => 'application/json',
-        ])->post('https://api.groq.com/openai/v1/chat/completions', [
-            'model' => 'llama-3.3-70b-versatile',
-            'messages' => $messages,
-            'temperature' => 0.2,
-            'max_tokens' => 400,
-        ]);
+$response = Http::withHeaders([
+    'Authorization' => 'Bearer ' . $geminiApiKey,
+    'Content-Type' => 'application/json',
+])->post('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', [
+    'model' => 'gemini-1.5-flash',
+    'messages' => $messages,
+    'temperature' => 0.2,
+    'max_tokens' => 400,
+]);
 
         if ($response->successful()) {
             $aiContent = $response->json()['choices'][0]['message']['content'] ?? $defaultFallback;
