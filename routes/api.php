@@ -7,12 +7,12 @@ use App\Http\Controllers\API\Auth\Driver\DriverForgetPasswordController;
 use App\Http\Controllers\API\Auth\Driver\DriverOtpController;
 use App\Http\Controllers\API\Auth\User\UserAuthController;
 use App\Http\Controllers\API\Auth\User\UserController;
+use App\Http\Controllers\API\Auth\Driver\DriverController;
 use App\Http\Controllers\API\Auth\User\UserForgetPasswordController;
 use App\Http\Controllers\API\Auth\User\UserOtpController;
 use App\Http\Controllers\API\BankController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\DiscountCodeController;
-use App\Http\Controllers\API\DriverController;
 use App\Http\Controllers\API\FavoritePlaceController;
 use App\Http\Controllers\API\LoyaltyWalletController;
 use App\Http\Controllers\API\NotificationController;
@@ -66,15 +66,17 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::apiResource('/user/service-bookings', ServiceBookingController::class);
         Route::post('/user/service-bookings/{id}/cancel', [ServiceBookingController::class, 'cancel']);
         Route::post('/support/open', [ChatController::class, 'openSupportChat']);
-    Route::post('/order/open', [ChatController::class, 'openOrderChat']);
+        Route::post('/order/open', [ChatController::class, 'openOrderChat']);
 });
 
 // Routes For Drivers only
 Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
         Route::post('/driver/logout',[DriverAuthController::class,'logout']);
-        Route::post('/driver/updateDeviceToken',[DriverController::class,'updateDeviceToken']);
-        Route::post('/driver/updateLocation',[DriverController::class,'updateLocation']);
-        Route::post('/driver/updateOnlineStatus',[DriverController::class,'updateOnlineStatus']);
+        Route::get('/driver/profile', [DriverController::class, 'index']);
+        Route::post('/driver/update-profile', [DriverController::class, 'updateProfile']);
+        Route::post('/driver/updateDeviceToken', [DriverController::class, 'updateDeviceToken']);
+        Route::post('/driver/updateLocation', [DriverController::class, 'updateLocation']);
+        Route::post('/driver/updateOnlineStatus', [DriverController::class, 'updateOnlineStatus']);
 });
         //           Auth Route For User          //
 Route::post('/user/register',[UserAuthController::class,'register']);
