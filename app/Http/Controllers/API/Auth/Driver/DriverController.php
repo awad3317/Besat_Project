@@ -63,14 +63,14 @@ class DriverController extends Controller
         ]);
 
         try {
-            $driverId = auth('sanctum')->id();
+            $driver = auth('sanctum')->user();
             $imageFields = ['driver_image', 'vehicle_image', 'identity_image'];
             foreach ($imageFields as $imageField) {
                 if ($request->hasFile($imageField)) {
                     $fields[$imageField] = $request->file($imageField)->store('drivers/' . $imageField, 'public');
                 }
             }
-            $updatedDriver = $this->driverRepository->update($fields, $driverId);
+            $updatedDriver = $this->driverRepository->update($fields, $driver->id);
             return ApiResponseClass::sendResponse($updatedDriver, 'تم تحديث بيانات الملف الشخصي بنجاح.');
         } catch (Exception $e) {
             Log::error('Error updating driver profile: ' . $e->getMessage());
@@ -85,8 +85,8 @@ class DriverController extends Controller
         ]);
 
         try {
-            $driver_id = auth('sanctum')->id();
-            $driver = $this->driverRepository->update($fields, $driver_id);
+            $driver = auth('sanctum')->user();
+            $driver = $this->driverRepository->update($fields, $driver->id);
             return ApiResponseClass::sendResponse($driver, 'Location updated successfully.');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('Error updated location.' . $e->getMessage());
@@ -98,8 +98,8 @@ class DriverController extends Controller
             $fields = $request->validate([
                 'is_online' => 'required|boolean',
             ]);
-            $driver_id = auth('sanctum')->id();
-            $this->driverRepository->update($fields, $driver_id);
+            $driver = auth('sanctum')->user();
+            $this->driverRepository->update($fields, $driver->id);
             $status = $fields['is_online'] ? 'متصل' : 'غير متصل';
             return ApiResponseClass::sendResponse([], "تم التحديث إلى: {$status}");
         } catch (Exception $e) {
