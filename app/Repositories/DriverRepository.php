@@ -21,7 +21,7 @@ class DriverRepository implements RepositoriesInterface
 
     public function getById($id): Driver
     {
-        return Driver::with(['vehicle','requests','ratings'])->findOrFail($id);
+        return Driver::with(['vehicle','requests'])->findOrFail($id);
     }
 
     public function store(array $data): Driver

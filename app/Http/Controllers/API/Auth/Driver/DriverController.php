@@ -32,8 +32,8 @@ class DriverController extends Controller
     public function index()
     {
         try {
-            $driverId = auth('sanctum')->id();
-            $driverProfile = $this->driverRepository->getById($driverId);
+            $driver = auth('sanctum')->user();
+            $driverProfile = $this->driverRepository->getById($driver->id);
 
             if (!$driverProfile) {
                 return ApiResponseClass::sendError('السائق غير موجود', [], 404);
