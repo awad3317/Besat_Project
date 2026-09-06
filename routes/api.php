@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 Broadcast::routes(['middleware' => ['auth.sanctum.api']]);
+
 Route::middleware(['auth.sanctum.api'])->group(function () {
         Route::apiResource('vehicles', VehicleController::class)->only(['index']);
         Route::get('notifications', [NotificationController::class, 'index']);
@@ -77,6 +78,7 @@ Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
         Route::post('/driver/updateDeviceToken', [DriverController::class, 'updateDeviceToken']);
         Route::post('/driver/updateLocation', [DriverController::class, 'updateLocation']);
         Route::post('/driver/updateOnlineStatus', [DriverController::class, 'updateOnlineStatus']);
+        Route::get('/driver/requests', [DriverController::class, 'allRequest']);
 });
         //           Auth Route For User          //
 Route::post('/user/register',[UserAuthController::class,'register']);

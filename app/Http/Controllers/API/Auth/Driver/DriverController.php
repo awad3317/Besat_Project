@@ -106,5 +106,15 @@ class DriverController extends Controller
             return ApiResponseClass::sendError('فشل في تحديث الحالة: ' . $e->getMessage());
         }
     }
+    public function allRequest()
+    {
+        try {
+            $driver = auth('sanctum')->user();
+            $orders = $driver->requests()->get(); 
+            return ApiResponseClass::sendResponse($orders, 'تم جلب طلبات السائق بنجاح.');
+        } catch (Exception $e) {
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب الطلبات.', $e->getMessage(), 500);
+        }
+    }
     
 }
