@@ -12,18 +12,18 @@ use Illuminate\Support\Facades\DB;
 class Index extends Component
 {
     use WithPagination;
-    
+
     public $activeFilter = 'all';
     public $search = '';
     public $perPage = 10;
-    
+
     protected $queryString = [
         'search' => ['except' => '', 'as' => 'search'],
         'activeFilter' => ['except' => 'all', 'as' => 'filter'],
         'page' => ['except' => 1],
     ];
-    
-    #[Computed(cache: true)] 
+
+    #[Computed(cache: true)]
     public function stats()
     {
         return [
@@ -33,25 +33,32 @@ class Index extends Component
             'active' => Driver::where('is_active', true)->count(),
         ];
     }
-    
+
     public function applyFilter($filter)
     {
         $this->activeFilter = $filter;
         $this->resetPage();
     }
-    
+
     public function updatedSearch()
     {
         $this->resetPage();
     }
-    
+
+    #[On('toggle-active')]
+    public function toggleActive($driverId)
+    {
+        Driver::where('id', $driverId)->update([
+            'is_active' => DB::raw('NOT is_active')
+        ]);
+    }
     public function toggleBan($driverId)
     {
         Driver::where('id', $driverId)->update([
             'is_banned' => DB::raw('NOT is_banned')
         ]);
     }
-    
+
     #[Computed]
     public function drivers()
     {
@@ -61,14 +68,21 @@ class Index extends Component
                 'requests:id,driver_id'
             ])
             ->select([
-                'id', 'name', 'phone', 'whatsapp_number',
-                'driver_image', 'is_online', 'is_banned',
-                'is_active', 'created_at','vehicle_id'
+                'id',
+                'name',
+                'phone',
+                'whatsapp_number',
+                'driver_image',
+                'is_online',
+                'is_banned',
+                'is_active',
+                'created_at',
+                'vehicle_id'
             ])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('phone', 'like', '%' . $this->search . '%');
+                        ->orWhere('phone', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->activeFilter === 'connected', fn($q) => $q->where('is_online', true))
@@ -77,7 +91,7 @@ class Index extends Component
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
     }
-    
+
     public function render()
     {
         return view('livewire.drivers.index');
