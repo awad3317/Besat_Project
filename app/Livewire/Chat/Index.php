@@ -2,12 +2,14 @@
 
 namespace App\Livewire\Chat;
 
+use App\Events\MessageSent;
 use App\Models\Conversation;
 use App\Models\Message;
-use App\Events\MessageSent;
+use App\Services\FirebaseService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Auth;
 
 class Index extends Component
 {
@@ -43,10 +45,62 @@ class Index extends Component
             'body' => $this->newMessage,
         ]);
 
-        Conversation::where('id', $this->selectedConversationId)->increment('user_unread_count', 1, [
+        $conversation = Conversation::with(['user.devices', 'driver'])->find($this->selectedConversationId);
+
+    if ($conversation) {
+        $tokens = [];
+        $unreadField = 'user_unread_count';
+
+        // 1. إذا كان المستلم مستخدماً (User)
+        if ($conversation->user) {
+            $user = $conversation->user;
+            $unreadField = 'user_unread_count';
+
+            if ($user->is_notifications_enabled) {
+                // الاعتماد على Collection المحملة مسبقاً دون استعلام إضافي
+                $tokens = $user->devices
+                    ->pluck('device_token')
+                    ->filter()
+                    ->all();
+            }
+        } 
+        // 2. إذا كان المستلم سائقاً (Driver)
+        elseif ($conversation->driver) {
+            $driver = $conversation->driver;
+            $unreadField = 'participant_unread_count';
+
+            if (!empty($driver->device_token) && !$driver->is_banned) {
+                $tokens[] = $driver->device_token;
+            }
+        }
+
+        // تحديث آخر رسالة وزيادة العداد للطرف المستلم الصحيح
+        $conversation->increment($unreadField, 1, [
             'last_message_id' => $message->id,
             'last_message_at' => now(),
         ]);
+
+        // تنظيف التوكنات وتفادي التكرار
+        $tokens = array_unique(array_filter($tokens));
+
+        // إرسال الإشعارات عبر Firebase
+        foreach ($tokens as $token) {
+            try {
+                app(FirebaseService::class)->sendNotification(
+                    deviceToken: $token,
+                    title: 'الدعم الفني',
+                    body: 'لديك رسالة جديدة من الدعم الفني: ' . mb_substr($message->body, 0, 50),
+                    data: [
+                        'type'            => 'support_chat',
+                        'conversation_id' => (string) $this->selectedConversationId,
+                        'message_id'      => (string) $message->id,
+                    ]
+                );
+            } catch (\Throwable $e) {
+                Log::warning("فشل إرسال إشعار FCM للتوكن {$token}: " . $e->getMessage());
+            }
+        }
+    }
 
         broadcast(new MessageSent($message));
 
