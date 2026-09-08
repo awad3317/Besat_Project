@@ -5,7 +5,7 @@
 
 @endsection
 @section('content')
-
+    @livewire('notifications.index')
 @endsection
 
 @section('script')
