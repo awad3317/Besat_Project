@@ -136,12 +136,18 @@ class SpecialOrderController extends Controller
             'vehicle_id'=>['required','integer'],
             'discount_code'=> ['nullable','string'],
             'user_id'=>['required_with:discount_code','nullable','integer'],
+            'stops' => ['nullable', 'array'],
+            'stops.*.latitude' => ['required_with:stops', 'numeric'],
+            'stops.*.longitude' => ['required_with:stops', 'numeric'],
         ]);
+        
+        $stops = $validated['stops'] ?? [];
         $distanceInKm = $this->priceCalculationService->getdistanceInKm(
             $validated['start_latitude'],
             $validated['start_longitude'],
             $validated['end_latitude'],
-            $validated['end_longitude']
+            $validated['end_longitude'],
+            $stops
         );
         $vehicle=$this->vehicleRepository->getById($validated['vehicle_id']);
         $price_per_km = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);

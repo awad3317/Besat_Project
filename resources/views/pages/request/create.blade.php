@@ -112,12 +112,13 @@
         <form method="POST" id="tripForm" action="{{ route('request.store') }}" enctype="multipart/form-data"
             @submit="loadingSubmit = true">
             @csrf
+    
             <div class="col-span-2 mb-6">
                 <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
                     تحديد المسار على الخريطة
                 </label>
-
-                <div class="mb-4 map-container">
+                <input type="hidden" id="distance_km" name="distance_km" value="{{ old('distance_km') }}">
+                <div class="mb-4 map-container" wire:ignore>
                     <div id="map"></div>
                     <div class="mb-6 map-controls">
                         <button type="button" id="clearRouteBtn" class="map-btn">
@@ -165,6 +166,9 @@
                             </div>
                         </div>
                     </div>
+                    @error('start_address')
+                        <p class="mt-1 text-xs text-error-500">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- نقطة النهاية -->
@@ -190,9 +194,15 @@
                             </div>
                         </div>
                     </div>
+                    @error('end_address')
+                        <p class="mt-1 text-xs text-error-500">{{ $message }}</p>
+                    @enderror
                 </div>
-
             </div>
+
+            <div id="stopsInputs"></div>
+            <!-- حاوية نقاط التوقف -->
+            <div id="waypointsContainer" class="col-span-2 my-4 space-y-3 sm:col-span-2"></div>
 
             <livewire:request.create />
 
@@ -202,97 +212,7 @@
             <!-- أزرار التحكم -->
             <div class="flex gap-3 justify-end items-center mt-6 w-full">
 
-                {{-- 2. تعديل زر "السعر" --}}
-                <button type="button"
-                    @click="
-                              loadingPrice = true;
-                              showPriceModal = false;
-                              // جلب الإحداثيات
-                              const startLat = document.getElementById('start_latitude').value;
-                              const startLng = document.getElementById('start_longitude').value;
-                              const endLat = document.getElementById('end_latitude').value;
-                              const endLng = document.getElementById('end_longitude').value;
-                              const vehicle_id = document.getElementById('vehicle_id').value;
-                              const discount_code = document.getElementById('discount_code').value;
-                              const user_id = document.getElementById('user_id').value;
-
-
-                              // تحقق من وجود الإحداثيات
-                              if (!startLat || !endLat) {
-                                  showErrorModal= true;
-                                  errorMessage='يجب عليك تحديد نقطة النهاية والبدايه';
-                                  loadingPrice = false;
-                                  return;
-                              }
-                              if(!vehicle_id){
-                                  showErrorModal= true;
-                                  errorMessage = 'يجب اختيار المركبه اولا';
-                                  loadingPrice = false;
-                                  return;
-                              }
-                              if(discount_code && !user_id){
-                                  showErrorModal= true;
-                                  errorMessage = 'يجب عليك أختيار مستخدم اولا عند ادخال كود خصم';
-                                  loadingPrice = false;
-                                  return;
-                              }
-
-                              // إرسال الطلب
-                              fetch('{{ route('trip.calculatePrice') }}', {
-                                  method: 'POST',
-                                  headers: {
-                                      'Content-Type': 'application/json',
-                                      'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                  },
-                                  body: JSON.stringify({
-                                      start_latitude: startLat,
-                                      start_longitude: startLng,
-                                      end_latitude: endLat,
-                                      end_longitude: endLng,
-                                      vehicle_id: vehicle_id,
-                                      discount_code: discount_code,
-                                      user_id: user_id,
-                                  })
-                              })
-                              .then(response => response.json())
-                              .then(data => {
-                                  if(data.price !== undefined) {
-                                      original_price = data.original_price;
-                                      calculatedPrice = data.price;
-                                      distanceInKm = data.distanceInKm;
-                                      vehicle = data.vehicle;
-                                      coupon = data.coupon;
-                                      discount_amount = data.discount_amount;
-                                      showPriceModal = true;
-                                  }if(data.error){
-                                      showErrorModal = true;
-                                      errorMessage = data.error;
-                                      loadingPrice = false;
-                                  }
-                              })
-                              .catch(error => {
-                                  console.error('Error:', error);
-                                  alert('فشل الاتصال بالخادم.');
-                              })
-                              .finally(() => {
-                                  loadingPrice = false;
-                              });
-                          "
-                    :disabled="loadingPrice"
-                    class="flex justify-center px-4 py-3 w-full text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 hover:border-brand-500 sm:w-auto disabled:opacity-50">
-
-                    <span x-show="!loadingPrice">السعر</span>
-                    <span x-show="loadingPrice">
-                        <svg class="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                            </path>
-                        </svg>
-                    </span>
-                </button>
+                {{-- زر السعر تم حذفه لأنه يتم حسابه تلقائياً عبر Livewire --}}
 
                 {{-- زر إنشاء الرحلة --}}
                 <button type="submit" :disabled="loadingSubmit"
@@ -319,6 +239,7 @@
 @endsection
 
 @section('script')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script
         src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAP_KEY') }}&libraries=places&language=ar&region=YE"
         async defer></script>
@@ -327,10 +248,22 @@
         let startMarker = null;
         let endMarker = null;
         let geocoder;
+        let directionsService, directionsRenderer;
+        let waypoints = [];
+        let customMarkers = [];
 
 
         function initializeMap() {
             if (!document.getElementById('map')) return;
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                suppressMarkers: true,
+                polylineOptions: {
+                    strokeColor: '#F58A07',
+                    strokeWeight: 5
+                } // Orange thick line like app
+            });
 
             map = new google.maps.Map(document.getElementById("map"), {
                 center: {
@@ -340,20 +273,37 @@
                 zoom: 13
             });
 
+            directionsRenderer.setMap(map);
             geocoder = new google.maps.Geocoder();
-            map.addListener('click', function(event) {
-                const latLng = event.latLng;
 
-                if (confirm('حدد نوع النقطة:\n\حسنا = نقطة بداية\nإلغاء = نقطة نهاية')) {
-                    setStartPoint(latLng);
-                } else {
-                    setEndPoint(latLng);
-                }
+            map.addListener('click', function(event) {
+                let latLng = event.latLng;
+
+                Swal.fire({
+                    title: 'تحديد نقطة المسار',
+                    text: 'ماذا تريد أن تعين هذه النقطة؟',
+                    icon: 'question',
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'نقطة انطلاق',
+                    denyButtonText: 'نقطة توقف',
+                    cancelButtonText: 'نقطة وصول',
+                    confirmButtonColor: '#28a745',
+                    denyButtonColor: '#F58A07',
+                    cancelButtonColor: '#dc3545',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setStartPoint(latLng);
+                    } else if (result.isDenied) {
+                        addWaypoint(latLng);
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        setEndPoint(latLng);
+                    }
+                });
             });
 
             document.getElementById('clearRouteBtn')?.addEventListener('click', clearMarkers);
         }
-
 
         function setStartPoint(latLng) {
             document.getElementById('start_latitude').value = latLng.lat();
@@ -363,19 +313,17 @@
 
             geocoder.geocode({
                 location: latLng
-            }, (results) => {});
-
-            if (startMarker) startMarker.setMap(null);
-
-            startMarker = new google.maps.Marker({
-                position: latLng,
-                map: map,
-                title: 'نقطة البداية',
-                icon: {
-                    url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
-                    scaledSize: new google.maps.Size(40, 40)
+            }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    document.querySelector('input[name="start_address"]').value = results[0].formatted_address;
                 }
             });
+
+            startMarker = {
+                lat: latLng.lat(),
+                lng: latLng.lng()
+            };
+            calculateAndDisplayRoute();
         }
 
         function setEndPoint(latLng) {
@@ -386,36 +334,253 @@
 
             geocoder.geocode({
                 location: latLng
-            }, (results) => {});
-
-            if (endMarker) endMarker.setMap(null);
-
-            endMarker = new google.maps.Marker({
-                position: latLng,
-                map: map,
-                title: 'نقطة النهاية',
-                icon: {
-                    url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-                    scaledSize: new google.maps.Size(40, 40)
+            }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    document.getElementById('end_address').value = results[0].formatted_address;
                 }
+            });
+
+            endMarker = {
+                lat: latLng.lat(),
+                lng: latLng.lng()
+            };
+            calculateAndDisplayRoute();
+        }
+
+        function addWaypoint(latLng) {
+            geocoder.geocode({
+                location: latLng
+            }, (results, status) => {
+                let address = 'نقطة توقف ' + (waypoints.length + 1);
+                if (status === 'OK' && results[0]) {
+                    address = results[0].formatted_address;
+                }
+                waypoints.push({
+                    location: latLng,
+                    stopover: true,
+                    address: address
+                });
+                renderWaypointsUI();
+                updateHiddenStopsInputs();
+                calculateAndDisplayRoute();
             });
         }
 
-        function clearMarkers() {
-            if (startMarker) {
-                startMarker.setMap(null);
-                startMarker = null;
-            }
-            if (endMarker) {
-                endMarker.setMap(null);
-                endMarker = null;
-            }
+        function removeWaypoint(index) {
+            waypoints.splice(index, 1);
+            renderWaypointsUI();
+            updateHiddenStopsInputs();
+            calculateAndDisplayRoute();
+        }
 
+        function moveWaypointUp(index) {
+            if (index > 0) {
+                const temp = waypoints[index];
+                waypoints[index] = waypoints[index - 1];
+                waypoints[index - 1] = temp;
+                renderWaypointsUI();
+                updateHiddenStopsInputs();
+                calculateAndDisplayRoute();
+            }
+        }
 
-            ['start_latitude', 'start_longitude', 'end_latitude', 'end_longitude', 'start_address', 'end_address'].forEach(
-                id => {
-                    document.getElementById(id).value = '';
+        function moveWaypointDown(index) {
+            if (index < waypoints.length - 1) {
+                const temp = waypoints[index];
+                waypoints[index] = waypoints[index + 1];
+                waypoints[index + 1] = temp;
+                renderWaypointsUI();
+                updateHiddenStopsInputs();
+                calculateAndDisplayRoute();
+            }
+        }
+
+        let draggedWaypointIndex = null;
+
+        function dragStart(event, index) {
+            draggedWaypointIndex = index;
+            event.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => {
+                event.target.classList.add('opacity-50');
+            }, 0);
+        }
+
+        function dragOver(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+        }
+
+        function drop(event, dropIndex) {
+            event.preventDefault();
+            if (draggedWaypointIndex !== null && draggedWaypointIndex !== dropIndex) {
+                const item = waypoints.splice(draggedWaypointIndex, 1)[0];
+                waypoints.splice(dropIndex, 0, item);
+                renderWaypointsUI();
+                updateHiddenStopsInputs();
+                calculateAndDisplayRoute();
+            }
+        }
+
+        function dragEnd(event) {
+            event.target.classList.remove('opacity-50');
+            draggedWaypointIndex = null;
+        }
+
+        function renderWaypointsUI() {
+            const container = document.getElementById('waypointsContainer');
+            container.innerHTML = '';
+
+            if (waypoints.length > 0) {
+                let html =
+                    '<label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">نقاط التوقف</label>';
+                html += '<div class="space-y-2">';
+                waypoints.forEach((wp, index) => {
+                    html += `
+                    <div draggable="true" ondragstart="dragStart(event, ${index})" ondragover="dragOver(event)" ondrop="drop(event, ${index})" ondragend="dragEnd(event)" class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 transition-colors dark:bg-gray-800 dark:border-gray-700 cursor-grab active:cursor-grabbing hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <div class="flex gap-3 items-center pointer-events-none">
+                            <div class="flex justify-center items-center w-8 h-8 text-sm font-bold text-blue-600 bg-blue-100 rounded-full">
+                                ${index + 1}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm text-gray-800 dark:text-gray-200 truncate max-w-[200px] sm:max-w-md" title="${wp.address}">${wp.address}</span>
+                                <span class="text-xs text-gray-500">
+                                    خط العرض: <span class="text-warning-500">${wp.location.lat().toFixed(6)}</span> | 
+                                    خط الطول: <span class="text-warning-500">${wp.location.lng().toFixed(6)}</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            ${index > 0 ? `<button type="button" onclick="moveWaypointUp(${index})" class="text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300" title="تحريك النقطة لأعلى">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                        </button>` : `<div class="w-6 h-6"></div>`}
+                            ${index < waypoints.length - 1 ? `<button type="button" onclick="moveWaypointDown(${index})" class="text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300" title="تحريك النقطة لأسفل">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </button>` : `<div class="w-6 h-6"></div>`}
+                            <button type="button" onclick="removeWaypoint(${index})" class="text-red-500 transition-colors hover:text-red-700" title="حذف النقطة">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    `;
                 });
+                html += '</div>';
+                container.innerHTML = html;
+            }
+        }
+
+        function updateHiddenStopsInputs() {
+            const container = document.getElementById('stopsInputs');
+            container.innerHTML = '';
+            waypoints.forEach((wp, index) => {
+                container.innerHTML +=
+                    `<input type="hidden" name="stops[${index}][latitude]" value="${wp.location.lat()}">`;
+                container.innerHTML +=
+                    `<input type="hidden" name="stops[${index}][longitude]" value="${wp.location.lng()}">`;
+            });
+        }
+
+        function calculateAndDisplayRoute() {
+            // Clear current map markers
+            customMarkers.forEach(marker => marker.setMap(null));
+            customMarkers = [];
+
+            // Draw Custom Markers (using google maps default colored pins to simulate app icons)
+            if (startMarker) drawCustomMarker(new google.maps.LatLng(startMarker.lat, startMarker.lng), 'start');
+            if (endMarker) drawCustomMarker(new google.maps.LatLng(endMarker.lat, endMarker.lng), 'end');
+            waypoints.forEach((wp, index) => {
+                drawCustomMarker(wp.location, 'stop', index + 1);
+            });
+
+            if (startMarker && endMarker) {
+                // تحويل مصفوفة التوقفات إلى waypoints المطلوبة في API جوجل
+                const formattedWaypoints = waypoints.map(wp => ({
+                    location: wp.location,
+                    stopover: true // إجبار المرور عبر النقاط
+                }));
+
+                directionsService.route({
+                    origin: new google.maps.LatLng(startMarker.lat, startMarker.lng),
+                    destination: new google.maps.LatLng(endMarker.lat, endMarker.lng),
+                    waypoints: formattedWaypoints, // تضمين نقاط التوقف المنسقة
+                    optimizeWaypoints: false, // الحفاظ على الترتيب الأصلي
+                    travelMode: 'DRIVING'
+                }, function(response, status) {
+                    if (status === 'OK') {
+                        directionsRenderer.setDirections(response);
+                        const route = response.routes[0];
+                        let totalDistance = 0;
+                        let totalDuration = 0;
+
+                        // جمع المسافات والوقت لجميع أجزاء الرحلة (من البداية مروراً بالتوقفات حتى النهاية)
+                        for (let i = 0; i < route.legs.length; i++) {
+                            totalDistance += route.legs[i].distance.value;
+                            totalDuration += route.legs[i].duration.value;
+                        }
+                        window.totalRouteDistanceInMeters =
+                            totalDistance; // تخزين المسافة الإجمالية لتمريرها للباك إند
+
+                        document.getElementById('routeInfo').classList.remove('hidden');
+                        document.getElementById('distance').textContent = (totalDistance / 1000).toFixed(2) + ' كم';
+                        document.getElementById('duration').textContent = Math.round(totalDuration / 60) + ' دقيقة';
+                        document.getElementById('distance_km').value =
+                            (totalDistance / 1000).toFixed(6);
+                        // إرسال المسافة المحسوبة إلى مكون Livewire لتحديث بطاقة السعر تلقائياً
+                        if (window.Livewire) {
+                            window.Livewire.dispatch('updateDistance', {
+                                distanceInMeters: totalDistance
+                            });
+                        }
+                    } else {
+                        window.alert('تعذر حساب المسار: ' + status);
+                    }
+                });
+            } else {
+                document.getElementById('routeInfo').classList.add('hidden');
+                directionsRenderer.setDirections({
+                    routes: []
+                }); // Clear route line
+            }
+        }
+
+        function drawCustomMarker(position, type, index = 1) {
+            let iconUrl = '';
+            let labelText = '';
+
+            if (type === 'start') {
+                iconUrl = 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png'; // Matches App orange start pin
+            } else if (type === 'end') {
+                iconUrl = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'; // Matches App red end pin
+            } else {
+                iconUrl = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'; // Matches App blue stop pin
+                labelText = index.toString();
+            }
+
+            let marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                icon: iconUrl,
+                label: labelText ? {
+                    text: labelText,
+                    color: 'white',
+                    fontWeight: 'bold'
+                } : null
+            });
+            customMarkers.push(marker);
+        }
+
+        function clearMarkers() {
+            startMarker = null;
+            endMarker = null;
+            waypoints = [];
+            renderWaypointsUI();
+            updateHiddenStopsInputs();
+            calculateAndDisplayRoute();
+
+            ['start_latitude', 'start_longitude', 'end_latitude', 'end_longitude'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.querySelector('input[name="start_address"]').value = '';
+            document.getElementById('end_address').value = '';
 
             ['startLatDisplay', 'startLngDisplay', 'endLatDisplay', 'endLngDisplay'].forEach(id => {
                 document.getElementById(id).textContent = '--';

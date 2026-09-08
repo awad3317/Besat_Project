@@ -12,11 +12,12 @@ use App\Repositories\VehicleRepository;
 use App\Repositories\AppSettingRepository;
 
 
-class PriceCalculationService{
-/**
+class PriceCalculationService
+{
+    /**
      * Create a new class instance.
      */
-    public function __construct(private VehicleRepository $vehicleRepository,private AppSettingRepository $appSettingRepository)
+    public function __construct(private VehicleRepository $vehicleRepository, private AppSettingRepository $appSettingRepository)
     {
         //
     }
@@ -30,12 +31,12 @@ class PriceCalculationService{
             return null;
         }
         $points = [];
-        $points[] = "{$lat1},{$lon1}"; 
+        $points[] = "{$lat1},{$lon1}";
 
         foreach ($stops as $stop) {
             $points[] = "{$stop['latitude']},{$stop['longitude']}";
         }
-        $points[] = "{$lat2},{$lon2}"; 
+        $points[] = "{$lat2},{$lon2}";
         $totalDistanceMeters = 0;
         $url = 'https://maps.googleapis.com/maps/api/distancematrix/json';
         for ($i = 0; $i < count($points) - 1; $i++) {
@@ -77,14 +78,15 @@ class PriceCalculationService{
         return $price_per_km;
     }
 
-    public function calculatePrice($distanceKm,$price_per_km,$min_price)
+    public function calculatePrice($distanceKm, $price_per_km, $min_price)
     {
         $total_price = $distanceKm * $price_per_km;
         return max($total_price, $min_price);
     }
 
-    public function calculateCommission($orginal_price){
-        $commission_rate=$this->appSettingRepository->getSetting()->commission_rate;
+    public function calculateCommission($orginal_price)
+    {
+        $commission_rate = $this->appSettingRepository->getSetting()->commission_rate;
         $commission_amount = $orginal_price * ($commission_rate / 100);
         return round($commission_amount, 2);
     }
@@ -139,9 +141,12 @@ class PriceCalculationService{
     {
         $surchargesToAttach = [];
         foreach ($surchargesDetailsArray as $surcharge) {
-            $surchargesToAttach[$surcharge['id']] = ['amount' => $surcharge['amount']]; 
+            // Only attach actual database surcharges (integer IDs)
+            if (is_numeric($surcharge['id'])) {
+                $surchargesToAttach[$surcharge['id']] = ['amount' => $surcharge['amount']];
+            }
         }
-        
+
         if (!empty($surchargesToAttach)) {
             $request->surcharges()->syncWithoutDetaching($surchargesToAttach);
         }
@@ -155,7 +160,7 @@ class PriceCalculationService{
             $validatedData['start_longitude'],
             $validatedData['end_latitude'],
             $validatedData['end_longitude'],
-            $stops 
+            $stops
         );
 
         if ($distanceInKm === null) {
@@ -163,17 +168,17 @@ class PriceCalculationService{
         }
         $price_per_km = $this->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
         $base_price = $this->calculatePrice($distanceInKm, $price_per_km, $vehicle->min_price);
-        
+
         $surcharges_details = [];
         $ac_cost = 0;
         $ac_applied = false;
         $wants_ac = $validatedData['wants_ac'] ?? false;
-        
+
         if ($wants_ac && $vehicle->has_ac_option) {
             $ac_cost = $distanceInKm * $vehicle->ac_price_per_km;
             $ac_cost = round((float) $ac_cost, 2);
             $ac_applied = true;
-        
+
             $surcharges_details[] = [
                 'id'     => 'ac_cost',
                 'name'   => 'رسوم تشغيل التكييف',
@@ -184,7 +189,7 @@ class PriceCalculationService{
         $tripDatetime = $validatedData['trip_datetime'] ?? now()->format('Y-m-d H:i:s');
         $surchargesData = $this->calculateSurcharges($tripDatetime);
         $total_surcharge_amount = $surchargesData['total_amount'];
-        
+
         if (!empty($surchargesData['details'])) {
             $surcharges_details = array_merge($surcharges_details, $surchargesData['details']);
         }
@@ -194,7 +199,7 @@ class PriceCalculationService{
 
         $discount_amount = 0;
         $coupon_for_response = null;
-        
+
         if ($couponObject) {
             $coupon_rate = $couponObject->discount_rate;
             $coupon_for_response = number_format($coupon_rate * 100, 2) . '%';
@@ -205,12 +210,12 @@ class PriceCalculationService{
             $surcharges_details[] = [
                 'id'     => 'discount',
                 'name'   => "خصم قسيمة ({$coupon_for_response})",
-                'amount' => -$discount_amount 
+                'amount' => -$discount_amount
             ];
         }
-        
+
         $app_commission_amount = $this->calculateCommission($final_price);
-        
+
         return [
             'distance_in_km'        => round((float) $distanceInKm, 2),
             'base_price'            => round((float) $base_price, 2),
@@ -223,7 +228,7 @@ class PriceCalculationService{
             'total_surcharges'      => round((float) $total_surcharge_amount, 2),
             'discount_amount'       => round((float) $discount_amount, 2),
             'app_commission_amount' => round((float) $app_commission_amount, 2),
-            'surcharges_details'    => $surcharges_details 
+            'surcharges_details'    => $surcharges_details
         ];
     }
 }

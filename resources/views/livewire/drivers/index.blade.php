@@ -333,42 +333,55 @@
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 sm:px-6">
-    <div class="flex items-center">
-        <!-- زر التبديل مع تأثيرات الحركة -->
-        <button type="button"
-                wire:click="toggleActive({{ $driver->id }})"
-                wire:loading.attr="disabled"
-                wire:loading.class="opacity-50 cursor-not-allowed"
-                class="transition-transform duration-200 focus:outline-none hover:scale-105 active:scale-95">
+                                            <div class="flex items-center">
+                                                <!-- زر التبديل مع تأثيرات الحركة -->
+                                                <button type="button" wire:click="toggleActive({{ $driver->id }})"
+                                                    wire:loading.attr="disabled"
+                                                    wire:loading.class="opacity-50 cursor-not-allowed"
+                                                    class="transition-transform duration-200 focus:outline-none hover:scale-105 active:scale-95">
 
-            @if ($driver->is_active)
-                <!-- شارة حالة "نشط" -->
-                <span class="inline-flex gap-1.5 items-center px-3 py-1 text-sm font-medium rounded-full border bg-success-50 text-success-700 hover:bg-success-100 dark:bg-success-500/15 dark:text-success-400 dark:hover:bg-success-500/25 border-success-200 dark:border-success-500/20">
-                    <svg class="w-4 h-4 text-success-600 dark:text-success-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    نشط
-                </span>
-            @else
-                <!-- شارة حالة "غير نشط" -->
-                <span class="inline-flex gap-1.5 items-center px-3 py-1 text-sm font-medium rounded-full border bg-error-50 text-error-700 hover:bg-error-100 dark:bg-error-500/15 dark:text-error-400 dark:hover:bg-error-500/25 border-error-200 dark:border-error-500/20">
-                    <svg class="w-4 h-4 text-error-600 dark:text-error-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                    </svg>
-                    غير نشط
-                </span>
-            @endif
-        </button>
+                                                    @if ($driver->is_active)
+                                                        <!-- شارة حالة "نشط" -->
+                                                        <span
+                                                            class="inline-flex gap-1.5 items-center px-3 py-1 text-sm font-medium rounded-full border bg-success-50 text-success-700 hover:bg-success-100 dark:bg-success-500/15 dark:text-success-400 dark:hover:bg-success-500/25 border-success-200 dark:border-success-500/20">
+                                                            <svg class="w-4 h-4 text-success-600 dark:text-success-400"
+                                                                fill="none" stroke="currentColor"
+                                                                stroke-width="2.5" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                            </svg>
+                                                            نشط
+                                                        </span>
+                                                    @else
+                                                        <!-- شارة حالة "غير نشط" -->
+                                                        <span
+                                                            class="inline-flex gap-1.5 items-center px-3 py-1 text-sm font-medium rounded-full border bg-error-50 text-error-700 hover:bg-error-100 dark:bg-error-500/15 dark:text-error-400 dark:hover:bg-error-500/25 border-error-200 dark:border-error-500/20">
+                                                            <svg class="w-4 h-4 text-error-600 dark:text-error-400"
+                                                                fill="none" stroke="currentColor"
+                                                                stroke-width="2.5" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                            </svg>
+                                                            غير نشط
+                                                        </span>
+                                                    @endif
+                                                </button>
 
-        <!-- مؤشر تحميل دائري (Spinner) يظهر فقط عند الضغط -->
-        <div wire:loading wire:target="toggleActive({{ $driver->id }})" class="mr-3">
-            <svg class="w-5 h-5 text-gray-400 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-        </div>
-    </div>
-</td>
+                                                <!-- مؤشر تحميل دائري (Spinner) يظهر فقط عند الضغط -->
+                                                <div wire:loading wire:target="toggleActive({{ $driver->id }})"
+                                                    class="mr-3">
+                                                    <svg class="w-5 h-5 text-gray-400 animate-spin"
+                                                        xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                        viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12"
+                                                            r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor"
+                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                        </path>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
                                             <div class="flex relative justify-center items-center">
                                                 <button @click="openOptions = !openOptions"
