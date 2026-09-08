@@ -79,6 +79,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(WalletTransaction::class);
     }
+    public function getWalletBalanceAttribute(): float
+    {
+        $deposit = (float) $this->walletTransactions()->where('type', 'deposit')->sum('amount');
+        $withdraw = (float) $this->walletTransactions()->where('type', 'payment')->sum('amount');
+
+        return round($deposit - $withdraw, 2);
+    }
     
     public function usedDiscountCodes()
     {

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\WalletTransaction;
 use App\Notifications\TripCancelledNotification;
 use App\Repositories\AppSettingRepository;
 use App\Repositories\DiscountCodeRepository;
@@ -77,7 +79,7 @@ class RequestController extends Controller
             'end_longitude' => 'required|numeric',
             'end_address' => 'required|string|max:255',
             'distance_km' => 'required|numeric|min:0',
-            'payment_method'=>['required',Rule::in(['cash', 'digital_payment'])],
+            'payment_method'=>['required',Rule::in(['cash', 'digital_payment','wallet'])],
             'notes' => 'nullable|string|max:500',
             'stops'  => ['nullable', 'array'],
             'stops.*.latitude'  => ['required_with:stops', 'numeric', 'between:-90,90'],
@@ -104,14 +106,27 @@ class RequestController extends Controller
             $priceDetails = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
             unset($validated['stops']);
             $validated['distance_km'] = $priceDetails['distance_in_km'];
-            $validated['original_price']        = $priceDetails['original_price'];
-            $validated['final_price']           = $priceDetails['final_price'];
-            $validated['discount_amount']       = $priceDetails['discount_amount'];
-            $validated['surcharge_amount']      = $priceDetails['total_surcharges']; 
-            $validated['ac_cost']               = $priceDetails['ac_cost']; 
+            $validated['original_price']  = $priceDetails['original_price'];
+            $validated['final_price']  = $priceDetails['final_price'];
+            $validated['discount_amount'] = $priceDetails['discount_amount'];
+            $validated['surcharge_amount']  = $priceDetails['total_surcharges']; 
+            $validated['ac_cost'] = $priceDetails['ac_cost']; 
             $validated['app_commission_amount'] = $priceDetails['app_commission_amount'];
             $validated['status'] = 'pending';
             DB::beginTransaction();
+
+            if ($validated['payment_method'] === 'wallet') {
+                $user = User::lockForUpdate()->find($validated['user_id']);
+                if ($user->wallet_balance < $validated['final_price']) {
+                    DB::rollBack();
+                    return ApiResponseClass::sendError('رصيد المحفظة غير كافٍ لإتمام الرحلة.', null, 400);
+                }
+                WalletTransaction::create([
+                    'user_id' => $user->id,
+                    'amount' => $validated['final_price'],
+                    'type' => 'payment',
+                ]);
+            }
             $requestModel = $this->requestRepository->store($validated);
             if (!empty($stopsData)) {
                 $this->requestStopRepository->store($requestModel->id, $stopsData);
