@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
+use App\Models\Bank;
+use App\Models\PaymentStep;
 use App\Models\User;
 use App\Models\WalletTransaction;
 use App\Notifications\TripCancelledNotification;
@@ -15,6 +17,7 @@ use App\Repositories\VehicleRepository;
 use App\Services\DiscountCodeService;
 use App\Services\DriverLocationService;
 use App\Services\FirebaseService;
+use App\Services\Payment\PaymentFactory;
 use App\Services\PriceCalculationService;
 use App\Services\RatingService;
 use App\Services\TripDispatchService;
@@ -80,6 +83,7 @@ class RequestController extends Controller
             'end_address' => 'required|string|max:255',
             'distance_km' => 'required|numeric|min:0',
             'payment_method'=>['required',Rule::in(['cash', 'digital_payment','wallet'])],
+            'bank_id' => ['required_if:payment_method,digital_payment', 'nullable', 'exists:banks,id'],
             'notes' => 'nullable|string|max:500',
             'stops'  => ['nullable', 'array'],
             'stops.*.latitude'  => ['required_with:stops', 'numeric', 'between:-90,90'],
@@ -90,9 +94,12 @@ class RequestController extends Controller
 
         try {
             $stopsData = $validated['stops'] ?? [];
+            unset($validated['stops']);
+
             $validated['user_id'] = auth('sanctum')->id();
             $validated['created_by'] = 'APP';
             $vehicle = $this->vehicleRepository->getById($validated['vehicle_id']);
+
             $coupon_object = null;
             if(isset($validated['discount_code']) && !empty($validated['discount_code'])){
                 $couponCheck = $this->discountCodeService->validateCoupon($validated['discount_code'], $validated['user_id']);
@@ -113,6 +120,8 @@ class RequestController extends Controller
             $validated['ac_cost'] = $priceDetails['ac_cost']; 
             $validated['app_commission_amount'] = $priceDetails['app_commission_amount'];
             $validated['status'] = 'pending';
+            $validated['payment_status'] = 'unpaid';
+            
             DB::beginTransaction();
 
             if ($validated['payment_method'] === 'wallet') {
@@ -126,6 +135,11 @@ class RequestController extends Controller
                     'amount' => $validated['final_price'],
                     'type' => 'payment',
                 ]);
+                $validated['payment_status'] = 'paid';
+                $validated['status'] = 'searching_driver';
+            }
+            if ($validated['payment_method'] === 'cash') {
+                $validated['status'] = 'searching_driver';
             }
             $requestModel = $this->requestRepository->store($validated);
             if (!empty($stopsData)) {
@@ -146,7 +160,7 @@ class RequestController extends Controller
                 $this->discountCodeService->recordCouponUsage($coupon_object, $validated['user_id']);
             }
             DB::commit();
-            if (in_array($validated['payment_method'], ['cash'])){
+            if (in_array($validated['payment_method'], ['cash', 'wallet'])){
                 $this->tripDispatchService->dispatchToDrivers($requestModel);
             }
             $requestModel->refresh();
@@ -288,4 +302,5 @@ class RequestController extends Controller
             return ApiResponseClass::sendError('حدث خطأ أثناء حساب السعر.', $e->getMessage(), 500);
         }
     }
+
 }

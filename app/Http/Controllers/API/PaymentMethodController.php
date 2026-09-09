@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Classes\ApiResponseClass; // لا تنسَ استدعاء الكلاس هنا
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
+use App\Models\PaymentStep;
 use App\Models\Request as TripRequest;
 use App\Services\Payment\PaymentFactory;
 use App\Services\TripDispatchService;
@@ -104,53 +105,76 @@ class PaymentMethodController extends Controller
 
     public function processPayment(Request $request, $action, $method_key)
     {
-        $validated = $request->validate([
+        $request->validate([
             'request_id' => 'required|exists:requests,id',
         ]);
-        DB::beginTransaction();
 
         try {
-            $tripRequest = TripRequest::findOrFail($request->request_id);
+            $user= auth('sanctum')->user();
+            $tripRequest = TripRequest::where('id', $request->request_id)
+                ->where('user_id', $user->id)
+                ->where('payment_status', 'unpaid')
+                ->firstOrFail();
+
+            $bank = Bank::where('method_key', $method_key)->firstOrFail();
             $bankStrategy = PaymentFactory::make($method_key);
-            if ($action === 'request_otp') {
-                
-                $response = $bankStrategy->requestOtp($request->all());
-                DB::commit(); 
-                return ApiResponseClass::sendResponse($response, $response['message']);
+            if ($tripRequest->bank_id !== $bank->id) {
+                $tripRequest->update(['bank_id' => $bank->id]);
+            }
+            $payload = array_merge($request->except(['request_id']), [
+                'amount'     => $tripRequest->final_price,
+                'request_id' => $tripRequest->id,
+            ]);
+            if (in_array($action, ['request_otp', 'initiate'])) {
+                $response = $bankStrategy->initiatePayment($payload);
 
-            } elseif ($action === 'submit') {
-                
-                $response = $bankStrategy->submitPayment($request->all());
+                $nextStep = PaymentStep::where('bank_id', $bank->id)
+                    ->where('step_key', 'submit')
+                    ->with('fields')
+                    ->first();
 
-                if ($response['status'] === 'success') {
+                return ApiResponseClass::sendResponse([
+                    'trip_request_id' => $tripRequest->id,
+                    'status'=> 'pending_payment',
+                    'next_step'=> $nextStep
+                ], $response['message'] ?? 'تم إرسال رمز التحقق بنجاح.');
+            }
+
+            if (in_array($action, ['submit', 'confirm'])) {
+                $response = $bankStrategy->confirmPayment($payload);
+
+                if (($response['status'] ?? '') === 'paid' || ($response['status'] ?? '') === 'success') {
+                    DB::beginTransaction();
+
                     $tripRequest->update([
                         'payment_method' => 'digital_payment',
                         'payment_status' => 'paid',
-                        'transaction_id' => $response['transaction_id'], 
-                        'bank_id'        => Bank::where('method_key', $method_key)->first()?->id 
+                        'status' => 'searching_driver',
+                        'transaction_id' => $response['transaction_id'] ?? null
                     ]);
 
                     DB::commit();
+
                     $this->tripDispatchService->dispatchToDrivers($tripRequest);
 
                     return ApiResponseClass::sendResponse([
                         'trip_request_id' => $tripRequest->id,
                         'transaction_id'  => $tripRequest->transaction_id,
                         'payment_status'  => 'paid'
-                    ], $response['message']);
+                    ], $response['message'] ?? 'تم خصم المبلغ بنجاح وجارٍ البحث عن كابتن.');
                 }
 
-                throw new \Exception("فشلت عملية الدفع من خلال البنك");
+                return ApiResponseClass::sendError($response['message'] ?? 'فشلت عملية الدفع من خلال البنك.', null, 400);
             }
 
-            throw new \Exception("الإجراء المطلوب غير مدعوم في النظام");
+            return ApiResponseClass::sendError('الإجراء المطلوب غير مدعوم في النظام.', null, 400);
 
         } catch (ValidationException $e) {
             DB::rollBack();
-            return ApiResponseClass::sendValidationError('بيانات الإدخال غير صالحة', $e->errors());
-
+            return ApiResponseClass::sendError('بيانات الإدخال غير صالحة.', $e->errors(), 422);
         } catch (\Exception $e) {
-            return ApiResponseClass::rollback($e, 'حدث خطأ أثناء معالجة العملية المالية: ' . $e->getMessage());
+            DB::rollBack();
+            return ApiResponseClass::sendError('حدث خطأ أثناء معالجة العملية المالية: ' . $e->getMessage(), null, 500);
         }
     }
 }

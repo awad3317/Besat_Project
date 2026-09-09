@@ -8,21 +8,23 @@ use App\Services\Payment\Traits\DynamicPaymentValidation;
 class QutaibiStrategy implements PaymentStrategy 
 {
     use DynamicPaymentValidation;
-    public function requestOtp(array $data): array 
+    public function initiatePayment(array $data): array 
     {
         $validatedData = $this->validateStepDynamic($data, 'qutaibi_pay', 'request_otp');
         return [
             'status' => 'success',
+            'next_action' => 'require_otp',
             'message' => 'تم إرسال رمز التحقق إلى هاتفك بنجاح.'
         ];
     }
 
-    public function submitPayment(array $data): array 
+    public function confirmPayment(array $data): array
     {
         $validatedData = $this->validateStepDynamic($data, 'qutaibi_pay', 'submit');
         $bankTransactionId = "TXN-QUT-" . rand(100000, 999999); 
         return [
             'status' => 'success',
+            'next_action'    => 'none',
             'transaction_id' => $bankTransactionId,
             'message' => 'تم خصم المبلغ بنجاح عبر بنك القطيبي.'
         ];
