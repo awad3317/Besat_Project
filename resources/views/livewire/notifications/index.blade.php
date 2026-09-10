@@ -26,7 +26,7 @@
         
         <!-- الترويسة -->
         <div class="flex gap-4 items-center px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
-            <div class="flex justify-center items-center w-12 h-12 rounded-xl shadow-sm bg-brand-50 dark:bg-brand-500/20 text-brand-500 dark:text-brand-400">
+            <div class="flex justify-center items-center w-12 h-12 rounded-xl shadow-sm bg-brand-50 dark:bg-gray-800 text-brand-500 dark:text-brand-400">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                 </svg>
@@ -93,11 +93,11 @@
                 <!-- عنوان ومحتوى الإشعار -->
                 <div class="space-y-5">
                     <div>
-                        <label for="title" class="block mb-2 text-sm font-bold text-gray-700 dark:text-gray-300">
+                        <label for="title" class="block mb-2 text-sm font-bold text-gray-700 dark:text-gray-50">
                             عنوان الإشعار <span class="text-error-500">*</span>
                         </label>
                         <input type="text" id="title" wire:model="title" 
-                            class="px-4 py-3 w-full text-sm text-gray-900 bg-gray-50 rounded-xl border border-gray-200 transition-all dark:bg-gray-800/50 dark:border-gray-700 focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:text-white dark:focus:bg-gray-900 placeholder:text-gray-400" 
+                            class="px-4 py-3 w-full text-sm text-gray-900 bg-gray-50 rounded-xl border border-gray-200 transition-all dark:bg-gray-800 dark:border-gray-700 focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:text-white dark:focus:bg-gray-900 placeholder:text-gray-400" 
                             placeholder="مثال: عرض خاص بمناسبة العيد!">
                         @error('title') <span class="flex gap-1 items-center mt-2 text-xs font-semibold text-error-500"><i class="fas fa-info-circle"></i> {{ $message }}</span> @enderror
                     </div>
@@ -107,7 +107,7 @@
                             محتوى الإشعار <span class="text-error-500">*</span>
                         </label>
                         <textarea id="body" wire:model="body" rows="4" 
-                            class="px-4 py-3 w-full text-sm text-gray-900 bg-gray-50 rounded-xl border border-gray-200 transition-all dark:bg-gray-800/50 dark:border-gray-700 focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:text-white dark:focus:bg-gray-900 placeholder:text-gray-400" 
+                            class="px-4 py-3 w-full text-sm text-gray-900 bg-gray-50 rounded-xl border border-gray-200 transition-all dark:bg-gray-800 dark:border-gray-700 focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:text-white dark:focus:bg-gray-900 placeholder:text-gray-400" 
                             placeholder="اكتب التفاصيل التي ستظهر في الإشعار للمستخدمين..."></textarea>
                         @error('body') <span class="flex gap-1 items-center mt-2 text-xs font-semibold text-error-500"><i class="fas fa-info-circle"></i> {{ $message }}</span> @enderror
                     </div>
@@ -116,7 +116,7 @@
             </div>
 
             <!-- الفوتر: زر الإرسال -->
-            <div class="flex justify-end items-center px-5 py-4 bg-gray-50 border-t border-gray-100 dark:bg-gray-800/50 dark:border-gray-800">
+            <div class="flex justify-end items-center px-5 py-4 bg-gray-50 border-t border-gray-100 dark:bg-gray-800 dark:border-gray-800">
                 <button type="submit" wire:loading.attr="disabled"
                     class="flex justify-center items-center px-12 py-3 w-full text-sm font-bold text-white rounded-xl shadow-sm transition-all duration-200 bg-brand-500 hover:bg-brand-600 hover:shadow focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:opacity-70 disabled:cursor-not-allowed dark:focus:ring-offset-gray-900">
                     

@@ -33,7 +33,7 @@ class Create extends Component
     public $vehicle_id = '';
     public $wants_ac = false;
     public $show_ac_options = false;
-    
+
     public $trip_date = '';
     public $trip_time = '';
 
@@ -45,6 +45,12 @@ class Create extends Component
     public $distance_km = 0;
     public $price_details = null;
     public $calculation_error = null;
+
+    // متغييرات إنشاء مستخدم جديد
+    public $new_user_name = '';
+    public $new_user_phone = '';
+    public $new_user_whatsapp = '';
+    public $new_user_password = '';
 
     protected $listeners = ['updateDistance' => 'setDistanceAndCalculate'];
 
@@ -91,14 +97,14 @@ class Create extends Component
     public function applyCoupon(DiscountCodeService $discountCodeService)
     {
         $this->reset(['coupon_message', 'calculation_error']);
-        
+
         if (empty($this->coupon_code)) {
             $this->calculatePrice();
             return;
         }
 
         $coupon = $discountCodeService->getDiscountCode($this->coupon_code);
-        
+
         if (!$coupon) {
             $this->coupon_message = 'كود الخصم غير صحيح.';
             $this->calculatePrice();
@@ -119,7 +125,7 @@ class Create extends Component
             $this->calculatePrice();
             return;
         }
-        
+
         $this->coupon_message = 'الكوبون صالح الاستخدام ' . number_format($coupon->discount_rate * 100, 2) . "%";
         $this->calculatePrice();
     }
@@ -174,7 +180,7 @@ class Create extends Component
         try {
             $priceService = app(PriceCalculationService::class);
             $discountService = app(DiscountCodeService::class);
-            
+
             $vehicle = Vehicle::find($this->vehicle_id);
             if (!$vehicle) return;
 
@@ -183,7 +189,7 @@ class Create extends Component
 
             $surcharges_details = [];
             $ac_cost = 0;
-            
+
             if ($this->wants_ac && $vehicle->has_ac_option) {
                 $ac_cost = $this->distance_km * $vehicle->ac_price_per_km;
                 $ac_cost = round((float) $ac_cost, 2);
@@ -197,7 +203,7 @@ class Create extends Component
             $tripDatetime = Carbon::parse($this->trip_date . ' ' . $this->trip_time)->format('Y-m-d H:i:s');
             $surchargesData = $priceService->calculateSurcharges($tripDatetime);
             $total_surcharge_amount = $surchargesData['total_amount'];
-            
+
             if (!empty($surchargesData['details'])) {
                 $surcharges_details = array_merge($surcharges_details, $surchargesData['details']);
             }
@@ -214,7 +220,7 @@ class Create extends Component
                     $surcharges_details[] = [
                         'id'     => 'discount',
                         'name'   => 'خصم قسيمة',
-                        'amount' => -$discount_amount 
+                        'amount' => -$discount_amount
                     ];
                 }
             }
@@ -227,13 +233,44 @@ class Create extends Component
                 'discount_amount' => $discount_amount,
                 'final_price' => round($final_price, 2),
                 'surcharges_details' => $surcharges_details,
+                'price_per_km' => $price_per_km,
             ];
-
         } catch (\Exception $e) {
             $this->calculation_error = 'حدث خطأ أثناء حساب السعر';
         }
     }
+    public function storeNewCustomer()
+    {
+        // التحقق من صحة البيانات
+        $this->validate([
+            'new_user_name' => 'required|string|max:255',
+            'new_user_phone' => 'required|string|unique:users,phone',
+            'new_user_whatsapp' => 'nullable|string',
+            'new_user_password' => 'required|string|min:8',
+        ], [
+            'new_user_phone.unique' => 'رقم الجوال مسجل مسبقاً في النظام.',
+            'new_user_password.min' => 'كلمة المرور يجب أن لا تقل عن 8 أحرف.',
+        ]);
 
+        // إنشاء المستخدم
+        $user = User::create([
+            'name' => $this->new_user_name,
+            'phone' => $this->new_user_phone,
+            'whatsapp_number' => $this->new_user_whatsapp,
+            'password' => bcrypt($this->new_user_password),
+            'type' => 'user',
+            'is_banned' => 0,
+        ]);
+
+        // تحديد المستخدم الجديد تلقائياً في خانة البحث
+        $this->selectCustomer($user->id, $user->phone, $user->name, 0);
+
+        // تفريغ الحقول بعد الإنشاء
+        $this->reset(['new_user_name', 'new_user_phone', 'new_user_whatsapp', 'new_user_password']);
+
+        // إرسال حدث لإغلاق النافذة المنبثقة
+        $this->dispatch('close-user-modal');
+    }
     #[Computed]
     public function vehicles()
     {
