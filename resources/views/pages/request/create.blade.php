@@ -112,7 +112,7 @@
         <form method="POST" id="tripForm" action="{{ route('request.store') }}" enctype="multipart/form-data"
             @submit="loadingSubmit = true">
             @csrf
-    
+
             <div class="col-span-2 mb-6">
                 <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
                     تحديد المسار على الخريطة
@@ -132,11 +132,11 @@
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                             <span class="text-sm text-gray-600 dark:text-gray-400">المسافة:</span>
-                            <span id="distance" class="font-medium">--</span>
+                            <span id="distance" class="font-medium dark:text-whtie">--</span>
                         </div>
                         <div>
                             <span class="text-sm text-gray-600 dark:text-gray-400">الوقت المتوقع:</span>
-                            <span id="duration" class="font-medium">--</span>
+                            <span id="duration" class="font-medium dark:text-whtie">--</span>
                         </div>
                     </div>
                 </div>
@@ -262,44 +262,34 @@
                 polylineOptions: {
                     strokeColor: '#F58A07',
                     strokeWeight: 5
-                } // Orange thick line like app
+                }
             });
 
             map = new google.maps.Map(document.getElementById("map"), {
                 center: {
                     lat: 12.7773,
                     lng: 45.0336
-                }, // عدن - كريتر
+                }, // عدن
                 zoom: 13
             });
 
             directionsRenderer.setMap(map);
             geocoder = new google.maps.Geocoder();
 
+            // التعديل الأول: النقرات الذكية (بدون نوافذ مزعجة)
             map.addListener('click', function(event) {
                 let latLng = event.latLng;
 
-                Swal.fire({
-                    title: 'تحديد نقطة المسار',
-                    text: 'ماذا تريد أن تعين هذه النقطة؟',
-                    icon: 'question',
-                    showDenyButton: true,
-                    showCancelButton: true,
-                    confirmButtonText: 'نقطة انطلاق',
-                    denyButtonText: 'نقطة توقف',
-                    cancelButtonText: 'نقطة وصول',
-                    confirmButtonColor: '#28a745',
-                    denyButtonColor: '#F58A07',
-                    cancelButtonColor: '#dc3545',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        setStartPoint(latLng);
-                    } else if (result.isDenied) {
-                        addWaypoint(latLng);
-                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        setEndPoint(latLng);
-                    }
-                });
+                if (!startMarker) {
+                    // إذا لم تكن هناك نقطة بداية، اجعلها البداية
+                    setStartPoint(latLng);
+                } else if (!endMarker) {
+                    // إذا كان هناك بداية ولا توجد نهاية، اجعلها النهاية
+                    setEndPoint(latLng);
+                } else {
+                    // إذا كانت البداية والنهاية موجودتين، أضفها كنقطة توقف
+                    addWaypoint(latLng);
+                }
             });
 
             document.getElementById('clearRouteBtn')?.addEventListener('click', clearMarkers);
@@ -438,7 +428,7 @@
                     html += `
                     <div draggable="true" ondragstart="dragStart(event, ${index})" ondragover="dragOver(event)" ondrop="drop(event, ${index})" ondragend="dragEnd(event)" class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200 transition-colors dark:bg-gray-800 dark:border-gray-700 cursor-grab active:cursor-grabbing hover:bg-gray-100 dark:hover:bg-gray-700">
                         <div class="flex gap-3 items-center pointer-events-none">
-                            <div class="flex justify-center items-center w-8 h-8 text-sm font-bold text-blue-600 bg-blue-100 rounded-full">
+                            <div class="flex justify-center items-center w-8 h-8 text-sm font-bold text-blue-500 bg-blue-100 rounded-full">
                                 ${index + 1}
                             </div>
                             <div class="flex flex-col">
@@ -449,14 +439,14 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="flex gap-2 items-center">
+                        <div class="flex gap-2 items-center my-3">
                             ${index > 0 ? `<button type="button" onclick="moveWaypointUp(${index})" class="text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300" title="تحريك النقطة لأعلى">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                                        </button>` : `<div class="w-6 h-6"></div>`}
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                                </button>` : `<div class="w-6 h-6"></div>`}
                             ${index < waypoints.length - 1 ? `<button type="button" onclick="moveWaypointDown(${index})" class="text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300" title="تحريك النقطة لأسفل">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                        </button>` : `<div class="w-6 h-6"></div>`}
-                            <button type="button" onclick="removeWaypoint(${index})" class="text-red-500 transition-colors hover:text-red-700" title="حذف النقطة">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                                </button>` : `<div class="w-6 h-6"></div>`}
+                            <button type="button" onclick="removeWaypoint(${index})" class="transition-colors text-error-500 hover:text-error-700" title="حذف النقطة">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
@@ -480,11 +470,10 @@
         }
 
         function calculateAndDisplayRoute() {
-            // Clear current map markers
+            // إخفاء العلامات القديمة
             customMarkers.forEach(marker => marker.setMap(null));
             customMarkers = [];
 
-            // Draw Custom Markers (using google maps default colored pins to simulate app icons)
             if (startMarker) drawCustomMarker(new google.maps.LatLng(startMarker.lat, startMarker.lng), 'start');
             if (endMarker) drawCustomMarker(new google.maps.LatLng(endMarker.lat, endMarker.lng), 'end');
             waypoints.forEach((wp, index) => {
@@ -492,17 +481,19 @@
             });
 
             if (startMarker && endMarker) {
-                // تحويل مصفوفة التوقفات إلى waypoints المطلوبة في API جوجل
                 const formattedWaypoints = waypoints.map(wp => ({
                     location: wp.location,
-                    stopover: true // إجبار المرور عبر النقاط
+                    stopover: true
                 }));
 
                 directionsService.route({
                     origin: new google.maps.LatLng(startMarker.lat, startMarker.lng),
                     destination: new google.maps.LatLng(endMarker.lat, endMarker.lng),
-                    waypoints: formattedWaypoints, // تضمين نقاط التوقف المنسقة
-                    optimizeWaypoints: false, // الحفاظ على الترتيب الأصلي
+                    waypoints: formattedWaypoints,
+
+                    // 🚨 التعديل الأهم: تغيير القيمة إلى true ليقوم جوجل بحساب أقصر وأفضل مسار تلقائياً
+                    optimizeWaypoints: true,
+
                     travelMode: 'DRIVING'
                 }, function(response, status) {
                     if (status === 'OK') {
@@ -511,23 +502,36 @@
                         let totalDistance = 0;
                         let totalDuration = 0;
 
-                        // جمع المسافات والوقت لجميع أجزاء الرحلة (من البداية مروراً بالتوقفات حتى النهاية)
                         for (let i = 0; i < route.legs.length; i++) {
                             totalDistance += route.legs[i].distance.value;
                             totalDuration += route.legs[i].duration.value;
                         }
-                        window.totalRouteDistanceInMeters =
-                            totalDistance; // تخزين المسافة الإجمالية لتمريرها للباك إند
 
                         document.getElementById('routeInfo').classList.remove('hidden');
                         document.getElementById('distance').textContent = (totalDistance / 1000).toFixed(2) + ' كم';
                         document.getElementById('duration').textContent = Math.round(totalDuration / 60) + ' دقيقة';
-                        document.getElementById('distance_km').value =
-                            (totalDistance / 1000).toFixed(6);
-                        // إرسال المسافة المحسوبة إلى مكون Livewire لتحديث بطاقة السعر تلقائياً
+
+                        // تجهيز قائمة نقاط التوقف لإرسالها لـ Livewire
+                        let livewireStops = waypoints.map(wp => ({
+                            lat: wp.location.lat(),
+                            lng: wp.location.lng(),
+                            address: wp.address
+                        }));
+
+                        // إرسال جميع بيانات الخريطة إلى Livewire لتحديث الأسعار والمتغيرات
                         if (window.Livewire) {
-                            window.Livewire.dispatch('updateDistance', {
-                                distanceInMeters: totalDistance
+                            window.Livewire.dispatch('updateMapData', {
+                                data: { // <-- أضفنا هذا المفتاح ليطابق اسم المتغير $data في كلاس Livewire
+                                    distanceInMeters: totalDistance,
+                                    start_lat: startMarker.lat,
+                                    start_lng: startMarker.lng,
+                                    start_address: document.querySelector('input[name="start_address"]')
+                                        .value,
+                                    end_lat: endMarker.lat,
+                                    end_lng: endMarker.lng,
+                                    end_address: document.getElementById('end_address').value,
+                                    stops: livewireStops
+                                }
                             });
                         }
                     } else {
@@ -538,7 +542,7 @@
                 document.getElementById('routeInfo').classList.add('hidden');
                 directionsRenderer.setDirections({
                     routes: []
-                }); // Clear route line
+                });
             }
         }
 
@@ -547,24 +551,51 @@
             let labelText = '';
 
             if (type === 'start') {
-                iconUrl = 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png'; // Matches App orange start pin
+                iconUrl = 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png';
             } else if (type === 'end') {
-                iconUrl = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'; // Matches App red end pin
+                iconUrl = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
             } else {
-                iconUrl = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'; // Matches App blue stop pin
+                iconUrl = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
                 labelText = index.toString();
             }
 
+            // التعديل الثاني: جعل العلامات قابلة للسحب
             let marker = new google.maps.Marker({
                 position: position,
                 map: map,
                 icon: iconUrl,
+                draggable: true, // تفعيل خاصية السحب!
                 label: labelText ? {
                     text: labelText,
                     color: 'white',
                     fontWeight: 'bold'
                 } : null
             });
+
+            // التعديل الثالث: تحديث المسار تلقائياً عند إفلات العلامة بعد سحبها
+            marker.addListener('dragend', function(event) {
+                let newLatLng = event.latLng;
+
+                if (type === 'start') {
+                    setStartPoint(newLatLng);
+                } else if (type === 'end') {
+                    setEndPoint(newLatLng);
+                } else {
+                    // تحديث نقطة التوقف المسحوبة
+                    waypoints[index - 1].location = newLatLng;
+                    geocoder.geocode({
+                        location: newLatLng
+                    }, (results, status) => {
+                        if (status === 'OK' && results[0]) {
+                            waypoints[index - 1].address = results[0].formatted_address;
+                        }
+                        renderWaypointsUI();
+                        updateHiddenStopsInputs();
+                        calculateAndDisplayRoute();
+                    });
+                }
+            });
+
             customMarkers.push(marker);
         }
 

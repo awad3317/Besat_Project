@@ -52,8 +52,7 @@ class Create extends Component
     public $new_user_whatsapp = '';
     public $new_user_password = '';
 
-    protected $listeners = ['updateDistance' => 'setDistanceAndCalculate'];
-
+    protected $listeners = ['updateMapData' => 'setMapDataAndCalculate'];
     public function mount()
     {
         $this->trip_date = now()->format('Y-m-d');
@@ -271,6 +270,25 @@ class Create extends Component
         // إرسال حدث لإغلاق النافذة المنبثقة
         $this->dispatch('close-user-modal');
     }
+
+    public function setMapDataAndCalculate($data)
+{
+    // استقبال جميع بيانات الخريطة
+    $this->distance_km = $data['distanceInMeters'] / 1000;
+    
+    $this->start_lat = $data['start_lat'];
+    $this->start_lng = $data['start_lng'];
+    $this->start_address = $data['start_address'];
+    
+    $this->end_lat = $data['end_lat'];
+    $this->end_lng = $data['end_lng'];
+    $this->end_address = $data['end_address'];
+    
+    $this->stops = $data['stops'];
+
+    // حساب السعر بناءً على المسافة الجديدة
+    $this->calculatePrice();
+}
     #[Computed]
     public function vehicles()
     {

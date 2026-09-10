@@ -460,10 +460,9 @@
         @close-user-modal.window="isUserModalOpen = false">
 
         <div x-show="isUserModalOpen"
-            class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto modal z-[99999]"
+            class="flex overflow-y-auto fixed inset-0 justify-center items-center p-5 modal z-99999"
             style="display: none;">
-            <div class="fixed inset-0 w-full h-full modal-close-btn bg-gray-400/50 backdrop-blur-[32px]"></div>
-
+            <div class="modal-close-btn fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
             <div @click.outside="isUserModalOpen = false" @keydown.enter.prevent="$wire.storeNewCustomer()"
                 class="relative w-full max-w-[630px] rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-10">
 
@@ -491,29 +490,85 @@
                             <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
                                 رقم الجوال <span class="mt-1 text-xs text-warning-500">*</span>
                             </label>
-                            <div x-data="{
-                                open: false,
-                                search: '',
-                                countries: [{ name: 'Yemen', code: 'YE', dial_code: '+967' }, { name: 'Saudi Arabia', code: 'SA', dial_code: '+966' }],
-                                selectedCountry: { name: 'Yemen', code: 'YE', dial_code: '+967' },
-                                localPhoneNumber: '',
-                                init() {
-                                    this.$watch('localPhoneNumber', value => { $wire.set('new_user_phone', this.selectedCountry.dial_code.replace('+', '') + value); });
-                                    this.$watch('selectedCountry', value => { $wire.set('new_user_phone', value.dial_code.replace('+', '') + this.localPhoneNumber); });
-                                }
-                            }" class="relative">
-                                <div
-                                    class="flex w-full h-11 rounded-lg border border-gray-300 dark:border-gray-600 shadow-theme-xs">
-                                    <button type="button" @click="open = !open"
-                                        class="flex gap-2 items-center px-3 bg-gray-50 rounded-r-lg border-l border-gray-300 dark:bg-gray-700 dark:border-gray-600">
-                                        <img :src="`https://flagcdn.com/w20/${selectedCountry.code.toLowerCase()}.png`"
-                                            class="w-5 h-auto">
-                                    </button>
-                                    <input type="tel" x-model="localPhoneNumber" placeholder="780236551"
-                                        dir="ltr"
-                                        class="flex-grow px-3 text-sm text-left text-gray-800 bg-transparent rounded-l-lg border-none dark:text-white focus:outline-none focus:ring-0">
+                           <div x-data="{
+                            open: false,
+                            search: '',
+                            countries: [
+                                { name: 'Yemen', code: 'YE', dial_code: '+967' },
+                                { name: 'Saudi Arabia', code: 'SA', dial_code: '+966' },
+                                { name: 'United Arab Emirates', code: 'AE', dial_code: '+971' },
+                                { name: 'Qatar', code: 'QA', dial_code: '+974' },
+                                { name: 'Oman', code: 'OM', dial_code: '+968' },
+                                { name: 'Kuwait', code: 'KW', dial_code: '+965' },
+                                { name: 'Egypt', code: 'EG', dial_code: '+20' },
+                                { name: 'Jordan', code: 'JO', dial_code: '+962' },
+                                { name: 'Turkey', code: 'TR', dial_code: '+90' }
+                            ],
+                            selectedCountry: { name: 'Yemen', code: 'YE', dial_code: '+967' },
+                            localPhoneNumber: '', // <-- 1. المتغير الجديد لتخزين رقم الجوال المحلي
+
+                            get filteredCountries() {
+                                if (this.search === '') return this.countries;
+                                return this.countries.filter(country => {
+                                    const searchLower = this.search.toLowerCase();
+                                    return country.name.toLowerCase().includes(searchLower) || country.dial_code.includes(searchLower);
+                                });
+                            }
+                        }" class="relative">
+
+                            <!-- 2. الحقل المخفي الذي سيتم إرساله إلى الخادم -->
+                            <input type="hidden" name="phone"
+                                :value="selectedCountry.dial_code.replace('+', '') + localPhoneNumber">
+
+                            <!-- This is the main visible input group -->
+                            <div
+                                class="flex w-full h-11 rounded-lg border border-gray-300 dark:border-gray-600 shadow-theme-xs">
+
+                                <!-- The dropdown button -->
+                                <button type="button" @click="open = !open"
+                                    class="flex gap-2 items-center px-3 bg-gray-50 rounded-r-lg border-l border-gray-300 dark:bg-gray-700 dark:border-gray-600">
+                                    <img :src="`https://flagcdn.com/w20/${selectedCountry.code.toLowerCase()}.png`"
+                                        alt="Flag" class="w-5 h-auto">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <!-- 3. حقل الإدخال المرئي (تم ربطه بـ x-model وإزالة name) -->
+                                <input id="phone_number_display" type="tel" x-model="localPhoneNumber"
+                                    placeholder="780236551" required
+                                    class="flex-grow px-3 text-sm text-left text-gray-800 bg-transparent rounded-l-lg border-none dark:text-white focus:outline-none focus:ring-0"
+                                    dir="ltr">
+                            </div>
+
+                            <!-- The Dropdown Panel (no changes here) -->
+                            <div x-show="open" @click.outside="open = false" x-transition
+                                class="overflow-hidden absolute z-20 mt-1 w-full max-h-60 bg-white rounded-lg border border-gray-200 shadow-lg dark:bg-gray-800 dark:border-gray-700">
+
+                                <input type="text" x-model="search" placeholder="ابحث عن الدولة..."
+                                    class="px-4 py-2 w-full border-b dark:bg-gray-900 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-brand-500">
+
+                                <div class="overflow-y-auto max-h-48">
+                                    <template x-for="country in filteredCountries" :key="country.code">
+                                        <div @click="selectedCountry = country; open = false"
+                                            class="flex gap-3 items-center p-2 px-4 transition-colors duration-150 cursor-pointer hover:bg-sky-50 dark:hover:bg-gray-700">
+                                            <img :src="`https://flagcdn.com/w20/${country.code.toLowerCase()}.png`"
+                                                alt="" class="w-5">
+                                            <span class="flex-grow text-sm font-medium text-gray-900 dark:text-gray-100"
+                                                x-text="country.name"></span>
+                                            <span class="text-xs tracking-wider text-gray-500 dark:text-gray-400"
+                                                x-text="country.dial_code"></span>
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
+
+                            <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
+                                سيتم استخدام هذا الرقم لتسجيل الدخول والتواصل.
+                            </p>
+                        </div>
                             <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">سيتم استخدام هذا الرقم لتسجيل
                                 الدخول.</p>
                             @error('new_user_phone')
@@ -526,46 +581,100 @@
                             <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
                                 رقم الواتساب <span class="text-gray-500">(اختياري)</span>
                             </label>
-                            <div x-data="{
-                                open: false,
-                                search: '',
-                                countries: [{ name: 'Yemen', code: 'YE', dial_code: '+967' }, { name: 'Saudi Arabia', code: 'SA', dial_code: '+966' }],
-                                selectedCountry: { name: 'Yemen', code: 'YE', dial_code: '+967' },
-                                localPhoneNumber: '',
-                                init() {
-                                    this.$watch('localPhoneNumber', value => { $wire.set('new_user_whatsapp', this.selectedCountry.dial_code.replace('+', '') + value); });
-                                    this.$watch('selectedCountry', value => { $wire.set('new_user_whatsapp', value.dial_code.replace('+', '') + this.localPhoneNumber); });
-                                }
-                            }" class="relative">
-                                <div
-                                    class="flex w-full h-11 rounded-lg border border-gray-300 dark:border-gray-600 shadow-theme-xs">
-                                    <button type="button" @click="open = !open"
-                                        class="flex gap-2 items-center px-3 bg-gray-50 rounded-r-lg border-l border-gray-300 dark:bg-gray-700 dark:border-gray-600">
-                                        <img :src="`https://flagcdn.com/w20/${selectedCountry.code.toLowerCase()}.png`"
-                                            class="w-5 h-auto">
-                                    </button>
-                                    <input type="tel" x-model="localPhoneNumber" placeholder="780236551"
-                                        dir="ltr"
-                                        class="flex-grow px-3 text-sm text-left text-gray-800 bg-transparent rounded-l-lg border-none dark:text-white focus:outline-none focus:ring-0">
+                           <div x-data="{
+                            open: false,
+                            search: '',
+                            countries: [
+                                { name: 'Yemen', code: 'YE', dial_code: '+967' },
+                                { name: 'Saudi Arabia', code: 'SA', dial_code: '+966' },
+                                { name: 'United Arab Emirates', code: 'AE', dial_code: '+971' },
+                                { name: 'Qatar', code: 'QA', dial_code: '+974' },
+                                { name: 'Oman', code: 'OM', dial_code: '+968' },
+                                { name: 'Kuwait', code: 'KW', dial_code: '+965' },
+                                { name: 'Egypt', code: 'EG', dial_code: '+20' },
+                                { name: 'Jordan', code: 'JO', dial_code: '+962' },
+                                { name: 'Turkey', code: 'TR', dial_code: '+90' }
+                            ],
+                            selectedCountry: { name: 'Yemen', code: 'YE', dial_code: '+967' },
+                            localPhoneNumber: '', // <-- 1. المتغير الجديد لتخزين رقم الجوال المحلي
+
+                            get filteredCountries() {
+                                if (this.search === '') return this.countries;
+                                return this.countries.filter(country => {
+                                    const searchLower = this.search.toLowerCase();
+                                    return country.name.toLowerCase().includes(searchLower) || country.dial_code.includes(searchLower);
+                                });
+                            }
+                        }" class="relative">
+
+                            <!-- 2. الحقل المخفي الذي سيتم إرساله إلى الخادم -->
+                            <input type="hidden" name="whatsapp_number"
+                                :value="selectedCountry.dial_code.replace('+', '') + localPhoneNumber">
+
+                            <!-- This is the main visible input group -->
+                            <div
+                                class="flex w-full h-11 rounded-lg border border-gray-300 dark:border-gray-600 shadow-theme-xs">
+
+                                <!-- The dropdown button -->
+                                <button type="button" @click="open = !open"
+                                    class="flex gap-2 items-center px-3 bg-gray-50 rounded-r-lg border-l border-gray-300 dark:bg-gray-700 dark:border-gray-600">
+                                    <img :src="`https://flagcdn.com/w20/${selectedCountry.code.toLowerCase()}.png`"
+                                        alt="Flag" class="w-5 h-auto">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <!-- 3. حقل الإدخال المرئي (تم ربطه بـ x-model وإزالة name) -->
+                                <input id="phone_number_display" type="tel" x-model="localPhoneNumber"
+                                    placeholder="780236551"
+                                    class="flex-grow px-3 text-sm text-left text-gray-800 bg-transparent rounded-l-lg border-none dark:text-white focus:outline-none focus:ring-0"
+                                    dir="ltr">
+                            </div>
+
+                            <!-- The Dropdown Panel (no changes here) -->
+                            <div x-show="open" @click.outside="open = false" x-transition
+                                class="overflow-hidden absolute z-20 mt-1 w-full max-h-60 bg-white rounded-lg border border-gray-200 shadow-lg dark:bg-gray-800 dark:border-gray-700">
+
+                                <input type="text" x-model="search" placeholder="ابحث عن الدولة..."
+                                    class="px-4 py-2 w-full border-b dark:bg-gray-900 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-brand-500">
+
+                                <div class="overflow-y-auto max-h-48">
+                                    <template x-for="country in filteredCountries" :key="country.code">
+                                        <div @click="selectedCountry = country; open = false"
+                                            class="flex gap-3 items-center p-2 px-4 transition-colors duration-150 cursor-pointer hover:bg-sky-50 dark:hover:bg-gray-700">
+                                            <img :src="`https://flagcdn.com/w20/${country.code.toLowerCase()}.png`"
+                                                alt="" class="w-5">
+                                            <span class="flex-grow text-sm font-medium text-gray-900 dark:text-gray-100"
+                                                x-text="country.name"></span>
+                                            <span class="text-xs tracking-wider text-gray-500 dark:text-gray-400"
+                                                x-text="country.dial_code"></span>
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
+
+
+                        </div>
                             @error('new_user_whatsapp')
                                 <span class="text-xs text-error-500">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <!-- كلمة السر -->
-                        <div class="sm:col-span-2">
-                            <label for="new_password"
-                                class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
-                                كلمة السر <span class="mt-1 text-xs text-warning-500">*</span>
-                            </label>
-                            <input type="text" id="new_password" wire:model="new_user_password"
-                                class="px-4 py-2.5 w-full h-11 text-sm text-gray-800 bg-transparent rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-900 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
-                            @error('new_user_password')
-                                <span class="text-xs text-error-500">{{ $message }}</span>
-                            @enderror
-                        </div>
+                          <div>
+                        <label for="password" class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
+                            كلمة السر <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>
+                        </label>
+                        <input type="text" id="password" name="password"
+                            class="px-4 py-2.5 w-full h-11 text-sm text-gray-800 bg-transparent rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-900 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+                        <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
+                            المستخدم يستطيع تسجيل الدخول من خلال التطبيق باستخدام كلمة السر.
+                        </p>
+                    </div>
+
                     </div>
 
                     <!-- أزرار الإجراءات -->
