@@ -3,8 +3,9 @@
 namespace App\Livewire\Notifications;
 
 use Livewire\Component;
-use App\Repositories\UserRepository;
-use App\Repositories\DriverRepository;
+use Livewire\Attributes\Computed;
+use App\Models\UserDevice;
+use App\Models\Driver;
 use App\Services\FirebaseService;
 use Illuminate\Support\Facades\Log;
 
@@ -17,45 +18,103 @@ class Index extends Component
     protected $rules = [
         'target' => 'required|in:all,users,drivers',
         'title' => 'required|string|max:255',
-        'body' => 'required|string|max:1000',
+        'body' => 'required|string',
     ];
 
-    public function send(UserRepository $userRepository, DriverRepository $driverRepository, FirebaseService $firebaseService)
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
+
+    #[Computed]
+    public function usersCount()
+    {
+        return UserDevice::whereNotNull('device_token')
+            ->where('device_token', '!=', '')
+            ->distinct('device_token')
+            ->count('device_token');
+    }
+
+    #[Computed]
+    public function driversCount()
+    {
+        return Driver::whereNotNull('device_token')
+            ->where('device_token', '!=', '')
+            ->distinct('device_token')
+            ->count('device_token');
+    }
+
+    #[Computed]
+    public function allCount()
+    {
+        return $this->usersCount() + $this->driversCount();
+    }
+
+    public function send(FirebaseService $firebaseService)
     {
         $this->validate();
 
-        $tokens = [];
-
-        if ($this->target === 'all' || $this->target === 'users') {
-            $userTokens = $userRepository->getAllFcmTokens();
-            $tokens = array_merge($tokens, $userTokens);
-        }
-
-        if ($this->target === 'all' || $this->target === 'drivers') {
-            $driverTokens = $driverRepository->getAllDeviceTokens();
-            $tokens = array_merge($tokens, $driverTokens);
-        }
-
-        // Remove empty or duplicate tokens
-        $tokens = array_unique(array_filter($tokens));
-
-        if (empty($tokens)) {
-            session()->flash('error', 'لم يتم العثور على أي مستخدمين أو سائقين لإرسال الإشعار إليهم.');
-            $this->dispatch('notify', ['type' => 'error', 'message' => 'لم يتم العثور على أي مستخدمين أو سائقين لإرسال الإشعار إليهم.']);
-            return;
-        }
-
         try {
-            $firebaseService->sendMulticast($tokens, $this->title, $this->body);
-            
-            session()->flash('success', 'تم إرسال الإشعارات بنجاح (' . count($tokens) . ' مستلم).');
-            $this->dispatch('notify', ['type' => 'success', 'message' => 'تم إرسال الإشعارات بنجاح (' . count($tokens) . ' مستلم).']);
-            
+            $deviceTokens = [];
+
+            if ($this->target === 'users' || $this->target === 'all') {
+                $userTokens = UserDevice::whereNotNull('device_token')
+                    ->where('device_token', '!=', '')
+                    ->pluck('device_token')
+                    ->toArray();
+                $deviceTokens = array_merge($deviceTokens, $userTokens);
+            }
+
+            if ($this->target === 'drivers' || $this->target === 'all') {
+                $driverTokens = Driver::whereNotNull('device_token')
+                    ->where('device_token', '!=', '')
+                    ->pluck('device_token')
+                    ->toArray();
+                $deviceTokens = array_merge($deviceTokens, $driverTokens);
+            }
+
+            $deviceTokens = array_unique($deviceTokens);
+
+            if (empty($deviceTokens)) {
+                return redirect()->back()->with([
+                    'error' => 'لا توجد أجهزة مسجلة لإرسال الإشعار إليها في الفئة المحددة.',
+                ]);
+            }
+
+            $data = [
+                'type' => 'general_notification',
+                'timestamp' => now()->toIso8601String(),
+            ];
+
+            $successCount = 0;
+            $failCount = 0;
+
+            foreach ($deviceTokens as $token) {
+                try {
+                    $firebaseService->sendNotification($token, $this->title, $this->body, $data);
+                    $successCount++;
+                } catch (\Exception $e) {
+                    $failCount++;
+                    Log::warning("Failed to send notification to token: {$token}", [
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            // Reset form
             $this->reset(['title', 'body']);
+
+            return redirect()->back()->with([
+                'success' => "تم إرسال الإشعار بنجاح إلى {$successCount} جهاز." 
+                    . ($failCount > 0 ? " (فشل: {$failCount})" : ''),
+            ]);
+
         } catch (\Exception $e) {
-            Log::error('Broadcast Notification Error: ' . $e->getMessage());
-            session()->flash('error', 'حدث خطأ أثناء الإرسال: ' . $e->getMessage());
-            $this->dispatch('notify', ['type' => 'error', 'message' => 'حدث خطأ أثناء الإرسال: ' . $e->getMessage()]);
+            Log::error('Notification failed: ' . $e->getMessage());
+
+            return redirect()->back()->with([
+                'error' => 'حدث خطأ أثناء إرسال الإشعار: ' . $e->getMessage(),
+            ]);
         }
     }
 
