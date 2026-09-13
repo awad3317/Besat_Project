@@ -35,6 +35,7 @@ return new class extends Migration
             $table->decimal('final_price', 10, 2);
             $table->string('payment_method')->default('cash');
             $table->enum('payment_status', ['unpaid', 'paid', 'failed', 'refunded'])->default('unpaid');
+            $table->timestamp('driver_settled_at')->nullable();
             $table->string('transaction_id')->nullable();
             $table->dateTime('trip_datetime');
             $table->boolean('wants_ac')->default(false);

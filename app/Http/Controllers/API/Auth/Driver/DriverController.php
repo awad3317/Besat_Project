@@ -8,10 +8,11 @@ use Illuminate\Http\Request;
 use App\Repositories\DriverRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use App\Services\DriverSettlementService;
 
 class DriverController extends Controller
 {
-    public function __construct(private DriverRepository $driverRepository)
+    public function __construct(private DriverRepository $driverRepository,private DriverSettlementService $settlementService)
     {
         //
     }
@@ -114,6 +115,15 @@ class DriverController extends Controller
             return ApiResponseClass::sendResponse($orders, 'تم جلب طلبات السائق بنجاح.');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('حدث خطأ أثناء جلب الطلبات.', $e->getMessage(), 500);
+        }
+    }
+    public function getFinancialSummary(){
+        try {
+            $driver = auth('sanctum')->user();
+            $summary = $this->settlementService->calculateDriverBalance($driver->id);
+            return ApiResponseClass::sendResponse($summary, 'تم جلب الحسابات المالية بنجاح.');
+        } catch (Exception $e) {
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب البيانات المالية: ' . $e->getMessage(), [], 500);
         }
     }
     

@@ -18,7 +18,8 @@ class Request extends Model
         'original_price', 'discount_amount', 'final_price',
         'distance_km', 'notes', 'payment_method',
         'trip_datetime', 'wants_ac', 'ac_cost' ,'bank_id',
-        'payment_status', 'transaction_id', 'cancelled_by'
+        'payment_status', 'transaction_id', 'cancelled_by', 
+        'driver_settled_at'
     ];
 
     protected $casts = [
