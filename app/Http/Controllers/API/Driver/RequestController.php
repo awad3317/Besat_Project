@@ -2,33 +2,36 @@
 
 namespace App\Http\Controllers\API\Driver;
 
-use App\Http\Controllers\Controller;
-use App\Repositories\RequestRepository;
-use Illuminate\Support\Facades\DB;
-use Exception;
 use App\Classes\ApiResponseClass;
+use App\Http\Controllers\Controller;
 use App\Models\Request as TripRequest;
 use App\Notifications\TripCancelledNotification;
 use App\Repositories\DriverRepository;
-use Illuminate\Validation\Rule;
+use App\Repositories\RequestRepository;
+use App\Services\FirebaseService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class RequestController extends Controller
 {
     public function __construct(
         private DriverRepository $driverRepository,
-        private RequestRepository $requestRepository) 
+        private RequestRepository $requestRepository,
+        private FirebaseService $firebaseService) 
     {}
     public function updateTripStatus(Request $request)
     {
         $fields = $request->validate([
             'request_id' => ['required', 'integer', Rule::exists('requests', 'id')],
-            'status'     => ['required', 'string', Rule::in(['accepted', 'on_trip', 'completed', 'cancelled'])],
+            'status' => ['required', 'string', Rule::in(['accepted', 'on_trip', 'completed', 'cancelled'])],
         ], [
             'request_id.required' => 'رقم الرحلة مطلوب.',
-            'request_id.exists'   => 'الرحلة المحددة غير موجودة.',
-            'status.required'     => 'الحالة الجديدة مطلوبة.',
-            'status.in'           => 'الحالة المحددة غير صالحة.',
+            'request_id.exists' => 'الرحلة المحددة غير موجودة.',
+            'status.required' => 'الحالة الجديدة مطلوبة.',
+            'status.in' => 'الحالة المحددة غير صالحة.',
         ]);
         $driver = auth('sanctum')->user();
         $targetStatus = $fields['status'];
@@ -60,14 +63,38 @@ class RequestController extends Controller
                 }
 
                 if ($targetStatus === 'cancelled') {
-                    $trip->update([
-                        'status' => 'cancelled',
-                        'cancelled_by' => $driver->id,
-                    ]);
-
-                    if ($trip->user && $trip->user->is_notifications_enabled) {
-                        $trip->user->notify(new TripCancelledNotification($trip));
+                    if ($trip->status === 'on_trip') {
+                        return ApiResponseClass::sendError('لا يمكن إلغاء الرحلة أثناء سيرها (في الطريق).', null, 400);
                     }
+                    $trip->update([
+                        'status'       => 'cancelled',
+                        'cancelled_by' => null, 
+                    ]);
+                    if ($trip->user){
+                        if ($trip->user->is_notifications_enabled) {
+                            $trip->user->notify(new TripCancelledNotification($trip));
+                        }
+                    }
+                    $deviceTokens = $trip->user->devices->pluck('device_token')->filter()->toArray();
+                    if (!empty($deviceTokens)){
+                        foreach ($deviceTokens as $token){
+                            try {
+                                $this->firebaseService->sendNotification(
+                                    $token,
+                                    'تم إلغاء الرحلة',
+                                    'قام الكابتن بإلغاء الرحلة الحالية.',
+                                    [
+                                        'request_id' => (string) $trip->id,
+                                        'status'     => 'cancelled',
+                                    ]
+                                );
+                            } catch (Exception $e) {
+                                Log::error("FCM Cancel Error: " . $e->getMessage());
+                            }
+                            
+                        }
+                    }
+                    
 
                     return ApiResponseClass::sendResponse($trip->fresh(), 'تم إلغاء الرحلة بنجاح.');
                 }
@@ -84,9 +111,12 @@ class RequestController extends Controller
                     );
                 }
 
-                $trip->update([
-                    'status' => $targetStatus,
-                ]);
+                $updateData = ['status' => $targetStatus];
+                
+                if ($targetStatus === 'completed' && $trip->payment_method === 'cash') {
+                    $updateData['payment_status'] = 'paid';
+                }
+                $trip->update($updateData);
 
                 return ApiResponseClass::sendResponse($trip->fresh(), 'تم تحديث حالة الرحلة بنجاح.');
             });

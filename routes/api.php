@@ -82,6 +82,7 @@ Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
         Route::get('/driver/requests', [DriverController::class, 'allRequest']);
         Route::post('/driver/requests/update-status', [DriverRequestController::class, 'updateTripStatus']);
         Route::get('/driver/financial-summary', [DriverController::class, 'getFinancialSummary']);
+        Route::get('/driver/statistics', [DriverController::class, 'getDriverStats']);
 });
         //           Auth Route For User          //
 Route::post('/user/register',[UserAuthController::class,'register']);

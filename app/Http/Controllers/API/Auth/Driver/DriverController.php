@@ -126,5 +126,18 @@ class DriverController extends Controller
             return ApiResponseClass::sendError('حدث خطأ أثناء جلب البيانات المالية: ' . $e->getMessage(), [], 500);
         }
     }
+    public function getDriverStats(){
+        try {
+            $driver = auth('sanctum')->user();
+            if (!$driver) {
+                return ApiResponseClass::sendError('المستخدم غير مصرح له أو الجلسة منتهية.', null, 401);
+            }
+            $stats = $this->settlementService->getDriverStats($driver->id);
+            return ApiResponseClass::sendResponse($stats, 'تم جلب إحصائيات السائق بنجاح.');
+        } catch (Exception $e) {
+            Log::error('Error fetching driver statistics: ' . $e->getMessage());
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب الإحصائيات: ' . $e->getMessage(), [], 500);
+        }
+    }
     
 }

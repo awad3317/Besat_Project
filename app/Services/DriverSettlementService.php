@@ -10,6 +10,10 @@ use Exception;
 class DriverSettlementService{
     public function calculateDriverBalance(int $driverId): array{
 
+        $driver = Driver::find($driverId);
+        if (!$driver) {
+            throw new Exception('السائق غير موجود في النظام.', 404);
+        }
         $cashTripsCommission = TripRequest::where('driver_id', $driverId)
             ->where('status', 'completed')
             ->where('payment_method', 'cash')
@@ -52,5 +56,36 @@ class DriverSettlementService{
                 'settled_at'  => now()->toDateTimeString(),
             ];
         });
+    }
+
+    public function getDriverStats(int $driverId)
+    {
+        $driver = Driver::find($driverId);
+        if (!$driver) {
+            throw new Exception('السائق غير موجود في النظام.', 404);
+        }
+        $tripsStats = TripRequest::where('driver_id', $driverId)
+        ->selectRaw("
+            COUNT(id) as total_trips,
+            COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_trips,
+            COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_trips,
+            COALESCE(SUM(CASE WHEN status = 'completed' THEN final_price ELSE 0 END), 0) as total_earnings
+        ")->first();
+        $balance = $this->calculateDriverBalance($driverId);
+        return [
+            'trips' => [
+                'total_trips' => (int) $tripsStats->total_trips,
+                'completed_trips' => (int) $tripsStats->completed_trips,
+                'cancelled_trips'=> (int) $tripsStats->cancelled_trips,
+            ],
+            'financial' => [
+                'total_earnings' => round((float) $tripsStats->total_earnings, 2),
+                'driver_owes_app' => $balance['driver_owes_app'], // عمولة الكاش المطلوب توريدها للمنصة
+                'app_owes_driver'=> $balance['app_owes_driver'], // مستحقات السائق من الدفع الإلكتروني/المحفظة
+                'net_balance' => $balance['net_balance'],     // الرصيد الصافي
+                'settlement_action'=> $balance['settlement_action'], // app_pays_driver أو driver_pays_app
+            ]
+        ];
+
     }
 }
