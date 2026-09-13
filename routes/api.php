@@ -19,6 +19,7 @@ use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\PaymentMethodController;
 use App\Http\Controllers\API\RatingController;
 use App\Http\Controllers\API\RequestController;
+use App\Http\Controllers\API\Driver\RequestController as DriverRequestController;
 use App\Http\Controllers\API\ServiceBookingController;
 use App\Http\Controllers\API\SpecialOrderController;
 use App\Http\Controllers\API\TiyarAiController;
@@ -79,6 +80,9 @@ Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
         Route::post('/driver/updateLocation', [DriverController::class, 'updateLocation']);
         Route::post('/driver/updateOnlineStatus', [DriverController::class, 'updateOnlineStatus']);
         Route::get('/driver/requests', [DriverController::class, 'allRequest']);
+        Route::post('/driver/requests/update-status', [DriverRequestController::class, 'updateTripStatus']);
+        Route::get('/driver/financial-summary', [DriverController::class, 'getFinancialSummary']);
+        Route::get('/driver/statistics', [DriverController::class, 'getDriverStats']);
 });
         //           Auth Route For User          //
 Route::post('/user/register',[UserAuthController::class,'register']);

@@ -8,14 +8,15 @@ use Illuminate\Http\Request;
 use App\Repositories\DriverRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use App\Services\DriverSettlementService;
 
 class DriverController extends Controller
 {
-    public function __construct(private DriverRepository $driverRepository)
+    public function __construct(private DriverRepository $driverRepository,private DriverSettlementService $settlementService)
     {
         //
     }
-     public function updateDeviceToken(Request $request)
+    public function updateDeviceToken(Request $request)
     {
         $fields=$request->validate([
             'device_token' => 'required',
@@ -114,6 +115,28 @@ class DriverController extends Controller
             return ApiResponseClass::sendResponse($orders, 'تم جلب طلبات السائق بنجاح.');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('حدث خطأ أثناء جلب الطلبات.', $e->getMessage(), 500);
+        }
+    }
+    public function getFinancialSummary(){
+        try {
+            $driver = auth('sanctum')->user();
+            $summary = $this->settlementService->calculateDriverBalance($driver->id);
+            return ApiResponseClass::sendResponse($summary, 'تم جلب الحسابات المالية بنجاح.');
+        } catch (Exception $e) {
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب البيانات المالية: ' . $e->getMessage(), [], 500);
+        }
+    }
+    public function getDriverStats(){
+        try {
+            $driver = auth('sanctum')->user();
+            if (!$driver) {
+                return ApiResponseClass::sendError('المستخدم غير مصرح له أو الجلسة منتهية.', null, 401);
+            }
+            $stats = $this->settlementService->getDriverStats($driver->id);
+            return ApiResponseClass::sendResponse($stats, 'تم جلب إحصائيات السائق بنجاح.');
+        } catch (Exception $e) {
+            Log::error('Error fetching driver statistics: ' . $e->getMessage());
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب الإحصائيات: ' . $e->getMessage(), [], 500);
         }
     }
     
