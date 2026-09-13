@@ -112,18 +112,26 @@ class PaymentMethodController extends Controller
         try {
             $user= auth('sanctum')->user();
             $tripRequest = TripRequest::where('id', $request->request_id)
-                ->where('user_id', $user->id)
-                ->where('payment_status', 'unpaid')
-                ->firstOrFail();
+                ->where('user_id', $user->id)->firstOrFail();
+            
+            if ($tripRequest->payment_status === 'paid') {
+                return ApiResponseClass::sendError('تم سداد قيمة هذه الرحلة مسبقاً.', null, 400);
+            }
 
             $bank = Bank::where('method_key', $method_key)->firstOrFail();
             $bankStrategy = PaymentFactory::make($method_key);
             if ($tripRequest->bank_id !== $bank->id) {
                 $tripRequest->update(['bank_id' => $bank->id]);
             }
+            $customerPhone = $request->filled('customer_number') 
+                ? $request->input('customer_number') 
+                : $user->phone;
             $payload = array_merge($request->except(['request_id']), [
                 'amount'     => $tripRequest->final_price,
                 'request_id' => $tripRequest->id,
+                'currency_id' => 1,
+                'customer_number' => (string) $customerPhone,
+                'user_phone' => (string) $user->phone,
             ]);
             if (in_array($action, ['request_otp', 'initiate'])) {
                 $response = $bankStrategy->initiatePayment($payload);
@@ -144,17 +152,20 @@ class PaymentMethodController extends Controller
                 $response = $bankStrategy->confirmPayment($payload);
 
                 if (($response['status'] ?? '') === 'paid' || ($response['status'] ?? '') === 'success') {
-                    DB::beginTransaction();
+                    DB::transaction(function () use ($tripRequest, $response) {
+                        $lockedTrip = TripRequest::where('id', $tripRequest->id)
+                            ->lockForUpdate()
+                            ->firstOrFail();
 
-                    $tripRequest->update([
-                        'payment_method' => 'digital_payment',
-                        'payment_status' => 'paid',
-                        'status' => 'searching_driver',
-                        'transaction_id' => $response['transaction_id'] ?? null
-                    ]);
+                        $lockedTrip->update([
+                            'payment_method' => 'digital_payment',
+                            'payment_status' => 'paid',
+                            'status'         => 'searching_driver',
+                            'transaction_id' => $response['transaction_id'] ?? null
+                        ]);
+                    });
 
-                    DB::commit();
-
+                    $tripRequest->refresh();
                     $this->tripDispatchService->dispatchToDrivers($tripRequest);
 
                     return ApiResponseClass::sendResponse([
@@ -170,10 +181,8 @@ class PaymentMethodController extends Controller
             return ApiResponseClass::sendError('الإجراء المطلوب غير مدعوم في النظام.', null, 400);
 
         } catch (ValidationException $e) {
-            DB::rollBack();
             return ApiResponseClass::sendError('بيانات الإدخال غير صالحة.', $e->errors(), 422);
-        } catch (\Exception $e) {
-            DB::rollBack();
+        } catch (Exception $e) {
             return ApiResponseClass::sendError('حدث خطأ أثناء معالجة العملية المالية: ' . $e->getMessage(), null, 500);
         }
     }

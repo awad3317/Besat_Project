@@ -83,7 +83,7 @@ class RequestController extends Controller
             'end_address' => 'required|string|max:255',
             'distance_km' => 'required|numeric|min:0',
             'payment_method'=>['required',Rule::in(['cash', 'digital_payment','wallet'])],
-            'bank_id' => ['required_if:payment_method,digital_payment', 'nullable', 'exists:banks,id'],
+            'bank_id' => ['required_if:payment_method,digital_payment', 'nullable', Rule::exists('banks','id')],
             'notes' => 'nullable|string|max:500',
             'stops'  => ['nullable', 'array'],
             'stops.*.latitude'  => ['required_with:stops', 'numeric', 'between:-90,90'],
