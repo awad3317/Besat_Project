@@ -23,7 +23,11 @@ class Index extends Component
         $this->selectedConversationId = (int) $id;
 
         // تحديث مباشر بدون جلب السجل كاملاً
-        Conversation::where('id', $id)->update(['participant_unread_count' => 0]);
+        // استخدام DB::raw('updated_at') لمنع تغيير وقت التحديث، وبالتالي عدم قفز المحادثة لأعلى القائمة
+        Conversation::where('id', $id)->update([
+            'participant_unread_count' => 0,
+            'updated_at' => \Illuminate\Support\Facades\DB::raw('updated_at')
+        ]);
 
         $conversationType = Conversation::where('id', $id)->value('type') ?? 'support';
 

@@ -89,15 +89,17 @@ class DashboardController extends Controller
         $totalSpecialOrders = $this->specialOrderRepository->index()->count();
         $totalRequests= $this->requestRepository->index()->count();
         
+        $recentRequests = \App\Models\Request::with(['user', 'driver'])->latest()->take(5)->get();
+
         return view('pages.dashboard.index', [
             'monthlySales' => $salesData,
             'chartTitle' => 'المبيعات الشهرية الحقيقية',
             'totalUsers' => $totalUsers,
             'totalDrivers' => $totalDrivers,
             'totalSpecialOrders' => $totalSpecialOrders,
-            'totalRequests' => $totalRequests
+            'totalRequests' => $totalRequests,
+            'recentRequests' => $recentRequests
         ]);
-        // return view('');
     }
     private function getRealSalesData()
     {

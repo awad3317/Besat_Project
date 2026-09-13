@@ -460,22 +460,24 @@
                                     class="font-semibold text-gray-900 dark:text-white">{{ $request->app_commission_amount }}
                                     {{ config('app.currency_symbol', 'ر.ي') }}</span>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span
-                                    class="flex gap-2 items-center text-success-600 dark:text-success-500 dark:bg-success-500/15 border-success-300 dark:border-success-500/30">
-                                    <!-- أيقونة العمولة/المحفظة (Briefcase) SVG -->
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                                        </path>
-                                    </svg>
-                                    خصم ({{ $request->discountCode->code }})
-                                </span>
-                                <span
-                                    class="font-semibold text-success-600 dark:text-success-500">-{{ $request->discount_amount }}
-                                    {{ config('app.currency_symbol', 'ر.ي') }}</span>
-                            </div>
+                            @if ($request->discountCode)
+                                <div class="flex justify-between items-center">
+                                    <span
+                                        class="flex gap-2 items-center text-success-600 dark:text-success-500 dark:bg-success-500/15 border-success-300 dark:border-success-500/30">
+                                        <!-- أيقونة العمولة/المحفظة (Briefcase) SVG -->
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                                            </path>
+                                        </svg>
+                                        خصم ({{ $request->discountCode->code }})
+                                    </span>
+                                    <span
+                                        class="font-semibold text-success-600 dark:text-success-500">-{{ $request->discount_amount }}
+                                        {{ config('app.currency_symbol', 'ر.ي') }}</span>
+                                </div>
+                            @endif
 
                         
                             <!-- الإجمالي النهائي -->

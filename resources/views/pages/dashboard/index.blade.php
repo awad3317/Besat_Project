@@ -404,57 +404,66 @@
         <!-- table header end -->
 
         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-          <!-- 1 -->
+          @forelse ($recentRequests as $request)
           <tr>
             <td class="py-3">
               <div class="flex items-center">
                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                  1
+                  {{ $request->id }}
                 </p>
               </div>
             </td>
             <td class="py-3">
               <div class="flex items-center">
+                @if($request->driver)
                 <div class="flex items-center gap-3">
                   <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                    <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="Product" />
+                    <img src="{{ $request->driver->driver_image ? url($request->driver->driver_image) : asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="Driver" />
                   </div>
                   <div>
                     <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                      أحمد شرجبي
+                      {{ $request->driver->name }}
                     </p>
                     <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                      +967780236552
+                      {{ $request->driver->phone }}
                     </span>
                   </div>
                 </div>
+                @else
+                <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                    لم يتم التعيين
+                </span>
+                @endif
               </div>
             </td>
             <td class="py-3">
               <div class="flex items-center">
+                @if($request->user)
                 <div class="flex items-center gap-3">
                   <div>
                     <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                      عوض لشرم
+                      {{ $request->user->name }}
                     </p>
                     <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                      +967780236551
+                      {{ $request->user->phone }}
                     </span>
                   </div>
                 </div>
+                @endif
+              </div>
             </td>
             <td class="py-3">
               <div class="flex items-center">
                 <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                  9700
+                  {{ $request->final_price }}
                 </p>
               </div>
             </td>
             <td class="py-3">
               <div class="flex items-center">
                 <p
-                  class="rounded-full bg-error-50 px-2 py-0.5 text-theme-xs font-medium text-error-600 dark:bg-error-500/15 dark:text-error-500">
-                  ملغية
+                  class="rounded-full px-2 py-0.5 text-theme-xs font-medium {{ $request->status_class }}">
+                  {{ $request->status_text }}
                 </p>
               </div>
             </td>
@@ -462,14 +471,14 @@
               <div class="flex items-center justify-center space-x-2">
                 <p
                   class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
-                  المنصورة
+                  {{ $request->start_address }}
                 </p>
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 <p
                   class="rounded-full bg-blue-light-50 px-2 py-0.5 text-theme-xs font-medium text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
-                  التواهي
+                  {{ $request->end_address }}
                 </p>
               </div>
             </td>
@@ -488,7 +497,7 @@
                   class="actions-dropdown-menu">
 
                   <!-- عرض التفاصيل -->
-                  <button type="button" class="actions-dropdown-item">
+                  <a href="{{ route('request.show', $request->id) }}" class="actions-dropdown-item">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round"
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -496,211 +505,19 @@
                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                     عرض التفاصيل
-                  </button>
+                  </a>
 
                 </div>
               </div>
             </td>
           </tr>
-
-          <!-- 2 -->
+          @empty
           <tr>
-            <td class="py-3">
-              <div class="flex items-center">
-                <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                  2
-                </p>
-              </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center">
-                <div class="flex items-center gap-3">
-                  <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                    <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="Product" />
-                  </div>
-                  <div>
-                    <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                      أحمد شرجبي
-                    </p>
-                    <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                      +967780236552
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center">
-                <div class="flex items-center gap-3">
-                  <div>
-                    <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                      عوض لشرم
-                    </p>
-                    <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                      +967780236551
-                    </span>
-                  </div>
-                </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center">
-                <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                  8500
-                </p>
-              </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center">
-                <p
-                  class="rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
-                  مكتملة
-                </p>
-              </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center justify-center space-x-2">
-                <p
-                  class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
-                  خورمكسر
-                </p>
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <p
-                  class="rounded-full bg-blue-light-50 px-2 py-0.5 text-theme-xs font-medium text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
-                  المعلا
-                </p>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
-              <div class="flex relative justify-center items-center">
-                <button @click="openOptions = !openOptions" @click.away="openOptions = false"
-                  class="actions-trigger-btn">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="5" r="2"></circle>
-                    <circle cx="12" cy="12" r="2"></circle>
-                    <circle cx="12" cy="19" r="2"></circle>
-                  </svg>
-                </button>
-
-                <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
-                  class="actions-dropdown-menu">
-
-                  <!-- عرض التفاصيل -->
-                  <button type="button" class="actions-dropdown-item">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    عرض التفاصيل
-                  </button>
-
-                </div>
-              </div>
+            <td colspan="7" class="p-4 text-center text-gray-500 dark:text-gray-400">
+                لا توجد طلبات حديثة.
             </td>
           </tr>
-
-          <!-- 3 -->
-          <tr>
-            <td class="py-3">
-              <div class="flex items-center">
-                <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                  3
-                </p>
-              </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center">
-                <div class="flex items-center gap-3">
-                  <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                    <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="Product" />
-                  </div>
-                  <div>
-                    <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                      أحمد شرجبي
-                    </p>
-                    <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                      +967780236552
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center">
-                <div class="flex items-center gap-3">
-                  <div>
-                    <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                      عوض لشرم
-                    </p>
-                    <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                      +967780236551
-                    </span>
-                  </div>
-                </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center">
-                <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                  10000
-                </p>
-              </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center">
-                <p
-                  class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
-                  بالانتظار
-                </p>
-              </div>
-            </td>
-            <td class="py-3">
-              <div class="flex items-center justify-center space-x-2">
-                <p
-                  class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
-                  المنصورة
-                </p>
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <p
-                  class="rounded-full bg-blue-light-50 px-2 py-0.5 text-theme-xs font-medium text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
-                  عدن
-                </p>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
-              <div class="flex relative justify-center items-center">
-                <button @click="openOptions = !openOptions" @click.away="openOptions = false"
-                  class="actions-trigger-btn">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="5" r="2"></circle>
-                    <circle cx="12" cy="12" r="2"></circle>
-                    <circle cx="12" cy="19" r="2"></circle>
-                  </svg>
-                </button>
-
-                <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
-                  class="actions-dropdown-menu">
-
-                  <!-- عرض التفاصيل -->
-                  <button type="button" class="actions-dropdown-item">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    عرض التفاصيل
-                  </button>
-
-                </div>
-              </div>
-            </td>
-          </tr>
-          <!-- table body end -->
+          @endforelse
         </tbody>
       </table>
     </div>
