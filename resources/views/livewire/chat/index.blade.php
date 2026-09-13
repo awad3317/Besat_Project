@@ -1,48 +1,49 @@
-<div class="chat-wrapper"
-     x-data="{ 
-        currentChannelName: null,
-        activeChannelObj: null,
-        
-        scrollToBottom() {
-            $nextTick(() => {
-                const container = this.$refs.messageContainer;
-                if (container) container.scrollTop = container.scrollHeight;
-            });
-        },
-        
-        listenToChannel(conversationId, type) {
-            if (!window.pusher) return;
+<div class="chat-wrapper" x-data="{
+    currentChannelName: null,
+    activeChannelObj: null,
 
-            const prefix = type === 'request' ? 'chat.request.' : 'chat.support.';
-            const newChannelName = prefix + conversationId;
-
-            if (this.currentChannelName === newChannelName) return;
-
-            if (this.currentChannelName && this.activeChannelObj) {
-                window.pusher.unsubscribe(this.currentChannelName);
+    scrollToBottom() {
+        setTimeout(() => {
+            const container = this.$refs.messageContainer;
+            if (container) {
+                container.scrollTop = container.scrollHeight;
             }
+        }, 50);
+    },
 
-            this.currentChannelName = newChannelName;
-            this.activeChannelObj = window.pusher.subscribe(this.currentChannelName);
+    listenToChannel(conversationId, type) {
+        if (!window.pusher) return;
 
-            this.activeChannelObj.bind('message.sent', (data) => {
-                $wire.handleIncomingMessage();
-            });
-            
-            this.activeChannelObj.bind('App\\Events\\MessageSent', (data) => {
-                $wire.handleIncomingMessage();
-            });
+        const prefix = type === 'request' ? 'chat.request.' : 'chat.support.';
+        const newChannelName = prefix + conversationId;
+
+        if (this.currentChannelName === newChannelName) return;
+
+        if (this.currentChannelName && this.activeChannelObj) {
+            window.pusher.unsubscribe(this.currentChannelName);
         }
-     }"
-     @subscribe-to-channel.window="listenToChannel($event.detail.conversationId, $event.detail.type)"
-     @scroll-to-bottom.window="scrollToBottom()">
+
+        this.currentChannelName = newChannelName;
+        this.activeChannelObj = window.pusher.subscribe(this.currentChannelName);
+
+        this.activeChannelObj.bind('message.sent', (data) => {
+            $wire.handleIncomingMessage();
+        });
+
+        this.activeChannelObj.bind('App\\Events\\MessageSent', (data) => {
+            $wire.handleIncomingMessage();
+        });
+    }
+}"
+    @subscribe-to-channel.window="listenToChannel($event.detail.conversationId, $event.detail.type)"
+    @scroll-to-bottom.window="scrollToBottom()">
 
     <!-- ====== 1. القائمة الجانبية للمحادثات (جهة اليمين) ====== -->
-    <div class="chat-sidebar border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        
+    <div class="bg-white border border-gray-200 chat-sidebar dark:border-gray-800 dark:bg-gray-900">
+
         <!-- الهيدر + إجمالي + البحث + التبويبات -->
-        <div class="p-4 border-b border-gray-100 dark:border-gray-800 space-y-3">
-            <div class="flex items-center justify-between">
+        <div class="p-4 space-y-3 border-b border-gray-100 dark:border-gray-800">
+            <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-gray-800 dark:text-white/90">
                     المحادثات المباشرة
                 </h3>
@@ -53,140 +54,164 @@
         </div>
 
         <!-- قائمة المحادثات -->
-        <div id="sidebar-scroll" class="flex-1 overflow-y-auto p-2 chat-custom-scroll space-y-1.5">
-    @forelse($conversations as $conv)
-        @php
-            $participantName = $conv->user?->name ?? $conv->driver?->name ?? 'مستخدم غير معروف';
-            $unreadCount = $conv->participant_unread_count ?? 0;
-            $isRequest = $conv->type === 'request';
-        @endphp
-        
-        <div wire:key="conv-{{ $conv->id }}"
-             wire:click="selectConversation({{ $conv->id }})"
-             class="chat-user-card {{ $selectedConversationId == $conv->id ? 'active' : '' }}">
-            
-            <!-- صورة / رمز العميل -->
-            <div class="relative h-11 w-11 flex-shrink-0">
-                <div class="flex h-full w-full items-center justify-center rounded-full bg-brand-500/10 font-bold text-brand-500 border border-brand-500/20 text-xs shadow-xs">
-                    {{ mb_substr($participantName, 0, 1) }}
-                </div>
-               
-            </div>
+        <div id="sidebar-scroll" class="overflow-y-auto flex-1 p-3 space-y-2 custom-scrollbar">
+            @forelse($conversations as $conv)
+                @php
+                    $participantName = $conv->user?->name ?? ($conv->driver?->name ?? 'مستخدم غير معروف');
+                    $unreadCount = $conv->participant_unread_count ?? 0;
+                    $isRequest = $conv->type === 'request';
+                @endphp
 
-            <!-- تفاصيل المحادثة -->
-            <div class="flex-1 min-w-0 pr-1">
-                <!-- السطر العلوي: الاسم + بادج عدد الرسائل غير المقروءة + الوقت -->
-                <div class="flex items-start justify-between gap-2">
-                    <!-- النصوص: الاسم + آخر رسالة -->
-                    <div class="flex-1 min-w-0">
-                        <h5 class="text-xs font-bold text-gray-800 truncate dark:text-white/90 leading-tight mb-1">
-                            {{ $participantName }}
-                        </h5>
-                        <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 leading-normal">
-                            {{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}
-                        </p>
+                <div wire:key="conv-{{ $conv->id }}" wire:click="selectConversation({{ $conv->id }})"
+                    class="chat-user-card group relative flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 {{ $selectedConversationId == $conv->id ? 'bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700' : 'hover:bg-white/60 dark:hover:bg-gray-800/60 border border-transparent' }}">
+
+                    @if ($selectedConversationId == $conv->id)
+                        <div class="absolute right-0 top-1/2 w-1 h-8 rounded-l-full -translate-y-1/2 bg-brand-500">
+                        </div>
+                    @endif
+
+                    <!-- صورة / رمز العميل -->
+                    <div class="relative flex-shrink-0 w-11 h-11">
+                        <div
+                            class="flex h-full w-full items-center justify-center rounded-full {{ $selectedConversationId == $conv->id ? 'bg-brand-500 text-white' : 'bg-brand-500/10 text-brand-500' }} font-bold border border-brand-500 text-sm shadow-sm transition-colors">
+                            {{ mb_substr($participantName, 0, 1) }}
+                        </div>
                     </div>
-                    <!-- الوقت + بادج -->
-                    <div class="flex flex-col items-end gap-1 flex-shrink-0 pt-0.5">
-                        <span class="text-[8px] text-gray-400 font-medium">
-                            {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
-                        </span>
-                        @if($unreadCount > 0)
-                            <span class="flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-brand-500 px-1 text-[8px] font-bold text-white">
-                                {{ $unreadCount }}
-                            </span>
-                        @endif
+
+                    <!-- تفاصيل المحادثة -->
+                    <div class="flex-1 pr-1 min-w-0">
+                        <!-- السطر العلوي: الاسم + بادج عدد الرسائل غير المقروءة + الوقت -->
+                        <div class="flex gap-2 justify-between items-start">
+                            <!-- النصوص: الاسم + آخر رسالة -->
+                            <div class="flex-1 min-w-0">
+                                <h5
+                                    class="mb-1 text-xs font-bold leading-tight text-gray-800 truncate dark:text-white/90">
+                                    {{ $participantName }}
+                                </h5>
+                                <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 leading-normal">
+                                    {{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}
+                                </p>
+                            </div>
+                            <!-- الوقت + بادج -->
+                            <div class="flex flex-col flex-shrink-0 gap-1 items-end pt-0.5">
+                                <span class="text-[8px] text-gray-400 font-medium">
+                                    {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
+                                </span>
+                                @if ($unreadCount > 0)
+                                    <span
+                                        class="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-error-500 px-1.5 text-[10px] font-bold text-white shadow-sm shadow-error-500/30">
+                                        {{ $unreadCount > 99 ? '+99' : $unreadCount }}
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @empty
+                <div class="p-8 text-xs text-center text-gray-400">
+                    لا توجد محادثات متاحة.
+                </div>
+            @endforelse
         </div>
-    @empty
-        <div class="p-8 text-center text-xs text-gray-400">
-            لا توجد محادثات متاحة.
-        </div>
-    @endforelse
-</div>
     </div>
 
     <!-- ====== 2. صندوق الشات الرئيسي (جهة اليسار) ====== -->
-    <div class="chat-main-box border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        @if($selectedConversation)
-            
+    <div class="bg-white border border-gray-200 chat-main-box dark:border-gray-800 dark:bg-gray-900">
+        @if ($selectedConversation)
+
             <!-- هيدر الشات -->
-            <!-- هيدر المحادثة النشطة (معدل ومحاذى بدقة) -->
-<div class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 px-4 py-3 sm:px-6 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xs">
-    
-    <!-- معلومات المستخدم (جهة اليمين) -->
-    <div class="flex items-center gap-3 min-w-0">
-        <!-- دائرة اسم العميل مع منع الانكماش flex-shrink-0 -->
-        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-500/10 font-bold text-brand-500 border border-brand-500/20 text-sm">
-            {{ mb_substr($selectedConversation->user?->name ?? $selectedConversation->driver?->name ?? 'U', 0, 1) }}
-        </div>
-        
-        <!-- تفاصيل الاسم ورقم المحادثة -->
-        <div class="flex flex-col min-w-0 text-right">
-            <h5 class="text-xs font-bold text-gray-800 dark:text-white/90 truncate">
-                {{ $selectedConversation->user?->name ?? $selectedConversation->driver?->name }}
-            </h5>
-           
-        </div>
-    </div>
+            <div
+                class="flex sticky top-0 z-10 justify-between items-center px-6 py-4 border-b border-gray-200 shadow-sm backdrop-blur-sm dark:border-gray-800 bg-white/95 dark:bg-gray-900/95">
+                <!-- معلومات المستخدم (جهة اليمين) -->
+                <div class="flex gap-3 items-center min-w-0">
+                    <!-- دائرة اسم العميل مع منع الانكماش flex-shrink-0 -->
+                    <div
+                        class="flex flex-shrink-0 justify-center items-center w-11 h-11 text-sm font-bold rounded-full border shadow-sm bg-brand-500/10 text-brand-500 border-brand-500/20">
+                        {{ mb_substr($selectedConversation->user?->name ?? ($selectedConversation->driver?->name ?? 'U'), 0, 1) }}
+                    </div>
 
-    <!-- أزرار الإجراءات والإغلاق (جهة اليسار) -->
-    <div class="flex items-center gap-2 flex-shrink-0" x-data="{ confirmingClose: false }">
+                    <!-- تفاصيل الاسم ورقم المحادثة -->
+                    <div class="flex flex-col min-w-0 text-right">
+                        <h5 class="text-sm font-bold text-gray-900 truncate dark:text-white">
+                            {{ $selectedConversation->user?->name ?? $selectedConversation->driver?->name }}
+                        </h5>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400">
+                            محادثة رقم #{{ $selectedConversation->id }}
+                        </p>
+                    </div>
+                </div>
 
-        <template x-if="confirmingClose">
-            <div class="flex items-center gap-1 rounded-lg bg-red-50 p-1 border border-red-200 dark:bg-red-950/30 dark:border-red-800">
-                <span class="text-[10px] text-red-600 dark:text-red-400 px-1 font-bold">تأكيد؟</span>
-                <button wire:click="closeConversation" type="button" class="rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-red-700 cursor-pointer">نعم</button>
-                <button @click="confirmingClose = false" type="button" class="rounded bg-gray-200 px-2 py-0.5 text-[10px] font-bold text-gray-700 dark:bg-gray-700 dark:text-gray-200 cursor-pointer">إلغاء</button>
+                <!-- أزرار الإجراءات والإغلاق (جهة اليسار) -->
+                <div class="flex flex-shrink-0 gap-2 items-center" x-data="{ confirmingClose: false }">
+
+                    <template x-if="confirmingClose">
+                        <div
+                            class="flex gap-1 items-center p-1 rounded-lg border bg-error-50 border-error-200 dark:bg-error-950/30 dark:border-error-800">
+                            <span class="text-[10px] text-error-600 dark:text-error-400 px-1 font-bold">تأكيد؟</span>
+                            <button wire:click="closeConversation" type="button"
+                                class="rounded bg-error-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-error-700 cursor-pointer">نعم</button>
+                            <button @click="confirmingClose = false" type="button"
+                                class="rounded bg-gray-200 px-2 py-0.5 text-[10px] font-bold text-gray-700 dark:bg-gray-700 dark:text-gray-200 cursor-pointer">إلغاء</button>
+                        </div>
+                    </template>
+
+                    <button @click="$wire.set('selectedConversationId', null)" type="button" title="إغلاق الشاشة"
+                        class="flex justify-center items-center w-8 h-8 text-gray-400 rounded-lg transition cursor-pointer hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </template>
-
-        <button @click="$wire.set('selectedConversationId', null)" 
-                type="button" 
-                title="إغلاق الشاشة"
-                class="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer transition">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
-    </div>
-</div>
 
             <!-- سجل الرسائل -->
-            <div x-ref="messageContainer" class="flex-1 p-4 overflow-y-auto space-y-3.5 chat-custom-scroll bg-gray-50/50 dark:bg-gray-900/40"
-                 x-data="{ pendingMessage: null }"
-                 @optimistic-message.window="pendingMessage = $event.detail.body; $nextTick(() => { $el.scrollTop = $el.scrollHeight; })"
-                 @clear-pending.window="pendingMessage = null">
+            <div x-ref="messageContainer"
+                class="overflow-y-auto relative flex-1 p-6 space-y-6 custom-scrollbar bg-gray-50/30 dark:bg-gray-900/40"
+                x-data="{ pendingMessage: null }" x-init="setTimeout(() => { $el.scrollTop = $el.scrollHeight; }, 50)"
+                @optimistic-message.window="pendingMessage = $event.detail.body; $nextTick(() => { $el.scrollTop = $el.scrollHeight; })"
+                @clear-pending.window="pendingMessage = null">
                 @forelse($messages as $msg)
                     @php
-                        $isAdmin = ($msg->sender_type === \App\Models\User::class && $msg->sender_id == auth()->id()) || $msg->sender_type === 'admin';
+                        $isAdmin =
+                            ($msg->sender_type === \App\Models\User::class && $msg->sender_id == auth()->id()) ||
+                            $msg->sender_type === 'admin';
                     @endphp
-                    
-                    <div class="flex flex-col {{ $isAdmin ? 'items-start' : 'items-end' }}">
-                        <div class="{{ $isAdmin ? 'chat-bubble-admin' : 'chat-bubble-user' }}">
-                            <p class="text-xs leading-relaxed break-words" dir="auto">{{ $msg->body }}</p>
+
+                    <div class="flex flex-col {{ $isAdmin ? 'items-start' : 'items-end' }} max-w-full">
+                        <div
+                            class="{{ $isAdmin ? 'bg-brand-500 text-white rounded-2xl rounded-tr-sm shadow-md shadow-brand-500/20' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 dark:border-gray-700' }} px-4 py-3 max-w-[85%] sm:max-w-[75%] relative group">
+                            <p class="text-[14px] leading-relaxed break-words" dir="auto">{{ $msg->body }}</p>
                         </div>
-                        <span class="text-[8px] text-gray-400 mt-0.5 px-1">
+                        <span class="text-[10px] text-gray-400 mt-1.5 px-1 flex items-center gap-1">
                             {{ $msg->created_at ? $msg->created_at->locale('ar')->translatedFormat('h:i A') : '' }}
+                            @if ($isAdmin)
+                                <svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            @endif
                         </span>
                     </div>
                 @empty
                     <template x-if="!pendingMessage">
-                        <div class="text-center text-xs text-gray-400 py-12">لا توجد رسائل سابقة في هذه المحادثة.</div>
+                        <div class="py-12 text-xs text-center text-gray-400">لا توجد رسائل سابقة في هذه المحادثة.</div>
                     </template>
                 @endforelse
 
                 <!-- الرسالة المؤقتة (Optimistic) -->
                 <template x-if="pendingMessage">
-                    <div class="flex flex-col items-start animate-fade-in-up" style="opacity: 0.5;">
-                        <div class="chat-bubble-admin">
-                            <p class="text-xs leading-relaxed break-words" dir="auto" x-text="pendingMessage"></p>
+                    <div class="flex flex-col items-start max-w-full animate-fade-in-up" style="opacity: 0.6;">
+                        <div
+                            class="bg-brand-500 text-white rounded-2xl rounded-tr-sm shadow-md shadow-brand-500/20 px-4 py-2.5 max-w-[85%] sm:max-w-[75%] relative">
+                            <p class="text-[13px] leading-relaxed break-words" dir="auto" x-text="pendingMessage">
+                            </p>
                         </div>
-                        <span class="text-[8px] text-gray-400 mt-0.5 px-1 flex items-center gap-1">
+                        <span class="text-[9px] text-gray-400 mt-1 px-1 flex items-center gap-1">
                             <svg class="w-2.5 h-2.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round"/>
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"
+                                    stroke-dasharray="31.4 31.4" stroke-linecap="round" />
                             </svg>
                             جاري الإرسال...
                         </span>
@@ -195,35 +220,38 @@
             </div>
 
             <!-- حقل الإدخال -->
-            <div class="p-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
-                 x-data="{ 
+            <div class="p-4 bg-white border-t border-gray-200 dark:border-gray-800 dark:bg-gray-900"
+                x-data="{
                     sendOptimistic() {
                         const input = this.$refs.msgInput;
                         const text = input.value.trim();
                         if (!text) return;
                         window.dispatchEvent(new CustomEvent('optimistic-message', { detail: { body: text } }));
                     }
-                 }">
-                <form wire:submit.prevent="sendMessage" 
-                      @submit="sendOptimistic()"
-                      class="flex items-center gap-2">
-                    <input type="text" 
-                           x-ref="msgInput"
-                           wire:model="newMessage"
-                           placeholder="اكتب رسالتك للعميل..." 
-                           class="h-10 flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:text-white/90" />
-                    
-                    <button type="submit" 
-                            class="h-10 px-5 rounded-xl bg-brand-500 text-xs font-bold text-white hover:bg-brand-600 transition flex-shrink-0 cursor-pointer flex items-center gap-1">
-                        <span>إرسال</span>
+                }">
+                <form wire:submit.prevent="sendMessage" @submit="sendOptimistic()"
+                    class="flex relative gap-4 items-end mx-auto max-w-4xl">
+                    <div class="relative flex-1">
+                        <input type="text" x-ref="msgInput" wire:model="newMessage"
+                            placeholder="اكتب رسالتك للعميل..."
+                            class="w-full h-14 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-6 text-[14px] text-gray-900 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 dark:text-white transition-all shadow-sm" />
+                    </div>
+
+                    <button type="submit"
+                        class="flex flex-shrink-0 justify-center items-center w-12 h-12 text-white rounded-2xl shadow-md transition-all cursor-pointer bg-brand-500 hover:bg-brand-600 shadow-brand-500/30 active:scale-95">
+                        <svg class="w-5 h-5 transform rtl:-scale-x-100" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
                     </button>
                 </form>
             </div>
-
         @else
             <!-- الشاشة الافتراضية -->
-            <div class="flex h-full flex-col items-center justify-center p-8 text-gray-400">
-                <p class="text-xs font-medium">اختر محادثة من القائمة المتاحة لبدء المراسلة</p>
+            <div class="flex flex-col justify-center items-center p-8 h-full text-gray-400">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">اختر محادثة من القائمة المتاحة لبدء
+                    المراسلة</p>
             </div>
         @endif
     </div>
@@ -231,24 +259,26 @@
 </div>
 
 @script
-<script>
-    let sidebarScrollPos = 0;
-    const sidebarEl = document.getElementById('sidebar-scroll');
+    <script>
+        let sidebarScrollPos = 0;
+        const sidebarEl = document.getElementById('sidebar-scroll');
 
-    if (sidebarEl) {
-        sidebarEl.addEventListener('scroll', () => {
-            sidebarScrollPos = sidebarEl.scrollTop;
-        });
-    }
+        if (sidebarEl) {
+            sidebarEl.addEventListener('scroll', () => {
+                sidebarScrollPos = sidebarEl.scrollTop;
+            });
+        }
 
-    Livewire.hook('commit', ({ succeed }) => {
-        const saved = sidebarScrollPos;
-        succeed(() => {
-            queueMicrotask(() => {
-                const el = document.getElementById('sidebar-scroll');
-                if (el) el.scrollTop = saved;
+        Livewire.hook('commit', ({
+            succeed
+        }) => {
+            const saved = sidebarScrollPos;
+            succeed(() => {
+                queueMicrotask(() => {
+                    const el = document.getElementById('sidebar-scroll');
+                    if (el) el.scrollTop = saved;
+                });
             });
         });
-    });
-</script>
+    </script>
 @endscript
