@@ -21,13 +21,18 @@ class RequestController extends Controller
     {}
     public function updateTripStatus(Request $request)
     {
-        $request->validate([
+        $fields = $request->validate([
             'request_id' => ['required', 'integer', Rule::exists('requests', 'id')],
-            'status'=> ['required', 'string', Rule::in(['accepted', 'on_trip', 'completed', 'cancelled'])],
+            'status'     => ['required', 'string', Rule::in(['accepted', 'on_trip', 'completed', 'cancelled'])],
+        ], [
+            'request_id.required' => 'رقم الرحلة مطلوب.',
+            'request_id.exists'   => 'الرحلة المحددة غير موجودة.',
+            'status.required'     => 'الحالة الجديدة مطلوبة.',
+            'status.in'           => 'الحالة المحددة غير صالحة.',
         ]);
         $driver = auth('sanctum')->user();
-        $targetStatus = $request->validated('status');
-        $requestId = $request->validated('request_id');
+        $targetStatus = $fields['status'];
+        $requestId = $fields['request_id'];
         try {
              return DB::transaction(function () use ($driver, $requestId, $targetStatus) {
                 $trip = TripRequest::where('id', $requestId)->lockForUpdate()->first();
