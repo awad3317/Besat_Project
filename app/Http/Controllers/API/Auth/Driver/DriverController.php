@@ -16,7 +16,7 @@ class DriverController extends Controller
     {
         //
     }
-     public function updateDeviceToken(Request $request)
+    public function updateDeviceToken(Request $request)
     {
         $fields=$request->validate([
             'device_token' => 'required',
