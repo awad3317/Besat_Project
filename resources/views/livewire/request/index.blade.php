@@ -1,14 +1,14 @@
 <div>
     {{-- 1. بطاقات الإحصائيات والفلاتر --}}
-    <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
+    <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
         {{-- فلتر: الكل --}}
         <div wire:click.debounce.150ms="applyFilter('all')" wire:loading.class="opacity-50" wire:target="applyFilter"
             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('all')"
-                class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
-                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
             </div>
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
                 <svg fill="#dc6803" width="20" height="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                     <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
                 </svg>
@@ -25,10 +25,10 @@
             wire:target="applyFilter"
             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'in_progress') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800  @endif">
             <div wire:loading wire:target="applyFilter('in_progress')"
-                class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
-                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
             </div>
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
                 <svg fill="#dc6803" width="20" height="20" version="1.1" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -48,10 +48,10 @@
             wire:target="applyFilter"
             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'completed') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('completed')"
-                class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
-                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
             </div>
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
                 <svg width="20" height="20" viewBox="0 0 1024 1024" fill="#dc6803" class="icon" version="1.1"
                     xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -73,10 +73,10 @@
             wire:target="applyFilter"
             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'cancelled') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('cancelled')"
-                class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
-                <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
             </div>
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
                 <svg width="20" height="20" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"
                     fill="#dc6803">
                     <path
@@ -97,21 +97,21 @@
             <label class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">البحث</label>
             <div class="relative">
                 <input wire:model.live.debounce.300ms="search" type="text"
-                    class="shadow-theme-xs h-10 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 text-right"
+                    class="px-4 py-2.5 w-full h-10 text-sm text-right text-gray-800 bg-transparent rounded-lg border border-gray-300 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
                     placeholder="ابحث باسم العميل، الهاتف، السائق..." />
-                <div class="absolute left-0 top-0 bottom-0 flex items-center px-3">
+                <div class="flex absolute top-0 bottom-0 left-0 items-center px-3">
                     <div wire:loading wire:target="search" class="mt-2">
-                        <div class="h-5 w-5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent">
+                        <div class="w-5 h-5 rounded-full border-2 animate-spin border-brand-500 border-t-transparent">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div wire:loading.class="opacity-50" wire:target="search,applyFilter" class="max-w-full overflow-x-auto table-responsive-container">
+        <div wire:loading.class="opacity-50" wire:target="search,applyFilter" class="overflow-x-auto max-w-full table-responsive-container">
             <table class="min-w-full">
                 <thead>
-                    <tr class="border-y border-gray-100 dark:border-gray-800">
+                    <tr class="border-gray-100 border-y dark:border-gray-800">
                         <th class="py-3 text-center">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">رقم الطلب</p>
                         </th>
@@ -139,11 +139,11 @@
                     @forelse ($this->requests as $request)
                         <tr wire:key="request-{{ $request->id }}">
                             <td class="py-3">
-                                <p class="text-gray-500 text-center text-theme-sm dark:text-gray-400">{{ $request->id }}</p>
+                                <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">{{ $request->id }}</p>
                             </td>
                             <td class="py-3">
                                 @if($request->driver)
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex gap-3 items-center">
                                         <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
                                             <img src="{{ $request->driver->driver_image ? url($request->driver->driver_image) : asset('tailadmin/build/src/images/user/SO.jpg') }}"
                                                 alt="Driver" />
@@ -159,7 +159,7 @@
                                     <button 
                                         wire:click="openAssignDriverModal({{ $request->id }})"
                                         wire:loading.attr="disabled"
-                                        class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-wait"
+                                        class="inline-flex gap-1 items-center px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait"
                                     >
                                         <svg wire:loading.remove wire:target="openAssignDriverModal({{ $request->id }})" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -167,7 +167,7 @@
                                             <line x1="20" y1="8" x2="20" y2="14"></line>
                                             <line x1="23" y1="11" x2="17" y2="11"></line>
                                         </svg>
-                                        <div wire:loading wire:target="openAssignDriverModal({{ $request->id }})" class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-500 border-t-transparent dark:border-gray-400"></div>
+                                        <div wire:loading wire:target="openAssignDriverModal({{ $request->id }})" class="w-3.5 h-3.5 rounded-full border-2 border-gray-500 animate-spin border-t-transparent dark:border-gray-400"></div>
                                         <span wire:loading.remove wire:target="openAssignDriverModal({{ $request->id }})">تعيين سائق</span>
                                         <span wire:loading wire:target="openAssignDriverModal({{ $request->id }})">جاري...</span>
                                     </button>
@@ -175,7 +175,7 @@
                             </td>
                             <td class="py-3">
                                 @if($request->user)
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex gap-3 items-center">
                                         <div>
                                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                                 {{ $request->user->name }}
@@ -188,7 +188,7 @@
                                 @endif
                             </td>
                             <td class="py-3">
-                                <p class="text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                                <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
                                     {{ $request->final_price }}</p>
                             </td>
                             <td class="py-3">
@@ -198,9 +198,9 @@
                                 </p>
                             </td>
                             <td class="py-3">
-                                <div class="flex items-center justify-center space-x-2">
+                                <div class="flex justify-center items-center space-x-2">
                                     <p
-                                        class="rounded-full bg-warning-50 px-2 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
+                                        class="px-2 py-0.5 font-medium rounded-full bg-warning-50 text-theme-xs text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
                                         {{ $request->start_address }}</p>
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -208,7 +208,7 @@
                                             d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                     </svg>
                                     <p
-                                        class="rounded-full px-2 py-0.5 text-theme-xs font-medium bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
+                                        class="px-2 py-0.5 font-medium rounded-full text-theme-xs bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
                                         {{ $request->end_address }}</p>
                                 </div>
                             </td>
