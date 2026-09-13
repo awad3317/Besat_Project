@@ -54,6 +54,13 @@ return [
     'google' => [
         'maps_key' => env('GOOGLE_MAP_KEY'),
     ],
+    
+    'qutaibi' => [
+        'app_key' => env('ALQUTAIBIBANK_APP_KEY'),
+        'api_key' => env('ALQUTAIBIBANK_API_KEY'),
+        'payment_destination' => env('ALQUTAIBIBANK_PAYMENT_DESTINATION'),
+        'base_url'=> env('ALQUTAIBIBANK_BASE_URL', 'https://newdc.qtb-bank.com:5052/BillPayLive'),
+    ],
 
 
 ];
