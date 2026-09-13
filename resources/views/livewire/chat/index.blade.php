@@ -135,9 +135,7 @@
                         <h5 class="text-sm font-bold text-gray-900 truncate dark:text-white">
                             {{ $selectedConversation->user?->name ?? $selectedConversation->driver?->name }}
                         </h5>
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400">
-                            محادثة رقم #{{ $selectedConversation->id }}
-                        </p>
+                       
                     </div>
                 </div>
 
