@@ -59,6 +59,7 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         Route::get('/user/banks', [BankController::class, 'index']);
         Route::get('/user/wallet-balance', [LoyaltyWalletController::class, 'getBalance']);
         Route::post('/user/convert-points', [LoyaltyWalletController::class, 'convertPoints']);
+        Route::delete('/user/delete-account', [UserController::class, 'deleteAccount']);
 
         Route::get('/user/digital-payments', [PaymentMethodController::class, 'getDigitalPayments']);
                 // مسار معالجة الدفع: يستقبل نوع الإجراء (action) واسم البنك (method_key)

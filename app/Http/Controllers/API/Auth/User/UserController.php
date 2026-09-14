@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Auth\User;
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
+use App\Services\UserAccountService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +16,7 @@ class UserController extends Controller
      /**
      * Create a new class instance.
      */
-    public function __construct(private UserRepository $UserRepository)
+    public function __construct(private UserRepository $UserRepository, private UserAccountService $userAccountService)
     {
         //
     }
@@ -68,6 +69,19 @@ class UserController extends Controller
         } catch (Exception $e) {
             Log::error('Error updating user profile: ' . $e->getMessage());
             return ApiResponseClass::sendError('حدث خطأ أثناء تحديث البيانات.', $e->getMessage(), 500);
+        }
+    }
+    public function deleteAccount(Request $request){
+        try {
+            $user = auth('sanctum')->user();
+            if (!$user) {
+                return ApiResponseClass::sendError('المستخدم غير موجود', [], 401);
+            }
+           $this->userAccountService->deleteAccount($user);
+            return ApiResponseClass::sendResponse([], 'تم حذف الحساب بنجاح.');
+        }catch(Exception $e){
+            Log::error('Error deleting user account: ' . $e->getMessage());
+            return ApiResponseClass::sendError('حدث خطأ أثناء حذف الحساب.', $e->getMessage(), 500);
         }
     }
 }
