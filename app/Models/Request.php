@@ -34,6 +34,10 @@ class Request extends Model
         'pricing_snapshot'  => 'array',
     ];
 
+    protected $hidden = [
+        'created_by_user','created_by','pricing_snapshot','driver_settled_at','driver_settled_by'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
