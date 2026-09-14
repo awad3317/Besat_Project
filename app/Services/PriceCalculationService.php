@@ -226,6 +226,7 @@ class PriceCalculationService
 
         return [
             'distance_in_km'        => round((float) $distanceInKm, 2),
+            'price_per_km'          => round((float) $price_per_km, 2),
             'base_price'            => round((float) $base_price, 2),
             'original_price'        => round((float) $original_price, 2),
             'final_price'           => round((float) $final_price, 2),

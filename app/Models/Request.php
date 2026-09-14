@@ -19,7 +19,8 @@ class Request extends Model
         'distance_km', 'notes', 'payment_method',
         'trip_datetime', 'wants_ac', 'ac_cost' ,'bank_id',
         'payment_status', 'transaction_id', 'cancelled_by', 
-        'driver_settled_at'
+        'driver_settled_at','price_per_km',     
+        'pricing_snapshot',
     ];
 
     protected $casts = [
@@ -29,6 +30,8 @@ class Request extends Model
         'final_price'   => 'float',
         'distance_km'   => 'float',
         'ac_cost'       => 'float', 
+        'price_per_km'  => 'float',
+        'pricing_snapshot'  => 'array',
     ];
 
     public function user()

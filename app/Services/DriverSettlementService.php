@@ -78,6 +78,7 @@ class DriverSettlementService
                 ->whereNull('driver_settled_at')
                 ->update([
                     'driver_settled_at' => now(),
+                    'driver_settled_by' => $adminId,
                 ]);
 
             return [

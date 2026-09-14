@@ -121,6 +121,27 @@ class RequestController extends Controller
             $validated['app_commission_amount'] = $priceDetails['app_commission_amount'];
             $validated['status'] = 'pending';
             $validated['payment_status'] = 'unpaid';
+            $validated['price_per_km'] = (float) ($priceDetails['price_per_km'] ?? 0);
+            $validated['pricing_snapshot'] = [
+                'vehicle_id'           => $vehicle->id,
+                'vehicle_type'         => $vehicle->type,
+                'vehicle_min_price'    => (float) $vehicle->min_price,
+                'applied_price_per_km' => (float) ($priceDetails['price_per_km'] ?? 0),
+                'ac_price_per_km'      => (float) ($vehicle->ac_price_per_km ?? 0),
+                'calculated_ac_cost'   => (float) $priceDetails['ac_cost'],
+                'distance_km'          => (float) $priceDetails['distance_in_km'],
+                'base_price'           => (float) $priceDetails['base_price'],
+                'original_price'       => (float) $priceDetails['original_price'],
+                'discount_amount'      => (float) $priceDetails['discount_amount'],
+                'surcharge_amount'     => (float) $priceDetails['total_surcharges'],
+                'driver_amount'        => (float) $priceDetails['driver_amount'],
+                'company_net_revenue'  => (float) $priceDetails['company_net_revenue'],
+                'surcharges_breakdown' => $priceDetails['surcharges_details'] ?? [],
+                'app_commission_amount'=> (float) $priceDetails['app_commission_amount'],
+                'final_price'          => (float) $priceDetails['final_price'],
+            ];
+            $validated['driver_settled_at'] = null;
+            $validated['driver_settled_by'] = null;
             
             DB::beginTransaction();
 
