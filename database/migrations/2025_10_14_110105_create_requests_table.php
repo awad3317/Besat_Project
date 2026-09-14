@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('restrict');
             $table->foreignId('driver_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('vehicle_id')->nullable()->constrained()->onDelete('set null');   
             $table->foreignId('bank_id')->nullable()->constrained('banks')->onDelete('set null');
@@ -41,12 +41,15 @@ return new class extends Migration
             $table->dateTime('trip_datetime');
             $table->boolean('wants_ac')->default(false);
             $table->decimal('ac_cost', 10, 2)->default(0);
-            $table->decimal('distance_km', 5, 2);
+            $table->decimal('distance_km', 8, 2);
             $table->decimal('price_per_km', 10, 2)->nullable();
             $table->text('notes')->nullable();
             $table->json('pricing_snapshot')->nullable();
             $table->foreignId('cancelled_by')->nullable()->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
+            $table->index('status');
+            $table->index(['driver_id', 'status']);
+            $table->index(['user_id', 'status']);
         });
     }
 
