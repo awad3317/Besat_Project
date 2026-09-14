@@ -194,6 +194,7 @@ class PriceCalculationService
             $surcharges_details = array_merge($surcharges_details, $surchargesData['details']);
         }
 
+        // 1. حساب السعر الأصلي للرحلة كاملاً قبل تطبيق أي كوبون خصم
         $original_price = $base_price + $ac_cost + $total_surcharge_amount;
         $final_price = $original_price;
 
@@ -205,7 +206,7 @@ class PriceCalculationService
             $coupon_for_response = number_format($coupon_rate * 100, 2) . '%';
             $discount_amount = $original_price * $coupon_rate;
             $discount_amount = round((float) $discount_amount, 2);
-            $final_price = $original_price - $discount_amount;
+            $final_price = max(0.0, $original_price - $discount_amount);
 
             $surcharges_details[] = [
                 'id'     => 'discount',
@@ -214,7 +215,14 @@ class PriceCalculationService
             ];
         }
 
-        $app_commission_amount = $this->calculateCommission($final_price);
+        // 2. حساب عمولة التطبيق من أصل السعر (original_price) لضمان عدم نقص عمولة المنصة
+        $app_commission_amount = $this->calculateCommission($original_price);
+
+        // 3. صافي مستحقات السائق: حقه من السعر الأصلي بعد اقتطاع عمولة التطبيق دون تحميله أي خصم
+        $driver_amount = $original_price - $app_commission_amount;
+
+        // 4. صافي دخل الشركة بعد امتصاص تكلفة الكوبون التسويقي
+        $company_net_revenue = $app_commission_amount - $discount_amount;
 
         return [
             'distance_in_km'        => round((float) $distanceInKm, 2),
@@ -228,6 +236,8 @@ class PriceCalculationService
             'total_surcharges'      => round((float) $total_surcharge_amount, 2),
             'discount_amount'       => round((float) $discount_amount, 2),
             'app_commission_amount' => round((float) $app_commission_amount, 2),
+            'driver_amount'         => round((float) $driver_amount, 2),
+            'company_net_revenue'   => round((float) $company_net_revenue, 2),
             'surcharges_details'    => $surcharges_details
         ];
     }
