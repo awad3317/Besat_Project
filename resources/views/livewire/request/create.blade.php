@@ -188,7 +188,7 @@
             </label>
 
             <!-- محفظة -->
-            {{-- <label class="flex-1 cursor-pointer">
+             <label class="flex-1 cursor-pointer">
                 <input type="radio" name="payment_method" value="wallet" wire:model.live="payment_method"
                     class="sr-only">
                 <div
@@ -205,10 +205,10 @@
                         <span class="text-xs text-gray-400">الرجاء اختيار عميل</span>
                     @endif
                 </div>
-            </label> --}}
+            </label> 
 
             <!-- إلكتروني -->
-            {{-- <label class="flex-1 cursor-pointer">
+             <label class="flex-1 cursor-pointer">
                 <input type="radio" name="payment_method" value="deposit" wire:model.live="payment_method"
                     class="sr-only">
                 <div
@@ -219,7 +219,7 @@
                         class="text-sm font-bold {{ $payment_method === 'deposit' ? 'text-brand-600 dark:text-gray-300' : 'text-gray-700 dark:text-gray-300' }}">الدفع
                         الإلكتروني</span>
                 </div>
-            </label> --}}
+            </label> 
         </div>
 
         <!-- حقول الدفع الإلكتروني تظهر عند اختياره -->
@@ -254,7 +254,7 @@
     <div class="col-span-1 sm:col-span-2" style="grid-column: 1 / -1;">
         <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">الوصف</label>
         <textarea placeholder="أدخل ملاحظات للسائق" name="notes" rows="2"
-            class="px-4 py-2.5 w-full text-sm text-gray-800 bg-transparent rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-900 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white"></textarea>
+            class="px-4 py-2.5 w-full text-sm text-gray-800 bg-transparent rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-900 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">{{ old('notes') }}</textarea>
     </div>
 
     <!-- Price Breakdown Card -->

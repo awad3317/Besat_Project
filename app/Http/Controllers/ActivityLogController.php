@@ -32,7 +32,6 @@ class ActivityLogController extends Controller
 
         return view('pages.ActivityLog.index', compact('logs', 'stats'));
     }
-public function store(Request $request)
     /**
      * Show the form for creating a new resource.
      */

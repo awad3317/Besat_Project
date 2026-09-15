@@ -92,9 +92,11 @@ class Index extends Component
     {
         $request = $this->selectedRequestId ? RequestModel::find($this->selectedRequestId) : null;
 
-        return Driver::where('is_banned', false)
+        return Driver::where('is_banned', false)    
             ->when($request, function ($query) use ($request) {
+
                 $query->where('vehicle_id', $request->vehicle_id);
+
             })
             ->when($this->driverSearch, function ($query) {
                 $query->where(function ($q) {

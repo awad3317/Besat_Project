@@ -30,6 +30,7 @@ class WebResponseClass
     public static function sendError($message,$title='حدث خطأ!',$buttonText='حسناً')
     {
         return redirect()->back()
+            ->withInput()
             ->with('error', true)
             ->with('error_title', $title)
             ->with('error_message', $message)
@@ -50,6 +51,7 @@ class WebResponseClass
     public static function sendExceptionError($e,$title='حدث خطأ!',$buttonText='حسناً')
     {
         return redirect()->back()
+            ->withInput()
             ->with('error', true)
             ->with('error_title', $title)
             ->with('error_message', $e->getMessage())

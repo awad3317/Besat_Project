@@ -620,8 +620,58 @@
 
         if (window.google && window.google.maps) {
             initializeMap();
+            restoreMarkersFromOldInput();
         } else {
-            window.addEventListener('load', initializeMap);
+            window.addEventListener('load', function() {
+                initializeMap();
+                restoreMarkersFromOldInput();
+            });
+        }
+
+        function restoreMarkersFromOldInput() {
+            let startLat = document.getElementById('start_latitude').value;
+            let startLng = document.getElementById('start_longitude').value;
+            if (startLat && startLng) {
+                let latLng = new google.maps.LatLng(parseFloat(startLat), parseFloat(startLng));
+                startMarker = { lat: latLng.lat(), lng: latLng.lng() };
+                drawCustomMarker(latLng, 'start');
+            }
+
+            let endLat = document.getElementById('end_latitude').value;
+            let endLng = document.getElementById('end_longitude').value;
+            if (endLat && endLng) {
+                let latLng = new google.maps.LatLng(parseFloat(endLat), parseFloat(endLng));
+                endMarker = { lat: latLng.lat(), lng: latLng.lng() };
+                drawCustomMarker(latLng, 'end');
+            }
+
+            let oldStops = @json(old('stops', []));
+            if (oldStops) {
+                Object.values(oldStops).forEach(function(stop) {
+                    if (stop.latitude && stop.longitude) {
+                        let latLng = new google.maps.LatLng(parseFloat(stop.latitude), parseFloat(stop.longitude));
+                        waypoints.push({
+                            location: latLng,
+                            stopover: true,
+                            address: 'نقطة توقف ' + (waypoints.length + 1)
+                        });
+                        let currentIndex = waypoints.length - 1;
+
+                        geocoder.geocode({ location: latLng }, (results, status) => {
+                            if (status === 'OK' && results[0]) {
+                                waypoints[currentIndex].address = results[0].formatted_address;
+                                renderWaypointsUI();
+                            }
+                        });
+                    }
+                });
+                renderWaypointsUI();
+                updateHiddenStopsInputs();
+            }
+
+            if (startLat && startLng && endLat && endLng) {
+                calculateAndDisplayRoute();
+            }
         }
     </script>
 @endsection

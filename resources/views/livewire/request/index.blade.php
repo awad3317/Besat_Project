@@ -128,6 +128,9 @@
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">حالة الطلب</p>
                         </th>
                         <th class="py-3 text-center">
+                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">نوع المركبه</p>
+                        </th>
+                        <th class="py-3 text-center">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">من - الى</p>
                         </th>
                         <th class="py-3 text-center">
@@ -196,6 +199,16 @@
                                     class="rounded-full text-center px-2 py-0.5 text-theme-xs font-medium {{ $request->status_class }}">
                                     {{ $request->status_text }}
                                 </p>
+                            </td>
+                            <td class="py-3">
+                                @if($request->vehicle)
+                                    <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
+                                        {{ $request->vehicle->type }}</p>
+                                    @else
+                                    <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
+                                        غير محدد
+                                    </p>
+                                @endif
                             </td>
                             <td class="py-3">
                                 <div class="flex justify-center items-center space-x-2">

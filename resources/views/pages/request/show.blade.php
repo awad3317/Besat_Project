@@ -114,6 +114,22 @@
                     </h4>
                 </div>
             </div>
+            <div
+                class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+                <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                    <svg fill="#dc6803" width="30" height="30" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M18.92 6.01A1.5 1.5 0 0 0 17.5 5h-11a1.5 1.5 0 0 0-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99ZM6.5 16A1.5 1.5 0 1 1 6.5 13a1.5 1.5 0 0 1 0 3Zm11 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM5 11l1.5-4.5h11L19 11H5Z" />
+                    </svg>
+                </div>
+                <div class="mt-3 w-full">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">نوع السياره</span>
+                    <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                        {{ $request->vehicle?->type ?? '' }}
+                    </h4>
+                </div>
+            </div>
 
             <!-- Distance Card -->
             <div
@@ -479,7 +495,7 @@
                                 </div>
                             @endif
 
-                        
+
                             <!-- الإجمالي النهائي -->
                             <div
                                 class="flex justify-between items-center pt-4 mt-4 border-t border-gray-200 border-dashed dark:border-gray-700">

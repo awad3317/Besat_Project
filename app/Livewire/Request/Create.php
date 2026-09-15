@@ -38,8 +38,8 @@ class Create extends Component
     public $trip_time = '';
 
     public $payment_method = 'cash';
-    public $bank_name = '';
-    public $account_number = '';
+    public $bank_id = '';
+    public $transaction_id = '';
 
     // Distance and Price Breakdown
     public $distance_km = 0;
@@ -55,8 +55,35 @@ class Create extends Component
     protected $listeners = ['updateMapData' => 'setMapDataAndCalculate'];
     public function mount()
     {
-        $this->trip_date = now()->format('Y-m-d');
-        $this->trip_time = now()->format('H:i');
+        $this->trip_date = old('trip_date', now()->format('Y-m-d'));
+        $this->trip_time = old('trip_time', now()->format('H:i'));
+
+        $this->vehicle_id = old('vehicle_id', '');
+        $this->wants_ac = old('wants_ac', false);
+        $this->payment_method = old('payment_method', 'cash');
+        $this->bank_id = old('bank_id', '');
+        $this->transaction_id = old('transaction_id', '');
+        $this->coupon_code = old('discount_code', '');
+        $this->distance_km = old('distance_km', 0);
+
+        if (old('user_id')) {
+            $user = User::find(old('user_id'));
+            if ($user) {
+                $this->selectCustomer($user->id, $user->phone, $user->name, $user->wallet_balance ?? 0);
+            }
+        }
+
+        if ($this->vehicle_id) {
+            $this->updatedVehicleId();
+        }
+
+        if ($this->coupon_code) {
+            $this->applyCoupon(app(\App\Services\DiscountCodeService::class));
+        }
+
+        if ($this->distance_km > 0 && $this->vehicle_id) {
+            $this->calculatePrice();
+        }
     }
 
     public function updatedCustomerPhone($value)
