@@ -3,27 +3,26 @@
 namespace App\Services;
 
 use App\Models\Driver;
+use App\Models\DriverSettlement;
 use App\Models\Request as TripRequest;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class DriverSettlementService
 {
+    /**
+     * حساب رصيد السائق للرحلات غير المصفاة
+     */
     public function calculateDriverBalance(int $driverId): array
     {
         $driver = Driver::find($driverId);
         if (!$driver) {
             throw new Exception('السائق غير موجود في النظام.', 404);
         }
-
-        // 1. حساب تسوية الرحلات النقدية (Cash Trips)
-        // السائق استلم كاش = final_price
-        // حق السائق = original_price - app_commission_amount
-        // ذمة السائق الصافية من الكاش = final_price - حق السائق = app_commission_amount - discount_amount
         $cashTrips = TripRequest::where('driver_id', $driverId)
             ->where('status', 'completed')
             ->where('payment_method', 'cash')
-            ->whereNull('driver_settled_at')
+            ->whereNull('driver_settlement_id')
             ->selectRaw('
                 COALESCE(SUM(app_commission_amount - discount_amount), 0) as net_cash_adjustment,
                 COALESCE(SUM(app_commission_amount), 0) as gross_commission,
@@ -33,13 +32,10 @@ class DriverSettlementService
 
         $cashNetAdjustment = (float) ($cashTrips->net_cash_adjustment ?? 0);
 
-        // 2. حساب تسوية الرحلات الرقمية (Wallet / Digital Payment)
-        // التطبيق استلم المبلغ نيابة عن السائق
-        // حق السائق الصافي = original_price - app_commission_amount (المنصة تمتص الكوبون ولا تخصمه من السائق)
         $digitalTrips = TripRequest::where('driver_id', $driverId)
             ->where('status', 'completed')
             ->whereIn('payment_method', ['wallet', 'digital_payment'])
-            ->whereNull('driver_settled_at')
+            ->whereNull('driver_settlement_id')
             ->selectRaw('
                 COALESCE(SUM(original_price - app_commission_amount), 0) as total_driver_due,
                 COALESCE(SUM(final_price), 0) as total_collected_by_app,
@@ -50,12 +46,9 @@ class DriverSettlementService
 
         $digitalDriverDue = (float) ($digitalTrips->total_driver_due ?? 0);
 
-        // 3. صافي الحساب (Net Balance):
-        // مستحقات السائق من الدفع الرقمي ناقص ما تبقى عليه من الرحلات النقدية
-        // Net Balance = Digital Driver Due - Cash Net Adjustment
+        // 3. صافي الحساب (Net Balance)
         $netBalance = $digitalDriverDue - $cashNetAdjustment;
 
-        // فصل المطالبات بحسب اتجاه الذمة المالية
         $driverOwesApp = $cashNetAdjustment > 0 ? $cashNetAdjustment : 0.0;
         $appOwesDriver = $digitalDriverDue + ($cashNetAdjustment < 0 ? abs($cashNetAdjustment) : 0.0);
 
@@ -68,21 +61,46 @@ class DriverSettlementService
         ];
     }
 
+    /**
+     * إتمام التسوية وتوليد السجل وربط الطلبات
+     */
     public function settleAccounts(int $driverId, ?int $adminId = null): array
     {
         return DB::transaction(function () use ($driverId, $adminId) {
             $balance = $this->calculateDriverBalance($driverId);
 
-            $updatedRows = TripRequest::where('driver_id', $driverId)
+            // جلب معرّفات الطلبات الجاهزة للتسوية وقفلها للتحديث
+            $pendingTripIds = TripRequest::where('driver_id', $driverId)
                 ->where('status', 'completed')
-                ->whereNull('driver_settled_at')
-                ->update([
-                    'driver_settled_at' => now(),
-                    'driver_settled_by' => $adminId,
-                ]);
+                ->whereNull('driver_settlement_id')
+                ->lockForUpdate()
+                ->pluck('id');
+
+            if ($pendingTripIds->isEmpty()) {
+                throw new Exception('لا توجد رحلات معلقة تحتاج إلى تصفية حساب لهذا السائق.', 422);
+            }
+
+            // 1. إنشاء سجل التصفية الرئيسي
+            $settlement = DriverSettlement::create([
+                'driver_id'         => $driverId,
+                'admin_id'          => $adminId,
+                'trips_count'       => $pendingTripIds->count(),
+                'driver_owes_app'   => $balance['driver_owes_app'],
+                'app_owes_driver'   => $balance['app_owes_driver'],
+                'net_balance'       => $balance['net_balance'],
+                'settlement_action' => $balance['settlement_action'],
+            ]);
+
+            // 2. تحديث الطلبات وربطها بالتصفية المنشأة
+            TripRequest::whereIn('id', $pendingTripIds)->update([
+                'driver_settlement_id' => $settlement->id,
+                'driver_settled_at'    => now(),
+                'driver_settled_by'    => $adminId,
+            ]);
 
             return [
-                'settled_trips_count'  => $updatedRows,
+                'settlement_id'        => $settlement->id,
+                'settled_trips_count'  => $pendingTripIds->count(),
                 'final_settled_amount' => $balance['net_balance'],
                 'action_taken'         => $balance['settlement_action'],
                 'settled_at'           => now()->toDateTimeString(),
@@ -90,6 +108,9 @@ class DriverSettlementService
         });
     }
 
+    /**
+     * إحصائيات السائق العامة والمالية
+     */
     public function getDriverStats(int $driverId): array
     {
         $driver = Driver::find($driverId);
@@ -97,7 +118,6 @@ class DriverSettlementService
             throw new Exception('السائق غير موجود في النظام.', 404);
         }
 
-        // إجمالي دخل السائق الحقيقي المحسوب على السعر الأصلي وليس المخفض
         $tripsStats = TripRequest::where('driver_id', $driverId)
             ->selectRaw("
                 COUNT(id) as total_trips,

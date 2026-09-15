@@ -20,7 +20,6 @@ return new class extends Migration
             $table->decimal('app_owes_driver', 10, 2)->default(0);
             $table->decimal('net_balance', 10, 2)->default(0);
             $table->enum('settlement_action', ['app_pays_driver', 'driver_pays_app'])->default('driver_pays_app');
-            $table->timestamp('settled_at')->nullable();
             $table->timestamps();
         });
     }

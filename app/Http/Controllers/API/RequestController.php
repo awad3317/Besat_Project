@@ -121,7 +121,6 @@ class RequestController extends Controller
             $validated['app_commission_amount'] = $priceDetails['app_commission_amount'];
             $validated['status'] = 'pending';
             $validated['payment_status'] = 'unpaid';
-            $validated['price_per_km'] = (float) ($priceDetails['price_per_km'] ?? 0);
             $validated['pricing_snapshot'] = [
                 'vehicle_id'           => $vehicle->id,
                 'vehicle_type'         => $vehicle->type,
@@ -140,9 +139,6 @@ class RequestController extends Controller
                 'app_commission_amount'=> (float) $priceDetails['app_commission_amount'],
                 'final_price'          => (float) $priceDetails['final_price'],
             ];
-            $validated['driver_settled_at'] = null;
-            $validated['driver_settled_by'] = null;
-            
             DB::beginTransaction();
 
             if ($validated['payment_method'] === 'wallet') {

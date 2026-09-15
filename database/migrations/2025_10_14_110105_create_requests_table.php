@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('bank_id')->nullable()->constrained('banks')->onDelete('set null');
             $table->foreignId('discount_code_id')->nullable()->references('id')->on('discount_codes')->onDelete('set null');
             $table->foreignId('created_by_user')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('driver_settlement_id')->nullable()->constrained('driver_settlements')->nullOnDelete();
             $table->enum('created_by',['APP','Web']);
             $table->string('title')->nullable();
             $table->decimal('start_latitude', 10, 8);
@@ -35,14 +36,11 @@ return new class extends Migration
             $table->decimal('final_price', 10, 2);
             $table->string('payment_method')->default('cash');
             $table->enum('payment_status', ['unpaid', 'paid', 'failed', 'refunded'])->default('unpaid');
-            $table->timestamp('driver_settled_at')->nullable();
-            $table->foreignId('driver_settled_by')->nullable()->constrained('users')->onDelete('set null');
             $table->string('transaction_id')->nullable();
             $table->dateTime('trip_datetime');
             $table->boolean('wants_ac')->default(false);
             $table->decimal('ac_cost', 10, 2)->default(0);
             $table->decimal('distance_km', 8, 2);
-            $table->decimal('price_per_km', 10, 2)->nullable();
             $table->text('notes')->nullable();
             $table->json('pricing_snapshot')->nullable();
             $table->foreignId('cancelled_by')->nullable()->references('id')->on('users')->onDelete('set null');
@@ -50,6 +48,7 @@ return new class extends Migration
             $table->index('status');
             $table->index(['driver_id', 'status']);
             $table->index(['user_id', 'status']);
+            $table->index(['driver_id', 'driver_settlement_id']);
         });
     }
 

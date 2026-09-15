@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Request extends Model
 {
@@ -18,9 +19,8 @@ class Request extends Model
         'original_price', 'discount_amount', 'final_price',
         'distance_km', 'notes', 'payment_method',
         'trip_datetime', 'wants_ac', 'ac_cost' ,'bank_id',
-        'payment_status', 'transaction_id', 'cancelled_by', 
-        'driver_settled_at','price_per_km',     
-        'pricing_snapshot',
+        'payment_status', 'transaction_id', 'cancelled_by',     
+        'pricing_snapshot','driver_settlement_id',
     ];
 
     protected $casts = [
@@ -30,12 +30,11 @@ class Request extends Model
         'final_price'   => 'float',
         'distance_km'   => 'float',
         'ac_cost'       => 'float', 
-        'price_per_km'  => 'float',
         'pricing_snapshot'  => 'array',
     ];
 
     protected $hidden = [
-        'created_by_user','created_by','pricing_snapshot','driver_settled_at','driver_settled_by'
+        'created_by_user','created_by','pricing_snapshot'
     ];
 
     public function user()
@@ -70,6 +69,10 @@ class Request extends Model
     public function stops()
     {
         return $this->hasMany(RequestStop::class, 'request_id')->orderBy('stop_order', 'asc');
+    }
+    public function settlement(): BelongsTo
+    {
+        return $this->belongsTo(DriverSettlement::class, 'driver_settlement_id');
     }
 
     public static function statusConfig()
