@@ -5,7 +5,7 @@
 
     <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
       
-            @livewire('drivers.settlements', ['driverId' => $driver->id])
+             <livewire:drivers.settlements :driverId="$driver->id" />
         <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
             <div class="mb-6 rounded-2xl border border-gray-200 dark:border-gray-800 lg:p-6">
 
