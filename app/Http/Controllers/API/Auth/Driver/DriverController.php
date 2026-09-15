@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Repositories\DriverRepository;
 use Exception;
+use App\Models\Request as TripRequest;
 use Illuminate\Support\Facades\Log;
 use App\Services\DriverSettlementService;
 
@@ -100,6 +101,16 @@ class DriverController extends Controller
                 'is_online' => 'required|boolean',
             ]);
             $driver = auth('sanctum')->user();
+            $driverId = $driver->id;
+            if (! $fields['is_online']) {
+                $hasActiveTrip = TripRequest::where('driver_id', $driverId)
+                    ->whereIn('status', ['accepted', 'on_trip'])
+                    ->exists();
+
+                if ($hasActiveTrip) {
+                    return ApiResponseClass::sendError('لا يمكنك تغيير حالتك إلى غير متصل أثناء وجود رحلة جارية.', [], 422);
+                }
+            }
             $this->driverRepository->update($fields, $driver->id);
             $status = $fields['is_online'] ? 'متصل' : 'غير متصل';
             return ApiResponseClass::sendResponse([], "تم التحديث إلى: {$status}");
