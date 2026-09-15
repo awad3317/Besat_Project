@@ -229,18 +229,19 @@
                 <div>
                     <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">البنك <span
                             class="text-warning-500">*</span></label>
-                    <select name="bank_name" wire:model="bank_name"
+                    <select name="bank_id" wire:model="bank_id"
                         class="px-4 py-2.5 w-full h-11 text-sm bg-white rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-600 focus:border-brand-500 dark:border-gray-600 dark:text-gray-50">
                         <option value="">اختر البنك</option>
-                        <option value="kuraimi">مصرف الكريمي</option>
-                        <option value="qutaibi">بنك القطيبي</option>
+                        @foreach(App\Models\Bank::where('is_active', true)->get() as $bank)
+                            <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div>
                     <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">رقم الحساب /
-                        الجوال <span class="text-warning-500">*</span></label>
-                    <input type="text" name="account_number" wire:model="account_number"
-                        placeholder="أدخل رقم الحساب المحول منه"
+                        العملية <span class="text-warning-500">*</span></label>
+                    <input type="text" name="transaction_id" wire:model="transaction_id"
+                        placeholder="أدخل رقم الحساب المحول منه أو رقم العملية"
                         class="px-4 py-2.5 w-full h-11 text-sm bg-white rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-600 focus:border-brand-500 dark:border-gray-600 dark:text-white">
                 </div>
             </div>
@@ -517,8 +518,8 @@
                         }" class="relative">
 
                             <!-- 2. الحقل المخفي الذي سيتم إرساله إلى الخادم -->
-                            <input type="hidden" name="phone"
-                                :value="selectedCountry.dial_code.replace('+', '') + localPhoneNumber">
+                            <input type="hidden" wire:model="new_user_phone"
+                                x-effect="$wire.set('new_user_phone', selectedCountry.dial_code.replace('+', '') + localPhoneNumber)">
 
                             <!-- This is the main visible input group -->
                             <div
@@ -538,7 +539,7 @@
 
                                 <!-- 3. حقل الإدخال المرئي (تم ربطه بـ x-model وإزالة name) -->
                                 <input id="phone_number_display" type="tel" x-model="localPhoneNumber"
-                                    placeholder="780236551" required
+                                    placeholder="780236551"
                                     class="flex-grow px-3 text-sm text-left text-gray-800 bg-transparent rounded-l-lg border-none dark:text-white focus:outline-none focus:ring-0"
                                     dir="ltr">
                             </div>
@@ -608,8 +609,8 @@
                         }" class="relative">
 
                             <!-- 2. الحقل المخفي الذي سيتم إرساله إلى الخادم -->
-                            <input type="hidden" name="whatsapp_number"
-                                :value="selectedCountry.dial_code.replace('+', '') + localPhoneNumber">
+                            <input type="hidden" wire:model="new_user_whatsapp"
+                                x-effect="$wire.set('new_user_whatsapp', selectedCountry.dial_code.replace('+', '') + localPhoneNumber)">
 
                             <!-- This is the main visible input group -->
                             <div
@@ -668,8 +669,8 @@
                         <label for="password" class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
                             كلمة السر <span class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>
                         </label>
-                        <input type="text" id="password" name="password"
-                            class="px-4 py-2.5 w-full h-11 text-sm text-gray-800 bg-transparent rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-900 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+                            <input type="text" id="password" wire:model="new_user_password"
+                                class="px-4 py-2.5 w-full h-11 text-sm text-gray-800 bg-transparent rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-900 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
                         <p class="mt-1 text-xs text-warning-500 dark:text-warning/90">
                             المستخدم يستطيع تسجيل الدخول من خلال التطبيق باستخدام كلمة السر.
                         </p>
