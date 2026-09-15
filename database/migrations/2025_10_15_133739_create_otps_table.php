@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamp('expires_at');
             $table->boolean('is_used')->default(false);
             $table->string('purpose');
+            $table->index(['phone', 'is_used', 'expires_at']);
             $table->timestamps();
         });
     }

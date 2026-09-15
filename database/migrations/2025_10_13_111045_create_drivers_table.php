@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vehicle_id')->constrained()->onDelete('cascade');
+            $table->foreignId('vehicle_id')->constrained()->onDelete('restrict');
 
             $table->string('name');
-            $table->string('phone');
+            $table->string('phone')->unique();
             $table->string('whatsapp_number')->nullable();
             $table->string('password');
             
@@ -35,9 +35,9 @@ return new class extends Migration
             $table->boolean('is_active')->default(false);
             $table->string('device_token')->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
-            $table->decimal('longitude', 10, 8)->nullable(); 
+            $table->decimal('longitude', 11, 8)->nullable();
             $table->timestamps();
-            $table->index(['is_online', 'is_banned', 'is_active']);
+            $table->index(['is_online', 'is_active', 'is_banned']);
         });
     }
 

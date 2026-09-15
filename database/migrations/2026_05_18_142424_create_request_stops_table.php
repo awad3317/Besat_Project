@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('request_id')->constrained('requests')->onDelete('cascade');
             $table->decimal('latitude', 10, 8);
-            $table->decimal('longitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
             $table->integer('stop_order'); 
             $table->timestamps();
         });

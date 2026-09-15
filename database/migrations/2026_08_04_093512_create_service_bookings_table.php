@@ -23,11 +23,11 @@ return new class extends Migration
 
             $table->string('start_address');
             $table->decimal('start_latitude', 10, 8)->nullable();
-            $table->decimal('start_longitude', 10, 8)->nullable();
+            $table->decimal('start_longitude', 11, 8)->nullable();
 
             $table->string('end_address');
             $table->decimal('end_latitude', 10, 8)->nullable();
-            $table->decimal('end_longitude', 10, 8)->nullable();
+            $table->decimal('end_longitude', 11, 8)->nullable();
 
             $table->integer('vehicles_count')->nullable()->default(1);
             $table->boolean('wants_ac')->default(false);

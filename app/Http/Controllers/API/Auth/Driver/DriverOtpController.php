@@ -35,7 +35,7 @@ class DriverOtpController extends Controller
 
     public function verifyOtpAndLogin(Request $request) {
         $fields=$request->validate([
-            'phone'=>['required',Rule::exists('otps', 'phone'),Rule::unique('users')],
+            'phone'=>['required',Rule::exists('otps', 'phone'),Rule::unique('drivers','phone')],
             'whatsapp_number'=>['nullable','string','min:9','max:15'],
             'password' => ['required','string','min:6','confirmed',],
             'name'=>['required','string','max:100'],

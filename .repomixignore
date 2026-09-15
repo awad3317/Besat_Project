@@ -1,0 +1,17 @@
+# Laravel Cache & Storage
+vendor/**
+node_modules/**
+storage/**
+public/**
+.git/**
+
+# Frontend & Views
+resources/views/**
+resources/js/**
+resources/css/**
+**/*.blade.php
+
+# Routes non-API
+routes/web.php
+routes/console.php
+routes/channels.php
