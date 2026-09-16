@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Drivers;
+namespace App\Livewire\drivers;
 
 use App\Models\Driver;
 use Livewire\Component;
