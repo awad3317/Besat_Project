@@ -18,6 +18,17 @@ class Index extends Component
     public $selectedConversationId = null;
     public $newMessage = '';
 
+    protected $queryString = [
+        'selectedConversationId' => ['except' => null, 'as' => 'c']
+    ];
+
+    public function mount()
+    {
+        if ($this->selectedConversationId) {
+            $this->selectConversation($this->selectedConversationId);
+        }
+    }
+
     public function selectConversation($id): void
     {
         $this->selectedConversationId = (int) $id;

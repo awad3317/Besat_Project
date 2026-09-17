@@ -4,11 +4,11 @@
 
     scrollToBottom() {
         setTimeout(() => {
-            const container = this.$refs.messageContainer;
+            const container = document.getElementById('chatMessagesContainer');
             if (container) {
                 container.scrollTop = container.scrollHeight;
             }
-        }, 50);
+        }, 150);
     },
 
     listenToChannel(conversationId, type) {
@@ -93,14 +93,17 @@
                                 </p>
                             </div>
                             <!-- الوقت + بادج -->
+                            <!-- الوقت + بادج -->
                             <div class="flex flex-col flex-shrink-0 gap-1 items-end pt-0.5">
                                 <span class="text-[8px] text-gray-400 font-medium">
                                     {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
                                 </span>
-                                @if ($unreadCount > 0)
-                                    <span
-                                        class="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-error-500 px-1.5 text-[10px] font-bold text-white shadow-sm shadow-error-500/30">
-                                        {{ $unreadCount > 99 ? '+99' : $unreadCount }}
+
+                                <!-- تم تعديل اسم المتغير هنا -->
+                                @if ($conv->participant_unread_count > 0)
+                                    <span style="min-width: 20px;"
+                                        class="flex h-5 items-center justify-center rounded-full bg-error-500 px-2 text-[10px] font-bold text-white shadow-sm shadow-error-500/30">
+                                        {{ $conv->participant_unread_count > 99 ? '+99' : $conv->participant_unread_count }}
                                     </span>
                                 @endif
                             </div>
@@ -123,7 +126,8 @@
             <div
                 class="flex sticky top-0 z-10 justify-between items-center px-6 py-4 border-b border-gray-200 shadow-sm backdrop-blur-sm dark:border-gray-800 bg-white/95 dark:bg-gray-900/95">
                 <!-- معلومات المستخدم (جهة اليمين) -->
-                <div class="flex gap-3 items-center min-w-0">
+                <a href="{{ $selectedConversation->user ? route('users.show', $selectedConversation->user->id) : ($selectedConversation->driver ? route('drivers.show', $selectedConversation->driver->id) : '#') }}"
+                    class="flex gap-3 items-center min-w-0 transition-opacity hover:opacity-80">
                     <!-- دائرة اسم العميل مع منع الانكماش flex-shrink-0 -->
                     <div
                         class="flex flex-shrink-0 justify-center items-center w-11 h-11 text-sm font-bold rounded-full border shadow-sm bg-brand-500/10 text-brand-500 border-brand-500/20">
@@ -135,9 +139,9 @@
                         <h5 class="text-sm font-bold text-gray-900 truncate dark:text-white">
                             {{ $selectedConversation->user?->name ?? $selectedConversation->driver?->name }}
                         </h5>
-                       
+
                     </div>
-                </div>
+                </a>
 
                 <!-- أزرار الإجراءات والإغلاق (جهة اليسار) -->
                 <div class="flex flex-shrink-0 gap-2 items-center" x-data="{ confirmingClose: false }">
@@ -164,11 +168,17 @@
             </div>
 
             <!-- سجل الرسائل -->
-            <div x-ref="messageContainer"
+            <div id="chatMessagesContainer" wire:key="chat-messages-{{ $selectedConversation->id }}"
                 class="overflow-y-auto relative flex-1 p-6 space-y-6 custom-scrollbar bg-gray-50/30 dark:bg-gray-900/40"
-                x-data="{ pendingMessage: null }" x-init="setTimeout(() => { $el.scrollTop = $el.scrollHeight; }, 50)"
-                @optimistic-message.window="pendingMessage = $event.detail.body; $nextTick(() => { $el.scrollTop = $el.scrollHeight; })"
+                x-data="{
+                    pendingMessage: null,
+                    scrollToBottom() {
+                        setTimeout(() => { $el.scrollTop = $el.scrollHeight; }, 150);
+                    }
+                }" x-init="scrollToBottom()" @scroll-to-bottom.window="scrollToBottom()"
+                @optimistic-message.window="pendingMessage = $event.detail.body; scrollToBottom()"
                 @clear-pending.window="pendingMessage = null">
+
                 @forelse($messages as $msg)
                     @php
                         $isAdmin =
@@ -178,8 +188,9 @@
 
                     <div class="flex flex-col {{ $isAdmin ? 'items-start' : 'items-end' }} max-w-full">
                         <div
-                            class="{{ $isAdmin ? 'bg-brand-500 text-white rounded-2xl rounded-tr-sm shadow-md shadow-brand-500/20' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 dark:border-gray-700' }} px-4 py-3 max-w-[85%] sm:max-w-[75%] relative group">
-                            <p class="text-[14px] leading-relaxed break-words" dir="auto">{{ $msg->body }}</p>
+                            class="{{ $isAdmin ? 'bg-brand-500 text-white rounded-2xl rounded-tr-sm shadow-md shadow-brand-500/20' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 dark:border-gray-700' }} px-4 py-3 max-w-[85%] sm:max-w-[75%] relative group">
+                            <p class="text-[14px] leading-relaxed break-words dark:text-white" dir="auto">
+                                {{ $msg->body }}</p>
                         </div>
                         <span class="text-[10px] text-gray-400 mt-1.5 px-1 flex items-center gap-1">
                             {{ $msg->created_at ? $msg->created_at->locale('ar')->translatedFormat('h:i A') : '' }}
