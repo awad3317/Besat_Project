@@ -129,41 +129,45 @@
             </div>
         </div>
 
-    <!-- أعلى سائق عليه مديونية -->
-<div class="relative flex flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] border border-gray-100 dark:border-gray-800">
-    <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-error-50 dark:bg-error-500/10">
-        <svg class="w-6 h-6 text-error-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-        </svg>
-    </div>
-    <div class="mt-3 w-full">
-        <span class="text-xs text-gray-500 dark:text-gray-400">أعلى سائق عليه مديونية</span>
-        <h4 class="mt-1 text-lg font-bold text-gray-800 truncate dark:text-white/90">
-            {{ $this->stats['highest_indebted_name'] }}
-        </h4>
-        <p class="mt-1 text-sm font-medium text-error-500">
-            {{ number_format($this->stats['highest_indebted_amount'], 2) }} رس
-        </p>
-    </div>
-</div>
+        <!-- أعلى سائق عليه مديونية -->
+        <div
+            class="relative flex flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] border border-brand-500 dark:border-brand-500 border-gray-100 dark:border-gray-800">
+            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-error-50 dark:bg-error-500/10">
+                <svg class="w-6 h-6 text-error-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                </svg>
+            </div>
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">أعلى سائق عليه مديونية</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 truncate dark:text-white/90">
+                    {{ $this->stats['highest_indebted_name'] }}
+                </h4>
+                <p class="mt-1 text-sm font-medium text-error-500">
+                    {{ number_format($this->stats['highest_indebted_amount'], 2) }} رس
+                </p>
+            </div>
+        </div>
 
-<!-- أكثر سائق له مستحقات -->
-<div class="relative flex flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] border border-gray-100 dark:border-gray-800">
-    <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-success-50 dark:bg-success-500/10">
-        <svg class="w-6 h-6 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-        </svg>
-    </div>
-    <div class="mt-3 w-full">
-        <span class="text-xs text-gray-500 dark:text-gray-400">أكثر سائق له مستحقات</span>
-        <h4 class="mt-1 text-lg font-bold text-gray-800 truncate dark:text-white/90">
-            {{ $this->stats['highest_dues_name'] }}
-        </h4>
-        <p class="mt-1 text-sm font-medium text-success-500">
-            {{ number_format($this->stats['highest_dues_amount'], 2) }} رس
-        </p>
-    </div>
-</div>
+        <!-- أكثر سائق له مستحقات -->
+        <div
+            class="relative flex flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] border border-gray-100 dark:border-gray-800">
+            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-success-50 dark:bg-success-500/10">
+                <svg class="w-6 h-6 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+            </div>
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">أكثر سائق له مستحقات</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 truncate dark:text-white/90">
+                    {{ $this->stats['highest_dues_name'] }}
+                </h4>
+                <p class="mt-1 text-sm font-medium text-success-500">
+                    {{ number_format($this->stats['highest_dues_amount'], 2) }} رس
+                </p>
+            </div>
+        </div>
     </div>
     <div class="space-y-5 sm:space-y-6">
         <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -378,15 +382,18 @@
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center">
                                                 @if (is_null($driver->net_balance) || $driver->net_balance == 0)
-                                                    <span class="px-2.5 py-0.5 font-medium rounded-full text-theme-xs bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500">
+                                                    <span
+                                                        class="px-2.5 py-0.5 font-medium rounded-full text-theme-xs bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500">
                                                         مسدد
                                                     </span>
                                                 @elseif ($driver->net_balance > 0)
-                                                    <span class="px-2.5 py-0.5 font-medium rounded-full text-theme-xs bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-500">
+                                                    <span
+                                                        class="px-2.5 py-0.5 font-medium rounded-full text-theme-xs bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-500">
                                                         له {{ number_format($driver->net_balance, 2) }}
                                                     </span>
                                                 @else
-                                                    <span class="px-2.5 py-0.5 font-medium rounded-full text-theme-xs bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
+                                                    <span
+                                                        class="px-2.5 py-0.5 font-medium rounded-full text-theme-xs bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500">
                                                         عليه {{ number_format(abs($driver->net_balance), 2) }}
                                                     </span>
                                                 @endif

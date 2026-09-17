@@ -81,18 +81,18 @@
     @endif
 
     <!-- جدول تصفيات الحسابات -->
-    <div class="p-5 mb-6 bg-white rounded-2xl border border-gray-200 shadow-sm dark:border-gray-800 dark:bg-dark-900 lg:p-6">
+    <div class="p-5 mb-6 rounded-2xl border border-gray-200 shadow-sm bg-dark-800 dark:border-gray-800 dark:bg-dark-800 lg:p-6">
         <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
             
             <div class="flex gap-3 items-center">
-                <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-brand-50 dark:bg-brand-500/10 text-brand-500">
+                <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-brand-50 dark:bg-brand-500 text-brand-500">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="2" y="4" width="20" height="16" rx="2" />
                         <line x1="2" y1="10" x2="22" y2="10" />
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white/90">
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white">
                         تصفيات الحسابات
                     </h3>
                     <p class="text-sm text-gray-500 dark:text-gray-400">سجل عمليات تسوية الحساب المالي للسائق</p>
@@ -104,7 +104,7 @@
                 
                 @if($unsettledStats['trips_count'] > 0 && $unsettledStats['net_balance'] != 0)
                     <button wire:click="openSettlementModal" 
-                        class="inline-flex gap-2 justify-center items-center px-4 py-2 text-sm font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/20 dark:bg-brand-600 dark:hover:bg-brand-500">
+                        class="inline-flex gap-2 justify-center items-center px-4 py-2 text-sm font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/20 dark:bg-brand-500 dark:hover:bg-brand-500">
                         تصفية الحساب
                     </button>
                 @else
@@ -260,7 +260,7 @@
                             إغلاق
                         </button>
                         <button type="submit" wire:loading.attr="disabled" :disabled="isLoading"
-                            class="flex gap-2 justify-center items-center px-4 py-3 w-full text-sm font-medium text-white rounded-lg transition-all hover:bg-brand-600 bg-brand-500 disabled:opacity-75 disabled:cursor-not-allowed">
+                            class="flex gap-2 justify-center items-center px-4 py-3 w-full text-sm font-medium text-white rounded-lg transition-all hover:bg-brand-500 bg-brand-500 disabled:opacity-75 disabled:cursor-not-allowed">
                             <svg wire:loading wire:target="confirmSettlement" class="w-5 h-5 text-white animate-spin"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

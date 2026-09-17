@@ -3,7 +3,7 @@
     <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
         {{-- فلتر: الكل --}}
         <div wire:click.debounce.150ms="applyFilter('all')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('all')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
@@ -23,7 +23,7 @@
         {{-- فلتر: الطلبات الجارية --}}
         <div wire:click.debounce.150ms="applyFilter('in_progress')" wire:loading.class="opacity-50"
             wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'in_progress') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800  @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'in_progress') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('in_progress')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
@@ -46,7 +46,7 @@
         {{-- فلتر: المكتملة --}}
         <div wire:click.debounce.150ms="applyFilter('completed')" wire:loading.class="opacity-50"
             wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'completed') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'completed') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('completed')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
@@ -71,14 +71,14 @@
 
         <div wire:click.debounce.150ms="applyFilter('cancelled')" wire:loading.class="opacity-50"
             wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if($activeFilter == 'cancelled') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'cancelled') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('cancelled')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
             </div>
             <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
-                <svg width="20" height="20" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                    fill="#dc6803">
+                <svg width="20" height="20" viewBox="0 0 512 512" version="1.1"
+                    xmlns="http://www.w3.org/2000/svg" fill="#dc6803">
                     <path
                         d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z">
                     </path>
@@ -108,7 +108,8 @@
             </div>
         </div>
 
-        <div wire:loading.class="opacity-50" wire:target="search,applyFilter" class="overflow-x-auto max-w-full table-responsive-container">
+        <div wire:loading.class="opacity-50" wire:target="search,applyFilter"
+            class="overflow-x-auto max-w-full table-responsive-container">
             <table class="min-w-full">
                 <thead>
                     <tr class="border-gray-100 border-y dark:border-gray-800">
@@ -142,10 +143,11 @@
                     @forelse ($this->requests as $request)
                         <tr wire:key="request-{{ $request->id }}">
                             <td class="py-3">
-                                <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">{{ $request->id }}</p>
+                                <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
+                                    {{ $request->id }}</p>
                             </td>
                             <td class="py-3">
-                                @if($request->driver)
+                                @if ($request->driver)
                                     <div class="flex gap-3 items-center">
                                         <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
                                             <img src="{{ $request->driver->driver_image ? url($request->driver->driver_image) : asset('tailadmin/build/src/images/user/SO.jpg') }}"
@@ -159,25 +161,33 @@
                                         </div>
                                     </div>
                                 @else
-                                    <button 
-                                        wire:click="openAssignDriverModal({{ $request->id }})"
+                                    <button wire:click="openAssignDriverModal({{ $request->id }})"
                                         wire:loading.attr="disabled"
-                                        class="inline-flex gap-1 items-center px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait"
-                                    >
-                                        <svg wire:loading.remove wire:target="openAssignDriverModal({{ $request->id }})" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        class="inline-flex gap-1 items-center px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait">
+                                        <svg wire:loading.remove
+                                            wire:target="openAssignDriverModal({{ $request->id }})"
+                                            xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="8.5" cy="7" r="4"></circle>
-                                            <line x1="20" y1="8" x2="20" y2="14"></line>
-                                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                                            <line x1="20" y1="8" x2="20" y2="14">
+                                            </line>
+                                            <line x1="23" y1="11" x2="17" y2="11">
+                                            </line>
                                         </svg>
-                                        <div wire:loading wire:target="openAssignDriverModal({{ $request->id }})" class="w-3.5 h-3.5 rounded-full border-2 border-gray-500 animate-spin border-t-transparent dark:border-gray-400"></div>
-                                        <span wire:loading.remove wire:target="openAssignDriverModal({{ $request->id }})">تعيين سائق</span>
-                                        <span wire:loading wire:target="openAssignDriverModal({{ $request->id }})">جاري...</span>
+                                        <div wire:loading wire:target="openAssignDriverModal({{ $request->id }})"
+                                            class="w-3.5 h-3.5 rounded-full border-2 border-gray-500 animate-spin border-t-transparent dark:border-gray-400">
+                                        </div>
+                                        <span wire:loading.remove
+                                            wire:target="openAssignDriverModal({{ $request->id }})">تعيين سائق</span>
+                                        <span wire:loading
+                                            wire:target="openAssignDriverModal({{ $request->id }})">جاري...</span>
                                     </button>
                                 @endif
                             </td>
                             <td class="py-3">
-                                @if($request->user)
+                                @if ($request->user)
                                     <div class="flex gap-3 items-center">
                                         <div>
                                             <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
@@ -201,10 +211,10 @@
                                 </p>
                             </td>
                             <td class="py-3">
-                                @if($request->vehicle)
+                                @if ($request->vehicle)
                                     <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
                                         {{ $request->vehicle->type }}</p>
-                                    @else
+                                @else
                                     <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
                                         غير محدد
                                     </p>
@@ -242,7 +252,8 @@
                                         <!-- عرض التفاصيل -->
                                         <a href="{{ route('request.show', $request->id) }}"
                                             class="actions-dropdown-item">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                stroke-width="2" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -250,6 +261,26 @@
                                             </svg>
                                             عرض التفاصيل
                                         </a>
+
+                                        <!-- محادثة مع العميل -->
+                                        <button wire:click="startChatWithCustomer({{ $request->id }})"
+                                            class="actions-dropdown-item text-brand-600 dark:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/20">
+                                            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                            </svg>
+                                            محادثة مع العميل
+                                        </button>
+
+                                        @if($request->driver_id)
+                                        <!-- محادثة السائق -->
+                                        <button wire:click="startChatWithDriver({{ $request->id }})"
+                                            class="actions-dropdown-item text-blue-light-600 dark:text-blue-light-500 hover:bg-blue-light-50 dark:hover:bg-blue-light-950/20">
+                                            <svg class="w-4 h-4 text-blue-light-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                            </svg>
+                                            محادثة السائق
+                                        </button>
+                                        @endif
 
                                     </div>
                                 </div>
@@ -274,5 +305,6 @@
         @endif
     </div>
 
-    @include('livewire.request.assign-driver-modal')
+     <livewire:request.assign-driver-modal />
+
 </div>

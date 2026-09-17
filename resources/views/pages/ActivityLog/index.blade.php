@@ -13,8 +13,8 @@
         {{-- إجمالي النشاطات --}}
         <div
             class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-brand-50 dark:bg-gray-800">
-                <svg class="w-5 h-5 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" stroke-width="2.5"
+            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
+                <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" stroke-width="2.5"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -30,8 +30,8 @@
         {{-- نشاطات اليوم --}}
         <div
             class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-success-50 dark:bg-gray-800">
-                <svg class="w-5 h-5 text-success-600 dark:text-success-400" fill="none" stroke="currentColor"
+            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
+                <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor"
                     stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -63,8 +63,8 @@
         {{-- نشاطات الأسبوع الماضي --}}
         <div
             class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-blue-light-50 dark:bg-gray-800">
-                <svg class="w-5 h-5 text-blue-light-600 dark:text-blue-light-400" fill="none" stroke="currentColor"
+            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
+                <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor"
                     stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />

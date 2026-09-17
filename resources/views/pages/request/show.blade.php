@@ -210,7 +210,7 @@
                     <div class="relative px-2">
                         <!-- Start Point -->
                         <div class="pb-8 timeline-item">
-                            <div class="border-green-500 timeline-dot"></div>
+                            <div class="border-success-500 timeline-dot"></div>
                             <div class="flex flex-col">
                                 <span class="mb-1 text-xs text-gray-500">نقطة الانطلاق</span>
                                 <p class="font-medium text-gray-800 dark:text-white">{{ $request->start_address }}</p>
@@ -257,7 +257,7 @@
 
                         <!-- End Point -->
                         <div class="pb-0 border-none timeline-item">
-                            <div class="border-red-500 timeline-dot"></div>
+                            <div class="border-error-500 timeline-dot"></div>
                             <div class="flex flex-col">
                                 <span class="mb-1 text-xs text-gray-500">نقطة الوصول</span>
                                 <p class="font-medium text-gray-800 dark:text-white">{{ $request->end_address }}</p>
@@ -628,12 +628,12 @@
 
                 if (point.type === 'start') {
                     iconUrl =
-                        'https://maps.google.com/mapfiles/ms/icons/green-dot.png';
+                        'https://maps.google.com/mapfiles/ms/icons/success-dot.png';
                 }
 
                 if (point.type === 'end') {
                     iconUrl =
-                        'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                        'https://maps.google.com/mapfiles/ms/icons/error-dot.png';
                 }
 
                 const marker =

@@ -180,7 +180,7 @@
                                     <td class="py-3">
                                         <div class="flex items-center">
                                             <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                {{ $request->price }}
+                                                {{ $request->final_price . ' ري ' }}
                                             </p>
                                         </div>
                                     </td>
