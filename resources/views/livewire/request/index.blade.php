@@ -305,6 +305,6 @@
         @endif
     </div>
 
-     <livewire:request.assign-driver-modal />
+     @include('livewire.request.assign-driver-modal')
 
 </div>

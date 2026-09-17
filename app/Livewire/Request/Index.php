@@ -159,6 +159,32 @@ class Index extends Component
         $this->dispatch('driver-assigned');
     }}
 
+    public function startChatWithCustomer($requestId)
+    {
+        $request = RequestModel::find($requestId);
+        if (!$request || !$request->user_id) return;
+        
+        $conversation = \App\Models\Conversation::firstOrCreate(
+            ['user_id' => $request->user_id, 'type' => 'support'],
+            ['status' => 'open']
+        );
+
+        return redirect()->route('chats.index', ['c' => $conversation->id]);
+    }
+
+    public function startChatWithDriver($requestId)
+    {
+        $request = RequestModel::find($requestId);
+        if (!$request || !$request->driver_id) return;
+        
+        $conversation = \App\Models\Conversation::firstOrCreate(
+            ['driver_id' => $request->driver_id, 'type' => 'support'],
+            ['status' => 'open']
+        );
+
+        return redirect()->route('chats.index', ['c' => $conversation->id]);
+    }
+
     public function clearSelectedRequest()
     {
         $this->selectedRequestId = null;
