@@ -8,6 +8,7 @@ use App\Repositories\UserRepository;
 use App\Services\UserAccountService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
@@ -77,7 +78,12 @@ class UserController extends Controller
             if (!$user) {
                 return ApiResponseClass::sendError('المستخدم غير موجود', [], 401);
             }
-           $this->userAccountService->deleteAccount($user);
+            DB::transaction(function () use ($user) {
+                $tokenIds = $user->tokens()->pluck('id');
+                DB::table('user_devices')->whereIn('token_id', $tokenIds)->delete();
+                $user->tokens()->delete();
+                $user->delete();
+            });
             return ApiResponseClass::sendResponse([], 'تم حذف الحساب بنجاح.');
         }catch(Exception $e){
             Log::error('Error deleting user account: ' . $e->getMessage());
