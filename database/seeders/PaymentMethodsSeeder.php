@@ -11,8 +11,8 @@ class PaymentMethodsSeeder extends Seeder
     public function run(): void
     {
         $yer = Currency::firstOrCreate(['code' => 'YER'], ['name' => 'ريال يمني']);
-        $usd = Currency::firstOrCreate(['code' => 'USD'], ['name' => 'دولار أمريكي']);
         $sar = Currency::firstOrCreate(['code' => 'SAR'], ['name' => 'ريال سعودي']);
+        $usd = Currency::firstOrCreate(['code' => 'USD'], ['name' => 'دولار أمريكي']);
 
         $qutaibi = Bank::create([
             'method_key' => 'qutaibi_pay',
@@ -21,7 +21,7 @@ class PaymentMethodsSeeder extends Seeder
             'color' => '#AEC737',
             'is_active' => true,
         ]);
-        $qutaibi->currencies()->attach([$yer->id, $usd->id, $sar->id]);
+        $qutaibi->currencies()->attach([$yer->id, $sar->id, $usd->id]);
 
         $step1 = $qutaibi->steps()->create([
             'step_key' => 'request_otp',
@@ -51,7 +51,7 @@ class PaymentMethodsSeeder extends Seeder
                 'type' => 'numeric',
                 'min_length' => 4,
                 'max_length' => 8,
-                'is_hidden' => true,
+                'is_hidden' => false,
                 'default_value' => ''
             ]
         ]);
