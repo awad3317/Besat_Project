@@ -56,10 +56,11 @@ return [
     ],
     
     'qutaibi' => [
-        'app_key' => env('ALQUTAIBIBANK_APP_KEY'),
-        'api_key' => env('ALQUTAIBIBANK_API_KEY'),
-        'payment_destination' => env('ALQUTAIBIBANK_PAYMENT_DESTINATION'),
-        'base_url'=> env('ALQUTAIBIBANK_BASE_URL', 'https://newdc.qtb-bank.com:5052/BillPayLive'),
+        'base_url' => env('ALQUTAIBIBANK_BASE_URL', 'https://newdc.qtb-bank.com:5052/BillPayLive'),
+        'api_key' => env('ALQUTAIBIBANK_API_KEY', 'xnxhSBh1KXXgHiMa'),
+        'app_key' => env('ALQUTAIBIBANK_APP_KEY', '0123335Uzi4RTestUmnuuumffUp'),
+        'destination' => (int) env('ALQUTAIBIBANK_PAYMENT_DESTINATION', 11250875),
+        'encrypted_customer_no' => env('ALQUTAIBIBANK_CUSTOMER_NO', 'Batwy3YPl8D2ZVoucGQmkw=='),
     ],
 
 
