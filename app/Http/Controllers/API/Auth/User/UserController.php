@@ -78,12 +78,8 @@ class UserController extends Controller
             if (!$user) {
                 return ApiResponseClass::sendError('المستخدم غير موجود', [], 401);
             }
-            DB::transaction(function () use ($user) {
-                $tokenIds = $user->tokens()->pluck('id');
-                DB::table('user_devices')->whereIn('token_id', $tokenIds)->delete();
-                $user->tokens()->delete();
-                $user->delete();
-            });
+           
+            $this->userAccountService->deleteAccount($user);
             return ApiResponseClass::sendResponse([], 'تم حذف الحساب بنجاح.');
         }catch(Exception $e){
             Log::error('Error deleting user account: ' . $e->getMessage());

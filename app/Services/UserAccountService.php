@@ -29,11 +29,13 @@ class UserAccountService
             if ($user->image) {
                 $this->imageService->deleteImage($user->image);
             }
-
-            $user->tokens()->delete();
-            $user->devices()->delete();
+            DB::transaction(function () use ($user) {
+                $tokenIds = $user->tokens()->pluck('id');
+                DB::table('user_devices')->whereIn('token_id', $tokenIds)->delete();
+                $user->tokens()->delete();
+                $user->delete();
+            });
             $user->favoritePlaces()->delete();
-
             $timestamp = now()->timestamp;
             $user->update([
                 'name'                     => 'مستخدم محذوف',
