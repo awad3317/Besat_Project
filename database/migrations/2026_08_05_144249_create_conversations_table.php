@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->enum('type', ['support', 'request'])->default('request');
             $table->foreignId('request_id')->nullable()->constrained('requests')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); 
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); 
             $table->foreignId('driver_id')->nullable()->constrained('drivers')->onDelete('cascade'); 
             $table->foreignId('assigned_admin_id')->nullable()->constrained('users')->onDelete('set null'); 
             $table->enum('status', ['open', 'closed'])->default('open');
