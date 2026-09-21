@@ -3,7 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Conversation;
+use App\Models\Driver;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class ChatRepository
@@ -29,24 +31,44 @@ class ChatRepository
     /**
      * الحصول على محادثة الدعم الفني الخاصة بالمستخدم أو إنشاؤها.
      */
-    public function getOrCreateSupportConversation(int $userId): Conversation
+    /**
+     * الحصول على محادثة الدعم الفني الخاصة بالمستخدم أو السائق أو إنشاؤها.
+     * تقبل Model السائق أو المستخدم
+     *
+     * @param User|Driver $sender
+     * @return Conversation
+     */
+    public function getOrCreateSupportConversation(User|Driver $sender): Conversation
     {
+        $isDriver = $sender instanceof Driver;
+
+        $attributes = [
+            'type'   => 'support',
+            'status' => 'open',
+        ];
+
+        if ($isDriver) {
+            $attributes['driver_id'] = $sender->id;
+            $attributes['user_id']   = null;
+        } else {
+            $attributes['user_id']   = $sender->id;
+            $attributes['driver_id'] = null;
+        }
+
         return Conversation::firstOrCreate(
+            $attributes,
             [
-                'type' => 'support',
-                'user_id'=> $userId,
-                'status' => 'open',
+                'status'                   => 'open',
+                'user_unread_count'        => 0,
+                'participant_unread_count' => 0,
             ]
         );
     }
 
-    /**
-     * حفظ الرسالة الجديدة وتحديث إحصائيات المحادثة تزامناً.
-     */
     public function storeMessage(Conversation $conversation, object $sender, array $data): Message
     {
         return DB::transaction(function () use ($conversation, $sender, $data) {
-            // 1. حفظ الرسالة
+            // 1. حفظ الرسالة (Polymorphic sender)
             $message = $conversation->messages()->create([
                 'sender_type'     => get_class($sender),
                 'sender_id'       => $sender->id,
@@ -62,11 +84,29 @@ class ChatRepository
                 'last_message_at' => $message->created_at,
             ];
 
-            // زيادة العداد بحسب الطرف المستلِم
-            if (get_class($sender) === \App\Models\User::class && $sender->id === $conversation->user_id) {
-                $updateData['participant_unread_count'] = DB::raw('participant_unread_count + 1');
+            // تحديد طرف الإرسال لتحديث العداد الصحيح
+            $isCustomerOrDriverOwner = false;
+
+            if ($conversation->type === 'support') {
+                // إذا كان المرسل هو صاحب المحادثة (العميل أو السائق)، فإن الإشعار يذهب للإدارة
+                if ($conversation->driver_id && get_class($sender) === Driver::class && $sender->id === $conversation->driver_id) {
+                    $isCustomerOrDriverOwner = true;
+                } elseif ($conversation->user_id && get_class($sender) === User::class && $sender->id === $conversation->user_id) {
+                    $isCustomerOrDriverOwner = true;
+                }
+
+                if ($isCustomerOrDriverOwner) {
+                    $updateData['participant_unread_count'] = DB::raw('participant_unread_count + 1'); // المشرف
+                } else {
+                    $updateData['user_unread_count'] = DB::raw('user_unread_count + 1'); // صاحب الشات
+                }
             } else {
-                $updateData['user_unread_count'] = DB::raw('user_unread_count + 1');
+                // محادثات الرحلات العادية (Request)
+                if (get_class($sender) === User::class && $sender->id === $conversation->user_id) {
+                    $updateData['participant_unread_count'] = DB::raw('participant_unread_count + 1');
+                } else {
+                    $updateData['user_unread_count'] = DB::raw('user_unread_count + 1');
+                }
             }
 
             $conversation->update($updateData);
@@ -74,21 +114,21 @@ class ChatRepository
             return $message;
         });
     }
-
     /**
      * تصفير العداد وتحديث حالة القراءة عند فتح الشات.
      */
     public function markAsRead(Conversation $conversation, object $user): void
     {
-        $isUser = get_class($user) === \App\Models\User::class && $user->id === $conversation->user_id;
+        $isUser = get_class($user) === User::class && $user->id === $conversation->user_id;
+        $isDriver = get_class($user) === Driver::class && $user->id === $conversation->driver_id;
 
-        if ($isUser) {
+        if ($isUser || $isDriver) {
             $conversation->update(['user_unread_count' => 0]);
         } else {
             $conversation->update(['participant_unread_count' => 0]);
         }
 
-        // تحديث read_at للرسائل القادمة من الطرف الآخر فقط
+        // تحديث read_at للرسائل القادمة من الطرف الآخر
         $conversation->messages()
             ->where('sender_type', '!=', get_class($user))
             ->whereNull('read_at')

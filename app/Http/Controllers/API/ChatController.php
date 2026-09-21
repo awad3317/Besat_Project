@@ -92,14 +92,21 @@ class ChatController extends Controller
     /**
      * فتح محادثة الدعم الفني للمستخدم الحالي
      */
+    /**
+     * فتح محادثة الدعم الفني للمستخدم الحالي أو السائق الحالي
+     */
     public function openSupportChat(Request $request)
     {
         try {
             $user = auth('sanctum')->user();
-            if (get_class($user) !== User::class) {
-                return ApiResponseClass::sendError('هذه الخدمة متاحة للمستخدمين فقط', null, 403);
+
+            // التحقق أن المتصل إما User أو Driver
+            if (!($user instanceof User) && !($user instanceof Driver)) {
+                return ApiResponseClass::sendError('غير مصرح لك بالوصول لخدمة الدعم الفني', null, 403);
             }
-            $conversation = $this->chatRepository->getOrCreateSupportConversation($user->id);
+
+            $conversation = $this->chatRepository->getOrCreateSupportConversation($user);
+
             return ApiResponseClass::sendResponse($conversation, 'محادثة الدعم الفني جاهزة');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('فشل فتح محادثة الدعم', $e->getMessage(), 500);

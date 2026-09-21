@@ -27,8 +27,9 @@ Broadcast::channel('chat.support.{conversationId}', function ($user, $conversati
 
     $isOwner = get_class($user) === \App\Models\User::class && $user->id === $conversation->user_id;
     $isAdmin = get_class($user) === \App\Models\User::class && $user->type === 'admin';
+    $isDriverOwner = get_class($user) === \App\Models\Driver::class && $user->id === $conversation->driver_id;
 
-    return $isOwner || $isAdmin;
+    return $isOwner || $isAdmin || $isDriverOwner;
 });
 Broadcast::channel('tracking.request.{requestId}', function ($user, $requestId) {
     $rideRequest = RideRequest::find($requestId);
