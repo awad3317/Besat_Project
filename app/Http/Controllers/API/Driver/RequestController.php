@@ -105,7 +105,7 @@ class RequestController extends Controller
                     ]);
                     
                     Conversation::where('request_id', $trip->id)
-                        ->where('type', 'request')
+                        ->where('status', 'open')
                         ->update(['status' => 'closed']);
 
                     if ($trip->user){

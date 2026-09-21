@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Conversation;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Request extends Model
@@ -56,10 +57,18 @@ class Request extends Model
     {
         return $this->belongsTo(Bank::class);
     }
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'request_id');
+    }
     public function conversation(): HasOne
     {
-        return $this->hasOne(Conversation::class, 'request_id')->where('type', 'request');
-    }   
+        return $this->hasOne(Conversation::class, 'request_id')
+            ->where('type', 'request')
+            ->where('status', 'open')
+            ->whereColumn('driver_id', 'requests.driver_id')
+            ->latestOfMany();
+    } 
 
     public function discountCode()
     {
