@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Conversation;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Request extends Model
@@ -53,6 +55,10 @@ class Request extends Model
     public function bank()
     {
         return $this->belongsTo(Bank::class);
+    }
+    public function conversation(): HasOne
+    {
+        return $this->hasOne(Conversation::class, 'request_id')->where('type', 'request');
     }   
 
     public function discountCode()

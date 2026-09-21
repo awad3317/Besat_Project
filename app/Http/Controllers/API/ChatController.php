@@ -76,6 +76,9 @@ class ChatController extends Controller
             if (!$isOwner) {
                 return ApiResponseClass::sendError('غير مصرح لك بالإرسال في هذه المحادثة', [], 403);
             }
+            if ($conversation->status === 'closed') {
+                return ApiResponseClass::sendError('تم إغلاق هذه المحادثة لانتهاء الرحلة.', null, 400);
+            }
             $data = $validator->validated();
             if ($request->hasFile('attachment')) {
                 $folder = $data['type'] === 'image' ? 'chat/images' : 'chat/audio';

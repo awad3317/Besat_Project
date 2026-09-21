@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Broadcast;
 use App\Models\Conversation;
+use App\Models\Driver;
 use App\Models\Request as RideRequest;
+use App\Models\User;
+use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
@@ -10,12 +12,12 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 
 Broadcast::channel('chat.request.{conversationId}', function ($user, $conversationId) {
     $conversation = Conversation::find($conversationId);
-    if (!$conversation || $conversation->type !== 'request') { // ✅ القيمة الصحيحة هي 'request'
+    if (!$conversation || $conversation->type !== 'request') {
         return false;
     }
 
-    $isUser = get_class($user) === \App\Models\User::class && $user->id === $conversation->user_id;
-    $isDriver = get_class($user) === \App\Models\Driver::class && $user->id === $conversation->driver_id;
+    $isUser = ($user instanceof User && $user->id === $conversation->user_id);
+    $isDriver = ($user instanceof Driver && $user->id === $conversation->driver_id);
 
     return $isUser || $isDriver;
 });

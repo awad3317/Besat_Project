@@ -4,8 +4,11 @@ namespace App\Http\Controllers\API\Driver;
 
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
+use App\Models\Conversation;
 use App\Models\Request as TripRequest;
+use App\Notifications\TripAcceptedNotification;
 use App\Notifications\TripCancelledNotification;
+use App\Repositories\ChatRepository;
 use App\Repositories\DriverRepository;
 use App\Repositories\RequestRepository;
 use App\Services\FirebaseService;
@@ -20,7 +23,8 @@ class RequestController extends Controller
     public function __construct(
         private DriverRepository $driverRepository,
         private RequestRepository $requestRepository,
-        private FirebaseService $firebaseService) 
+        private FirebaseService $firebaseService,
+        private ChatRepository $chatRepository) 
     {}
     public function updateTripStatus(Request $request)
     {
@@ -45,6 +49,7 @@ class RequestController extends Controller
                 if (in_array($trip->status, ['completed', 'cancelled'])) {
                     return ApiResponseClass::sendError("لا يمكن تعديل حالة رحلة منتهية ({$trip->status}).", null, 400);
                 }
+                
                 if ($targetStatus === 'accepted'){
                     if (!in_array($trip->status, ['searching_driver', 'pending'])) {
                         return ApiResponseClass::sendError('لا يمكن قبول هذه الرحلة لأنها ليست قيد البحث عن سائق.', null, 400);
@@ -56,20 +61,53 @@ class RequestController extends Controller
                         'driver_id' => $driver->id,
                         'status' => 'accepted',
                     ]);
-                    return ApiResponseClass::sendResponse($trip->fresh(), 'تم قبول الرحلة بنجاح.');
+                    $conversation = $this->chatRepository->getOrCreateOrderConversation(
+                        $trip->id,
+                        $trip->user_id,
+                        $driver->id
+                    );
+                    if ($trip->user){
+                        if ($trip->user->is_notifications_enabled) {
+                            $trip->user->notify(new TripAcceptedNotification($trip, $conversation->id));
+                        }
+                    }
+                    $deviceTokens = $trip->user->devices->pluck('device_token')->filter()->toArray();
+                    foreach ($deviceTokens as $token){
+                        try {
+                            $this->firebaseService->sendNotification(
+                                    $token,
+                                    'تم قبول الرحلة!',
+                                    'الكابتن ' . $driver->name . ' في طريقه إليك الآن.',
+                                    [
+                                        'request_id'=> (string) $trip->id,
+                                        'conversation_id' => (string) $conversation->id,
+                                        'status'=> 'accepted',
+                                    ]
+                                );
+                        }catch(Exception $e){
+                            Log::error("FCM Driver accept trip Error: " . $e->getMessage());
+                        }
+                    }
+                    $responseData = $trip->fresh()->toArray();
+                    $responseData['conversation_id'] = $conversation->id;
+                    return ApiResponseClass::sendResponse($responseData, 'تم قبول الرحلة بنجاح.');
                 }
                 if ($trip->driver_id !== $driver->id) {
                     return ApiResponseClass::sendError('غير مصرح لك بتحديث حالة هذه الرحلة.', null, 403);
                 }
-
                 if ($targetStatus === 'cancelled') {
                     if ($trip->status === 'on_trip') {
                         return ApiResponseClass::sendError('لا يمكن إلغاء الرحلة أثناء سيرها (في الطريق).', null, 400);
                     }
                     $trip->update([
-                        'status'       => 'cancelled',
+                        'status' => 'cancelled',
                         'cancelled_by' => null, 
                     ]);
+                    
+                    Conversation::where('request_id', $trip->id)
+                        ->where('type', 'request')
+                        ->update(['status' => 'closed']);
+
                     if ($trip->user){
                         if ($trip->user->is_notifications_enabled) {
                             $trip->user->notify(new TripCancelledNotification($trip));

@@ -199,11 +199,13 @@ class RequestController extends Controller
                 'stops:id,request_id,latitude,longitude,stop_order',
                 'surcharges:id,name,amount',
                 'driver:id,vehicle_id,name,phone,vehicle_image,driver_image,city,plate_number,whatsapp_number,latitude,longitude,is_online',
-                'vehicle:id,type'
+                'vehicle:id,type',
+                'conversation:id,request_id',
             ]);
             if (!$requestModel) {
                 return ApiResponseClass::sendError('الطلب غير موجود أو غير مصرح لك بالوصول إليه.', null, 404);
             }
+            $requestModel->setAttribute('conversation_id', $requestModel->conversation?->id);
             if ($requestModel->driver) {
                 $ratingStats = $this->ratingService->getDriverAverageRating($requestModel->driver->id);
                 $requestModel->driver->setAttribute('rating', $ratingStats);
