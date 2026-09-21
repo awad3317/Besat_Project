@@ -40,6 +40,8 @@ Route::middleware(['auth.sanctum.api'])->group(function () {
         Route::post('notifications/markAllAsRead', [NotificationController::class, 'markAllAsRead']);
         Route::get('/conversations/{conversationId}/messages', [ChatController::class, 'getMessages']);
         Route::post('/send-message', [ChatController::class, 'sendMessage']);
+        Route::post('/support/open', [ChatController::class, 'openSupportChat']);
+        Route::post('/order/open', [ChatController::class, 'openOrderChat']);
 });
 
 // Routes For Users only
@@ -68,8 +70,8 @@ Route::middleware(['auth.sanctum.api', 'user'])->group(function () {
         // Service Booking Routes - حجوزات الخدمات
         Route::apiResource('/user/service-bookings', ServiceBookingController::class);
         Route::post('/user/service-bookings/{id}/cancel', [ServiceBookingController::class, 'cancel']);
-        Route::post('/support/open', [ChatController::class, 'openSupportChat']);
-        Route::post('/order/open', [ChatController::class, 'openOrderChat']);
+        // Route::post('/support/open', [ChatController::class, 'openSupportChat']);
+        // Route::post('/order/open', [ChatController::class, 'openOrderChat']);
 });
 
 // Routes For Drivers only
@@ -84,6 +86,7 @@ Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
         Route::post('/driver/requests/update-status', [DriverRequestController::class, 'updateTripStatus']);
         Route::get('/driver/financial-summary', [DriverController::class, 'getFinancialSummary']);
         Route::get('/driver/statistics', [DriverController::class, 'getDriverStats']);
+        
 });
         //           Auth Route For User          //
 Route::post('/user/register',[UserAuthController::class,'register']);
