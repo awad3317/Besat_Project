@@ -66,9 +66,8 @@ class Request extends Model
         return $this->hasOne(Conversation::class, 'request_id')
             ->where('type', 'request')
             ->where('status', 'open')
-            ->whereColumn('driver_id', 'requests.driver_id')
             ->latestOfMany();
-    } 
+    }
 
     public function discountCode()
     {
