@@ -121,8 +121,24 @@ class DriverController extends Controller
     public function allRequest()
     {
         try {
+            /** @var \App\Models\Driver $driver */
             $driver = auth('sanctum')->user();
-            $orders = $driver->requests()->get(); 
+            $orders = $driver->requests()
+                ->with([
+                    'user:id,name,phone,image', 
+                    'stops:id,request_id,latitude,longitude,stop_order', 
+                    'conversation' => function ($query) use ($driver) {
+                        $query->where('type', 'request')
+                              ->where('driver_id', $driver->id);
+                    }
+                ])
+                ->latest('id')
+                ->get()
+                ->map(function ($order) {
+                    // إرفاق معرف المحادثة مباشرة في كل طلب
+                    $order->setAttribute('conversation_id', $order->conversation?->id);
+                    return $order;
+                }); 
             return ApiResponseClass::sendResponse($orders, 'تم جلب طلبات السائق بنجاح.');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('حدث خطأ أثناء جلب الطلبات.', $e->getMessage(), 500);
