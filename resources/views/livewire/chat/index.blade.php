@@ -41,15 +41,41 @@
     <!-- ====== 1. القائمة الجانبية للمحادثات (جهة اليمين) ====== -->
     <div class="bg-white border border-gray-200 chat-sidebar dark:border-gray-800 dark:bg-gray-900">
 
-        <!-- الهيدر + إجمالي + البحث + التبويبات -->
-        <div class="p-4 space-y-3 border-b border-gray-100 dark:border-gray-800">
-            <div class="flex justify-between items-center">
+        <!-- الهيدر + إجمالي + التبويبات -->
+        <div class="p-4 space-y-4 border-b border-gray-100 dark:border-gray-800">
+            <!-- العنوان وإجمالي المحادثات -->
+            <div class="flex justify-between items-center mb-2">
                 <h3 class="text-sm font-bold text-gray-800 dark:text-white/90">
                     المحادثات المباشرة
                 </h3>
                 <span class="rounded-full bg-brand-500/10 px-2.5 py-0.5 text-[11px] font-bold text-brand-500">
                     إجمالي: {{ $totalCount }}
                 </span>
+            </div>
+
+            <!-- نظام التابات الأفقي -->
+            <div class="flex p-1 bg-gray-100 rounded-lg shadow-inner dark:bg-gray-800/80">
+                <!-- تاب العملاء -->
+                <button wire:click="switchTab('clients')" 
+                    class="flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-md transition-all duration-200 {{ $activeTab === 'clients' ? 'bg-white text-brand-500 shadow-sm dark:bg-gray-700 dark:text-brand-400' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700/50' }}">
+                    <span>العملاء</span>
+                    @if($clientsUnread > 0)
+                        <span class="flex items-center justify-center w-5 h-5 text-[10px] text-white bg-brand-500 rounded-full shadow-sm shadow-brand-500/30">
+                            {{ $clientsUnread > 99 ? '+99' : $clientsUnread }}
+                        </span>
+                    @endif
+                </button>
+
+                <!-- تاب السائقين -->
+                <button wire:click="switchTab('drivers')" 
+                    class="flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-md transition-all duration-200 {{ $activeTab === 'drivers' ? 'bg-white text-brand-500 shadow-sm dark:bg-gray-700 dark:text-brand-400' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700/50' }}">
+                    <span>السائقين</span>
+                    @if($driversUnread > 0)
+                        <span class="flex items-center justify-center w-5 h-5 text-[10px] text-white bg-brand-500 rounded-full shadow-sm shadow-brand-500/30">
+                            {{ $driversUnread > 99 ? '+99' : $driversUnread }}
+                        </span>
+                    @endif
+                </button>
             </div>
         </div>
 
@@ -101,10 +127,14 @@
 
                                 <!-- تم تعديل اسم المتغير هنا -->
                                 @if ($conv->participant_unread_count > 0)
-                                    <span style="min-width: 20px;"
-                                        class="flex h-5 items-center justify-center rounded-full bg-error-500 px-2 text-[10px] font-bold text-white shadow-sm shadow-error-500/30">
-                                        {{ $conv->participant_unread_count > 99 ? '+99' : $conv->participant_unread_count }}
-                                    </span>
+                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                        <!-- النقطة الزرقاء الصغيرة -->
+                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/40"></span>
+                                        <span style="min-width: 20px;"
+                                            class="flex h-5 items-center justify-center rounded-full bg-brand-500 px-2 text-[10px] font-bold text-white shadow-sm shadow-brand-500/30">
+                                            {{ $conv->participant_unread_count > 99 ? '+99' : $conv->participant_unread_count }}
+                                        </span>
+                                    </div>
                                 @endif
                             </div>
                         </div>

@@ -165,11 +165,11 @@ class Index extends Component
         if (!$request || !$request->user_id) return;
         
         $conversation = \App\Models\Conversation::firstOrCreate(
-            ['user_id' => $request->user_id, 'type' => 'support'],
+            ['user_id' => $request->user_id, 'driver_id' => null, 'type' => 'support'],
             ['status' => 'open']
         );
 
-        return redirect()->route('chats.index', ['c' => $conversation->id]);
+        return redirect()->route('chats.index', ['c' => $conversation->id, 'tab' => 'clients']);
     }
 
     public function startChatWithDriver($requestId)
@@ -178,11 +178,11 @@ class Index extends Component
         if (!$request || !$request->driver_id) return;
         
         $conversation = \App\Models\Conversation::firstOrCreate(
-            ['driver_id' => $request->driver_id, 'type' => 'support'],
+            ['driver_id' => $request->driver_id, 'user_id' => null, 'type' => 'support'],
             ['status' => 'open']
         );
 
-        return redirect()->route('chats.index', ['c' => $conversation->id]);
+        return redirect()->route('chats.index', ['c' => $conversation->id, 'tab' => 'drivers']);
     }
 
     public function clearSelectedRequest()

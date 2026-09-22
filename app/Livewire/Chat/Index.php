@@ -17,9 +17,11 @@ class Index extends Component
 
     public $selectedConversationId = null;
     public $newMessage = '';
+    public $activeTab = 'clients'; // 'clients' or 'drivers'
 
     protected $queryString = [
-        'selectedConversationId' => ['except' => null, 'as' => 'c']
+        'selectedConversationId' => ['except' => null, 'as' => 'c'],
+        'activeTab' => ['except' => 'clients', 'as' => 'tab'],
     ];
 
     public function mount()
@@ -27,6 +29,12 @@ class Index extends Component
         if ($this->selectedConversationId) {
             $this->selectConversation($this->selectedConversationId);
         }
+    }
+
+    public function switchTab($tab)
+    {
+        $this->activeTab = $tab;
+        $this->resetPage();
     }
 
     public function selectConversation($id): void
@@ -140,15 +148,21 @@ class Index extends Component
 
     public function render()
     {
-        $conversations = Conversation::query()
+        $query = Conversation::query()
             ->select(['id', 'user_id', 'driver_id', 'type', 'last_message_id', 'last_message_at', 'participant_unread_count', 'updated_at'])
             ->with([
                 'user:id,name,phone',
                 'driver:id,name,phone',
                 'lastMessage:id,body,created_at'
-            ])
-            ->orderBy('updated_at', 'desc')
-            ->paginate(25);
+            ]);
+
+        if ($this->activeTab === 'clients') {
+            $query->whereNotNull('user_id');
+        } else {
+            $query->whereNotNull('driver_id')->whereNull('user_id');
+        }
+
+        $conversations = $query->orderBy('updated_at', 'desc')->paginate(25);
         $selectedConversation = null;
         $messages = [];
 
@@ -164,11 +178,16 @@ class Index extends Component
                 ->get();
         }
 
+        $clientsUnread = Conversation::whereNotNull('user_id')->where('participant_unread_count', '>', 0)->count();
+        $driversUnread = Conversation::whereNotNull('driver_id')->whereNull('user_id')->where('participant_unread_count', '>', 0)->count();
+
         return view('livewire.chat.index', [
             'conversations' => $conversations,
             'selectedConversation' => $selectedConversation,
             'messages'  => $messages,
             'totalCount' => $conversations->total(),
+            'clientsUnread' => $clientsUnread,
+            'driversUnread' => $driversUnread,
         ]);
     }
 }
