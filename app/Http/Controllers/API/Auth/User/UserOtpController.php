@@ -51,7 +51,7 @@ class UserOtpController extends Controller
         try {
             if(!$this->otpService->verifyOTP($fields['phone'], $fields['otp'])){
                 return ApiResponseClass::sendError(
-                    'Invalid or expired verification code',
+                    'رمز التحقق غير صحيح أو منتهي الصلاحية',
                     [],
                     401 
                 );
