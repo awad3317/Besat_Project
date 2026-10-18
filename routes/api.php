@@ -34,7 +34,6 @@ use Illuminate\Support\Facades\Route;
 Broadcast::routes(['middleware' => ['auth.sanctum.api']]);
 
 Route::middleware(['auth.sanctum.api'])->group(function () {
-        Route::apiResource('vehicles', VehicleController::class)->only(['index']);
         Route::get('notifications', [NotificationController::class, 'index']);
         Route::post('notifications/{id}/markAsRead', [NotificationController::class, 'markAsRead']);
         Route::post('notifications/markAllAsRead', [NotificationController::class, 'markAllAsRead']);
@@ -109,8 +108,8 @@ Route::post('/driver/resetPassword', [DriverForgetPasswordController::class,'res
 Route::get('/appSettings', [AppSettingController::class, 'index']);
         //       Ads Route For Mobile    //  
 Route::get('/ads', [AdController::class, 'getAds']);
+Route::get('/vehicles', [VehicleController::class, 'index']);
 
 Route::post('/whatsapp/webhook', [TiyarAiController::class, 'handleWebhook'])
     ->withoutMiddleware([\App\Http\Middleware\VerifyAppAccessMiddleware::class]);
-
 

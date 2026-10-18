@@ -281,7 +281,7 @@ class RequestController extends Controller
                             \Log::error("Failed to send Cancellation FCM to token: {$token}. Error: " . $e->getMessage());
                         }
                     }
-    }
+                }
             }
             return ApiResponseClass::sendResponse($requestModel, 'تم إلغاء الرحلة بنجاح.');
         }catch (Exception $e) {
