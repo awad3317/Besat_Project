@@ -12,9 +12,8 @@ class AppSettingRepository
     {
         //
     }
-    public function getSetting()
+    public function getSetting(string $appType = 'user')
     {
-        $setting = app_setting::first();
-        return $setting ;
+        return app_setting::where('app_type', $appType)->first();
     }
 }

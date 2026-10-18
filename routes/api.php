@@ -106,6 +106,7 @@ Route::post('/driver/forgetPassword', [DriverForgetPasswordController::class,'fo
 Route::post('/driver/resetPassword', [DriverForgetPasswordController::class,'resetPassword']);
         //       App Settings Route    //  
 Route::get('/appSettings', [AppSettingController::class, 'index']);
+Route::get('/driver/appSettings', [AppSettingController::class, 'driverSettings']);
         //       Ads Route For Mobile    //  
 Route::get('/ads', [AdController::class, 'getAds']);
 Route::get('/vehicles', [VehicleController::class, 'index']);

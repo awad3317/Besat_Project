@@ -11,6 +11,7 @@ class app_setting extends Model
     protected $table = 'app_settings';
 
     protected $fillable = [
+        'app_type',
         'commission_rate',
         'auto_assign_to_drivers',
         'version',

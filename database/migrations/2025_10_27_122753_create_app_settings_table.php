@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('app_settings', function (Blueprint $table) {
             $table->id();
+            $table->string('app_type', 20)->default('user')->unique();
             $table->decimal('commission_rate', 5, 2)->nullable();
             $table->boolean('auto_assign_to_drivers')->default(false);
             $table->string('version');
