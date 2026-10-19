@@ -341,11 +341,11 @@
                             </div>
 
                             <!-- التبديل التفاعلي بين تطبيق المستخدم وتطبيق السائق -->
-                            <div class="flex p-1 bg-gray-100 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700/80 shadow-inner">
+                            <div class="flex p-1 bg-gray-100 dark:bg-gray-900 rounded-xl border border-gray-200/80 dark:border-gray-800 shadow-inner">
                                 <!-- زر تطبيق المستخدم -->
                                 <button type="button" wire:click="selectApp('user')"
                                     wire:loading.attr="disabled"
-                                    class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 {{ $selectedApp === 'user' ? 'bg-white text-brand-600 shadow-sm dark:bg-gray-700 dark:text-brand-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50' }}">
+                                    class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 {{ $selectedApp === 'user' ? 'bg-white text-brand-600 shadow-sm border border-gray-200/60 dark:bg-brand-500 dark:text-white dark:border-transparent dark:shadow-md dark:shadow-brand-500/20' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-white/[0.05] border border-transparent' }}">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -356,7 +356,7 @@
                                 <!-- زر تطبيق السائق -->
                                 <button type="button" wire:click="selectApp('driver')"
                                     wire:loading.attr="disabled"
-                                    class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 {{ $selectedApp === 'driver' ? 'bg-white text-brand-600 shadow-sm dark:bg-gray-700 dark:text-brand-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50' }}">
+                                    class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 {{ $selectedApp === 'driver' ? 'bg-white text-brand-600 shadow-sm border border-gray-200/60 dark:bg-brand-500 dark:text-white dark:border-transparent dark:shadow-md dark:shadow-brand-500/20' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-white/[0.05] border border-transparent' }}">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M8 17a2 2 0 100-4 2 2 0 000 4zm8 0a2 2 0 100-4 2 2 0 000 4zM3 9l2-5h14l2 5M3 9h18v7a1 1 0 01-1 1h-1a3 3 0 01-6 0H9a3 3 0 01-6 0H2a1 1 0 01-1-1V9z" />
