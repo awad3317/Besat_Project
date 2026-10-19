@@ -81,12 +81,17 @@
                     @if (Auth::user()->type == 'superAdmin')
                         <button @click="activeSection = 'special'"
                             :class="activeSection === 'special' ? 'menu-item-active' : 'menu-item-inactive'"
-                            class="flex w-auto md:w-full flex-shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-colors whitespace-nowrap">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z" />
-                            </svg>
-                            الإعدادات الخاصة
+                            class="flex w-auto md:w-full flex-shrink-0 items-center justify-between rounded-lg px-4 py-3 text-base font-medium transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-3">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z" />
+                                </svg>
+                                <span>الإعدادات الخاصة</span>
+                            </div>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold {{ $selectedApp === 'user' ? 'bg-brand-500/10 text-brand-500 dark:bg-brand-400/10 dark:text-brand-400' : 'bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400' }}">
+                                {{ $selectedApp === 'user' ? 'المستخدم' : 'السائق' }}
+                            </span>
                         </button>
 
                         {{-- زر تبويب اتصال واتساب --}}
@@ -323,15 +328,48 @@
             @if (Auth::user()->type == 'superAdmin')
                 <!-- Special Settings Section -->
                 <div x-show="activeSection === 'special'" x-transition
+                    wire:key="special-settings-section-{{ $selectedApp }}"
                     class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] shadow-theme-xs">
+                    
+                    <!-- Header with Title & App Switcher Tabs -->
                     <div class="border-b border-gray-200 px-6 py-5 dark:border-gray-800">
-                        <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">الإعدادات الخاصة</h2>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">تخصيص الخيارات المتقدمة وروابط التطبيق</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                <div class="flex items-center gap-3">
+                                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">الإعدادات الخاصة</h2>
+                                </div>
+                            </div>
+
+                            <!-- التبديل التفاعلي بين تطبيق المستخدم وتطبيق السائق -->
+                            <div class="flex p-1 bg-gray-100 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700/80 shadow-inner">
+                                <!-- زر تطبيق المستخدم -->
+                                <button type="button" wire:click="selectApp('user')"
+                                    wire:loading.attr="disabled"
+                                    class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 {{ $selectedApp === 'user' ? 'bg-white text-brand-600 shadow-sm dark:bg-gray-700 dark:text-brand-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50' }}">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span>تطبيق المستخدم</span>
+                                </button>
+
+                                <!-- زر تطبيق السائق -->
+                                <button type="button" wire:click="selectApp('driver')"
+                                    wire:loading.attr="disabled"
+                                    class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 {{ $selectedApp === 'driver' ? 'bg-white text-brand-600 shadow-sm dark:bg-gray-700 dark:text-brand-400' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50' }}">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 17a2 2 0 100-4 2 2 0 000 4zm8 0a2 2 0 100-4 2 2 0 000 4zM3 9l2-5h14l2 5M3 9h18v7a1 1 0 01-1 1h-1a3 3 0 01-6 0H9a3 3 0 01-6 0H2a1 1 0 01-1-1V9z" />
+                                    </svg>
+                                    <span>تطبيق السائق</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="divide-y divide-gray-200 dark:divide-gray-800">
                         <!-- WhatsApp Support -->
-                        <div class="px-6 py-5 flex items-center justify-between">
+                        <div class="px-6 py-5 flex items-center justify-between" wire:key="whatsapp-row-{{ $selectedApp }}">
                             <div class="flex items-center gap-4">
                                 <div
                                     class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
@@ -343,16 +381,15 @@
                                 </div>
                                 <div>
                                     <h3 class="text-base font-semibold text-gray-800 dark:text-white">رقم الواتساب</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">رقم الدعم الفني الخاص بالتطبيق</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">رقم الدعم الفني الخاص بـ {{ $selectedApp === 'driver' ? 'تطبيق السائق' : 'تطبيق المستخدم' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-4">
                                 <span
-                                    class="text-lg font-medium text-gray-800 dark:text-white">{{ $settings['whatsapp_support'] }}</span>
+                                    class="text-lg font-medium text-gray-800 dark:text-white" dir="ltr">{{ $settings['whatsapp_support'] }}</span>
                                 <button
                                     wire:click="openSimpleModal('تعديل رقم الواتساب', 'يرجى إدخال رقم الواتساب الجديد للدعم الفني', 'رقم الواتساب', 'whatsapp_support', 'text')"
                                     wire:loading.attr="disabled"
-                                    wire:target="openSimpleModal('تعديل رقم الواتساب', 'يرجى إدخال رقم الواتساب الجديد للدعم الفني', 'رقم الواتساب', 'whatsapp_support', 'text')"
                                     class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
                                     <svg wire:loading.remove
                                         wire:target="openSimpleModal('تعديل رقم الواتساب', 'يرجى إدخال رقم الواتساب الجديد للدعم الفني', 'رقم الواتساب', 'whatsapp_support', 'text')"
@@ -374,7 +411,7 @@
                         </div>
 
                         <!-- Company Website -->
-                        <div class="px-6 py-5 flex items-center justify-between">
+                        <div class="px-6 py-5 flex items-center justify-between" wire:key="website-row-{{ $selectedApp }}">
                             <div class="flex items-center gap-4">
                                 <div
                                     class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
@@ -395,7 +432,6 @@
                                 <button
                                     wire:click="openSimpleModal('تعديل الموقع الإلكتروني', 'يرجى إدخال رابط الموقع الرسمي للشركة', 'رابط الموقع', 'company_website', 'url')"
                                     wire:loading.attr="disabled"
-                                    wire:target="openSimpleModal('تعديل الموقع الإلكتروني', 'يرجى إدخال رابط الموقع الرسمي للشركة', 'رابط الموقع', 'company_website', 'url')"
                                     class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
                                     <svg wire:loading.remove
                                         wire:target="openSimpleModal('تعديل الموقع الإلكتروني', 'يرجى إدخال رابط الموقع الرسمي للشركة', 'رابط الموقع', 'company_website', 'url')"
@@ -417,7 +453,7 @@
                         </div>
 
                         <!-- Company Email -->
-                        <div class="px-6 py-5 flex items-center justify-between">
+                        <div class="px-6 py-5 flex items-center justify-between" wire:key="email-row-{{ $selectedApp }}">
                             <div class="flex items-center gap-4">
                                 <div
                                     class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
@@ -438,7 +474,6 @@
                                 <button
                                     wire:click="openSimpleModal('تعديل البريد الإلكتروني', 'يرجى إدخال البريد الإلكتروني للشركة', 'البريد الإلكتروني', 'company_email', 'email')"
                                     wire:loading.attr="disabled"
-                                    wire:target="openSimpleModal('تعديل البريد الإلكتروني', 'يرجى إدخال البريد الإلكتروني للشركة', 'البريد الإلكتروني', 'company_email', 'email')"
                                     class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
                                     <svg wire:loading.remove
                                         wire:target="openSimpleModal('تعديل البريد الإلكتروني', 'يرجى إدخال البريد الإلكتروني للشركة', 'البريد الإلكتروني', 'company_email', 'email')"
@@ -460,7 +495,7 @@
                         </div>
 
                         <!-- Android Update URL -->
-                        <div class="px-6 py-5 flex items-center justify-between">
+                        <div class="px-6 py-5 flex items-center justify-between" wire:key="android-row-{{ $selectedApp }}">
                             <div class="flex items-center gap-4">
                                 <div
                                     class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
@@ -472,7 +507,7 @@
                                 </div>
                                 <div>
                                     <h3 class="text-base font-semibold text-gray-800 dark:text-white">رابط تحديث أندرويد</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">الرابط المباشر لتحديث تطبيق أندرويد</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">الرابط المباشر لتحديث تطبيق أندرويد ({{ $selectedApp === 'driver' ? 'السائق' : 'المستخدم' }})</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-4">
@@ -481,7 +516,6 @@
                                 <button
                                     wire:click="openSimpleModal('تعديل رابط تحديث أندرويد', 'يرجى إدخال الرابط المباشر لتحديث تطبيق أندرويد', 'رابط تحديث أندرويد', 'android_update_url', 'url')"
                                     wire:loading.attr="disabled"
-                                    wire:target="openSimpleModal('تعديل رابط تحديث أندرويد', 'يرجى إدخال الرابط المباشر لتحديث تطبيق أندرويد', 'رابط تحديث أندرويد', 'android_update_url', 'url')"
                                     class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
                                     <svg wire:loading.remove
                                         wire:target="openSimpleModal('تعديل رابط تحديث أندرويد', 'يرجى إدخال الرابط المباشر لتحديث تطبيق أندرويد', 'رابط تحديث أندرويد', 'android_update_url', 'url')"
@@ -503,7 +537,7 @@
                         </div>
 
                         <!-- iOS Update URL -->
-                        <div class="px-6 py-5 flex items-center justify-between">
+                        <div class="px-6 py-5 flex items-center justify-between" wire:key="ios-row-{{ $selectedApp }}">
                             <div class="flex items-center gap-4">
                                 <div
                                     class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
@@ -515,7 +549,7 @@
                                 </div>
                                 <div>
                                     <h3 class="text-base font-semibold text-gray-800 dark:text-white">رابط تحديث iOS</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">الرابط المباشر لتحديث تطبيق iOS</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">الرابط المباشر لتحديث تطبيق iOS ({{ $selectedApp === 'driver' ? 'السائق' : 'المستخدم' }})</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-4">
@@ -524,7 +558,6 @@
                                 <button
                                     wire:click="openSimpleModal('تعديل رابط تحديث iOS', 'يرجى إدخال الرابط المباشر لتحديث تطبيق iOS', 'رابط تحديث iOS', 'ios_update_url', 'url')"
                                     wire:loading.attr="disabled"
-                                    wire:target="openSimpleModal('تعديل رابط تحديث iOS', 'يرجى إدخال الرابط المباشر لتحديث تطبيق iOS', 'رابط تحديث iOS', 'ios_update_url', 'url')"
                                     class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
                                     <svg wire:loading.remove
                                         wire:target="openSimpleModal('تعديل رابط تحديث iOS', 'يرجى إدخال الرابط المباشر لتحديث تطبيق iOS', 'رابط تحديث iOS', 'ios_update_url', 'url')"
@@ -546,7 +579,7 @@
                         </div>
 
                         <!-- App Version -->
-                        <div class="px-6 py-5 flex items-center justify-between">
+                        <div class="px-6 py-5 flex items-center justify-between" wire:key="version-row-{{ $selectedApp }}">
                             <div class="flex items-center gap-4">
                                 <div
                                     class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
@@ -558,16 +591,15 @@
                                 </div>
                                 <div>
                                     <h3 class="text-base font-semibold text-gray-800 dark:text-white">إصدار التطبيق</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">رقم الإصدار الحالي المنشور</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">رقم الإصدار الحالي المنشور لـ {{ $selectedApp === 'driver' ? 'تطبيق السائق' : 'تطبيق المستخدم' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-4">
                                 <span
-                                    class="text-lg font-bold text-gray-800 dark:text-white">{{ $settings['app_version'] }}</span>
+                                    class="text-lg font-bold text-gray-800 dark:text-white" dir="ltr">{{ $settings['app_version'] }}</span>
                                 <button
                                     wire:click="openSimpleModal('تعديل رقم الإصدار', 'يرجى إدخال رقم الإصدار الحالي للتطبيق', 'رقم الإصدار', 'app_version', 'text')"
                                     wire:loading.attr="disabled"
-                                    wire:target="openSimpleModal('تعديل رقم الإصدار', 'يرجى إدخال رقم الإصدار الحالي للتطبيق', 'رقم الإصدار', 'app_version', 'text')"
                                     class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
                                     <svg wire:loading.remove
                                         wire:target="openSimpleModal('تعديل رقم الإصدار', 'يرجى إدخال رقم الإصدار الحالي للتطبيق', 'رقم الإصدار', 'app_version', 'text')"
@@ -589,7 +621,7 @@
                         </div>
 
                         <!-- Reference Number -->
-                        <div class="px-6 py-5 flex items-center justify-between">
+                        <div class="px-6 py-5 flex items-center justify-between" wire:key="ref-row-{{ $selectedApp }}">
                             <div class="flex items-center gap-4">
                                 <div
                                     class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
@@ -602,16 +634,15 @@
                                 <div>
                                     <h3 class="text-base font-semibold text-gray-800 dark:text-white">الرقم المرجعي (Ref No)
                                     </h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">الرقم المرجعي الخاص بالنظام</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">الرقم المرجعي الخاص بـ {{ $selectedApp === 'driver' ? 'تطبيق السائق' : 'تطبيق المستخدم' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-4">
                                 <span
-                                    class="text-lg font-bold text-gray-800 dark:text-white">{{ $settings['ref_no'] }}</span>
+                                    class="text-lg font-bold text-gray-800 dark:text-white" dir="ltr">{{ $settings['ref_no'] }}</span>
                                 <button
                                     wire:click="openSimpleModal('تعديل الرقم المرجعي', 'يرجى إدخال الرقم المرجعي الجديد للنظام', 'الرقم المرجعي', 'ref_no', 'text')"
                                     wire:loading.attr="disabled"
-                                    wire:target="openSimpleModal('تعديل الرقم المرجعي', 'يرجى إدخال الرقم المرجعي الجديد للنظام', 'الرقم المرجعي', 'ref_no', 'text')"
                                     class="p-1 text-gray-400 hover:text-brand-500 transition-colors relative">
                                     <svg wire:loading.remove
                                         wire:target="openSimpleModal('تعديل الرقم المرجعي', 'يرجى إدخال الرقم المرجعي الجديد للنظام', 'الرقم المرجعي', 'ref_no', 'text')"
@@ -633,7 +664,7 @@
                         </div>
 
                         <!-- Maintenance Mode -->
-                        <div class="px-6 py-5 flex items-center justify-between text-right">
+                        <div class="px-6 py-5 flex items-center justify-between text-right" wire:key="maintenance-row-{{ $selectedApp }}">
                             <div class="flex items-center gap-4">
                                 <div
                                     class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
@@ -645,51 +676,51 @@
                                 </div>
                                 <div>
                                     <h3 class="text-base font-semibold text-gray-800 dark:text-white">وضع الصيانة</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">إغلاق التطبيق للصيانة المؤقتة</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">إغلاق {{ $selectedApp === 'driver' ? 'تطبيق السائق' : 'تطبيق المستخدم' }} للصيانة المؤقتة</p>
                                 </div>
                             </div>
                             <label class="flex cursor-pointer items-center gap-3">
                                 <div class="relative">
-                                    <input type="checkbox" class="sr-only" wire:model.live="settings.maintenance_mode">
-                                    <div class="block h-6 w-11 rounded-full transition-colors duration-300"
+                                    <input type="checkbox" class="sr-only" wire:model.live="settings.maintenance_mode" wire:key="toggle-maintenance-{{ $selectedApp }}">
+                                    <div class="block h-6 w-11 rounded-full transition-colors duration-300 {{ !empty($settings['maintenance_mode']) ? 'bg-success-500' : 'bg-gray-200 dark:bg-gray-700' }}"
                                         :class="$wire.settings.maintenance_mode ? 'bg-success-500' : 'bg-gray-200 dark:bg-gray-700'">
                                     </div>
-                                    <div class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-300"
+                                    <div class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-300 {{ !empty($settings['maintenance_mode']) ? 'translate-x-full' : '' }}"
                                         :class="{ 'translate-x-full': $wire.settings.maintenance_mode }"></div>
                                 </div>
                             </label>
                         </div>
                         
-                        <!-- OTP Enabled Toggle -->
-                        <div class="px-6 py-5 flex items-center justify-between text-right">
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
-                                    <!-- أيقونة قفل الحماية للـ OTP -->
-                                    <svg class="h-6 w-6 text-warning-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white">التحقق برمز الـ OTP
-                                    </h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">تفعيل أو إيقاف التحقق من أرقام
-                                        الهواتف (للطوارئ)</p>
-                                </div>
-                            </div>
-                            <label class="flex cursor-pointer items-center gap-3">
-                                <div class="relative">
-                                    <input type="checkbox" class="sr-only" wire:model.live="settings.otp_enabled">
-                                    <div class="block h-6 w-11 rounded-full transition-colors duration-300"
-                                        :class="$wire.settings.otp_enabled ? 'bg-success-500' : 'bg-gray-200 dark:bg-gray-700'">
+                        <!-- OTP Enabled Toggle (Only for User app) -->
+                        @if($selectedApp !== 'driver')
+                            <div class="px-6 py-5 flex items-center justify-between text-right" wire:key="otp-row-{{ $selectedApp }}">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="flex h-12 w-12 menu-item-icon-active items-center justify-center rounded-lg bg-warning-50 dark:bg-gray-800">
+                                        <!-- أيقونة قفل الحماية للـ OTP -->
+                                        <svg class="h-6 w-6 text-warning-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
                                     </div>
-                                    <div class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-300"
-                                        :class="{ 'translate-x-full': $wire.settings.otp_enabled }"></div>
+                                    <div>
+                                        <h3 class="text-base font-semibold text-gray-800 dark:text-white">التحقق برمز الـ OTP</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">تفعيل أو إيقاف التحقق من أرقام الهواتف لتطبيق المستخدم (للطوارئ)</p>
+                                    </div>
                                 </div>
-                            </label>
-                        </div>
+                                <label class="flex cursor-pointer items-center gap-3">
+                                    <div class="relative">
+                                        <input type="checkbox" class="sr-only" wire:model.live="settings.otp_enabled" wire:key="toggle-otp-{{ $selectedApp }}">
+                                        <div class="block h-6 w-11 rounded-full transition-colors duration-300 {{ !empty($settings['otp_enabled']) ? 'bg-success-500' : 'bg-gray-200 dark:bg-gray-700' }}"
+                                            :class="$wire.settings.otp_enabled ? 'bg-success-500' : 'bg-gray-200 dark:bg-gray-700'">
+                                        </div>
+                                        <div class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-300 {{ !empty($settings['otp_enabled']) ? 'translate-x-full' : '' }}"
+                                            :class="{ 'translate-x-full': $wire.settings.otp_enabled }"></div>
+                                    </div>
+                                </label>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endif

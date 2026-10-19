@@ -18,6 +18,7 @@ class app_setting extends Model
         'android_update_url',
         'ios_update_url',
         'company_website',
+        'company_whatsapp',
         'whatsapp_support',
         'company_email',
         'ref_no',

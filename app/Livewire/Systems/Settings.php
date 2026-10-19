@@ -5,13 +5,15 @@ namespace App\Livewire\Systems;
 use App\Models\app_setting;
 use App\Services\Evolution\EvolutionApiService;
 use Illuminate\Support\Facades\Cache;
-
 use Illuminate\Support\Facades\Log;
 use App\Models\Surcharge;
 use Livewire\Component;
 
 class Settings extends Component
 {
+    // نوع التطبيق المختار حالياً (user أو driver)
+    public string $selectedApp = 'user';
+
     // خصائص لحفظ حالة الإعدادات والرسوم
     public array $settings = [];
     public $surcharges;
@@ -45,11 +47,39 @@ class Settings extends Component
         $this->loadWhatsAppStatus();
     }
 
-    // دالة لتحميل/إعادة تحميل البيانات من قاعدة البيانات
+    // دالة للتبديل بين تطبيق المستخدم وتطبيق السائق
+    public function selectApp(string $type): void
+    {
+        if (in_array($type, ['user', 'driver'])) {
+            $this->selectedApp = $type;
+            $this->loadData();
+        }
+    }
+
+    // دالة لتحميل/إعادة تحميل البيانات من قاعدة البيانات بناءً على التطبيق المختار
     public function loadData()
     {
-        // استخدم firstOrFail لضمان وجود سجل إعدادات
-        $app_settings = app_setting::firstOrFail(); 
+        $app_settings = app_setting::where('app_type', $this->selectedApp)->first();
+
+        if (!$app_settings) {
+            $app_settings = app_setting::firstOrCreate(
+                ['app_type' => $this->selectedApp],
+                [
+                    'commission_rate'        => 10.00,
+                    'auto_assign_to_drivers' => false,
+                    'version'                => $this->selectedApp === 'driver' ? '1.0.0' : '1.0.1',
+                    'otp_enabled'            => $this->selectedApp === 'driver' ? false : true,
+                    'android_update_url'     => 'https://www.google.com/',
+                    'ios_update_url'         => 'https://www.google.com/',
+                    'company_website'        => 'https://www.instagram.com/codak.dev?igsh=emtmaDkzOWNxcTlm',
+                    'company_whatsapp'       => '+967774712979',
+                    'company_email'          => 'info@besat.com',
+                    'ref_no'                 => $this->selectedApp === 'driver' ? '1008' : '1007',
+                    'maintenance_mode'       => false,
+                ]
+            );
+        }
+
         $this->settings = [
             'commission_rate'    => $app_settings->commission_rate,
             'auto_assign'        => (bool) $app_settings->auto_assign_to_drivers,
@@ -61,7 +91,7 @@ class Settings extends Component
             'company_website'    => $app_settings->company_website,
             'company_email'      => $app_settings->company_email,
             'ref_no'             => $app_settings->ref_no,
-            'otp_enabled'        => (bool) $app_settings->otp_enabled,
+            'otp_enabled'        => $this->selectedApp === 'driver' ? false : (bool) $app_settings->otp_enabled,
         ];
         $this->surcharges = Surcharge::all();
     }
@@ -71,11 +101,12 @@ class Settings extends Component
     {
         $this->resetErrorBag();
         $this->modalType = 'simple';
-        $this->modalTitle = $title;
+        $appName = $this->selectedApp === 'driver' ? 'تطبيق السائق' : 'تطبيق المستخدم';
+        $this->modalTitle = $title . " ({$appName})";
         $this->modalDesc = $desc;
         $this->simpleLabel = $label;
         $this->simpleKey = $key;
-        $this->simpleValue = $this->settings[$key];
+        $this->simpleValue = $this->settings[$key] ?? '';
         $this->simpleInputType = $type;
         $this->modalOpen = true;
     }
@@ -95,8 +126,6 @@ class Settings extends Component
         } else {
             $this->modalTitle = 'إضافة قاعدة جديدة';
             $this->modalDesc = 'قم بإضافة قاعدة تسعير جديدة للنظام';
-            $this->modalTitle = 'إضافة قاعدة جديدة';
-            $this->modalDesc = 'قم بإضافة قاعدة تسعير جديدة للنظام';
             $this->surchargeForm = ['id' => null, 'name' => '', 'type' => 'percentage', 'time_from' => '', 'time_to' => '', 'amount' => '', 'is_active' => true];
             $this->isTimeEditable = true;
         }
@@ -106,25 +135,38 @@ class Settings extends Component
     // دالة لحفظ التغييرات من النافذة المنبثقة
     public function saveSettings()
     {
-        $appSettingsModel = app_setting::firstOrFail();
+        $appSettingsModel = app_setting::where('app_type', $this->selectedApp)->first();
+        if (!$appSettingsModel) {
+            $this->loadData();
+            $appSettingsModel = app_setting::where('app_type', $this->selectedApp)->firstOrFail();
+        }
 
         if ($this->modalType === 'simple') {
-            // يمكنك إضافة validation هنا
             $db_key = match($this->simpleKey) {
-                'auto_assign' => 'auto_assign_to_drivers', 'whatsapp_support' => 'company_whatsapp', 'app_version' => 'version', default => $this->simpleKey
+                'auto_assign' => 'auto_assign_to_drivers',
+                'whatsapp_support' => 'company_whatsapp',
+                'app_version' => 'version',
+                default => $this->simpleKey
             };
             $appSettingsModel->update([$db_key => $this->simpleValue]);
         } else { // modalType is 'surcharge'
-            // يمكنك إضافة validation هنا
             if (!empty($this->surchargeForm['id'])) {
                 Surcharge::find($this->surchargeForm['id'])->update($this->surchargeForm);
             } else {
                 Surcharge::create($this->surchargeForm);
             }
         }
+
         Cache::forget('app_settings');
+        Cache::forget('app_settings_user');
+        Cache::forget('app_settings_driver');
         
-        $this->dispatch('notify', ['message' => 'تم حفظ التغييرات بنجاح']);
+        $appName = $this->selectedApp === 'driver' ? 'تطبيق السائق' : 'تطبيق المستخدم';
+        $message = $this->modalType === 'simple' 
+            ? "تم حفظ التعديلات لـ {$appName} بنجاح" 
+            : 'تم حفظ التغييرات بنجاح';
+
+        $this->dispatch('notify', ['message' => $message]);
         $this->loadData(); // إعادة تحميل البيانات لعرضها محدثة
         $this->modalOpen = false;
     }
@@ -132,17 +174,29 @@ class Settings extends Component
     // يتم استدعاؤها تلقائياً عند تغيير قيمة أي مفتاح في $settings عبر wire:model.live
     public function updatedSettings($value, $key)
     {
+        if ($key === 'otp_enabled' && $this->selectedApp === 'driver') {
+            $this->settings['otp_enabled'] = false;
+            return;
+        }
+
         $db_key = match($key) {
-            'auto_assign' => 'auto_assign_to_drivers',
+            'auto_assign'      => 'auto_assign_to_drivers',
             'maintenance_mode' => 'maintenance_mode',
             'otp_enabled'      => 'otp_enabled',
             default => null
         };
         
         if ($db_key) {
-            app_setting::firstOrFail()->update([$db_key => $value]);
+            $appSettingsModel = app_setting::where('app_type', $this->selectedApp)->first();
+            if ($appSettingsModel) {
+                $appSettingsModel->update([$db_key => $value]);
+            }
             Cache::forget('app_settings');
-            $this->dispatch('notify', ['message' => 'تم التحديث']);
+            Cache::forget('app_settings_user');
+            Cache::forget('app_settings_driver');
+
+            $appName = $this->selectedApp === 'driver' ? 'تطبيق السائق' : 'تطبيق المستخدم';
+            $this->dispatch('notify', ['message' => "تم تحديث الإعداد لـ {$appName} بنجاح"]);
             $this->loadData();
         }
     }
@@ -210,32 +264,32 @@ class Settings extends Component
      * قطع اتصال WhatsApp عبر Evolution API
      */
     public function disconnectWhatsApp(EvolutionApiService $apiService)
-{
-    try {
-        // 1. إرسال طلب الفصل للسيرفر
-        $success = $apiService->logoutInstance();
+    {
+        try {
+            // 1. إرسال طلب الفصل للسيرفر
+            $success = $apiService->logoutInstance();
 
-        if ($success) {
-            // 2. مسح الكاش المحلي فوراً
-            Cache::forget('whatsapp_status');
-            $this->whatsappStatus = 'close';
+            if ($success) {
+                // 2. مسح الكاش المحلي فوراً
+                Cache::forget('whatsapp_status');
+                $this->whatsappStatus = 'close';
 
-            // 3. الانتظار ثانية واحدة ليتنفس السيرفر بعد الفصل
-            sleep(1);
+                // 3. الانتظار ثانية واحدة ليتنفس السيرفر بعد الفصل
+                sleep(1);
 
-            // 4. استدعاء دالة التحديث لإجبار السيرفر على توليد QR جديد وحفظه في المتغير
-            $this->refreshWhatsAppStatus($apiService);
+                // 4. استدعاء دالة التحديث لإجبار السيرفر على توليد QR جديد وحفظه في المتغير
+                $this->refreshWhatsAppStatus($apiService);
 
-            // إرسال تنبيه نجاح للواجهة
-            $this->dispatch('notify', ['type' => 'success', 'message' => 'تم قطع اتصال الحساب بنجاح، وجاري تجهيز كود جديد.']);
-        } else {
-            $this->dispatch('notify', ['type' => 'error', 'message' => 'فشل في قطع الاتصال من السيرفر.']);
+                // إرسال تنبيه نجاح للواجهة
+                $this->dispatch('notify', ['type' => 'success', 'message' => 'تم قطع اتصال الحساب بنجاح، وجاري تجهيز كود جديد.']);
+            } else {
+                $this->dispatch('notify', ['type' => 'error', 'message' => 'فشل في قطع الاتصال من السيرفر.']);
+            }
+        } catch (\Exception $e) {
+            Log::error("WhatsApp Disconnect Error: " . $e->getMessage());
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'حدث خطأ أثناء محاولة فصل الحساب.']);
         }
-    } catch (\Exception $e) {
-        \Log::error("WhatsApp Disconnect Error: " . $e->getMessage());
-        $this->dispatch('notify', ['type' => 'error', 'message' => 'حدث خطأ أثناء محاولة فصل الحساب.']);
     }
-}
 
     public function render()
     {
@@ -243,5 +297,3 @@ class Settings extends Component
         return view('livewire.systems.settings');
     }
 }
-
-

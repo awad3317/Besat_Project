@@ -40,7 +40,7 @@ class AppSettingsSeeder extends Seeder
                 'commission_rate'        => 10.00,
                 'auto_assign_to_drivers' => false,
                 'version'                => '1.0.0',
-                'otp_enabled'            => true,
+                'otp_enabled'            => false,
                 'android_update_url'     => 'https://www.google.com/',
                 'ios_update_url'         => 'https://www.google.com/',
                 'company_website'        => 'https://www.instagram.com/codak.dev?igsh=emtmaDkzOWNxcTlm',
