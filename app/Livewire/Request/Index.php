@@ -142,6 +142,8 @@ class Index extends Component
                 $title = 'تم تعيين سائق!';
                 $body = 'تم تعيين سائق لرحلتك وهو الآن في الطريق إليك.';
                 $data = [
+                    'new_request'  => 'false',
+                    'new_message'  => 'false',
                     'request_id'   => (string) $request->id,
                     'status'       => 'accepted',
                     'click_action' => 'FLUTTER_NOTIFICATION_CLICK'

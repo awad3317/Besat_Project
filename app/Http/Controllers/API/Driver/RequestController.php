@@ -79,9 +79,11 @@ class RequestController extends Controller
                                     'تم قبول الرحلة!',
                                     'الكابتن ' . $driver->name . ' في طريقه إليك الآن.',
                                     [
-                                        'request_id'=> (string) $trip->id,
+                                        'new_request'     => 'false',
+                                        'new_message'     => 'false',
+                                        'request_id'      => (string) $trip->id,
                                         'conversation_id' => (string) $conversation->id,
-                                        'status'=> 'accepted',
+                                        'status'          => 'accepted',
                                     ]
                                 );
                         }catch(Exception $e){
@@ -122,8 +124,10 @@ class RequestController extends Controller
                                     'تم إلغاء الرحلة',
                                     'قام الكابتن بإلغاء الرحلة الحالية.',
                                     [
-                                        'request_id' => (string) $trip->id,
-                                        'status'     => 'cancelled',
+                                        'new_request' => 'false',
+                                        'new_message' => 'false',
+                                        'request_id'  => (string) $trip->id,
+                                        'status'      => 'cancelled',
                                     ]
                                 );
                             } catch (Exception $e) {

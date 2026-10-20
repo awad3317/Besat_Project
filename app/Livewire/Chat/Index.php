@@ -115,6 +115,8 @@ class Index extends Component
                     body: 'لديك رسالة جديدة من الدعم الفني: ' . mb_substr($message->body, 0, 50),
                     data: [
                         'type'            => 'support_chat',
+                        'new_message'     => 'true',
+                        'new_request'     => 'false',
                         'conversation_id' => (string) $this->selectedConversationId,
                         'message_id'      => (string) $message->id,
                     ]

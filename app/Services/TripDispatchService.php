@@ -44,6 +44,8 @@ class TripDispatchService
                 $title = 'طلب جديد';
                 $body  = 'يوجد طلب جديد في منطقتك، اضغط لقبول الطلب';
                 $data  = [
+                    'new_request'     => 'true',
+                    'new_message'     => 'false',
                     'request_id'      => $tripRequest->id,
                     'start_latitude'  => $tripRequest->start_latitude,
                     'start_longitude' => $tripRequest->start_longitude,

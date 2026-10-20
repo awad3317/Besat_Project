@@ -269,6 +269,8 @@ class RequestController extends Controller
                     $title = 'تم إلغاء الرحلة!';
                     $body = 'تم إلغاء طلب الرحلة الخاص بك بنجاح.';
                     $data = [
+                        'new_request'  => 'false',
+                        'new_message'  => 'false',
                         'request_id'   => (string) $requestModel->id,
                         'status'       => 'cancelled',
                         'cancelled_by' => 'USER',

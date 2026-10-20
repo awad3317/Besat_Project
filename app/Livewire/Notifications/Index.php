@@ -82,6 +82,8 @@ class Index extends Component
             }
 
             $data = [
+                'new_request' => 'false',
+                'new_message' => 'false',
                 'type' => 'general_notification',
                 'timestamp' => now()->toIso8601String(),
             ];
