@@ -118,7 +118,41 @@ class DriverController extends Controller
             return ApiResponseClass::sendError('فشل في تحديث الحالة: ' . $e->getMessage());
         }
     }
+    /**
+     * جلب الطلبات الحية (غير الملغية وغير المكتملة)
+     */
     public function allRequest()
+    {
+        try {
+            /** @var \App\Models\Driver $driver */
+            $driver = auth('sanctum')->user();
+            $orders = $driver->requests()
+                ->whereNotIn('status', ['cancelled', 'completed'])
+                ->with([
+                    'user:id,name,phone,image', 
+                    'stops:id,request_id,latitude,longitude,stop_order', 
+                    'conversation' => function ($query) use ($driver) {
+                        $query->where('type', 'request')
+                              ->where('driver_id', $driver->id);
+                    }
+                ])
+                ->latest('id')
+                ->get()
+                ->map(function ($order) {
+                    // إرفاق معرف المحادثة مباشرة في كل طلب
+                    $order->setAttribute('conversation_id', $order->conversation?->id);
+                    return $order;
+                }); 
+            return ApiResponseClass::sendResponse($orders, 'تم جلب الطلبات الحية بنجاح.');
+        } catch (Exception $e) {
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب الطلبات.', $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * جلب سجل جميع الطلبات
+     */
+    public function requestHistory()
     {
         try {
             /** @var \App\Models\Driver $driver */
@@ -135,13 +169,12 @@ class DriverController extends Controller
                 ->latest('id')
                 ->get()
                 ->map(function ($order) {
-                    // إرفاق معرف المحادثة مباشرة في كل طلب
                     $order->setAttribute('conversation_id', $order->conversation?->id);
                     return $order;
                 }); 
-            return ApiResponseClass::sendResponse($orders, 'تم جلب طلبات السائق بنجاح.');
+            return ApiResponseClass::sendResponse($orders, 'تم جلب سجل الطلبات بنجاح.');
         } catch (Exception $e) {
-            return ApiResponseClass::sendError('حدث خطأ أثناء جلب الطلبات.', $e->getMessage(), 500);
+            return ApiResponseClass::sendError('حدث خطأ أثناء جلب سجل الطلبات.', $e->getMessage(), 500);
         }
     }
     public function getFinancialSummary(){
