@@ -23,7 +23,8 @@ class DriverController extends Controller
             'device_token' => 'required',
         ]);
         try {
-            $driver_id=auth('sanctum')->id();
+            $driver=auth('sanctum')->user();
+            $driver_id = $driver->id;
             $driver=$this->driverRepository->update($fields,$driver_id);
             return ApiResponseClass::sendResponse($driver,'Device token updated successfully.');
         } catch (Exception $e) {
