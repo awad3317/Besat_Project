@@ -151,28 +151,51 @@ class DriverController extends Controller
     }
 
     /**
-     * جلب سجل جميع الطلبات
+     * جلب سجل جميع الطلبات مع دعم الترقيم (Pagination) وتحسين الأداء
      */
-    public function requestHistory()
+    public function requestHistory(Request $request)
     {
         try {
             /** @var \App\Models\Driver $driver */
             $driver = auth('sanctum')->user();
-            $orders = $driver->requests()
+            if (!$driver) {
+                return ApiResponseClass::sendError('المستخدم غير مصرح له أو الجلسة منتهية.', null, 401);
+            }
+
+            $perPage = (int) $request->input('per_page', 15);
+            $perPage = ($perPage > 0 && $perPage <= 100) ? $perPage : 15;
+
+            $query = $driver->requests()
                 ->with([
                     'user:id,name,phone,image', 
                     'stops:id,request_id,latitude,longitude,stop_order', 
                     'conversation' => function ($query) use ($driver) {
-                        $query->where('type', 'request')
+                        $query->select('id', 'request_id', 'driver_id', 'type')
+                              ->where('type', 'request')
                               ->where('driver_id', $driver->id);
                     }
-                ])
-                ->latest('id')
-                ->get()
-                ->map(function ($order) {
+                ]);
+
+            // فلترة اختيارية حسب الحالة والتاريخ لتحسين سرعة والوصول للبيانات
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->filled('from_date')) {
+                $query->whereDate('created_at', '>=', $request->from_date);
+            }
+
+            if ($request->filled('to_date')) {
+                $query->whereDate('created_at', '<=', $request->to_date);
+            }
+
+            $orders = $query->latest('id')
+                ->paginate($perPage)
+                ->through(function ($order) {
                     $order->setAttribute('conversation_id', $order->conversation?->id);
                     return $order;
                 }); 
+
             return ApiResponseClass::sendResponse($orders, 'تم جلب سجل الطلبات بنجاح.');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('حدث خطأ أثناء جلب سجل الطلبات.', $e->getMessage(), 500);
