@@ -2,13 +2,14 @@
 
 namespace App\Livewire\Request;
 
-use App\Models\Request as RequestModel;
 use App\Models\Driver;
+use App\Models\Request as RequestModel;
+use App\Notifications\DriverAssignedNotification;
+use App\Repositories\ChatRepository;
+use App\Services\FirebaseService;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Computed;
-use App\Services\FirebaseService;
-use App\Notifications\DriverAssignedNotification;
 
 class Index extends Component
 {
@@ -117,7 +118,7 @@ class Index extends Component
         $this->dispatch('open-modal', 'assign-driver-modal');
     }
 
-    public function assignDriver($driverId, FirebaseService $firebaseService)
+    public function assignDriver($driverId, FirebaseService $firebaseService, ChatRepository $chatRepository)
     {
         $request = RequestModel::find($this->selectedRequestId);
         if (!$request) {
@@ -131,10 +132,15 @@ class Index extends Component
         }
 
         $driver = Driver::find($driverId);
+        $conversation = $chatRepository->getOrCreateOrderConversation(
+            $request->id,
+            $request->user_id,
+            $driverId
+        );
 
         $request->update([
             'driver_id' => $driverId,
-            'status' => 'accepted' // 'accepted' is the correct database enum value for requests
+            'status' => 'accepted',
         ]);
 
         // 1. إرسال إشعار للعميل
@@ -186,6 +192,7 @@ class Index extends Component
                 \Log::error("Failed to send FCM to driver {$driver->id}. Error: " . $e->getMessage());
             }
         }
+        
 
         $this->dispatch('driver-assigned');
     }

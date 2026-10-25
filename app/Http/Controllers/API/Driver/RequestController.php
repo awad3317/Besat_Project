@@ -57,15 +57,16 @@ class RequestController extends Controller
                     if (!is_null($trip->driver_id) && $trip->driver_id !== $driver->id) {
                         return ApiResponseClass::sendError('تم قبول هذه الرحلة بالفعل من قِبل سائق آخر.', null, 400);
                     }
-                    $trip->update([
-                        'driver_id' => $driver->id,
-                        'status' => 'accepted',
-                    ]);
                     $conversation = $this->chatRepository->getOrCreateOrderConversation(
                         $trip->id,
                         $trip->user_id,
                         $driver->id
                     );
+                    $trip->update([
+                        'driver_id' => $driver->id,
+                        'status' => 'accepted',
+                    ]);
+                   
                     if ($trip->user){
                         if ($trip->user->is_notifications_enabled) {
                             $trip->user->notify(new TripAcceptedNotification($trip, $conversation->id));
@@ -155,8 +156,13 @@ class RequestController extends Controller
 
                 $updateData = ['status' => $targetStatus];
                 
-                if ($targetStatus === 'completed' && $trip->payment_method === 'cash') {
-                    $updateData['payment_status'] = 'paid';
+                if ($targetStatus === 'completed') {
+                    if ($trip->payment_method === 'cash') {
+                        $updateData['payment_status'] = 'paid';
+                    }
+                    Conversation::where('request_id', $trip->id)
+                        ->where('status', 'open')
+                        ->update(['status' => 'closed']);
                 }
                 $trip->update($updateData);
 
