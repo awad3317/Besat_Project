@@ -130,15 +130,18 @@ class Index extends Component
             return;
         }
 
-        if ($request) {
-            $request->update([
-                'driver_id' => $driverId,
-                'status' => 'accepted' // 'accepted' is the correct database enum value for requests
-            ]);
-            if ($request->user && $request->user->is_notifications_enabled) {
-                $request->user->notify(new DriverAssignedNotification($request));
-                $deviceTokens = $request->user->devices->pluck('device_token')->filter()->toArray();
-                if (!empty($deviceTokens)) {
+        $driver = Driver::find($driverId);
+
+        $request->update([
+            'driver_id' => $driverId,
+            'status' => 'accepted' // 'accepted' is the correct database enum value for requests
+        ]);
+
+        // 1. إرسال إشعار للعميل
+        if ($request->user && $request->user->is_notifications_enabled) {
+            $request->user->notify(new DriverAssignedNotification($request));
+            $deviceTokens = $request->user->devices->pluck('device_token')->filter()->toArray();
+            if (!empty($deviceTokens)) {
                 $title = 'تم تعيين سائق!';
                 $body = 'تم تعيين سائق لرحلتك وهو الآن في الطريق إليك.';
                 $data = [
@@ -153,13 +156,39 @@ class Index extends Component
                         $firebaseService->sendNotification($token, $title, $body, $data);
                     } catch (\Exception $e) {
                         \Log::error("Failed to send FCM to token: {$token}. Error: " . $e->getMessage());
+                        
                     }
                 }
             }
         }
 
+        \Log::info("1. Checking Driver:", ['id' => $driver?->id, 'token' => $driver?->device_token]);
+        // 2. إرسال إشعار للسائق عبر Firebase
+        if ($driver && !empty($driver->device_token)) {
+            $driverTitle = 'طلب جديد مسند إليك!';
+            $driverBody  = 'تم إسناد الطلب رقم #' . $request->id . ' إليك بنجاح.';
+            $driverData  = [
+                'new_request'     => 'true',
+                'new_message'     => 'false',
+                'request_id'      => (string) $request->id,
+                'status'          => 'accepted',
+                'start_latitude'  => (string) ($request->start_latitude ?? ''),
+                'start_longitude' => (string) ($request->start_longitude ?? ''),
+                'start_address'   => (string) ($request->start_address ?? ''),
+                'end_address'     => (string) ($request->end_address ?? ''),
+                'click_action'    => 'FLUTTER_NOTIFICATION_CLICK'
+            ];
+
+            try {
+                $response=$firebaseService->sendNotification($driver->device_token, $driverTitle, $driverBody, $driverData);
+                \Log::info("2. Driver FCM Sent Result:", ['response' => $response]);
+            } catch (\Exception $e) {
+                \Log::error("Failed to send FCM to driver {$driver->id}. Error: " . $e->getMessage());
+            }
+        }
+
         $this->dispatch('driver-assigned');
-    }}
+    }
 
     public function startChatWithCustomer($requestId)
     {
