@@ -167,25 +167,18 @@ class Index extends Component
         if ($driver && !empty($driver->device_token)) {
             $driverTitle = 'طلب جديد مسند إليك!';
             $driverBody  = 'تم إسناد الطلب رقم #' . $request->id . ' إليك بنجاح.';
-            // $driverData  = [
-            //     'new_request'     => 'true',
-            //     'new_message'     => 'false',
-            //     'request_id'      => (string) $request->id,
-            //     'status'          => 'accepted',
-            //     'start_latitude'  => (string) ($request->start_latitude ?? ''),
-            //     'start_longitude' => (string) ($request->start_longitude ?? ''),
-            //     'start_address'   => (string) ($request->start_address ?? ''),
-            //     'end_address'     => (string) ($request->end_address ?? ''),
-            //     'click_action'    => 'FLUTTER_NOTIFICATION_CLICK'
-            // ];
             $driverData  = [
-        'new_request'     => 'false', // غيرناها إلى false مثل الإشعار العام
-        'new_message'     => 'false',
-        'type'            => 'general_notification', // أضفنا نفس النوع
-        'request_id'      => (string) $request->id,
-        'status'          => 'accepted',
-        'timestamp'       => now()->toIso8601String(),
-    ];
+                'new_request'     => 'false',
+                'new_message'     => 'false',
+                'request_id'      => (string) $request->id,
+                'status'          => 'accepted',
+                'start_latitude'  => (string) ($request->start_latitude ?? ''),
+                'start_longitude' => (string) ($request->start_longitude ?? ''),
+                'start_address'   => (string) ($request->start_address ?? ''),
+                'end_address'     => (string) ($request->end_address ?? ''),
+                'click_action'    => 'FLUTTER_NOTIFICATION_CLICK'
+            ];
+           
 
             try {
                 $response=$firebaseService->sendNotification($driver->device_token, $driverTitle, $driverBody, $driverData);
