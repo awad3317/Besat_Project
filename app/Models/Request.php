@@ -64,8 +64,8 @@ class Request extends Model
     public function conversation(): HasOne
     {
         return $this->hasOne(Conversation::class, 'request_id')
-            ->where('type', 'request')
-            ->where('status', 'open')
+            ->where('conversations.type', 'request')
+            ->where('conversations.status', 'open')
             ->latestOfMany();
     }
 

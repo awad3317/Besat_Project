@@ -133,8 +133,7 @@ class DriverController extends Controller
                     'user:id,name,phone,image', 
                     'stops:id,request_id,latitude,longitude,stop_order', 
                     'conversation' => function ($query) use ($driver) {
-                        $query->where('type', 'request')
-                              ->where('driver_id', $driver->id);
+                        $query->where('conversations.driver_id', $driver->id);
                     }
                 ])
                 ->latest('id')
@@ -170,9 +169,8 @@ class DriverController extends Controller
                     'user:id,name,phone,image', 
                     'stops:id,request_id,latitude,longitude,stop_order', 
                     'conversation' => function ($query) use ($driver) {
-                        $query->select('id', 'request_id', 'driver_id', 'type')
-                              ->where('type', 'request')
-                              ->where('driver_id', $driver->id);
+                        $query->select('conversations.id', 'conversations.request_id', 'conversations.driver_id', 'conversations.type')
+                              ->where('conversations.driver_id', $driver->id);
                     }
                 ]);
 
