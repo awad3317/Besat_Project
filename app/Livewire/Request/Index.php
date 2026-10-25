@@ -168,7 +168,7 @@ class Index extends Component
             $driverTitle = 'طلب جديد مسند إليك!';
             $driverBody  = 'تم إسناد الطلب رقم #' . $request->id . ' إليك بنجاح.';
             $driverData  = [
-                'new_request'     => 'false',
+                'new_request'     => 'true',
                 'new_message'     => 'false',
                 'request_id'      => (string) $request->id,
                 'status'          => 'accepted',
@@ -181,8 +181,7 @@ class Index extends Component
            
 
             try {
-                $response=$firebaseService->sendNotification($driver->device_token, $driverTitle, $driverBody, $driverData);
-                \Log::info("2. Driver FCM Sent Result:", ['response' => $response]);
+                $firebaseService->sendNotification($driver->device_token, $driverTitle, $driverBody, $driverData);
             } catch (\Exception $e) {
                 \Log::error("Failed to send FCM to driver {$driver->id}. Error: " . $e->getMessage());
             }
