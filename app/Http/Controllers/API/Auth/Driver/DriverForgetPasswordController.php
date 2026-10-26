@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\Auth\Driver;
 use Exception;
 use App\Services\OtpService;
 use Illuminate\Http\Request;
-use App\Services\TwilioService;
 use Illuminate\Validation\Rule;
 use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
@@ -13,7 +12,7 @@ use App\Repositories\DriverRepository;
 
 class DriverForgetPasswordController extends Controller
 {
-    public function __construct(private OtpService $otpService,private DriverRepository $driverRepository,private TwilioService $twilioService)
+    public function __construct(private OtpService $otpService,private DriverRepository $driverRepository)
     {
         //
     }
