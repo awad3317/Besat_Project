@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\Auth\Driver;
 
 use Exception;
-use App\Services\OtpService;
+use App\Services\Evolution\OTPService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Classes\ApiResponseClass;
