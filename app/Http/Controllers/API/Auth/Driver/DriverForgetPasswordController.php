@@ -23,7 +23,7 @@ class DriverForgetPasswordController extends Controller
         ]);
         try {
             $otp = $this->otpService->generateOTP($fields['phone'],'forgetPassword');
-            // $this->HypersenderService->sendTextMessage($fields['phone'],strval($otp));
+            $this->otpService->sendOtp($fields['phone'], $otp);
             return ApiResponseClass::sendResponse(null, 'Verification code has been sent to: ' . $fields['phone']);
         } catch (Exception $e) {
             return ApiResponseClass::sendError(null, 'Failed to send verification code. Please try again later.' . $e->getMessage());
