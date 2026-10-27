@@ -7,8 +7,10 @@ use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Driver;
+use App\Models\Message;
 use App\Models\User;
 use App\Repositories\ChatRepository;
+use App\Services\FirebaseService;
 use App\Services\ImageService;
 use Exception;
 use Illuminate\Http\Request;
@@ -20,7 +22,8 @@ class ChatController extends Controller
 {
     public function __construct(
         private ChatRepository $chatRepository,
-        private ImageService $imageService
+        private ImageService $imageService,
+        private FirebaseService $firebaseService
     ) {}
 
     /**
@@ -68,7 +71,7 @@ class ChatController extends Controller
             }
 
             $user = auth('sanctum')->user();
-            $conversation = Conversation::findOrFail($request->conversation_id);
+            $conversation = Conversation::with(['user.devices', 'driver'])->findOrFail($request->conversation_id);
 
             $isOwner = (get_class($user) === User::class && $conversation->user_id === $user->id)
                      || (get_class($user) === Driver::class && $conversation->driver_id === $user->id);
@@ -85,7 +88,11 @@ class ChatController extends Controller
                 $data['attachment_path'] = $this->imageService->saveImage($request->file('attachment'), $folder);
             }
             $message = $this->chatRepository->storeMessage($conversation, $user, $data);
-           broadcast(new MessageSent($message));
+
+            // إرسال إشعار Firebase للطرف الآخر (سائق -> مستخدم أو مستخدم -> سائق)
+            $this->sendChatNotification($conversation, $message, $user);
+
+            broadcast(new MessageSent($message));
             return ApiResponseClass::sendResponse($message->load('sender:id,name'), 'تم إرسال الرسالة بنجاح');
         } catch (Exception $e) {
             return ApiResponseClass::sendError('حدث خطأ أثناء إرسال الرسالة', $e->getMessage(), 500);
@@ -140,6 +147,79 @@ class ChatController extends Controller
         } catch (Exception $e) {
             Log::error('Error opening order chat: ' . $e->getMessage());
             return ApiResponseClass::sendError('فشل فتح محادثة الطلب', $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * إرسال إشعار Firebase للطرف الآخر في المحادثة (سائق -> مستخدم أو مستخدم -> سائق)
+     */
+    private function sendChatNotification(Conversation $conversation, Message $message, User|Driver $sender): void
+    {
+        $tokens = [];
+        $title = '';
+
+        $previewText = match ($message->type) {
+            'image'    => 'أرسل صورة',
+            'audio'    => 'أرسل تسجيلاً صوتياً',
+            'location' => 'أرسل موقعاً',
+            default    => mb_substr($message->body ?? '', 0, 50),
+        };
+
+        if ($sender instanceof User) {
+            // المرسل هو المستخدم -> المستلم هو السائق
+            $driver = $conversation->driver;
+            if ($driver && !empty($driver->device_token) && !$driver->is_banned) {
+                $tokens[] = $driver->device_token;
+            }
+            $title = $sender->name ?? 'العميل';
+            $body = 'لديك رسالة جديدة من ' . $title . ': ' . $previewText;
+        } elseif ($sender instanceof Driver) {
+            // المرسل هو السائق -> المستلم هو المستخدم
+            $recipientUser = $conversation->user;
+            if ($recipientUser && $recipientUser->is_notifications_enabled) {
+                $tokens = $recipientUser->devices
+                    ->pluck('device_token')
+                    ->filter()
+                    ->all();
+
+                if (!empty($recipientUser->fcm_token)) {
+                    $tokens[] = $recipientUser->fcm_token;
+                }
+            }
+            $title = 'الكابتن ' . ($sender->name ?? 'السائق');
+            $body = 'لديك رسالة جديدة من ' . $title . ': ' . $previewText;
+        }
+
+        $tokens = array_unique(array_filter($tokens));
+
+        if (empty($tokens)) {
+            return;
+        }
+
+        $notificationData = [
+            'type'            => $conversation->type === 'support' ? 'support_chat' : 'chat',
+            'new_message'     => 'true',
+            'new_request'     => 'false',
+            'conversation_id' => (string) $conversation->id,
+            'message_id'      => (string) $message->id,
+            'click_action'    => 'FLUTTER_NOTIFICATION_CLICK',
+        ];
+
+        if (!empty($conversation->request_id)) {
+            $notificationData['request_id'] = (string) $conversation->request_id;
+        }
+
+        foreach ($tokens as $token) {
+            try {
+                $this->firebaseService->sendNotification(
+                    deviceToken: $token,
+                    title: $title,
+                    body: $body,
+                    data: $notificationData
+                );
+            } catch (\Throwable $e) {
+                Log::warning("فشل إرسال إشعار FCM للتوكن {$token}: " . $e->getMessage());
+            }
         }
     }
 }
