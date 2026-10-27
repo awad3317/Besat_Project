@@ -217,8 +217,7 @@ class Create extends Component
             $ac_cost = 0;
 
             if ($this->wants_ac && $vehicle->has_ac_option) {
-                $ac_cost = $this->distance_km * $vehicle->ac_price_per_km;
-                $ac_cost = round((float) $ac_cost, 2);
+                $ac_cost = $priceService->roundPrice($this->distance_km * $vehicle->ac_price_per_km);
                 $surcharges_details[] = [
                     'id'     => 'ac_cost',
                     'name'   => 'رسوم تشغيل التكييف',
@@ -228,21 +227,21 @@ class Create extends Component
 
             $tripDatetime = Carbon::parse($this->trip_date . ' ' . $this->trip_time)->format('Y-m-d H:i:s');
             $surchargesData = $priceService->calculateSurcharges($tripDatetime);
-            $total_surcharge_amount = $surchargesData['total_amount'];
+            $total_surcharge_amount = (int) $surchargesData['total_amount'];
 
             if (!empty($surchargesData['details'])) {
                 $surcharges_details = array_merge($surcharges_details, $surchargesData['details']);
             }
 
-            $original_price = $base_price + $ac_cost + $total_surcharge_amount;
+            $original_price = $priceService->roundPrice($base_price + $ac_cost + $total_surcharge_amount);
             $final_price = $original_price;
             $discount_amount = 0;
 
             if ($this->coupon_code && strpos($this->coupon_message, 'صالح') !== false) {
                 $coupon = $discountService->getDiscountCode($this->coupon_code);
                 if ($coupon) {
-                    $discount_amount = round($original_price * $coupon->discount_rate, 2);
-                    $final_price -= $discount_amount;
+                    $discount_amount = $priceService->roundPrice($original_price * $coupon->discount_rate);
+                    $final_price = max(0, $original_price - $discount_amount);
                     $surcharges_details[] = [
                         'id'     => 'discount',
                         'name'   => 'خصم قسيمة',
@@ -253,13 +252,13 @@ class Create extends Component
 
             $this->price_details = [
                 'distance_km' => round($this->distance_km, 2),
-                'base_price' => round($base_price, 2),
-                'ac_cost' => $ac_cost,
-                'total_surcharges' => $total_surcharge_amount,
-                'discount_amount' => $discount_amount,
-                'final_price' => round($final_price, 2),
+                'base_price' => (int) $base_price,
+                'ac_cost' => (int) $ac_cost,
+                'total_surcharges' => (int) $total_surcharge_amount,
+                'discount_amount' => (int) $discount_amount,
+                'final_price' => (int) $final_price,
                 'surcharges_details' => $surcharges_details,
-                'price_per_km' => $price_per_km,
+                'price_per_km' => round($price_per_km, 2),
             ];
         } catch (\Exception $e) {
             $this->calculation_error = 'حدث خطأ أثناء حساب السعر';

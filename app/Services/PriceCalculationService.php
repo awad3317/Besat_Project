@@ -78,17 +78,26 @@ class PriceCalculationService
         return $price_per_km;
     }
 
+    /**
+     * تقريب السعر لأقرب 100 ريال لأعلى وبدون فواصل عشرية (مثال: 7825 تصبح 7900)
+     */
+    public function roundPrice($amount): int
+    {
+        return (int) (ceil((float) $amount / 100) * 100);
+    }
+
     public function calculatePrice($distanceKm, $price_per_km, $min_price)
     {
         $total_price = $distanceKm * $price_per_km;
-        return max($total_price, $min_price);
+        $price = max($total_price, $min_price);
+        return $this->roundPrice($price);
     }
 
     public function calculateCommission($orginal_price)
     {
         $commission_rate = $this->appSettingRepository->getSetting()->commission_rate;
         $commission_amount = $orginal_price * ($commission_rate / 100);
-        return round($commission_amount, 2);
+        return (int) round($commission_amount);
     }
 
     public function calculateSurcharges($tripDatetime)
@@ -122,17 +131,18 @@ class PriceCalculationService
             }
 
             if ($applyThisSurcharge) {
-                $total_amount += $surcharge->amount;
+                $surchargeAmount = (int) $surcharge->amount;
+                $total_amount += $surchargeAmount;
                 $details[] = [
                     'id'     => $surcharge->id,
                     'name'   => $surcharge->name,
-                    'amount' => (float) $surcharge->amount
+                    'amount' => $surchargeAmount
                 ];
             }
         }
 
         return [
-            'total_amount' => (float) $total_amount,
+            'total_amount' => (int) $total_amount,
             'details'      => $details
         ];
     }
@@ -175,8 +185,7 @@ class PriceCalculationService
         $wants_ac = $validatedData['wants_ac'] ?? false;
 
         if ($wants_ac && $vehicle->has_ac_option) {
-            $ac_cost = $distanceInKm * $vehicle->ac_price_per_km;
-            $ac_cost = round((float) $ac_cost, 2);
+            $ac_cost = $this->roundPrice($distanceInKm * $vehicle->ac_price_per_km);
             $ac_applied = true;
 
             $surcharges_details[] = [
@@ -188,14 +197,14 @@ class PriceCalculationService
 
         $tripDatetime = $validatedData['trip_datetime'] ?? now()->format('Y-m-d H:i:s');
         $surchargesData = $this->calculateSurcharges($tripDatetime);
-        $total_surcharge_amount = $surchargesData['total_amount'];
+        $total_surcharge_amount = (int) $surchargesData['total_amount'];
 
         if (!empty($surchargesData['details'])) {
             $surcharges_details = array_merge($surcharges_details, $surchargesData['details']);
         }
 
         // 1. حساب السعر الأصلي للرحلة كاملاً قبل تطبيق أي كوبون خصم
-        $original_price = $base_price + $ac_cost + $total_surcharge_amount;
+        $original_price = $this->roundPrice($base_price + $ac_cost + $total_surcharge_amount);
         $final_price = $original_price;
 
         $discount_amount = 0;
@@ -204,9 +213,8 @@ class PriceCalculationService
         if ($couponObject) {
             $coupon_rate = $couponObject->discount_rate;
             $coupon_for_response = number_format($coupon_rate * 100, 2) . '%';
-            $discount_amount = $original_price * $coupon_rate;
-            $discount_amount = round((float) $discount_amount, 2);
-            $final_price = max(0.0, $original_price - $discount_amount);
+            $discount_amount = $this->roundPrice($original_price * $coupon_rate);
+            $final_price = max(0, $original_price - $discount_amount);
 
             $surcharges_details[] = [
                 'id'     => 'discount',
@@ -227,18 +235,18 @@ class PriceCalculationService
         return [
             'distance_in_km'        => round((float) $distanceInKm, 2),
             'price_per_km'          => round((float) $price_per_km, 2),
-            'base_price'            => round((float) $base_price, 2),
-            'original_price'        => round((float) $original_price, 2),
-            'final_price'           => round((float) $final_price, 2),
+            'base_price'            => (int) $base_price,
+            'original_price'        => (int) $original_price,
+            'final_price'           => (int) $final_price,
             'vehicle'               => $vehicle->type,
             'coupon'                => $coupon_for_response,
             'ac_applied'            => $ac_applied,
-            'ac_cost'               => round((float) $ac_cost, 2),
-            'total_surcharges'      => round((float) $total_surcharge_amount, 2),
-            'discount_amount'       => round((float) $discount_amount, 2),
-            'app_commission_amount' => round((float) $app_commission_amount, 2),
-            'driver_amount'         => round((float) $driver_amount, 2),
-            'company_net_revenue'   => round((float) $company_net_revenue, 2),
+            'ac_cost'               => (int) $ac_cost,
+            'total_surcharges'      => (int) $total_surcharge_amount,
+            'discount_amount'       => (int) $discount_amount,
+            'app_commission_amount' => (int) $app_commission_amount,
+            'driver_amount'         => (int) $driver_amount,
+            'company_net_revenue'   => (int) $company_net_revenue,
             'surcharges_details'    => $surcharges_details
         ];
     }
