@@ -233,7 +233,7 @@
                       <div class="flex items-center gap-3">
                         <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
                           @if ($request->driver && $request->driver->driver_image)
-                            <img src='{{ url("$request->driver->driver_image") }}' alt="Driver Image" loading="lazy" />
+                            <img src="{{ url($request->driver->driver_image) }}" class="object-cover w-full h-full" alt="Driver Image" loading="lazy" />
                           @else
                             <img src="{{ asset('assets/img/User_img.png') }}" alt="Driver Image" loading="lazy" />
                           @endif

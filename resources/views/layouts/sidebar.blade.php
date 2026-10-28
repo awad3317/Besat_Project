@@ -134,10 +134,12 @@
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''"
                 style="display: flex; align-items: center; justify-content: space-between; flex: 1;">
                 <span>المحادثات</span>
-                <span x-show="unreadCount > 0" x-cloak
-                  style="display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 20px; padding: 0 7px; border-radius: 9999px; background: linear-gradient(135deg, #f97316, #dc6803); color: #ffffff; font-size: 11px; font-weight: 700; line-height: 1; box-shadow: 0 2px 6px rgba(220, 104, 3, 0.35);"
-                  x-text="unreadCount > 99 ? '+99' : unreadCount">
-                </span>
+                <template x-if="unreadCount > 0">
+                  <span
+                    style="display: inline-flex; align-items: center; justify-content: center; text-align: center; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 5px; background-color: #dc6803; color: #ffffff; font-size: 12px; font-weight: 700; line-height: 22px;"
+                    x-text="unreadCount > 99 ? '+99' : unreadCount">
+                  </span>
+                </template>
               </span>
             </a>
           </li>
