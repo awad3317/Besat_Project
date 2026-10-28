@@ -20,15 +20,6 @@ use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\vehiclePricingController;
 use Illuminate\Support\Facades\Route;
 
-
-// Route::get('/', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -38,29 +29,24 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::post('users/{id}/add-balance', [UserController::class, 'addBalance'])->name('users.add-balance');
     Route::resource('drivers', DriverController::class);
-    Route::resource('request',RequestController::class);
-    Route::resource('Coupon',CouponController::class);
-    Route::resource('Vehicle',VehicleController::class);
-    Route::resource('vehiclePricing',vehiclePricingController::class);
-    Route::resource('specialOrder',SpecialOrderController::class);
-    Route::resource('systems',SystemSettingsController::class);
-    Route::resource('notifications',NotificationController::class);
+    Route::resource('request', RequestController::class);
+    Route::resource('Coupon', CouponController::class);
+    Route::resource('Vehicle', VehicleController::class);
+    Route::resource('vehiclePricing', vehiclePricingController::class);
+    Route::resource('specialOrder', SpecialOrderController::class);
+    Route::resource('systems', SystemSettingsController::class);
+    Route::resource('notifications', NotificationController::class);
     Route::post('admins/{id}/toggle-ban', [AdminController::class, 'toggleBan'])->name('admins.toggle-ban')->middleware(['superAdmin']);
-    Route::resource('admins',AdminController::class)->middleware(['superAdmin']);
-    Route::resource('log',ActivityLogController::class)->only(['index']);
-    Route::resource('ads',AdController::class);
+    Route::resource('admins', AdminController::class)->middleware(['superAdmin']);
+    Route::resource('log', ActivityLogController::class)->only(['index']);
+    Route::resource('ads', AdController::class);
     Route::resource('Bank', BankController::class);
-    Route::post('/system-settings/auto-assign', [SystemSettingsController::class, 'updateAutoAssignSetting'])
-        ->name('system-settings.auto-assign.update');
     Route::post('/Vehicle/{id}/restore', [VehicleController::class, 'restore'])->name('Vehicle.restore');
     Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
-        
-Route::post('/calculate-price', [SpecialOrderController::class, 'calculatePrice'])->name('trip.calculatePrice');
-    Route::get('/system-settings/auto-assign', [SystemSettingsController::class, 'getAutoAssignSetting'])
-        ->name('system-settings.auto-assign.get');
+
+    Route::post('/calculate-price', [SpecialOrderController::class, 'calculatePrice'])->name('trip.calculatePrice');
     Route::patch('/firebase/token', [FirebaseController::class, 'updateToken'])->name('firebase.token');
     Route::post('/firebase/validate-token', [FirebaseController::class, 'validateToken'])->name('firebase.validate-token');
-
 });
 
 require __DIR__.'/auth.php';

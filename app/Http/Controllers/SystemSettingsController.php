@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\app_setting;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Repositories\AppSettingRepository;
 
 class SystemSettingsController extends Controller
@@ -12,41 +9,10 @@ class SystemSettingsController extends Controller
     public function __construct(private AppSettingRepository $appSettingRepository)
     {
     }
-    public function index(){
+
+    public function index()
+    {
         $settings = $this->appSettingRepository->getSetting();
-        return view('pages.systems.index',compact('settings'));
-    }
-    public function updateAutoAssignSetting(Request $request): JsonResponse
-    {
-        $request->validate([
-            'enabled' => 'required|boolean'
-        ]);
-        
-        try {
-            $app_setting=app_setting::first();
-            $app_setting->update([
-                "auto_assign_to_drivers"=>$request->enabled
-            ]);
-            return response()->json([
-                'success' => true,
-                'message' => $request->enabled ? 
-                    'تم تفعيل النظام التلقائي بنجاح' : 
-                    'تم تفعيل النظام اليدوي بنجاح'
-            ]);
-            
-        } catch (\Exception $e) { 
-            return response()->json([
-                'success' => false,
-                'message' => 'حدث خطأ أثناء حفظ الإعدادات'
-            ], 500);
-        }
-    }
-    public function getAutoAssignSetting(): JsonResponse
-    {
-        $autoAssignEnabled = app_setting::first();
-        
-        return response()->json([
-            'auto_assign_enabled' => (bool) $autoAssignEnabled->auto_assign_to_drivers,
-        ]);
+        return view('pages.systems.index', compact('settings'));
     }
 }

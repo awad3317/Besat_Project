@@ -28,11 +28,11 @@ try {
     messaging.onBackgroundMessage(function(payload) {
         console.log('📨 إشعار خلفية:', payload);
         
-        const notificationTitle = payload.notification?.title || 'إشعار بسات';
+        const notificationTitle = payload.notification?.title || payload.data?.title || 'إشعار بسات';
         const notificationOptions = {
-            body: payload.notification?.body || 'لديك إشعار جديد',
-            icon: payload.notification?.icon || '/logo.png',
-            badge: '/logo.png',
+            body: payload.notification?.body || payload.data?.body || 'لديك إشعار جديد',
+            icon: payload.notification?.icon || '/tailadmin/build/src/images/user/Busat.png',
+            badge: '/tailadmin/build/src/images/user/Busat.png',
             data: payload.data || {},
             actions: [
                 {
@@ -55,7 +55,7 @@ self.addEventListener('notificationclick', function(event) {
     
     event.notification.close();
     
-    const urlToOpen = event.notification.data?.url || '/';
+    const urlToOpen = event.notification.data?.url || '/request';
     
     event.waitUntil(
         clients.matchAll({ 
@@ -63,7 +63,10 @@ self.addEventListener('notificationclick', function(event) {
             includeUncontrolled: true 
         }).then(function(clientList) {
             for (const client of clientList) {
-                if (client.url.includes('/') && 'focus' in client) {
+                if ('focus' in client) {
+                    if (urlToOpen && 'navigate' in client) {
+                        client.navigate(urlToOpen);
+                    }
                     return client.focus();
                 }
             }

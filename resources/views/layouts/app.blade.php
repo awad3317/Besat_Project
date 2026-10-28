@@ -34,7 +34,7 @@
             measurementId: "{{ config('services.firebase.measurement_id', '') }}"
         };
 
-        const vapidKey = "{{ env('FIREBASE_VAPID_KEY', '') }}";
+        const vapidKey = "{{ config('services.firebase.vapid_key', '') }}";
         const TOKEN_STORAGE_KEY = 'fcm_token_stored';
 
         function isFirebaseLoaded() {
@@ -149,27 +149,22 @@
         function setupMessageListener(messaging) {
             if (messageListenerSetup) return;
             messaging.onMessage(function (payload) {
-                setTimeout(() => {
-                    let data = payload.notification ? {
-                        title: payload.notification.title || 'إشعار جديد',
-                        message: payload.notification.body || 'لديك إشعار',
-                        showButtons: payload.data?.showButtons === 'true' || false
-                    } : {
-                        title: payload.data?.title || 'إشعار جديد',
-                        message: payload.data?.body || 'لديك إشعار',
-                        showButtons: payload.data?.showButtons === 'true' || false
-                    };
-                    sendEventWithRetry(data);
-                }, 300);
+                let data = payload.notification ? {
+                    title: payload.notification.title || 'إشعار جديد',
+                    message: payload.notification.body || 'لديك إشعار',
+                    url: payload.data?.url || '',
+                    request_id: payload.data?.request_id || '',
+                    showButtons: payload.data?.showButtons === 'true' || false
+                } : {
+                    title: payload.data?.title || 'إشعار جديد',
+                    message: payload.data?.body || 'لديك إشعار',
+                    url: payload.data?.url || '',
+                    request_id: payload.data?.request_id || '',
+                    showButtons: payload.data?.showButtons === 'true' || false
+                };
+                triggerEvent(data);
             });
             messageListenerSetup = true;
-        }
-
-        function sendEventWithRetry(data) {
-            setTimeout(() => triggerEvent(data), 0);
-            setTimeout(() => triggerEvent(data), 200);
-            setTimeout(() => triggerEvent(data), 500);
-            setTimeout(() => triggerEvent(data), 1000);
         }
 
         function triggerEvent(data) {
@@ -220,67 +215,6 @@
 
     @livewireScripts
     @yield('script')
-
-    <!-- دالة الإسناد التلقائي الآمنة لـ Alpine.js -->
-    <script>
-        function autoAssignSystem() {
-            return {
-                autoAssignEnabled: false,
-                message: '',
-                messageType: 'success',
-
-                async init() {
-                    await this.loadCurrentSettings();
-                },
-
-                async loadCurrentSettings() {
-                    try {
-                        const response = await fetch('{{ route("system-settings.auto-assign.get") }}', {
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            }
-                        });
-                        const data = await response.json();
-                        this.autoAssignEnabled = data.auto_assign_enabled;
-                    } catch (error) {
-                        this.showMessage('خطأ في تحميل الإعدادات', 'error');
-                    }
-                },
-
-                async updateAutoAssignSetting(enabled) {
-                    try {
-                        const response = await fetch('{{ route("system-settings.auto-assign.update") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({ enabled: enabled })
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            this.autoAssignEnabled = enabled;
-                            this.showMessage(data.message, 'success');
-                        } else {
-                            this.showMessage(data.message, 'error');
-                            this.autoAssignEnabled = !enabled;
-                        }
-                    } catch (error) {
-                        this.showMessage('حدث خطأ أثناء حفظ الإعدادات', 'error');
-                        this.autoAssignEnabled = !enabled;
-                    }
-                },
-
-                showMessage(text, type = 'success') {
-                    this.message = text;
-                    this.messageType = type;
-                    setTimeout(() => { this.message = ''; }, 3000);
-                }
-            }
-        }
-    </script>
 
     <!-- ========== تهيئة Pusher و Laravel Echo عالمياً بشكل آمن وتوافقي ========== -->
     <script>

@@ -187,16 +187,23 @@ class Settings extends Component
         };
         
         if ($db_key) {
-            $appSettingsModel = app_setting::where('app_type', $this->selectedApp)->first();
-            if ($appSettingsModel) {
-                $appSettingsModel->update([$db_key => $value]);
+            if ($key === 'auto_assign') {
+                app_setting::query()->update([$db_key => (bool) $value]);
+            } else {
+                $appSettingsModel = app_setting::where('app_type', $this->selectedApp)->first();
+                if ($appSettingsModel) {
+                    $appSettingsModel->update([$db_key => $value]);
+                }
             }
             Cache::forget('app_settings');
             Cache::forget('app_settings_user');
             Cache::forget('app_settings_driver');
 
             $appName = $this->selectedApp === 'driver' ? 'تطبيق السائق' : 'تطبيق المستخدم';
-            $this->dispatch('notify', ['message' => "تم تحديث الإعداد لـ {$appName} بنجاح"]);
+            $message = $key === 'auto_assign'
+                ? ($value ? 'تم تفعيل التوزيع التلقائي للسائقين بنجاح' : 'تم إيقاف التوزيع التلقائي وتفعيل إشعارات الداشبورد بنجاح')
+                : "تم تحديث الإعداد لـ {$appName} بنجاح";
+            $this->dispatch('notify', ['message' => $message]);
             $this->loadData();
         }
     }
