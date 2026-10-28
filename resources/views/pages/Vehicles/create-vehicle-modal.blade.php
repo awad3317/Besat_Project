@@ -56,15 +56,19 @@
             </label>
             <div class="flex items-center gap-6 h-11">
               
-              <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 hover:text-yellow-500 dark:text-gray-400 dark:hover:text-yellow-500 transition-colors">
+              <label class="flex cursor-pointer items-center gap-2 text-sm font-medium hover:text-brand-500 transition-colors"
+                :class="hasAc === '1' ? 'text-brand-500' : 'text-gray-700 dark:text-gray-400'">
                 <input type="radio" name="has_ac_option" value="1" x-model="hasAc"
-                  class="h-4 w-4 cursor-pointer text-yellow-500 border-gray-300 bg-gray-100 focus:ring-yellow-500 focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:ring-offset-gray-900">
+                  style="accent-color: #dc6803; width: 16px; height: 16px;"
+                  class="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 focus:ring-brand-500 focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:ring-offset-gray-900">
                 <span>نعم، تدعم</span>
               </label>
 
-              <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 hover:text-yellow-500 dark:text-gray-400 dark:hover:text-yellow-500 transition-colors">
+              <label class="flex cursor-pointer items-center gap-2 text-sm font-medium hover:text-brand-500 transition-colors"
+                :class="hasAc === '0' ? 'text-brand-500' : 'text-gray-700 dark:text-gray-400'">
                 <input type="radio" name="has_ac_option" value="0" x-model="hasAc"
-                  class="h-4 w-4 cursor-pointer text-yellow-500 border-gray-300 bg-gray-100 focus:ring-yellow-500 focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:ring-offset-gray-900">
+                  style="accent-color: #dc6803; width: 16px; height: 16px;"
+                  class="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 focus:ring-brand-500 focus:ring-2 dark:border-gray-600 dark:bg-gray-800 dark:ring-offset-gray-900">
                 <span>لا تدعم</span>
               </label>
               
