@@ -100,16 +100,24 @@
                     </button>
 
                     <!-- Dropdown Start -->
-                    <div x-show="dropdownOpen" x-cloak style="width: 320px; max-height: 360px; left: 0; right: auto;"
+                    <div x-show="dropdownOpen" x-cloak style="width: 340px; max-height: 390px; left: 0; right: auto;"
                         class="shadow-theme-lg dark:bg-gray-dark absolute top-full mt-2 flex flex-col rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800">
                         <div
                             class="mb-3 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
-                            <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                                الإشعارات
-                            </h5>
+                            <div class="flex items-center gap-2">
+                                <span style="width: 30px; height: 30px; border-radius: 8px; background: rgba(220, 104, 3, 0.12); display: inline-flex; align-items: center; justify-content: center;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#dc6803" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#dc6803" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                                <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                    الإشعارات
+                                </h5>
+                            </div>
 
-                            <button @click="dropdownOpen = false" class="text-gray-500 dark:text-gray-400">
-                                <svg class="fill-current" width="24" height="24" viewBox="0 0 24 24"
+                            <button @click="dropdownOpen = false" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
+                                <svg class="fill-current" width="22" height="22" viewBox="0 0 24 24"
                                     fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" clip-rule="evenodd"
                                         d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z"
@@ -118,19 +126,42 @@
                             </button>
                         </div>
 
-                        <ul class="custom-scrollbar flex flex-col overflow-y-auto" style="max-height: 230px;">
+                        <ul class="custom-scrollbar flex flex-col overflow-y-auto" style="max-height: 250px;">
                             <!-- الإشعارات الفورية الواردة عبر Firebase -->
                             <template x-for="(item, index) in liveNotifications" :key="index">
                                 <li>
-                                    <a class="flex gap-3 rounded-lg border-b border-gray-100 bg-orange-50/40 p-3 hover:bg-gray-100 dark:border-gray-800 dark:bg-orange-500/10 dark:hover:bg-white/5"
+                                    <a class="flex items-start gap-3 rounded-xl border-b border-gray-100 p-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
+                                        style="background: rgba(220, 104, 3, 0.06);"
                                         :href="item.url">
-                                        <span class="block">
+                                        <!-- أيقونة الطلب الفوري -->
+                                        <span style="width: 40px; height: 40px; min-width: 40px; border-radius: 10px; background: rgba(220, 104, 3, 0.16); display: flex; align-items: center; justify-content: center; position: relative;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M5 17H4a2 2 0 0 1-2-2v-4l2.48-5.78A2 2 0 0 1 6.32 4h11.36a2 2 0 0 1 1.84 1.22L22 11v4a2 2 0 0 1-2 2h-1" stroke="#dc6803" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <circle cx="7.5" cy="17.5" r="2.5" stroke="#dc6803" stroke-width="1.8"/>
+                                                <circle cx="16.5" cy="17.5" r="2.5" stroke="#dc6803" stroke-width="1.8"/>
+                                                <path d="M10 17h4" stroke="#dc6803" stroke-width="1.8" stroke-linecap="round"/>
+                                            </svg>
+                                            <span style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; border-radius: 9999px; background: #dc6803;"></span>
+                                        </span>
+
+                                        <span class="block flex-1">
                                             <span class="text-theme-sm mb-1 block font-semibold text-gray-800 dark:text-white/90" x-text="item.title"></span>
-                                            <span class="text-theme-xs mb-1.5 block text-gray-600 dark:text-gray-300" x-text="item.message"></span>
-                                            <span class="text-theme-xs flex items-center gap-2 text-orange-600 dark:text-orange-400">
-                                                <span>طلب جديد</span>
+                                            <span class="text-theme-xs mb-1.5 block text-gray-500 dark:text-gray-400" style="line-height: 1.45;" x-text="item.message"></span>
+                                            <span class="text-theme-xs flex items-center gap-2" style="color: #dc6803;">
+                                                <span class="flex items-center gap-1">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" fill="#dc6803"/>
+                                                    </svg>
+                                                    <span>طلب جديد</span>
+                                                </span>
                                                 <span class="h-1 w-1 rounded-full bg-orange-400"></span>
-                                                <span x-text="item.time"></span>
+                                                <span class="flex items-center gap-1">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <circle cx="12" cy="12" r="9" stroke="#dc6803" stroke-width="2"/>
+                                                        <path d="M12 7v5l3 2" stroke="#dc6803" stroke-width="2" stroke-linecap="round"/>
+                                                    </svg>
+                                                    <span x-text="item.time"></span>
+                                                </span>
                                             </span>
                                         </span>
                                     </a>
@@ -139,33 +170,66 @@
 
                             @forelse ($adminNotifications as $notification)
                                 <li>
-                                    <a class="flex gap-3 rounded-lg border-b border-gray-100 p-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
+                                    <a class="flex items-start gap-3 rounded-xl border-b border-gray-100 p-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
                                         href="{{ $notification->data['url'] ?? (isset($notification->data['request_id']) ? route('request.show', $notification->data['request_id']) : route('request.index')) }}">
-                                        <span class="block">
+                                        <!-- أيقونة الإشعار -->
+                                        <span style="width: 40px; height: 40px; min-width: 40px; border-radius: 10px; background: rgba(220, 104, 3, 0.12); display: flex; align-items: center; justify-content: center;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M5 17H4a2 2 0 0 1-2-2v-4l2.48-5.78A2 2 0 0 1 6.32 4h11.36a2 2 0 0 1 1.84 1.22L22 11v4a2 2 0 0 1-2 2h-1" stroke="#dc6803" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <circle cx="7.5" cy="17.5" r="2.5" stroke="#dc6803" stroke-width="1.8"/>
+                                                <circle cx="16.5" cy="17.5" r="2.5" stroke="#dc6803" stroke-width="1.8"/>
+                                                <path d="M10 17h4" stroke="#dc6803" stroke-width="1.8" stroke-linecap="round"/>
+                                            </svg>
+                                        </span>
+
+                                        <span class="block flex-1">
                                             <span class="text-theme-sm mb-1 block font-semibold text-gray-800 dark:text-white/90">
                                                 {{ $notification->data['title'] ?? 'إشعار جديد' }}
                                             </span>
-                                            <span class="text-theme-xs mb-1.5 block text-gray-500 dark:text-gray-400">
+                                            <span class="text-theme-xs mb-1.5 block text-gray-500 dark:text-gray-400" style="line-height: 1.45;">
                                                 {{ $notification->data['body'] ?? '' }}
                                             </span>
                                             <span class="text-theme-xs flex items-center gap-2 text-gray-400 dark:text-gray-500">
-                                                <span>رحلة</span>
+                                                <span class="flex items-center gap-1" style="color: #dc6803;">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" fill="#dc6803"/>
+                                                    </svg>
+                                                    <span>رحلة</span>
+                                                </span>
                                                 <span class="h-1 w-1 rounded-full bg-gray-400"></span>
-                                                <span>{{ $notification->created_at->diffForHumans() }}</span>
+                                                <span class="flex items-center gap-1">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                                                        <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                                    </svg>
+                                                    <span>{{ $notification->created_at->diffForHumans() }}</span>
+                                                </span>
                                             </span>
                                         </span>
                                     </a>
                                 </li>
                             @empty
                                 <li x-show="liveNotifications.length === 0" class="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    لا توجد إشعارات حالياً
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <span style="width: 44px; height: 44px; border-radius: 9999px; background: rgba(156, 163, 175, 0.12); display: inline-flex; align-items: center; justify-content: center;">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#9ca3af" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#9ca3af" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                        <span>لا توجد إشعارات حالياً</span>
+                                    </div>
                                 </li>
                             @endforelse
                         </ul>
 
                         <a href="{{ route('request.index') }}"
-                            class="text-theme-sm shadow-theme-xs mt-3 flex justify-center rounded-lg border border-gray-300 bg-white p-2.5 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
-                            عرض جميع الطلبات
+                            class="text-theme-sm shadow-theme-xs mt-3 flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white p-2.5 font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                            </svg>
+                            <span>عرض جميع الطلبات</span>
                         </a>
                     </div>
                     <!-- Dropdown End -->
