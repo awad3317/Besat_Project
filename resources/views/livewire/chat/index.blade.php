@@ -54,13 +54,13 @@
             </div>
 
             <!-- نظام التابات الأفقي -->
-            <div class="flex p-1 bg-gray-100 rounded-lg shadow-inner dark:bg-gray-800/80">
+            <div class="chat-tabs-container">
                 <!-- تاب العملاء -->
                 <button wire:click="switchTab('clients')" 
-                    class="flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-md transition-all duration-200 {{ $activeTab === 'clients' ? 'bg-white text-brand-500 shadow-sm dark:bg-gray-700 dark:text-brand-400' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700/50' }}">
+                    class="chat-tab-btn {{ $activeTab === 'clients' ? 'active' : '' }}">
                     <span>العملاء</span>
                     @if($clientsUnread > 0)
-                        <span class="flex items-center justify-center w-5 h-5 text-[10px] text-white bg-brand-500 rounded-full shadow-sm shadow-brand-500/30">
+                        <span class="chat-tab-badge">
                             {{ $clientsUnread > 99 ? '+99' : $clientsUnread }}
                         </span>
                     @endif
@@ -68,10 +68,10 @@
 
                 <!-- تاب السائقين -->
                 <button wire:click="switchTab('drivers')" 
-                    class="flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-md transition-all duration-200 {{ $activeTab === 'drivers' ? 'bg-white text-brand-500 shadow-sm dark:bg-gray-700 dark:text-brand-400' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700/50' }}">
+                    class="chat-tab-btn {{ $activeTab === 'drivers' ? 'active' : '' }}">
                     <span>السائقين</span>
                     @if($driversUnread > 0)
-                        <span class="flex items-center justify-center w-5 h-5 text-[10px] text-white bg-brand-500 rounded-full shadow-sm shadow-brand-500/30">
+                        <span class="chat-tab-badge">
                             {{ $driversUnread > 99 ? '+99' : $driversUnread }}
                         </span>
                     @endif
@@ -119,19 +119,16 @@
                                 </p>
                             </div>
                             <!-- الوقت + بادج -->
-                            <!-- الوقت + بادج -->
                             <div class="flex flex-col flex-shrink-0 gap-1 items-end pt-0.5">
                                 <span class="text-[8px] text-gray-400 font-medium">
                                     {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
                                 </span>
 
-                                <!-- تم تعديل اسم المتغير هنا -->
                                 @if ($conv->participant_unread_count > 0)
                                     <div class="flex items-center gap-1.5 mt-0.5">
                                         <!-- النقطة الزرقاء الصغيرة -->
                                         <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/40"></span>
-                                        <span style="min-width: 20px;"
-                                            class="flex h-5 items-center justify-center rounded-full bg-brand-500 px-2 text-[10px] font-bold text-white shadow-sm shadow-brand-500/30">
+                                        <span style="display: inline-flex; align-items: center; justify-content: center; text-align: center; min-width: 20px; height: 20px; padding: 0 5px; line-height: 20px; border-radius: 5px; background-color: #dc6803; color: #ffffff; font-size: 11px; font-weight: 700;">
                                             {{ $conv->participant_unread_count > 99 ? '+99' : $conv->participant_unread_count }}
                                         </span>
                                     </div>
