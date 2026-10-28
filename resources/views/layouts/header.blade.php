@@ -100,8 +100,8 @@
                     </button>
 
                     <!-- Dropdown Start -->
-                    <div x-show="dropdownOpen" x-cloak style="width: 320px"
-                        class="shadow-theme-lg dark:bg-gray-dark absolute top-full mt-2 flex max-h-[360px] w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800 sm:w-[400px] lg:start-1/2 lg:end-1/2 lg:-translate-x-1/2">
+                    <div x-show="dropdownOpen" x-cloak style="width: 320px; max-height: 360px; left: 0; right: auto;"
+                        class="shadow-theme-lg dark:bg-gray-dark absolute top-full mt-2 flex flex-col rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800">
                         <div
                             class="mb-3 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
                             <h5 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -118,7 +118,7 @@
                             </button>
                         </div>
 
-                        <ul class="custom-scrollbar flex h-auto flex-col overflow-y-auto">
+                        <ul class="custom-scrollbar flex flex-col overflow-y-auto" style="max-height: 230px;">
                             <!-- الإشعارات الفورية الواردة عبر Firebase -->
                             <template x-for="(item, index) in liveNotifications" :key="index">
                                 <li>
