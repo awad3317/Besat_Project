@@ -41,12 +41,18 @@ class Index extends Component
     {
         $this->selectedConversationId = (int) $id;
 
+        $unreadCount = (int) Conversation::where('id', $id)->value('participant_unread_count');
+
         // تحديث مباشر بدون جلب السجل كاملاً
         // استخدام DB::raw('updated_at') لمنع تغيير وقت التحديث، وبالتالي عدم قفز المحادثة لأعلى القائمة
         Conversation::where('id', $id)->update([
             'participant_unread_count' => 0,
             'updated_at' => \Illuminate\Support\Facades\DB::raw('updated_at')
         ]);
+
+        if ($unreadCount > 0) {
+            $this->dispatch('chat-messages-read', count: $unreadCount);
+        }
 
         $conversationType = Conversation::where('id', $id)->value('type') ?? 'support';
 

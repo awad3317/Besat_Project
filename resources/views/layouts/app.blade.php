@@ -154,12 +154,18 @@
                     message: payload.notification.body || 'لديك إشعار',
                     url: payload.data?.url || '',
                     request_id: payload.data?.request_id || '',
+                    type: payload.data?.type || '',
+                    new_message: payload.data?.new_message || 'false',
+                    conversation_id: payload.data?.conversation_id || '',
                     showButtons: payload.data?.showButtons === 'true' || false
                 } : {
                     title: payload.data?.title || 'إشعار جديد',
                     message: payload.data?.body || 'لديك إشعار',
                     url: payload.data?.url || '',
                     request_id: payload.data?.request_id || '',
+                    type: payload.data?.type || '',
+                    new_message: payload.data?.new_message || 'false',
+                    conversation_id: payload.data?.conversation_id || '',
                     showButtons: payload.data?.showButtons === 'true' || false
                 };
                 triggerEvent(data);

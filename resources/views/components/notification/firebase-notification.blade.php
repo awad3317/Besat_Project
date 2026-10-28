@@ -4,6 +4,7 @@
     title: '',
     message: '',
     url: '',
+    isChat: false,
     showButtons: false,
     init() {
         window.firebaseNotificationReady = true;
@@ -16,6 +17,7 @@
         this.title = data.title || 'إشعار جديد';
         this.message = data.message || 'لديك إشعار';
         this.url = data.url || '';
+        this.isChat = (data.type === 'support_chat' || data.new_message === 'true');
         this.showButtons = data.showButtons || false;
     },
     closeNotification() {
@@ -44,12 +46,22 @@
             <div class="flex items-start gap-3">
                 <!-- أيقونة الإشعار البارزة -->
                 <div style="width: 46px; height: 46px; min-width: 46px; border-radius: 12px; background: rgba(220, 104, 3, 0.14); display: flex; align-items: center; justify-content: center; position: relative;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5 17H4a2 2 0 0 1-2-2v-4l2.48-5.78A2 2 0 0 1 6.32 4h11.36a2 2 0 0 1 1.84 1.22L22 11v4a2 2 0 0 1-2 2h-1" stroke="#dc6803" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="7.5" cy="17.5" r="2.5" stroke="#dc6803" stroke-width="1.8"/>
-                        <circle cx="16.5" cy="17.5" r="2.5" stroke="#dc6803" stroke-width="1.8"/>
-                        <path d="M10 17h4" stroke="#dc6803" stroke-width="1.8" stroke-linecap="round"/>
-                    </svg>
+                    <!-- أيقونة المحادثة للدعم الفني -->
+                    <template x-if="isChat">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2.5 21.5L7 20.6622C8.47087 21.513 10.1786 22 12 22Z" stroke="#dc6803" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 12H8.01M12 12H12.01M16 12H16.01" stroke="#dc6803" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </template>
+                    <!-- أيقونة السيارة للرحلات -->
+                    <template x-if="!isChat">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 17H4a2 2 0 0 1-2-2v-4l2.48-5.78A2 2 0 0 1 6.32 4h11.36a2 2 0 0 1 1.84 1.22L22 11v4a2 2 0 0 1-2 2h-1" stroke="#dc6803" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="7.5" cy="17.5" r="2.5" stroke="#dc6803" stroke-width="1.8"/>
+                            <circle cx="16.5" cy="17.5" r="2.5" stroke="#dc6803" stroke-width="1.8"/>
+                            <path d="M10 17h4" stroke="#dc6803" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </template>
                     <span style="position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 9999px; background: #dc6803; border: 2px solid #fff;"></span>
                 </div>
 
@@ -82,7 +94,7 @@
                                 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span>فتح الطلب</span>
+                            <span x-text="isChat ? 'فتح المحادثة' : 'فتح الطلب'">فتح الطلب</span>
                         </button>
                         <button
                             type="button"

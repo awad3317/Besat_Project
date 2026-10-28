@@ -98,21 +98,46 @@
             </a>
           </li>
           <!-- Menu Item Chat -->
-          <li>
+          @php
+            $unreadChatMessagesCount = (int) \App\Models\Conversation::sum('participant_unread_count');
+          @endphp
+          <li x-data="{
+                unreadCount: {{ $unreadChatMessagesCount }},
+                init() {
+                    window.addEventListener('show-firebase-notification', (event) => {
+                        if (event.detail && (event.detail.type === 'support_chat' || event.detail.new_message === 'true')) {
+                            this.unreadCount++;
+                        }
+                    });
+                    window.addEventListener('chat-messages-read', (event) => {
+                        const readCount = (event.detail && event.detail.count) ? parseInt(event.detail.count) : 0;
+                        this.unreadCount = Math.max(0, this.unreadCount - readCount);
+                    });
+                }
+              }">
             <a href="{{ route('chats.index') }}" @click="selected = (selected === 'Chat' ? '':'Chat')"
-              class="menu-item group" :class="window.location.href.includes('{{ route('chats.index') }}') ? 'menu-item-active' :
+              class="menu-item group relative" :class="window.location.href.includes('{{ route('chats.index') }}') ? 'menu-item-active' :
                                 'menu-item-inactive'">
 
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2.5 21.5L7 20.6622C8.47087 21.513 10.1786 22 12 22Z"
-                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M8 12H8.01M12 12H12.01M16 12H16.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
+              <div style="position: relative; display: inline-flex; align-items: center; justify-content: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2.5 21.5L7 20.6622C8.47087 21.513 10.1786 22 12 22Z"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M8 12H8.01M12 12H12.01M16 12H16.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                <span x-show="unreadCount > 0 && sidebarToggle" x-cloak
+                  style="position: absolute; top: -2px; right: -2px; width: 9px; height: 9px; border-radius: 9999px; background-color: #dc6803; border: 1.5px solid #fff;"></span>
+              </div>
 
-              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                المحادثات 
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''"
+                style="display: flex; align-items: center; justify-content: space-between; flex: 1;">
+                <span>المحادثات</span>
+                <span x-show="unreadCount > 0" x-cloak
+                  style="display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 20px; padding: 0 7px; border-radius: 9999px; background: linear-gradient(135deg, #f97316, #dc6803); color: #ffffff; font-size: 11px; font-weight: 700; line-height: 1; box-shadow: 0 2px 6px rgba(220, 104, 3, 0.35);"
+                  x-text="unreadCount > 99 ? '+99' : unreadCount">
+                </span>
               </span>
             </a>
           </li>
@@ -562,4 +587,6 @@
     </nav>
     <!-- Sidebar Menu -->
   </div>
+</aside>
+
 </aside>

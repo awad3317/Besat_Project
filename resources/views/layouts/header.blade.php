@@ -68,6 +68,10 @@
                         liveNotifications: [],
                         init() {
                             window.addEventListener('show-firebase-notification', (event) => {
+                                // استثناء إشعارات المحادثات والدعم الفني من الظهور في جرس الهيدر
+                                if (event.detail && (event.detail.type === 'support_chat' || event.detail.new_message === 'true')) {
+                                    return;
+                                }
                                 this.notifying = true;
                                 this.liveNotifications.unshift({
                                     title: event.detail.title || 'طلب رحلة جديد',

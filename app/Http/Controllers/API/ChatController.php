@@ -151,20 +151,72 @@ class ChatController extends Controller
     }
 
     /**
-     * إرسال إشعار Firebase للطرف الآخر في المحادثة (سائق -> مستخدم أو مستخدم -> سائق)
+     * إرسال إشعار Firebase للطرف الآخر في المحادثة (دعم فني -> داشبورد الأدمن، أو سائق <-> مستخدم)
      */
     private function sendChatNotification(Conversation $conversation, Message $message, User|Driver $sender): void
     {
         $tokens = [];
         $title = '';
+        $body = '';
 
         $previewText = match ($message->type) {
-            'image'    => 'أرسل صورة',
-            'audio'    => 'أرسل تسجيلاً صوتياً',
-            'location' => 'أرسل موقعاً',
+            'image'    => 'أرسل صورة 📷',
+            'audio'    => 'أرسل تسجيلاً صوتياً 🎤',
+            'location' => 'أرسل موقعاً 📍',
             default    => mb_substr($message->body ?? '', 0, 50),
         };
 
+        // 1. إذا كانت المحادثة مع الدعم الفني -> إرسال الإشعار لمدراء الداشبورد عبر Firebase فقط
+        if ($conversation->type === 'support') {
+            $tokens = User::whereIn('type', ['admin', 'superAdmin'])
+                ->where('is_banned', false)
+                ->whereNotNull('fcm_token')
+                ->where('fcm_token', '!=', '')
+                ->pluck('fcm_token')
+                ->unique()
+                ->values()
+                ->all();
+
+            if (empty($tokens)) {
+                return;
+            }
+
+            $isDriver = $sender instanceof Driver;
+            $senderLabel = $isDriver
+                ? 'الكابتن ' . ($sender->name ?? 'سائق')
+                : 'العميل ' . ($sender->name ?? 'مستخدم');
+            $tab = $isDriver ? 'drivers' : 'clients';
+
+            $title = 'رسالة دعم فني جديدة';
+            $body  = $senderLabel . ': ' . $previewText;
+            $url   = route('chats.index', ['c' => $conversation->id, 'tab' => $tab]);
+
+            $notificationData = [
+                'type'            => 'support_chat',
+                'new_message'     => 'true',
+                'new_request'     => 'false',
+                'conversation_id' => (string) $conversation->id,
+                'message_id'      => (string) $message->id,
+                'url'             => (string) $url,
+            ];
+
+            foreach ($tokens as $token) {
+                try {
+                    $this->firebaseService->sendNotification(
+                        deviceToken: $token,
+                        title: $title,
+                        body: $body,
+                        data: $notificationData
+                    );
+                } catch (\Throwable $e) {
+                    Log::warning("فشل إرسال إشعار دعم فني FCM للتوكن {$token}: " . $e->getMessage());
+                }
+            }
+
+            return;
+        }
+
+        // 2. محادثات الرحلات بين العميل والسائق
         if ($sender instanceof User) {
             // المرسل هو المستخدم -> المستلم هو السائق
             $driver = $conversation->driver;
@@ -197,7 +249,7 @@ class ChatController extends Controller
         }
 
         $notificationData = [
-            'type'            => $conversation->type === 'support' ? 'support_chat' : 'chat',
+            'type'            => 'chat',
             'new_message'     => 'true',
             'new_request'     => 'false',
             'conversation_id' => (string) $conversation->id,
