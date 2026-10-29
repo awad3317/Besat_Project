@@ -38,7 +38,7 @@
 }"
     @subscribe-to-channel.window="listenToChannel($event.detail.conversationId, $event.detail.type)"
     @scroll-to-bottom.window="scrollToBottom()"
-    @show-firebase-notification.window="if ($event.detail && ($event.detail.type === 'support_chat' || $event.detail.new_message === 'true')) { $wire.handleIncomingMessage(); }">
+    x-on:show-firebase-notification.window="if ($event.detail && ($event.detail.type === 'support_chat' || $event.detail.new_message === 'true')) { $wire.handleIncomingMessage(); }">
 
     <!-- ====== 1. القائمة الجانبية للمحادثات (جهة اليمين) ====== -->
     <div class="bg-white border border-gray-200 chat-sidebar dark:border-gray-800 dark:bg-gray-900">
