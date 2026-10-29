@@ -1,4 +1,5 @@
 <div class="chat-wrapper" x-data="{
+    activeTab: '{{ $activeTab }}',
     currentChannelName: null,
     activeChannelObj: null,
 
@@ -36,7 +37,8 @@
     }
 }"
     @subscribe-to-channel.window="listenToChannel($event.detail.conversationId, $event.detail.type)"
-    @scroll-to-bottom.window="scrollToBottom()">
+    @scroll-to-bottom.window="scrollToBottom()"
+    @show-firebase-notification.window="if ($event.detail && ($event.detail.type === 'support_chat' || $event.detail.new_message === 'true')) { $wire.handleIncomingMessage(); }">
 
     <!-- ====== 1. القائمة الجانبية للمحادثات (جهة اليمين) ====== -->
     <div class="bg-white border border-gray-200 chat-sidebar dark:border-gray-800 dark:bg-gray-900">
@@ -48,16 +50,18 @@
                 <h3 class="text-sm font-bold text-gray-800 dark:text-white/90">
                     المحادثات المباشرة
                 </h3>
-                <span class="rounded-full bg-brand-500/10 px-2.5 py-0.5 text-[11px] font-bold text-brand-500">
-                    إجمالي: {{ $totalCount }}
+                <span class="rounded-full bg-brand-500/10 px-2.5 py-0.5 text-[11px] font-bold text-brand-500"
+                    x-text="'إجمالي: ' + (activeTab === 'clients' ? {{ $clientsCount }} : {{ $driversCount }})">
+                    إجمالي: {{ $clientsCount }}
                 </span>
             </div>
 
-            <!-- نظام التابات الأفقي -->
+            <!-- نظام التابات الأفقي السريع عبر Alpine -->
             <div class="chat-tabs-container">
                 <!-- تاب العملاء -->
-                <button wire:click="switchTab('clients')" 
-                    class="chat-tab-btn {{ $activeTab === 'clients' ? 'active' : '' }}">
+                <button type="button" @click="activeTab = 'clients'"
+                    class="chat-tab-btn"
+                    :class="activeTab === 'clients' ? 'active' : ''">
                     <span>العملاء</span>
                     @if($clientsUnread > 0)
                         <span class="chat-tab-badge">
@@ -67,8 +71,9 @@
                 </button>
 
                 <!-- تاب السائقين -->
-                <button wire:click="switchTab('drivers')" 
-                    class="chat-tab-btn {{ $activeTab === 'drivers' ? 'active' : '' }}">
+                <button type="button" @click="activeTab = 'drivers'"
+                    class="chat-tab-btn"
+                    :class="activeTab === 'drivers' ? 'active' : ''">
                     <span>السائقين</span>
                     @if($driversUnread > 0)
                         <span class="chat-tab-badge">
@@ -80,68 +85,126 @@
         </div>
 
         <!-- قائمة المحادثات -->
-        <div id="sidebar-scroll" class="overflow-y-auto flex-1 p-3 space-y-2 custom-scrollbar">
-            @forelse($conversations as $conv)
-                @php
-                    $participantName = $conv->user?->name ?? ($conv->driver?->name ?? 'مستخدم غير معروف');
-                    $unreadCount = $conv->participant_unread_count ?? 0;
-                    $isRequest = $conv->type === 'request';
-                @endphp
+        <div id="sidebar-scroll" class="overflow-y-auto flex-1 p-3 custom-scrollbar">
 
-                <div wire:key="conv-{{ $conv->id }}" wire:click="selectConversation({{ $conv->id }})"
-                    class="chat-user-card group relative flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 {{ $selectedConversationId == $conv->id ? 'bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700' : 'hover:bg-white/60 dark:hover:bg-gray-800/60 border border-transparent' }}">
+            <!-- قائمة محادثات العملاء -->
+            <div x-show="activeTab === 'clients'" class="space-y-2">
+                @forelse($clientConversations as $conv)
+                    @php
+                        $participantName = $conv->user?->name ?? 'مستخدم غير معروف';
+                    @endphp
 
-                    @if ($selectedConversationId == $conv->id)
-                        <div class="absolute right-0 top-1/2 w-1 h-8 rounded-l-full -translate-y-1/2 bg-brand-500">
-                        </div>
-                    @endif
+                    <div wire:key="conv-client-{{ $conv->id }}" wire:click="selectConversation({{ $conv->id }})"
+                        class="chat-user-card group relative flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 {{ $selectedConversationId == $conv->id ? 'bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700' : 'hover:bg-white/60 dark:hover:bg-gray-800/60 border border-transparent' }}">
 
-                    <!-- صورة / رمز العميل -->
-                    <div class="relative flex-shrink-0 w-11 h-11">
-                        <div
-                            class="flex h-full w-full items-center justify-center rounded-full {{ $selectedConversationId == $conv->id ? 'bg-brand-500 text-white' : 'bg-brand-500/10 text-brand-500' }} font-bold border border-brand-500 text-sm shadow-sm transition-colors">
-                            {{ mb_substr($participantName, 0, 1) }}
-                        </div>
-                    </div>
-
-                    <!-- تفاصيل المحادثة -->
-                    <div class="flex-1 pr-1 min-w-0">
-                        <!-- السطر العلوي: الاسم + بادج عدد الرسائل غير المقروءة + الوقت -->
-                        <div class="flex gap-2 justify-between items-start">
-                            <!-- النصوص: الاسم + آخر رسالة -->
-                            <div class="flex-1 min-w-0">
-                                <h5
-                                    class="mb-1 text-xs font-bold leading-tight text-gray-800 truncate dark:text-white/90">
-                                    {{ $participantName }}
-                                </h5>
-                                <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 leading-normal">
-                                    {{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}
-                                </p>
+                        @if ($selectedConversationId == $conv->id)
+                            <div class="absolute right-0 top-1/2 w-1 h-8 rounded-l-full -translate-y-1/2 bg-brand-500">
                             </div>
-                            <!-- الوقت + بادج -->
-                            <div class="flex flex-col flex-shrink-0 gap-1 items-end pt-0.5">
-                                <span class="text-[8px] text-gray-400 font-medium">
-                                    {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
-                                </span>
+                        @endif
 
-                                @if ($conv->participant_unread_count > 0)
-                                    <div class="flex items-center gap-1.5 mt-0.5">
-                                        <!-- النقطة الزرقاء الصغيرة -->
-                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/40"></span>
-                                        <span style="display: inline-flex; align-items: center; justify-content: center; text-align: center; min-width: 20px; height: 20px; padding: 0 5px; line-height: 20px; border-radius: 5px; background-color: #dc6803; color: #ffffff; font-size: 11px; font-weight: 700;">
-                                            {{ $conv->participant_unread_count > 99 ? '+99' : $conv->participant_unread_count }}
-                                        </span>
-                                    </div>
-                                @endif
+                        <!-- صورة / رمز العميل -->
+                        <div class="relative flex-shrink-0 w-11 h-11">
+                            <div
+                                class="flex h-full w-full items-center justify-center rounded-full {{ $selectedConversationId == $conv->id ? 'bg-brand-500 text-white' : 'bg-brand-500/10 text-brand-500' }} font-bold border border-brand-500 text-sm shadow-sm transition-colors">
+                                {{ mb_substr($participantName, 0, 1) }}
+                            </div>
+                        </div>
+
+                        <!-- تفاصيل المحادثة -->
+                        <div class="flex-1 pr-1 min-w-0">
+                            <div class="flex gap-2 justify-between items-start">
+                                <div class="flex-1 min-w-0">
+                                    <h5
+                                        class="mb-1 text-xs font-bold leading-tight text-gray-800 truncate dark:text-white/90">
+                                        {{ $participantName }}
+                                    </h5>
+                                    <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 leading-normal">
+                                        {{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}
+                                    </p>
+                                </div>
+                                <div class="flex flex-col flex-shrink-0 gap-1 items-end pt-0.5">
+                                    <span class="text-[8px] text-gray-400 font-medium">
+                                        {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
+                                    </span>
+
+                                    @if ($conv->participant_unread_count > 0)
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/40"></span>
+                                            <span style="display: inline-flex; align-items: center; justify-content: center; text-align: center; min-width: 20px; height: 20px; padding: 0 5px; line-height: 20px; border-radius: 5px; background-color: #dc6803; color: #ffffff; font-size: 11px; font-weight: 700;">
+                                                {{ $conv->participant_unread_count > 99 ? '+99' : $conv->participant_unread_count }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @empty
-                <div class="p-8 text-xs text-center text-gray-400">
-                    لا توجد محادثات متاحة.
-                </div>
-            @endforelse
+                @empty
+                    <div class="p-8 text-xs text-center text-gray-400">
+                        لا توجد محادثات عملاء متاحة.
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- قائمة محادثات السائقين -->
+            <div x-show="activeTab === 'drivers'" x-cloak class="space-y-2">
+                @forelse($driverConversations as $conv)
+                    @php
+                        $participantName = $conv->driver?->name ?? 'سائق غير معروف';
+                    @endphp
+
+                    <div wire:key="conv-driver-{{ $conv->id }}" wire:click="selectConversation({{ $conv->id }})"
+                        class="chat-user-card group relative flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 {{ $selectedConversationId == $conv->id ? 'bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700' : 'hover:bg-white/60 dark:hover:bg-gray-800/60 border border-transparent' }}">
+
+                        @if ($selectedConversationId == $conv->id)
+                            <div class="absolute right-0 top-1/2 w-1 h-8 rounded-l-full -translate-y-1/2 bg-brand-500">
+                            </div>
+                        @endif
+
+                        <!-- صورة / رمز السائق -->
+                        <div class="relative flex-shrink-0 w-11 h-11">
+                            <div
+                                class="flex h-full w-full items-center justify-center rounded-full {{ $selectedConversationId == $conv->id ? 'bg-brand-500 text-white' : 'bg-brand-500/10 text-brand-500' }} font-bold border border-brand-500 text-sm shadow-sm transition-colors">
+                                {{ mb_substr($participantName, 0, 1) }}
+                            </div>
+                        </div>
+
+                        <!-- تفاصيل المحادثة -->
+                        <div class="flex-1 pr-1 min-w-0">
+                            <div class="flex gap-2 justify-between items-start">
+                                <div class="flex-1 min-w-0">
+                                    <h5
+                                        class="mb-1 text-xs font-bold leading-tight text-gray-800 truncate dark:text-white/90">
+                                        {{ $participantName }}
+                                    </h5>
+                                    <p class="text-[11px] text-gray-500 truncate dark:text-gray-400 leading-normal">
+                                        {{ $conv->lastMessage?->body ?? 'لا يوجد رسائل' }}
+                                    </p>
+                                </div>
+                                <div class="flex flex-col flex-shrink-0 gap-1 items-end pt-0.5">
+                                    <span class="text-[8px] text-gray-400 font-medium">
+                                        {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
+                                    </span>
+
+                                    @if ($conv->participant_unread_count > 0)
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/40"></span>
+                                            <span style="display: inline-flex; align-items: center; justify-content: center; text-align: center; min-width: 20px; height: 20px; padding: 0 5px; line-height: 20px; border-radius: 5px; background-color: #dc6803; color: #ffffff; font-size: 11px; font-weight: 700;">
+                                                {{ $conv->participant_unread_count > 99 ? '+99' : $conv->participant_unread_count }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-8 text-xs text-center text-gray-400">
+                        لا توجد محادثات سائقين متاحة.
+                    </div>
+                @endforelse
+            </div>
+
         </div>
     </div>
 

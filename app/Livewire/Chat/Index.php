@@ -9,12 +9,9 @@ use App\Services\FirebaseService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 class Index extends Component
 {
-    use WithPagination;
-
     public $selectedConversationId = null;
     public $newMessage = '';
     public $activeTab = 'clients'; // 'clients' or 'drivers'
@@ -34,14 +31,18 @@ class Index extends Component
     public function switchTab($tab)
     {
         $this->activeTab = $tab;
-        $this->resetPage();
     }
 
     public function selectConversation($id): void
     {
         $this->selectedConversationId = (int) $id;
 
-        $unreadCount = (int) Conversation::where('id', $id)->value('participant_unread_count');
+        $conv = Conversation::select(['id', 'user_id', 'driver_id', 'type', 'participant_unread_count'])->find($id);
+        $unreadCount = (int) ($conv->participant_unread_count ?? 0);
+
+        if ($conv) {
+            $this->activeTab = ($conv->driver_id && !$conv->user_id) ? 'drivers' : 'clients';
+        }
 
         // تحديث مباشر بدون جلب السجل كاملاً
         // استخدام DB::raw('updated_at') لمنع تغيير وقت التحديث، وبالتالي عدم قفز المحادثة لأعلى القائمة
@@ -54,7 +55,7 @@ class Index extends Component
             $this->dispatch('chat-messages-read', count: $unreadCount);
         }
 
-        $conversationType = Conversation::where('id', $id)->value('type') ?? 'support';
+        $conversationType = $conv->type ?? 'support';
 
         $this->dispatch('subscribe-to-channel', conversationId: $id, type: $conversationType);
         $this->dispatch('scroll-to-bottom');
@@ -76,62 +77,62 @@ class Index extends Component
 
         $conversation = Conversation::with(['user.devices', 'driver'])->find($this->selectedConversationId);
 
-    if ($conversation) {
-        $tokens = [];
-        $unreadField = 'user_unread_count';
-
-        // 1. إذا كان المستلم مستخدماً (User)
-        if ($conversation->user) {
-            $user = $conversation->user;
+        if ($conversation) {
+            $tokens = [];
             $unreadField = 'user_unread_count';
 
-            if ($user->is_notifications_enabled) {
-                // الاعتماد على Collection المحملة مسبقاً دون استعلام إضافي
-                $tokens = $user->devices
-                    ->pluck('device_token')
-                    ->filter()
-                    ->all();
-            }
-        } 
-        // 2. إذا كان المستلم سائقاً (Driver)
-        elseif ($conversation->driver) {
-            $driver = $conversation->driver;
-            $unreadField = 'participant_unread_count';
+            // 1. إذا كان المستلم مستخدماً (User)
+            if ($conversation->user) {
+                $user = $conversation->user;
+                $unreadField = 'user_unread_count';
 
-            if (!empty($driver->device_token) && !$driver->is_banned) {
-                $tokens[] = $driver->device_token;
+                if ($user->is_notifications_enabled) {
+                    // الاعتماد على Collection المحملة مسبقاً دون استعلام إضافي
+                    $tokens = $user->devices
+                        ->pluck('device_token')
+                        ->filter()
+                        ->all();
+                }
+            } 
+            // 2. إذا كان المستلم سائقاً (Driver)
+            elseif ($conversation->driver) {
+                $driver = $conversation->driver;
+                $unreadField = 'participant_unread_count';
+
+                if (!empty($driver->device_token) && !$driver->is_banned) {
+                    $tokens[] = $driver->device_token;
+                }
+            }
+
+            // تحديث آخر رسالة وزيادة العداد للطرف المستلم الصحيح
+            $conversation->increment($unreadField, 1, [
+                'last_message_id' => $message->id,
+                'last_message_at' => now(),
+            ]);
+
+            // تنظيف التوكنات وتفادي التكرار
+            $tokens = array_unique(array_filter($tokens));
+
+            // إرسال الإشعارات عبر Firebase
+            foreach ($tokens as $token) {
+                try {
+                    app(FirebaseService::class)->sendNotification(
+                        deviceToken: $token,
+                        title: 'الدعم الفني',
+                        body: 'لديك رسالة جديدة من الدعم الفني: ' . mb_substr($message->body, 0, 50),
+                        data: [
+                            'type'            => 'support_chat',
+                            'new_message'     => 'true',
+                            'new_request'     => 'false',
+                            'conversation_id' => (string) $this->selectedConversationId,
+                            'message_id'      => (string) $message->id,
+                        ]
+                    );
+                } catch (\Throwable $e) {
+                    Log::warning("فشل إرسال إشعار FCM للتوكن {$token}: " . $e->getMessage());
+                }
             }
         }
-
-        // تحديث آخر رسالة وزيادة العداد للطرف المستلم الصحيح
-        $conversation->increment($unreadField, 1, [
-            'last_message_id' => $message->id,
-            'last_message_at' => now(),
-        ]);
-
-        // تنظيف التوكنات وتفادي التكرار
-        $tokens = array_unique(array_filter($tokens));
-
-        // إرسال الإشعارات عبر Firebase
-        foreach ($tokens as $token) {
-            try {
-                app(FirebaseService::class)->sendNotification(
-                    deviceToken: $token,
-                    title: 'الدعم الفني',
-                    body: 'لديك رسالة جديدة من الدعم الفني: ' . mb_substr($message->body, 0, 50),
-                    data: [
-                        'type'            => 'support_chat',
-                        'new_message'     => 'true',
-                        'new_request'     => 'false',
-                        'conversation_id' => (string) $this->selectedConversationId,
-                        'message_id'      => (string) $message->id,
-                    ]
-                );
-            } catch (\Throwable $e) {
-                Log::warning("فشل إرسال إشعار FCM للتوكن {$token}: " . $e->getMessage());
-            }
-        }
-    }
 
         broadcast(new MessageSent($message));
 
@@ -156,21 +157,18 @@ class Index extends Component
 
     public function render()
     {
-        $query = Conversation::query()
+        $baseQuery = fn () => Conversation::query()
             ->select(['id', 'user_id', 'driver_id', 'type', 'last_message_id', 'last_message_at', 'participant_unread_count', 'updated_at'])
             ->with([
                 'user:id,name,phone',
                 'driver:id,name,phone',
                 'lastMessage:id,body,created_at'
-            ]);
+            ])
+            ->orderBy('updated_at', 'desc');
 
-        if ($this->activeTab === 'clients') {
-            $query->whereNotNull('user_id');
-        } else {
-            $query->whereNotNull('driver_id')->whereNull('user_id');
-        }
+        $clientConversations = $baseQuery()->whereNotNull('user_id')->limit(50)->get();
+        $driverConversations = $baseQuery()->whereNotNull('driver_id')->whereNull('user_id')->limit(50)->get();
 
-        $conversations = $query->orderBy('updated_at', 'desc')->paginate(25);
         $selectedConversation = null;
         $messages = [];
 
@@ -186,14 +184,16 @@ class Index extends Component
                 ->get();
         }
 
-        $clientsUnread = Conversation::whereNotNull('user_id')->where('participant_unread_count', '>', 0)->count();
-        $driversUnread = Conversation::whereNotNull('driver_id')->whereNull('user_id')->where('participant_unread_count', '>', 0)->count();
+        $clientsUnread = $clientConversations->where('participant_unread_count', '>', 0)->count();
+        $driversUnread = $driverConversations->where('participant_unread_count', '>', 0)->count();
 
         return view('livewire.chat.index', [
-            'conversations' => $conversations,
+            'clientConversations' => $clientConversations,
+            'driverConversations' => $driverConversations,
+            'clientsCount' => $clientConversations->count(),
+            'driversCount' => $driverConversations->count(),
             'selectedConversation' => $selectedConversation,
             'messages'  => $messages,
-            'totalCount' => $conversations->total(),
             'clientsUnread' => $clientsUnread,
             'driversUnread' => $driversUnread,
         ]);
