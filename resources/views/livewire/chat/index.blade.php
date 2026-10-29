@@ -40,6 +40,25 @@
     @scroll-to-bottom.window="scrollToBottom()"
     x-on:show-firebase-notification.window="if ($event.detail && ($event.detail.type === 'support_chat' || $event.detail.new_message === 'true')) { $wire.handleIncomingMessage(); }">
 
+    @php
+        $formatChatDate = function ($date) {
+            if (!$date) {
+                return '';
+            }
+            $daysDiff = (int) $date->copy()->startOfDay()->diffInDays(now()->startOfDay());
+            if ($date->isToday() || $daysDiff === 0) {
+                return $date->locale('ar')->translatedFormat('h:i A');
+            }
+            if ($date->isYesterday() || $daysDiff === 1) {
+                return 'منذ أمس';
+            }
+            if ($daysDiff === 2) {
+                return 'منذ يومين';
+            }
+            return $date->format('Y/m/d');
+        };
+    @endphp
+
     <!-- ====== 1. القائمة الجانبية للمحادثات (جهة اليمين) ====== -->
     <div class="bg-white border border-gray-200 chat-sidebar dark:border-gray-800 dark:bg-gray-900">
 
@@ -124,7 +143,7 @@
                                 </div>
                                 <div class="flex flex-col flex-shrink-0 gap-1 items-end pt-0.5">
                                     <span class="text-[8px] text-gray-400 font-medium">
-                                        {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
+                                        {{ $formatChatDate($conv->last_message_at) }}
                                     </span>
 
                                     @if ($conv->participant_unread_count > 0)
@@ -190,7 +209,7 @@
                                 </div>
                                 <div class="flex flex-col flex-shrink-0 gap-1 items-end pt-0.5">
                                     <span class="text-[8px] text-gray-400 font-medium">
-                                        {{ $conv->last_message_at ? $conv->last_message_at->locale('ar')->translatedFormat('h:i A') : '' }}
+                                        {{ $formatChatDate($conv->last_message_at) }}
                                     </span>
 
                                     @if ($conv->participant_unread_count > 0)
@@ -306,7 +325,7 @@
                                 {{ $msg->body }}</p>
                         </div>
                         <span class="text-[10px] text-gray-400 mt-1.5 px-1 flex items-center gap-1">
-                            {{ $msg->created_at ? $msg->created_at->locale('ar')->translatedFormat('h:i A') : '' }}
+                            {{ $formatChatDate($msg->created_at) }}
                             @if ($isAdmin)
                                 <svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
