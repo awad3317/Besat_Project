@@ -161,12 +161,19 @@
                             </div>
                         @endif
 
-                        <!-- صورة / رمز السائق -->
+                        <!-- صورة السائق -->
                         <div class="relative flex-shrink-0 w-11 h-11">
-                            <div
-                                class="flex h-full w-full items-center justify-center rounded-full {{ $selectedConversationId == $conv->id ? 'bg-brand-500 text-white' : 'bg-brand-500/10 text-brand-500' }} font-bold border border-brand-500 text-sm shadow-sm transition-colors">
-                                {{ mb_substr($participantName, 0, 1) }}
-                            </div>
+                            @if ($conv->driver?->driver_image)
+                                <img src="{{ url($conv->driver->driver_image) }}"
+                                    alt="{{ $participantName }}"
+                                    loading="lazy"
+                                    class="object-cover w-full h-full rounded-full border border-brand-500 shadow-sm" />
+                            @else
+                                <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}"
+                                    alt="{{ $participantName }}"
+                                    loading="lazy"
+                                    class="object-cover w-full h-full rounded-full border border-brand-500 shadow-sm" />
+                            @endif
                         </div>
 
                         <!-- تفاصيل المحادثة -->
@@ -218,11 +225,27 @@
                 <!-- معلومات المستخدم (جهة اليمين) -->
                 <a href="{{ $selectedConversation->user ? route('users.show', $selectedConversation->user->id) : ($selectedConversation->driver ? route('drivers.show', $selectedConversation->driver->id) : '#') }}"
                     class="flex gap-3 items-center min-w-0 transition-opacity hover:opacity-80">
-                    <!-- دائرة اسم العميل مع منع الانكماش flex-shrink-0 -->
-                    <div
-                        class="flex flex-shrink-0 justify-center items-center w-11 h-11 text-sm font-bold rounded-full border shadow-sm bg-brand-500/10 text-brand-500 border-brand-500/20">
-                        {{ mb_substr($selectedConversation->user?->name ?? ($selectedConversation->driver?->name ?? 'U'), 0, 1) }}
-                    </div>
+                    <!-- صورة السائق أو دائرة اسم العميل مع منع الانكماش flex-shrink-0 -->
+                    @if ($selectedConversation->driver && !$selectedConversation->user)
+                        <div class="relative flex-shrink-0 w-11 h-11">
+                            @if ($selectedConversation->driver->driver_image)
+                                <img src="{{ url($selectedConversation->driver->driver_image) }}"
+                                    alt="{{ $selectedConversation->driver->name }}"
+                                    loading="lazy"
+                                    class="object-cover w-full h-full rounded-full border border-brand-500/40 shadow-sm" />
+                            @else
+                                <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}"
+                                    alt="{{ $selectedConversation->driver->name }}"
+                                    loading="lazy"
+                                    class="object-cover w-full h-full rounded-full border border-brand-500/40 shadow-sm" />
+                            @endif
+                        </div>
+                    @else
+                        <div
+                            class="flex flex-shrink-0 justify-center items-center w-11 h-11 text-sm font-bold rounded-full border shadow-sm bg-brand-500/10 text-brand-500 border-brand-500/20">
+                            {{ mb_substr($selectedConversation->user?->name ?? ($selectedConversation->driver?->name ?? 'U'), 0, 1) }}
+                        </div>
+                    @endif
 
                     <!-- تفاصيل الاسم ورقم المحادثة -->
                     <div class="flex flex-col min-w-0 text-right">

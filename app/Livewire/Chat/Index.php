@@ -161,7 +161,7 @@ class Index extends Component
             ->select(['id', 'user_id', 'driver_id', 'type', 'last_message_id', 'last_message_at', 'participant_unread_count', 'updated_at'])
             ->with([
                 'user:id,name,phone',
-                'driver:id,name,phone',
+                'driver:id,name,phone,driver_image',
                 'lastMessage:id,body,created_at'
             ])
             ->orderBy('updated_at', 'desc');
@@ -174,7 +174,7 @@ class Index extends Component
 
         if ($this->selectedConversationId) {
             $selectedConversation = Conversation::select(['id', 'user_id', 'driver_id', 'type'])
-                ->with(['user:id,name', 'driver:id,name'])
+                ->with(['user:id,name', 'driver:id,name,driver_image'])
                 ->find($this->selectedConversationId);
 
             $messages = Message::where('conversation_id', $this->selectedConversationId)
