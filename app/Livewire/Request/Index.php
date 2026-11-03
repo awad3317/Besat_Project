@@ -6,7 +6,10 @@ use App\Models\Driver;
 use App\Models\Request as RequestModel;
 use App\Notifications\DriverAssignedNotification;
 use App\Repositories\ChatRepository;
+use App\Services\ActivityLog;
+use App\Services\DriverLocationService;
 use App\Services\FirebaseService;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -18,9 +21,16 @@ class Index extends Component
     protected $paginationTheme = 'custom-pagination';
     public $page;
 
+    // ── Table Filters ──
     public $activeFilter = 'all';
     public $search = '';
     public $perPage = 10;
+
+    // ── Assign Driver Modal ──
+    public $selectedRequestId = null;
+    public $driverSearch = '';
+    public bool $onlineDriversOnly = false;
+    public bool $matchVehicleOnly = false;
 
     protected $queryString = [
         'search' => ['except' => '', 'as' => 'q'],
@@ -28,7 +38,9 @@ class Index extends Component
         'page' => ['except' => 1],
     ];
 
-    
+    // ═══════════════════════════════════════════
+    //  COMPUTED: Stats Cards
+    // ═══════════════════════════════════════════
     #[Computed]
     public function stats()
     {
@@ -40,40 +52,25 @@ class Index extends Component
         ];
     }
 
-    public function applyFilter($filter)
-    {
-        $validFilters = ['all', 'in_progress', 'completed', 'cancelled'];
-        if (in_array($filter, $validFilters)) {
-            $this->activeFilter = $filter;
-            $this->resetPage(); 
-        }
-    }
-
-    
-    public function updatedSearch()
-    {
-        $this->resetPage();
-    }
-
-    
+    // ═══════════════════════════════════════════
+    //  COMPUTED: Requests Table (paginated)
+    // ═══════════════════════════════════════════
     #[Computed]
     public function requests()
     {
-        return RequestModel::with(['driver', 'user']) 
+        return RequestModel::with(['driver', 'user', 'vehicle'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    
                     $q->where('start_address', 'like', '%' . $this->search . '%')
                         ->orWhere('end_address', 'like', '%' . $this->search . '%')
-                        ->orWhereHas('driver', fn($driverQuery) => $driverQuery->where('name', 'like', '%' . $this->search . '%'))
+                        ->orWhereHas('driver', fn ($driverQuery) => $driverQuery->where('name', 'like', '%' . $this->search . '%'))
                         ->orWhereHas('user', function ($userQuery) {
                             $userQuery->where('name', 'like', '%' . $this->search . '%')
-                                      ->orWhere('phone', 'like', '%' . $this->search . '%');
+                                ->orWhere('phone', 'like', '%' . $this->search . '%');
                         });
                 });
             })
             ->when($this->activeFilter !== 'all', function ($query) {
-                
                 if ($this->activeFilter === 'in_progress') {
                     return $query->whereIn('status', ['pending', 'searching_driver', 'paused', 'in_progress', 'accepted', 'on_trip']);
                 }
@@ -83,108 +80,264 @@ class Index extends Component
             ->paginate($this->perPage);
     }
 
-    public $selectedRequestId = null;
-    public $driverSearch = '';
+    // ═══════════════════════════════════════════
+    //  COMPUTED: Selected Request (for modal)
+    // ═══════════════════════════════════════════
+    #[Computed]
+    public function selectedRequest()
+    {
+        if (! $this->selectedRequestId) {
+            return null;
+        }
 
-    // ... existing properties ...
+        return RequestModel::with(['user:id,name,phone', 'vehicle:id,type', 'stops'])
+            ->find($this->selectedRequestId);
+    }
 
+    // ═══════════════════════════════════════════
+    //  COMPUTED: Nearby Drivers (for modal list & map)
+    // ═══════════════════════════════════════════
     #[Computed]
     public function drivers()
     {
-        $request = $this->selectedRequestId ? RequestModel::find($this->selectedRequestId) : null;
+        $request = $this->selectedRequest;
+        if (! $request) {
+            return collect();
+        }
 
-        return Driver::where('is_banned', false)    
-            ->when($request, function ($query) use ($request) {
+        $lat = $request->start_latitude;
+        $lng = $request->start_longitude;
 
-                $query->where('vehicle_id', $request->vehicle_id);
+        // Fallback if request has no coordinates
+        if (! $lat || ! $lng) {
+            return Driver::where('is_banned', false)
+                ->where('is_active', true)
+                ->with('vehicle:id,type')
+                ->when($this->onlineDriversOnly, fn ($q) => $q->where('is_online', true))
+                ->when($this->matchVehicleOnly && $request->vehicle_id, fn ($q) => $q->where('vehicle_id', $request->vehicle_id))
+                ->when($this->driverSearch, function ($q) {
+                    $q->where(function ($sub) {
+                        $sub->where('name', 'like', "%{$this->driverSearch}%")
+                            ->orWhere('phone', 'like', "%{$this->driverSearch}%")
+                            ->orWhere('plate_number', 'like', "%{$this->driverSearch}%");
+                    });
+                })
+                ->orderByDesc('is_online')
+                ->limit(30)
+                ->get();
+        }
 
-            })
-            ->when($this->driverSearch, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->driverSearch . '%')
-                      ->orWhere('phone', 'like', '%' . $this->driverSearch . '%');
-                });
-            })
-            ->orderByDesc('is_online')
-            ->orderByDesc('is_active')
-            ->limit(10)
-            ->get();
+        $service = app(DriverLocationService::class);
+
+        return $service->getNearestDriversForDashboard(
+            latitude: (float) $lat,
+            longitude: (float) $lng,
+            search: $this->driverSearch,
+            onlineOnly: $this->onlineDriversOnly,
+            vehicleId: $this->matchVehicleOnly ? $request->vehicle_id : null,
+            limit: 30,
+        );
     }
 
-    public function openAssignDriverModal($requestId,)
+    // ═══════════════════════════════════════════
+    //  Open Assign Driver Modal
+    // ═══════════════════════════════════════════
+    public function openAssignDriverModal($requestId)
     {
         $this->selectedRequestId = $requestId;
         $this->driverSearch = '';
+        $this->onlineDriversOnly = false;
+        $this->matchVehicleOnly = false;
+
+        // Clear cached computed properties so they re-evaluate
+        unset($this->selectedRequest, $this->drivers);
+
         $this->dispatch('open-modal', 'assign-driver-modal');
+
+        // Send initial map data after modal opens
+        $this->dispatchMapUpdate();
     }
 
-    public function assignDriver($driverId, FirebaseService $firebaseService, ChatRepository $chatRepository)
+    // ═══════════════════════════════════════════
+    //  Dispatch Map Data to Browser
+    // ═══════════════════════════════════════════
+    public function dispatchMapUpdate()
     {
-        $request = RequestModel::find($this->selectedRequestId);
-        if (!$request) {
+        $request = $this->selectedRequest;
+        if (! $request) {
             return;
         }
 
-        if ($request->status === 'cancelled') {
-            $this->dispatch('close-modal', 'assign-driver-modal');
-            session()->flash('error', 'لا يمكن تعيين سائق لطلب ملغي.');
-            return;
-        }
+        $drivers = $this->drivers;
 
-        $driver = Driver::find($driverId);
-        $conversation = $chatRepository->getOrCreateOrderConversation(
-            $request->id,
-            $request->user_id,
-            $driverId
-        );
+        $driverMarkers = $drivers->map(function ($driver) {
+            return [
+                'id' => $driver->id,
+                'name' => $driver->name,
+                'phone' => $driver->phone,
+                'plate_number' => $driver->plate_number,
+                'vehicle_type' => $driver->vehicle?->type ?? 'غير محدد',
+                'driver_image' => $driver->driver_image ? url($driver->driver_image) : asset('tailadmin/build/src/images/user/SO.jpg'),
+                'is_online' => (bool) $driver->is_online,
+                'latitude' => $driver->latitude,
+                'longitude' => $driver->longitude,
+                'distance_km' => isset($driver->distance_km) ? round($driver->distance_km, 1) : null,
+            ];
+        })->filter(fn ($d) => $d['latitude'] && $d['longitude'])->values()->toArray();
 
-        $request->update([
-            'driver_id' => $driverId,
-            'status' => 'accepted',
+        $stops = $request->stops->map(fn ($stop) => [
+            'latitude' => $stop->latitude,
+            'longitude' => $stop->longitude,
+            'order' => $stop->stop_order,
+        ])->toArray();
+
+        $this->dispatch('sync-dispatch-map', [
+            'pickup' => [
+                'latitude' => $request->start_latitude,
+                'longitude' => $request->start_longitude,
+                'address' => $request->start_address,
+            ],
+            'dropoff' => [
+                'latitude' => $request->end_latitude,
+                'longitude' => $request->end_longitude,
+                'address' => $request->end_address,
+            ],
+            'stops' => $stops,
+            'drivers' => $driverMarkers,
         ]);
+    }
 
-        // 1. إرسال إشعار للعميل
-        if ($request->user && $request->user->is_notifications_enabled) {
+    // ═══════════════════════════════════════════
+    //  Filter Hooks → Re-dispatch map data
+    // ═══════════════════════════════════════════
+    public function updatedDriverSearch()
+    {
+        unset($this->drivers);
+        $this->dispatchMapUpdate();
+    }
+
+    public function updatedOnlineDriversOnly()
+    {
+        unset($this->drivers);
+        $this->dispatchMapUpdate();
+    }
+
+    public function updatedMatchVehicleOnly()
+    {
+        unset($this->drivers);
+        $this->dispatchMapUpdate();
+    }
+
+    // ═══════════════════════════════════════════
+    //  Table Filter & Search Hooks
+    // ═══════════════════════════════════════════
+    public function applyFilter($filter)
+    {
+        $validFilters = ['all', 'in_progress', 'completed', 'cancelled'];
+        if (in_array($filter, $validFilters)) {
+            $this->activeFilter = $filter;
+            $this->resetPage();
+        }
+    }
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    // ═══════════════════════════════════════════
+    //  Assign Driver (Transactional)
+    // ═══════════════════════════════════════════
+    public function assignDriver(int $driverId, FirebaseService $firebaseService, ChatRepository $chatRepository)
+    {
+        DB::transaction(function () use ($driverId, $chatRepository) {
+            // Lock the request row to prevent race conditions
+            $request = RequestModel::where('id', $this->selectedRequestId)->lockForUpdate()->first();
+
+            if (! $request) {
+                $this->dispatch('close-modal', 'assign-driver-modal');
+                session()->flash('error', 'الطلب غير موجود.');
+                return;
+            }
+
+            if ($request->status === 'cancelled') {
+                $this->dispatch('close-modal', 'assign-driver-modal');
+                session()->flash('error', 'لا يمكن تعيين سائق لطلب ملغي.');
+                return;
+            }
+
+            $driver = Driver::find($driverId);
+            if (! $driver) {
+                session()->flash('error', 'السائق غير موجود.');
+                return;
+            }
+
+            // Create or get the order conversation
+            $chatRepository->getOrCreateOrderConversation(
+                $request->id,
+                $request->user_id,
+                $driverId,
+            );
+
+            // Update request
+            $request->update([
+                'driver_id' => $driverId,
+                'status' => 'accepted',
+            ]);
+
+            // Log administrative action
+            ActivityLog::log(
+                'update',
+                'Request',
+                "تم تعيين السائق #{$driverId} ({$driver->name}) للطلب #{$request->id} بواسطة المسؤول."
+            );
+        });
+
+        // ── Post-Transaction: Notifications (outside DB::transaction so FCM failures don't rollback) ──
+        $request = RequestModel::with(['user.devices'])->find($this->selectedRequestId);
+        $driver = Driver::find($driverId);
+
+        if ($request && $request->user && $request->user->is_notifications_enabled) {
+            // Database notification
             $request->user->notify(new DriverAssignedNotification($request));
+
+            // FCM push to customer devices
             $deviceTokens = $request->user->devices->pluck('device_token')->filter()->toArray();
-            if (!empty($deviceTokens)) {
+            if (! empty($deviceTokens)) {
                 $title = 'تم تعيين سائق!';
                 $body = 'تم تعيين سائق لرحلتك وهو الآن في الطريق إليك.';
                 $data = [
-                    'new_request'  => 'false',
-                    'new_message'  => 'false',
-                    'request_id'   => (string) $request->id,
-                    'status'       => 'accepted',
-                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK'
+                    'new_request' => 'false',
+                    'new_message' => 'false',
+                    'request_id' => (string) $request->id,
+                    'status' => 'accepted',
+                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
                 ];
                 foreach ($deviceTokens as $token) {
                     try {
                         $firebaseService->sendNotification($token, $title, $body, $data);
                     } catch (\Exception $e) {
-                        \Log::error("Failed to send FCM to token: {$token}. Error: " . $e->getMessage());
-                        
+                        \Log::error("Failed to send FCM to customer token: {$token}. Error: " . $e->getMessage());
                     }
                 }
             }
         }
 
-        \Log::info("1. Checking Driver:", ['id' => $driver?->id, 'token' => $driver?->device_token]);
-        // 2. إرسال إشعار للسائق عبر Firebase
-        if ($driver && !empty($driver->device_token)) {
+        // FCM push to driver
+        if ($driver && ! empty($driver->device_token)) {
             $driverTitle = 'طلب جديد مسند إليك!';
-            $driverBody  = 'تم إسناد الطلب رقم #' . $request->id . ' إليك بنجاح.';
-            $driverData  = [
-                'new_request'     => 'true',
-                'new_message'     => 'false',
-                'request_id'      => (string) $request->id,
-                'status'          => 'accepted',
-                'start_latitude'  => (string) ($request->start_latitude ?? ''),
+            $driverBody = 'تم إسناد الطلب رقم #' . $request->id . ' إليك بنجاح.';
+            $driverData = [
+                'new_request' => 'true',
+                'new_message' => 'false',
+                'request_id' => (string) $request->id,
+                'status' => 'accepted',
+                'start_latitude' => (string) ($request->start_latitude ?? ''),
                 'start_longitude' => (string) ($request->start_longitude ?? ''),
-                'start_address'   => (string) ($request->start_address ?? ''),
-                'end_address'     => (string) ($request->end_address ?? ''),
-                'click_action'    => 'FLUTTER_NOTIFICATION_CLICK'
+                'start_address' => (string) ($request->start_address ?? ''),
+                'end_address' => (string) ($request->end_address ?? ''),
+                'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
             ];
-           
 
             try {
                 $firebaseService->sendNotification($driver->device_token, $driverTitle, $driverBody, $driverData);
@@ -192,16 +345,20 @@ class Index extends Component
                 \Log::error("Failed to send FCM to driver {$driver->id}. Error: " . $e->getMessage());
             }
         }
-        
 
         $this->dispatch('driver-assigned');
     }
 
+    // ═══════════════════════════════════════════
+    //  Chat Actions
+    // ═══════════════════════════════════════════
     public function startChatWithCustomer($requestId)
     {
         $request = RequestModel::find($requestId);
-        if (!$request || !$request->user_id) return;
-        
+        if (! $request || ! $request->user_id) {
+            return;
+        }
+
         $conversation = \App\Models\Conversation::firstOrCreate(
             ['user_id' => $request->user_id, 'driver_id' => null, 'type' => 'support'],
             ['status' => 'open']
@@ -213,8 +370,10 @@ class Index extends Component
     public function startChatWithDriver($requestId)
     {
         $request = RequestModel::find($requestId);
-        if (!$request || !$request->driver_id) return;
-        
+        if (! $request || ! $request->driver_id) {
+            return;
+        }
+
         $conversation = \App\Models\Conversation::firstOrCreate(
             ['driver_id' => $request->driver_id, 'user_id' => null, 'type' => 'support'],
             ['status' => 'open']
@@ -223,9 +382,15 @@ class Index extends Component
         return redirect()->route('chats.index', ['c' => $conversation->id, 'tab' => 'drivers']);
     }
 
+    // ═══════════════════════════════════════════
+    //  Cleanup
+    // ═══════════════════════════════════════════
     public function clearSelectedRequest()
     {
         $this->selectedRequestId = null;
+        $this->driverSearch = '';
+        $this->onlineDriversOnly = false;
+        $this->matchVehicleOnly = false;
     }
 
     public function render()
