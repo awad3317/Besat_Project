@@ -16,8 +16,20 @@
                         <div class="flex gap-6">
                             <div
                                 class="overflow-hidden relative w-20 h-20 rounded-full border border-gray-200 dark:border-gray-800">
-                                <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="user"
-                                    class="object-cover w-full h-full" />
+                                @php
+                                    $defaultAvatar = asset('tailadmin/build/src/images/user/SO.jpg');
+                                    $driverAvatar = $defaultAvatar;
+                                    if (!empty($driver->driver_image) && !str_contains($driver->driver_image, 'default_driver1.png')) {
+                                        $driverAvatar = str_starts_with($driver->driver_image, 'http')
+                                            ? $driver->driver_image
+                                            : url($driver->driver_image);
+                                    }
+                                @endphp
+                                <img src="{{ $driverAvatar }}" alt="{{ $driver->name }}"
+                                    class="object-cover w-full h-full"
+                                    onerror="this.onerror=null;this.src='{{ $defaultAvatar }}';" />
+
+
                             </div>
                             <div>
                                 <h4 class="mb-2 text-lg font-semibold text-gray-800 dark:text-white/90">
