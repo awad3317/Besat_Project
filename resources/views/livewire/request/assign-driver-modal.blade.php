@@ -276,7 +276,7 @@
                         <div class="flex items-center gap-3">
                             <div class="relative" style="flex-shrink: 0;">
                                 <img :src="selectedDriver?.driver_image && !selectedDriver?.driver_image.includes('default_driver1.png') ? selectedDriver.driver_image : '{{ asset('tailadmin/build/src/images/user/SO.jpg') }}'" :alt="selectedDriver?.name"
-                                     @error="$event.target.src='{{ asset('tailadmin/build/src/images/user/SO.jpg') }}'"
+                                     x-on:error="$event.target.src='{{ asset('tailadmin/build/src/images/user/SO.jpg') }}'"
                                      class="h-12 w-12 rounded-xl border-2 border-brand-500 shadow-theme-xs" style="object-fit: cover;" />
                                 <template x-if="selectedDriver?.is_online">
                                     <span class="absolute rounded-full border-2 border-white bg-success-500 dark:border-gray-900" style="width: 12px; height: 12px; bottom: -2px; right: -2px;"></span>
