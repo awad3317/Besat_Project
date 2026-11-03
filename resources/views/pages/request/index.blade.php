@@ -21,8 +21,8 @@
         .dispatch-modal-box {
             width: 95vw;
             max-width: 1200px;
-            height: 86vh;
-            max-height: 800px;
+            height: 88vh;
+            max-height: 840px;
             display: flex;
             flex-direction: column;
         }
@@ -38,14 +38,36 @@
         }
 
         .dispatch-drivers-panel {
-            width: 400px;
+            width: 410px;
             min-width: 360px;
-            max-width: 420px;
+            max-width: 430px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
+        }
+
+        .dark .dispatch-drivers-panel {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            border-color: #1f2a37 !important;
+        }
+
+        .dispatch-filter-pill {
+            transition: all 0.2s ease;
+        }
+
+        .driver-card-item {
+            transition: all 0.2s ease;
+        }
+        .dark .driver-card-item {
+            background-color: #1a2231 !important;
+            border-color: #2e394b !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        .dark .driver-card-item:hover {
+            border-color: #f79009 !important;
+            box-shadow: 0 4px 14px rgba(247, 144, 9, 0.15);
         }
 
         .dispatch-map-panel {
@@ -200,7 +222,6 @@
                     const mapEl = this.$refs.dispatchMap;
                     if (!mapEl) return;
 
-                    // Initialize Map with OpenStreetMap free high-resolution tiles
                     this.map = L.map(mapEl, {
                         center: [15.3694, 44.191],
                         zoom: 13,
@@ -208,10 +229,16 @@
                         attributionControl: false,
                     });
 
-                    // 100% Free OpenStreetMap tile server - No API key required
-                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: '&copy; OpenStreetMap contributors'
+                    // Google Maps Roadmap Tiles: Arabic labels, Yemen region, fast, 100% UNBLOCKED on all servers
+                    const googleKey = @json(config('services.google.maps_key') ?: env('GOOGLE_MAP_KEY'));
+                    const tileUrl = googleKey
+                        ? 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=ar&gl=YE&key=' + encodeURIComponent(googleKey)
+                        : 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=ar&gl=YE';
+
+                    L.tileLayer(tileUrl, {
+                        maxZoom: 20,
+                        subdomains: ['0', '1', '2', '3'],
+                        attribution: 'Google Maps'
                     }).addTo(this.map);
 
                     L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
@@ -247,7 +274,7 @@
                                 className: 'pickup-marker-icon',
                                 html: '<div class="pickup-pulse-wrapper">' +
                                         '<div class="pickup-pulse-ring"></div>' +
-                                        '<div class="flex items-center justify-center w-10 h-10 bg-emerald-500 rounded-full border-3 border-white shadow-xl text-white relative z-10">' +
+                                        '<div class="flex relative z-10 justify-center items-center w-10 h-10 text-white bg-emerald-500 rounded-full border-white shadow-xl border-3">' +
                                             '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>' +
                                         '</div>' +
                                       '</div>',
@@ -279,7 +306,7 @@
                         this.dropoffMarker = L.marker(dropoffLatLng, {
                             icon: L.divIcon({
                                 className: 'dropoff-marker-icon',
-                                html: '<div class="flex items-center justify-center w-9 h-9 bg-red-500 rounded-full border-3 border-white shadow-xl text-white">' +
+                                html: '<div class="flex justify-center items-center w-9 h-9 text-white bg-red-500 rounded-full border-white shadow-xl border-3">' +
                                         '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>' +
                                       '</div>',
                                 iconSize: [36, 36],
@@ -302,7 +329,7 @@
                             const stopMarker = L.marker(stopLatLng, {
                                 icon: L.divIcon({
                                     className: 'stop-marker-icon',
-                                    html: '<div class="flex items-center justify-center w-7 h-7 bg-amber-500 rounded-full border-2 border-white shadow-lg text-white text-xs font-bold">' + (i + 1) + '</div>',
+                                    html: '<div class="flex justify-center items-center w-7 h-7 text-xs font-bold text-white bg-amber-500 rounded-full border-2 border-white shadow-lg">' + (i + 1) + '</div>',
                                     iconSize: [28, 28],
                                     iconAnchor: [14, 14],
                                 })
@@ -325,8 +352,8 @@
 
                             const onlineRing = driver.is_online ? 'border-emerald-500 ring-2 ring-emerald-400' : 'border-gray-300';
                             const onlineDot = driver.is_online
-                                ? '<div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white"></div>'
-                                : '<div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-gray-400 rounded-full border-2 border-white"></div>';
+                                ? '<div class="absolute -right-0.5 -bottom-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white"></div>'
+                                : '<div class="absolute -right-0.5 -bottom-0.5 w-3.5 h-3.5 bg-gray-400 rounded-full border-2 border-white"></div>';
 
                             const avatarSrc = driver.driver_image || '/tailadmin/build/src/images/user/SO.jpg';
 
