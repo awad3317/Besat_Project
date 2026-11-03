@@ -193,6 +193,76 @@
 @section('script')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // ── 1. Defensive Tooltip Patch (Protects against Leaflet internal latLngToLayerPoint null crash) ──
+        if (typeof window !== 'undefined') {
+            const patchLeafletTooltip = () => {
+                if (typeof L !== 'undefined' && L.Tooltip && !L.Tooltip.prototype._patchedSafeUpdate) {
+                    const originalUpdatePosition = L.Tooltip.prototype._updatePosition;
+                    L.Tooltip.prototype._updatePosition = function () {
+                        if (!this._map) return;
+                        try {
+                            originalUpdatePosition.apply(this, arguments);
+                        } catch (e) {
+                            // Suppress latLngToLayerPoint crash if layer is detached mid-animation
+                        }
+                    };
+                    L.Tooltip.prototype._patchedSafeUpdate = true;
+                }
+            };
+            patchLeafletTooltip();
+            window.addEventListener('load', patchLeafletTooltip);
+        }
+
+        // ── 2. Decoupled Leaflet Objects (Stored OUTSIDE Alpine x-data reactive Proxy) ──
+        let dispatchMap = null;
+        let dispatchMarkers = [];
+        let dispatchPickupMarker = null;
+        let dispatchDropoffMarker = null;
+        let dispatchStopMarkers = [];
+        let dispatchRadarCircle = null;
+        let dispatchPickupLocation = null;
+
+        const DEFAULT_DRIVER_AVATAR = '{{ asset("tailadmin/build/src/images/user/SO.jpg") }}';
+
+        // Helper to safely detach layers, popups, and tooltips before removing from map
+        function safeRemoveLayer(layer) {
+            if (!layer || !dispatchMap) return;
+            try {
+                if (typeof layer.closeTooltip === 'function') layer.closeTooltip();
+                if (typeof layer.unbindTooltip === 'function') layer.unbindTooltip();
+                if (typeof layer.closePopup === 'function') layer.closePopup();
+                if (typeof layer.unbindPopup === 'function') layer.unbindPopup();
+                if (dispatchMap.hasLayer(layer)) {
+                    dispatchMap.removeLayer(layer);
+                }
+            } catch (err) {
+                console.warn('Error removing Leaflet layer:', err);
+            }
+        }
+
+        function clearAllMapLayers() {
+            if (dispatchMarkers && dispatchMarkers.length) {
+                dispatchMarkers.forEach(m => safeRemoveLayer(m));
+                dispatchMarkers = [];
+            }
+            if (dispatchPickupMarker) {
+                safeRemoveLayer(dispatchPickupMarker);
+                dispatchPickupMarker = null;
+            }
+            if (dispatchDropoffMarker) {
+                safeRemoveLayer(dispatchDropoffMarker);
+                dispatchDropoffMarker = null;
+            }
+            if (dispatchRadarCircle) {
+                safeRemoveLayer(dispatchRadarCircle);
+                dispatchRadarCircle = null;
+            }
+            if (dispatchStopMarkers && dispatchStopMarkers.length) {
+                dispatchStopMarkers.forEach(m => safeRemoveLayer(m));
+                dispatchStopMarkers = [];
+            }
+        }
+
         function assignDriverDispatch() {
             return {
                 show: false,
@@ -200,13 +270,6 @@
                 isSuccess: false,
                 selectedDriverId: null,
                 selectedDriver: null,
-                map: null,
-                markers: [],
-                pickupMarker: null,
-                dropoffMarker: null,
-                stopMarkers: [],
-                radarCircle: null,
-                pickupLocation: null,
 
                 initMap() {
                     if (typeof L === 'undefined') {
@@ -214,22 +277,24 @@
                         return;
                     }
 
-                    if (this.map) {
-                        this.map.invalidateSize();
-                        return;
-                    }
-
                     const mapEl = this.$refs.dispatchMap;
                     if (!mapEl) return;
 
-                    this.map = L.map(mapEl, {
+                    if (dispatchMap) {
+                        try {
+                            dispatchMap.invalidateSize();
+                        } catch (e) {}
+                        return;
+                    }
+
+                    dispatchMap = L.map(mapEl, {
                         center: [15.3694, 44.191],
                         zoom: 13,
                         zoomControl: false,
                         attributionControl: false,
                     });
 
-                    // Google Maps Roadmap Tiles: Arabic labels, Yemen region, fast, 100% UNBLOCKED on all servers
+                    // Google Maps Roadmap Tiles: Arabic labels, Yemen region, fast, 100% UNBLOCKED
                     const googleKey = @json(config('services.google.maps_key') ?: env('GOOGLE_MAP_KEY'));
                     const tileUrl = googleKey
                         ? 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=ar&gl=YE&key=' + encodeURIComponent(googleKey)
@@ -239,26 +304,37 @@
                         maxZoom: 20,
                         subdomains: ['0', '1', '2', '3'],
                         attribution: 'Google Maps'
-                    }).addTo(this.map);
+                    }).addTo(dispatchMap);
 
-                    L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
+                    L.control.zoom({ position: 'bottomleft' }).addTo(dispatchMap);
+
+                    setTimeout(() => {
+                        if (dispatchMap) dispatchMap.invalidateSize();
+                    }, 250);
+                },
+
+                invalidateMap() {
+                    if (dispatchMap) {
+                        try {
+                            dispatchMap.invalidateSize();
+                        } catch (e) {}
+                    }
                 },
 
                 syncMap(data) {
                     if (!data) return;
-                    if (typeof L === 'undefined' || !this.map) {
+                    if (typeof L === 'undefined' || !dispatchMap) {
                         setTimeout(() => this.syncMap(data), 200);
                         return;
                     }
 
-                    // Clear existing layers
-                    this.markers.forEach(m => this.map.removeLayer(m));
-                    this.markers = [];
-                    if (this.pickupMarker) { this.map.removeLayer(this.pickupMarker); this.pickupMarker = null; }
-                    if (this.dropoffMarker) { this.map.removeLayer(this.dropoffMarker); this.dropoffMarker = null; }
-                    if (this.radarCircle) { this.map.removeLayer(this.radarCircle); this.radarCircle = null; }
-                    this.stopMarkers.forEach(m => this.map.removeLayer(m));
-                    this.stopMarkers = [];
+                    // Stop any ongoing animations to prevent frame conflicts
+                    try {
+                        dispatchMap.stop();
+                    } catch (e) {}
+
+                    // Clear existing layers safely without leaving orphaned tooltips
+                    clearAllMapLayers();
 
                     const bounds = L.latLngBounds();
                     let hasValidPickup = false;
@@ -266,10 +342,10 @@
                     // ── Pickup Pin + Pulsing Radar ──
                     if (data.pickup && data.pickup.latitude && data.pickup.longitude) {
                         const pickupLatLng = [Number(data.pickup.latitude), Number(data.pickup.longitude)];
-                        this.pickupLocation = pickupLatLng;
+                        dispatchPickupLocation = pickupLatLng;
                         hasValidPickup = true;
 
-                        this.pickupMarker = L.marker(pickupLatLng, {
+                        dispatchPickupMarker = L.marker(pickupLatLng, {
                             icon: L.divIcon({
                                 className: 'pickup-marker-icon',
                                 html: '<div class="pickup-pulse-wrapper">' +
@@ -281,20 +357,20 @@
                                 iconSize: [40, 40],
                                 iconAnchor: [20, 20],
                             })
-                        }).addTo(this.map);
+                        }).addTo(dispatchMap);
 
                         if (data.pickup.address) {
-                            this.pickupMarker.bindTooltip('موقع العميل: ' + data.pickup.address, { direction: 'top', offset: [0, -20], className: 'map-tooltip-rtl' });
+                            dispatchPickupMarker.bindTooltip('موقع العميل: ' + data.pickup.address, { direction: 'top', offset: [0, -20], className: 'map-tooltip-rtl' });
                         }
 
-                        this.radarCircle = L.circle(pickupLatLng, {
+                        dispatchRadarCircle = L.circle(pickupLatLng, {
                             radius: 1200,
                             color: '#10b981',
                             fillColor: '#10b981',
                             fillOpacity: 0.08,
                             weight: 2,
                             dashArray: '5, 5',
-                        }).addTo(this.map);
+                        }).addTo(dispatchMap);
 
                         bounds.extend(pickupLatLng);
                     }
@@ -303,7 +379,7 @@
                     if (data.dropoff && data.dropoff.latitude && data.dropoff.longitude) {
                         const dropoffLatLng = [Number(data.dropoff.latitude), Number(data.dropoff.longitude)];
 
-                        this.dropoffMarker = L.marker(dropoffLatLng, {
+                        dispatchDropoffMarker = L.marker(dropoffLatLng, {
                             icon: L.divIcon({
                                 className: 'dropoff-marker-icon',
                                 html: '<div class="flex justify-center items-center w-9 h-9 text-white bg-red-500 rounded-full border-white shadow-xl border-3">' +
@@ -312,10 +388,10 @@
                                 iconSize: [36, 36],
                                 iconAnchor: [18, 18],
                             })
-                        }).addTo(this.map);
+                        }).addTo(dispatchMap);
 
                         if (data.dropoff.address) {
-                            this.dropoffMarker.bindTooltip('الوجهة: ' + data.dropoff.address, { direction: 'top', offset: [0, -18], className: 'map-tooltip-rtl' });
+                            dispatchDropoffMarker.bindTooltip('الوجهة: ' + data.dropoff.address, { direction: 'top', offset: [0, -18], className: 'map-tooltip-rtl' });
                         }
 
                         bounds.extend(dropoffLatLng);
@@ -333,8 +409,8 @@
                                     iconSize: [28, 28],
                                     iconAnchor: [14, 14],
                                 })
-                            }).addTo(this.map);
-                            this.stopMarkers.push(stopMarker);
+                            }).addTo(dispatchMap);
+                            dispatchStopMarkers.push(stopMarker);
                             bounds.extend(stopLatLng);
                         });
                     }
@@ -355,7 +431,11 @@
                                 ? '<div class="absolute -right-0.5 -bottom-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white"></div>'
                                 : '<div class="absolute -right-0.5 -bottom-0.5 w-3.5 h-3.5 bg-gray-400 rounded-full border-2 border-white"></div>';
 
-                            const avatarSrc = driver.driver_image || '/tailadmin/build/src/images/user/SO.jpg';
+                            // Clean avatar path fallback (prevents 404 for default_driver1.png)
+                            let avatarSrc = driver.driver_image || '';
+                            if (!avatarSrc || avatarSrc.includes('default_driver1.png')) {
+                                avatarSrc = DEFAULT_DRIVER_AVATAR;
+                            }
 
                             const marker = L.marker(driverLatLng, {
                                 icon: L.divIcon({
@@ -363,20 +443,20 @@
                                     html: '<div class="flex flex-col items-center cursor-pointer">' +
                                             distBadge +
                                             '<div class="relative">' +
-                                                '<img src="' + avatarSrc + '" class="w-10 h-10 rounded-full object-cover border-2 shadow-lg ' + onlineRing + '" onerror="this.src=\'/tailadmin/build/src/images/user/SO.jpg\'" />' +
+                                                '<img src="' + avatarSrc + '" class="w-10 h-10 rounded-full object-cover border-2 shadow-lg ' + onlineRing + '" onerror="this.onerror=null;this.src=\'' + DEFAULT_DRIVER_AVATAR + '\';" />' +
                                                 onlineDot +
                                             '</div>' +
                                           '</div>',
                                     iconSize: [44, 56],
                                     iconAnchor: [22, 50],
                                 })
-                            }).addTo(this.map);
+                            }).addTo(dispatchMap);
 
                             marker.on('click', () => {
                                 this.selectDriver(driver);
                             });
 
-                            this.markers.push(marker);
+                            dispatchMarkers.push(marker);
 
                             if (driver.distance_km !== null && driver.distance_km <= 35) {
                                 bounds.extend(driverLatLng);
@@ -385,15 +465,19 @@
                         });
                     }
 
-                    // Center on pickup location if available
-                    if (hasValidPickup) {
-                        if (nearbyDriversCount > 0 && bounds.isValid()) {
-                            this.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
-                        } else {
-                            this.map.setView(this.pickupLocation, 14);
+                    // Center on pickup location or bounds safely without animation race conditions
+                    try {
+                        if (hasValidPickup) {
+                            if (nearbyDriversCount > 0 && bounds.isValid()) {
+                                dispatchMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 15, animate: false });
+                            } else {
+                                dispatchMap.setView(dispatchPickupLocation, 14, { animate: false });
+                            }
+                        } else if (bounds.isValid()) {
+                            dispatchMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 14, animate: false });
                         }
-                    } else if (bounds.isValid()) {
-                        this.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+                    } catch (err) {
+                        console.warn('Error adjusting map bounds:', err);
                     }
                 },
 
@@ -401,14 +485,24 @@
                     this.selectedDriverId = driver.id;
                     this.selectedDriver = driver;
 
-                    if (driver.latitude && driver.longitude && this.map) {
-                        this.map.flyTo([Number(driver.latitude), Number(driver.longitude)], 15, { duration: 0.8 });
+                    if (driver.latitude && driver.longitude && dispatchMap) {
+                        try {
+                            dispatchMap.stop();
+                            dispatchMap.flyTo([Number(driver.latitude), Number(driver.longitude)], 15, { duration: 0.8 });
+                        } catch (e) {
+                            dispatchMap.setView([Number(driver.latitude), Number(driver.longitude)], 15);
+                        }
                     }
                 },
 
                 recenterOnPickup() {
-                    if (this.pickupLocation && this.map) {
-                        this.map.flyTo(this.pickupLocation, 14, { duration: 0.7 });
+                    if (dispatchPickupLocation && dispatchMap) {
+                        try {
+                            dispatchMap.stop();
+                            dispatchMap.flyTo(dispatchPickupLocation, 14, { duration: 0.7 });
+                        } catch (e) {
+                            dispatchMap.setView(dispatchPickupLocation, 14);
+                        }
                     }
                 },
 

@@ -6,7 +6,7 @@
 <div x-data="assignDriverDispatch()"
      x-on:open-modal.window="if ($event.detail == 'assign-driver-modal') {
         show = true; isLoading = false; isSuccess = false; clearSelection();
-        $nextTick(() => { initMap(); setTimeout(() => { if (map) map.invalidateSize(); }, 300); });
+        $nextTick(() => { initMap(); setTimeout(() => { invalidateMap(); }, 300); });
      }"
      x-on:close-modal.window="if ($event.detail == 'assign-driver-modal') { show = false; clearSelection(); }"
      x-on:driver-assigned.window="isLoading = false; isSuccess = true; setTimeout(() => { show = false; isSuccess = false; $wire.clearSelectedRequest(); }, 2000)"
@@ -132,7 +132,10 @@
                     @forelse($this->drivers as $driver)
                         @php
                             $distKm = isset($driver->distance_km) ? round($driver->distance_km, 1) : null;
-                            $driverImage = $driver->driver_image ? url($driver->driver_image) : asset('tailadmin/build/src/images/user/SO.jpg');
+                            $driverImg = $driver->driver_image;
+                            $driverImage = (!$driverImg || str_contains($driverImg, 'default_driver1.png'))
+                                ? asset('tailadmin/build/src/images/user/SO.jpg')
+                                : url($driverImg);
                             $vehicleTypeName = $driver->vehicle?->type ?? 'غير محدد';
                         @endphp
                         <div @click="flyToDriver({{ $driver->latitude ?? 'null' }}, {{ $driver->longitude ?? 'null' }}, {{ $driver->id }}, {
@@ -156,7 +159,7 @@
                             <div class="flex items-center gap-3 flex-1" style="min-width: 0;">
                                 <div class="relative" style="flex-shrink: 0;">
                                     <div class="h-11 w-11 overflow-hidden rounded-full border-2 {{ $driver->is_online ? 'border-success-500' : 'border-gray-200 dark:border-gray-700' }}">
-                                        <img src="{{ $driverImage }}" alt="{{ $driver->name }}" class="h-full w-full" style="object-fit: cover;">
+                                        <img src="{{ $driverImage }}" alt="{{ $driver->name }}" class="h-full w-full" style="object-fit: cover;" onerror="this.onerror=null;this.src='{{ asset('tailadmin/build/src/images/user/SO.jpg') }}';">
                                     </div>
                                     @if($driver->is_online)
                                         <span class="absolute rounded-full border-2 border-white bg-success-500 dark:border-gray-900" style="width: 12px; height: 12px; bottom: -1px; right: -1px;" title="متصل"></span>
@@ -272,7 +275,8 @@
 
                         <div class="flex items-center gap-3">
                             <div class="relative" style="flex-shrink: 0;">
-                                <img :src="selectedDriver?.driver_image" :alt="selectedDriver?.name"
+                                <img :src="selectedDriver?.driver_image && !selectedDriver?.driver_image.includes('default_driver1.png') ? selectedDriver.driver_image : '{{ asset('tailadmin/build/src/images/user/SO.jpg') }}'" :alt="selectedDriver?.name"
+                                     @error="$event.target.src='{{ asset('tailadmin/build/src/images/user/SO.jpg') }}'"
                                      class="h-12 w-12 rounded-xl border-2 border-brand-500 shadow-theme-xs" style="object-fit: cover;" />
                                 <template x-if="selectedDriver?.is_online">
                                     <span class="absolute rounded-full border-2 border-white bg-success-500 dark:border-gray-900" style="width: 12px; height: 12px; bottom: -2px; right: -2px;"></span>
