@@ -114,6 +114,24 @@
                     </h4>
                 </div>
             </div>
+
+            <!-- Trip Time Card -->
+            <div
+                class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+                <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                    <svg fill="#dc6803" width="30" height="30" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z" />
+                    </svg>
+                </div>
+                <div class="mt-3 w-full">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">وقت الرحلة</span>
+                    <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                        {{ $request->trip_datetime ? $request->trip_datetime->format('Y-m-d H:i') : 'غير محدد' }}
+                    </h4>
+                </div>
+            </div>
             <div
                 class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
                 <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
@@ -206,7 +224,17 @@
                     }
                 @endphp
                 <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
-                    <h3 class="mb-6 text-lg font-semibold text-gray-800 dark:text-white/90">مسار الرحلة</h3>
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">مسار الرحلة</h3>
+                        @if ($request->trip_datetime)
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400 text-xs font-medium border border-warning-200 dark:border-warning-500/30">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>وقت الانطلاق: <span dir="ltr">{{ $request->trip_datetime->format('Y-m-d h:i A') }}</span></span>
+                            </div>
+                        @endif
+                    </div>
                     <div class="relative px-2">
                         <!-- Start Point -->
                         <div class="pb-8 timeline-item">
