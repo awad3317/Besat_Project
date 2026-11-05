@@ -516,14 +516,41 @@
                 },
 
                 estimateArrival(distanceKm) {
-                    if (!distanceKm || distanceKm <= 0) return '—';
+                    const km = parseFloat(distanceKm);
+                    if (!km || isNaN(km) || km <= 0) return '—';
+
                     const avgSpeedKmPerMin = 0.5;
-                    const mins = Math.ceil(distanceKm / avgSpeedKmPerMin);
+                    const mins = Math.round(km / avgSpeedKmPerMin);
+
                     if (mins < 1) return 'أقل من دقيقة';
                     if (mins === 1) return 'دقيقة واحدة';
                     if (mins === 2) return 'دقيقتان';
-                    if (mins <= 10) return mins + ' دقائق';
-                    return mins + ' دقيقة';
+
+                    if (mins < 60) {
+                        if (mins <= 10) return mins + ' دقائق';
+                        return mins + ' دقيقة';
+                    }
+
+                    const hours = Math.floor(mins / 60);
+                    const remMins = mins % 60;
+
+                    let hourStr = '';
+                    if (hours === 1) hourStr = 'ساعة';
+                    else if (hours === 2) hourStr = 'ساعتان';
+                    else if (hours >= 3 && hours <= 10) hourStr = hours + ' ساعات';
+                    else hourStr = hours + ' ساعة';
+
+                    if (remMins === 0) {
+                        return hourStr;
+                    }
+
+                    let minStr = '';
+                    if (remMins === 1) minStr = 'دقيقة واحدة';
+                    else if (remMins === 2) minStr = 'دقيقتان';
+                    else if (remMins <= 10) minStr = remMins + ' دقائق';
+                    else minStr = remMins + ' دقيقة';
+
+                    return hourStr + ' و ' + minStr;
                 }
             };
         }

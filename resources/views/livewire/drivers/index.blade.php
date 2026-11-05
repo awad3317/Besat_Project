@@ -293,23 +293,29 @@
                                             <div class="flex items-center">
                                                 <div class="flex gap-3 items-center">
                                                     <div class="relative flex-shrink-0 mx-2 w-10 h-10">
-                                                        @if ($driver->driver_image)
-                                                            <img src="{{ url("$driver->driver_image") }}"
-                                                                alt="User" loading="lazy" width="40"
+                                                        <div class="w-10 h-10 overflow-hidden rounded-full border-2 {{ $driver->is_online ? 'border-success-500' : 'border-gray-300 dark:border-gray-600' }}">
+                                                            @php
+                                                                $driverImg = $driver->driver_image;
+                                                                $driverAvatar = (!empty($driverImg) && !str_contains($driverImg, 'default_driver1.png'))
+                                                                    ? (str_starts_with($driverImg, 'http') ? $driverImg : url($driverImg))
+                                                                    : asset('tailadmin/build/src/images/user/SO.jpg');
+                                                            @endphp
+                                                            <img src="{{ $driverAvatar }}"
+                                                                alt="{{ $driver->name }}" loading="lazy" width="40"
                                                                 height="40"
-                                                                class="object-cover w-full h-full rounded-full" />
-                                                        @else
-                                                            <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}"
-                                                                alt="User" loading="lazy" width="40"
-                                                                height="40"
-                                                                class="object-cover w-full h-full rounded-full" />
-                                                        @endif
+                                                                class="object-cover w-full h-full"
+                                                                onerror="this.onerror=null;this.src='{{ asset('tailadmin/build/src/images/user/SO.jpg') }}';" />
+                                                        </div>
                                                         @if ($driver->is_online)
                                                             <span
-                                                                class="bg-success-500 absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"></span>
+                                                                class="absolute rounded-full border-2 border-white bg-success-500 dark:border-gray-900"
+                                                                style="width: 12px; height: 12px; bottom: -1px; right: -1px;"
+                                                                title="متصل"></span>
                                                         @else
                                                             <span
-                                                                class="absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"></span>
+                                                                class="absolute rounded-full border-2 border-white bg-gray-400 dark:border-gray-900"
+                                                                style="width: 12px; height: 12px; bottom: -1px; right: -1px;"
+                                                                title="غير متصل"></span>
                                                         @endif
                                                     </div>
                                                 </div>
