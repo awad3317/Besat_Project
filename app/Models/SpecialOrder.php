@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SpecialOrder extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'customer_name',
         'customer_phone',
@@ -19,24 +21,49 @@ class SpecialOrder extends Model
         'end_address',
         'description',
         'driver_id',
+        'status',
         'cancellation_reason',
         'created_by',
-        'cancelled_by'
+        'cancelled_by',
     ];
-    public function user()
+
+    protected $casts = [
+        'price' => 'integer',
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function driver()
+    public function driver(): BelongsTo
     {
         return $this->belongsTo(Driver::class);
     }
-    public static function statusConfig()
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function canceller(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cancelled_by');
+    }
+
+    public static function statusConfig(): array
     {
         return [
+            'pending' => [
+                'text' => 'قيد الانتظار',
+                'class' => 'text-warning-600 bg-warning-50 dark:bg-warning-500/15 dark:text-warning-500',
+            ],
             'searching_driver' => [
                 'text' => 'جاري البحث عن سائق',
+                'class' => 'text-warning-600 bg-warning-50 dark:bg-warning-500/15 dark:text-warning-500',
+            ],
+            'paused' => [
+                'text' => 'بانتظار التوجيه',
                 'class' => 'text-warning-600 bg-warning-50 dark:bg-warning-500/15 dark:text-warning-500',
             ],
             'in_progress' => [
@@ -50,22 +77,23 @@ class SpecialOrder extends Model
             'cancelled' => [
                 'text' => 'ملغية',
                 'class' => 'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500',
-            ]
+            ],
         ];
     }
-    public function getStatusInfo()
+
+    public function getStatusInfo(): array
     {
         $config = self::statusConfig();
         return $config[$this->status] ?? $config['pending'];
     }
-    public function getStatusTextAttribute()
+
+    public function getStatusTextAttribute(): string
     {
         return $this->getStatusInfo()['text'];
     }
-    public function getStatusClassAttribute()
+
+    public function getStatusClassAttribute(): string
     {
         return $this->getStatusInfo()['class'];
     }
-
-
 }

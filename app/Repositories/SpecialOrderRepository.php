@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Repositories;
 
@@ -7,21 +7,19 @@ use App\Models\SpecialOrder;
 
 class SpecialOrderRepository implements RepositoriesInterface
 {
-/**
-     * Create a new class instance.
-     */
     public function __construct()
     {
         //
     }
+
     public function index()
     {
-        return SpecialOrder::paginate(10);
+        return SpecialOrder::with(['driver', 'user'])->latest()->paginate(10);
     }
 
     public function getById($id): SpecialOrder
     {
-        return SpecialOrder::findOrFail($id);
+        return SpecialOrder::with(['driver', 'user', 'creator', 'canceller'])->findOrFail($id);
     }
 
     public function store(array $data): SpecialOrder
@@ -31,24 +29,28 @@ class SpecialOrderRepository implements RepositoriesInterface
 
     public function update(array $data, $id): SpecialOrder
     {
-        $SpecialOrder = SpecialOrder::findOrFail($id);
-        $SpecialOrder->update($data);
-        return $SpecialOrder;
+        $specialOrder = SpecialOrder::findOrFail($id);
+        $specialOrder->update($data);
+        return $specialOrder;
     }
+
     public function delete($id): bool
     {
         return SpecialOrder::where('id', $id)->delete() > 0;
     }
-    public function cancelledOrders(){
+
+    public function cancelledOrders()
+    {
         return SpecialOrder::where('status', 'cancelled')->get();
     }
-    public function completedOrders(){
+
+    public function completedOrders()
+    {
         return SpecialOrder::where('status', 'completed')->get();
     }
-    public function in_progressOrders(){
-        return SpecialOrder::where('status', '!=','completed')->where('status','!=','cancelled')->get();
+
+    public function in_progressOrders()
+    {
+        return SpecialOrder::whereIn('status', ['in_progress', 'pending', 'searching_driver', 'paused'])->get();
     }
-
-
-
 }

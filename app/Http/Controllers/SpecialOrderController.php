@@ -18,27 +18,20 @@ use App\Repositories\SpecialOrderRepository;
 
 class SpecialOrderController extends Controller
 {
-    public function __construct(private SpecialOrderRepository $specialOrderRepository,
-    private DriverRepository $driverRepository,
-    private VehicleRepository $vehicleRepository,
-    private DiscountCodeService $discountCodeService,
-    private PriceCalculationService $priceCalculationService
-   )
-    {
+    public function __construct(
+        private SpecialOrderRepository $specialOrderRepository,
+        private DriverRepository $driverRepository,
+        private VehicleRepository $vehicleRepository,
+        private DiscountCodeService $discountCodeService,
+        private PriceCalculationService $priceCalculationService
+    ) {}
 
-    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $orders=$this->specialOrderRepository->index();
-        $cancelledOrders = $this->specialOrderRepository->cancelledOrders()->count();
-        $completedOrders = $this->specialOrderRepository->cancelledOrders()->count();
-        $in_progressOrders = $this->specialOrderRepository->cancelledOrders()->count();
-        return view('pages.specialOrder.index', compact(
-            'orders',
-            'cancelledOrders','completedOrders','in_progressOrders'));
+        return view('pages.specialOrder.index');
     }
 
     /**
@@ -46,7 +39,8 @@ class SpecialOrderController extends Controller
      */
     public function create()
     {
-
+        $vehicles = $this->vehicleRepository->index();
+        return view('pages.specialOrder.create', compact('vehicles'));
     }
 
     /**
@@ -55,39 +49,51 @@ class SpecialOrderController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id'=>['required', Rule::exists(User::class, 'id')],
-            'vehicle_id'=>['required',Rule::exists(Vehicle::class, 'id')],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'start_address'=>['required'],
-            'start_latitude' => ['required','numeric'],
-            'start_longitude' => ['required','numeric'],
-            'end_latitude' => ['required','numeric'],
-            'end_longitude' => ['required','numeric'],
-            'end_address' => ['required'],
+            'user_id'            => ['nullable', Rule::exists(User::class, 'id')],
+            'customer_name'      => ['nullable', 'string', 'max:255'],
+            'customer_phone'     => ['nullable', 'string', 'max:30'],
+            'customer_whatsapp'  => ['nullable', 'string', 'max:30'],
+            'driver_id'          => ['nullable', Rule::exists('drivers', 'id')],
+            'title'              => ['required', 'string', 'max:255'],
+            'description'        => ['nullable', 'string'],
+            'start_address'      => ['required', 'string', 'max:255'],
+            'end_address'        => ['required', 'string', 'max:255'],
+            'price'              => ['nullable', 'numeric', 'min:0'],
+            'start_latitude'     => ['nullable', 'numeric'],
+            'start_longitude'    => ['nullable', 'numeric'],
+            'end_latitude'       => ['nullable', 'numeric'],
+            'end_longitude'      => ['nullable', 'numeric'],
+            'vehicle_id'         => ['nullable', Rule::exists(Vehicle::class, 'id')],
         ]);
+
         if ($validator->fails()) {
             return WebResponseClass::sendValidationError($validator);
         }
+
         try {
-            $validatData = $validator->validated();
-            $distanceInKm = $this->priceCalculationService->getdistanceInKm(
-                $validatData['start_latitude'],
-                $validatData['start_longitude'],
-                $validatData['end_latitude'],
-                $validatData['end_longitude']
-            );
-            $vehicle=$this->vehicleRepository->getById($validatData['vehicle_id']);
-            $price_per_km = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
-            $price_orginal = $this->priceCalculationService->calculatePrice($distanceInKm,$price_per_km,$vehicle->min_price);
-            $validatData['price'] = $price_orginal;
-            $validatData['created_by'] = auth()->user()->id;
-            $validatData['status'] = 'paused';
-            dd($validatData);
-            $this->specialOrderRepository->store($validatData);
-            ActivityLog::log('create','SpecialOrder','تم إنشاء رحلة جديده');
-            
-            return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة الرحلة بنجاح');
+            $data = $validator->validated();
+
+            // حساب السعر التقديري تلقائياً إذا توفرت الإحداثيات ونوع المركبة ولم يُحدد السعر يدوياً
+            if ((empty($data['price']) || $data['price'] <= 0) && !empty($data['vehicle_id']) && !empty($data['start_latitude']) && !empty($data['end_latitude'])) {
+                $distanceInKm = $this->priceCalculationService->getdistanceInKm(
+                    $data['start_latitude'],
+                    $data['start_longitude'],
+                    $data['end_latitude'],
+                    $data['end_longitude']
+                );
+                $vehicle = $this->vehicleRepository->getById($data['vehicle_id']);
+                $pricePerKm = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
+                $data['price'] = $this->priceCalculationService->calculatePrice($distanceInKm, $pricePerKm, $vehicle->min_price);
+            }
+
+            $data['created_by'] = auth()->id();
+            $data['status'] = !empty($data['driver_id']) ? 'in_progress' : 'pending';
+
+            $order = $this->specialOrderRepository->store($data);
+
+            ActivityLog::log('create', 'SpecialOrder', "تم إنشاء طلب خاص جديد #{$order->id} ({$order->title})");
+
+            return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة الطلب الخاص بنجاح', 'حسناً', 'specialOrder.index');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
         }
@@ -98,7 +104,12 @@ class SpecialOrderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $order = $this->specialOrderRepository->getById($id);
+            return view('pages.specialOrder.show', compact('order'));
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 
     /**
@@ -106,7 +117,7 @@ class SpecialOrderController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return redirect()->route('specialOrder.show', $id);
     }
 
     /**
@@ -114,7 +125,38 @@ class SpecialOrderController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title'              => ['required', 'string', 'max:255'],
+            'customer_name'      => ['nullable', 'string', 'max:255'],
+            'customer_phone'     => ['nullable', 'string', 'max:30'],
+            'customer_whatsapp'  => ['nullable', 'string', 'max:30'],
+            'driver_id'          => ['nullable', Rule::exists('drivers', 'id')],
+            'start_address'      => ['required', 'string', 'max:255'],
+            'end_address'        => ['required', 'string', 'max:255'],
+            'price'              => ['nullable', 'numeric', 'min:0'],
+            'description'        => ['nullable', 'string'],
+            'status'             => ['required', 'in:pending,searching_driver,paused,in_progress,completed,cancelled'],
+            'cancellation_reason'=> ['nullable', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return WebResponseClass::sendValidationError($validator);
+        }
+
+        try {
+            $data = $validator->validated();
+            if ($data['status'] === 'cancelled') {
+                $data['cancelled_by'] = auth()->id();
+            }
+
+            $order = $this->specialOrderRepository->update($data, $id);
+
+            ActivityLog::log('update', 'SpecialOrder', "تم تعديل بيانات الطلب الخاص #{$order->id}");
+
+            return WebResponseClass::sendResponse('تم التحديث!', 'تم تحديث بيانات الطلب بنجاح', 'حسناً', 'specialOrder.index');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 
     /**
@@ -122,25 +164,35 @@ class SpecialOrderController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $this->specialOrderRepository->delete($id);
+
+            ActivityLog::log('delete', 'SpecialOrder', "تم حذف الطلب الخاص #{$id}");
+
+            return WebResponseClass::sendResponse('تم الحذف!', 'تم حذف الطلب بنجاح', 'حسناً', 'specialOrder.index');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 
+    /**
+     * Calculate price endpoint for maps and trips
+     */
     public function calculatePrice(Request $request)
     {
-
         $validated = $request->validate([
-            'start_latitude' => ['required','numeric'],
-            'start_longitude' => ['required','numeric'],
-            'end_latitude' => ['required','numeric'],
-            'end_longitude' => ['required','numeric'],
-            'vehicle_id'=>['required','integer'],
-            'discount_code'=> ['nullable','string'],
-            'user_id'=>['required_with:discount_code','nullable','integer'],
-            'stops' => ['nullable', 'array'],
-            'stops.*.latitude' => ['required_with:stops', 'numeric'],
+            'start_latitude'  => ['required', 'numeric'],
+            'start_longitude' => ['required', 'numeric'],
+            'end_latitude'    => ['required', 'numeric'],
+            'end_longitude'   => ['required', 'numeric'],
+            'vehicle_id'      => ['required', 'integer'],
+            'discount_code'   => ['nullable', 'string'],
+            'user_id'         => ['required_with:discount_code', 'nullable', 'integer'],
+            'stops'           => ['nullable', 'array'],
+            'stops.*.latitude'  => ['required_with:stops', 'numeric'],
             'stops.*.longitude' => ['required_with:stops', 'numeric'],
         ]);
-        
+
         $stops = $validated['stops'] ?? [];
         $distanceInKm = $this->priceCalculationService->getdistanceInKm(
             $validated['start_latitude'],
@@ -149,39 +201,44 @@ class SpecialOrderController extends Controller
             $validated['end_longitude'],
             $stops
         );
-        $vehicle=$this->vehicleRepository->getById($validated['vehicle_id']);
-        $price_per_km = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
-        $price_orginal = $this->priceCalculationService->calculatePrice($distanceInKm,$price_per_km,$vehicle->min_price);
 
-        $price_final = $price_orginal;
-        $vehicle = $vehicle->type;
-        $coupon_rate = 0;
-        $coupon_for_response = null;
-        $discount_amount = 0;
-        if(isset($validated['discount_code']) && !empty($validated['discount_code'])){
-            $coupon_object  = $this->discountCodeService->getDiscountCode($validated['discount_code']);
-            if (!$coupon_object) {
-                return response()->json(['error' => 'كود الخصم الذي أدخلته غير صحيح.'], 422); // 422 هو كود مناسب لأخطاء التحقق
-            }
-            if(!$this->discountCodeService->checkIsActive($coupon_object)){
-                return response()->json(['error' => 'كود الخصم غير متاح']);
-            }
-            if(!$this->discountCodeService->checkGlobalUsage($coupon_object)){
-                return response()->json(['error'=> 'كود الخصم تجاوز الاستخدام المسموح به']);
-            }
-            if(!$this->discountCodeService->checkUserEligibility($coupon_object,$validated['user_id'])){
-                return response()->json(['error' => 'كود الخصم تم استخدامه من قبل هذا المستخدم.']);
-            }
-            $coupon_rate = $coupon_object->discount_rate;
-            $coupon_for_response = number_format($coupon_rate * 100, 2);
-            $discount_amount = $price_orginal * ($coupon_rate);
-            $price_final = $price_orginal - $discount_amount;
+        $vehicle = $this->vehicleRepository->getById($validated['vehicle_id']);
+        $pricePerKm = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
+        $priceOriginal = $this->priceCalculationService->calculatePrice($distanceInKm, $pricePerKm, $vehicle->min_price);
 
+        $priceFinal = $priceOriginal;
+        $vehicleName = $vehicle->type;
+        $couponForResponse = null;
+        $discountAmount = 0;
+
+        if (!empty($validated['discount_code'])) {
+            $couponObject = $this->discountCodeService->getDiscountCode($validated['discount_code']);
+            if (!$couponObject) {
+                return response()->json(['error' => 'كود الخصم الذي أدخلته غير صحيح.'], 422);
+            }
+            if (!$this->discountCodeService->checkIsActive($couponObject)) {
+                return response()->json(['error' => 'كود الخصم غير متاح'], 422);
+            }
+            if (!$this->discountCodeService->checkGlobalUsage($couponObject)) {
+                return response()->json(['error' => 'كود الخصم تجاوز الاستخدام المسموح به'], 422);
+            }
+            if (!empty($validated['user_id']) && !$this->discountCodeService->checkUserEligibility($couponObject, $validated['user_id'])) {
+                return response()->json(['error' => 'كود الخصم تم استخدامه من قبل هذا المستخدم.'], 422);
+            }
+
+            $couponRate = $couponObject->discount_rate;
+            $couponForResponse = number_format($couponRate * 100, 2);
+            $discountAmount = $priceOriginal * $couponRate;
+            $priceFinal = max(0, $priceOriginal - $discountAmount);
         }
 
-        return response()->json(['distanceInKm' => $distanceInKm, 'price' => $price_final, 'vehicle' => $vehicle, 'coupon' => $coupon_for_response , 'discount_amount'=>$discount_amount, 'original_price' => $price_orginal]);
+        return response()->json([
+            'distanceInKm'    => $distanceInKm,
+            'price'           => $priceFinal,
+            'vehicle'         => $vehicleName,
+            'coupon'          => $couponForResponse,
+            'discount_amount' => $discountAmount,
+            'original_price'  => $priceOriginal,
+        ]);
     }
-
-
-
 }
