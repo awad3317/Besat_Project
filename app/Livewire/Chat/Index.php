@@ -164,7 +164,10 @@ class Index extends Component
                 'driver:id,name,phone,driver_image',
                 'lastMessage:id,body,created_at'
             ])
-            ->orderBy('updated_at', 'desc');
+            // ترتيب مثل واتساب: الأحدث رسالةً في الأعلى، والمحادثات بدون رسائل في الأسفل
+            ->orderByRaw('last_message_at IS NULL')
+            ->orderByDesc('last_message_at')
+            ->orderByDesc('id');
 
         $clientConversations = $baseQuery()->whereNotNull('user_id')->limit(50)->get();
         $driverConversations = $baseQuery()->whereNotNull('driver_id')->whereNull('user_id')->limit(50)->get();
