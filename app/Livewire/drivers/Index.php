@@ -3,6 +3,7 @@
 namespace App\Livewire\drivers;
 
 use App\Models\Driver;
+use App\Services\ActivityLog;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
@@ -77,16 +78,34 @@ class Index extends Component
     #[On('toggle-active')]
     public function toggleActive($driverId)
     {
-        Driver::where('id', $driverId)->update([
-            'is_active' => DB::raw('NOT is_active')
-        ]);
+        $driver = Driver::find($driverId);
+        if ($driver) {
+            $driver->is_active = !$driver->is_active;
+            $driver->save();
+
+            ActivityLog::log(
+                'update',
+                'Driver',
+                $driver->is_active ? "تم تفعيل حساب السائق {$driver->name}" : "تم إيقاف حساب السائق {$driver->name}",
+                $driver->id
+            );
+        }
     }
 
     public function toggleBan($driverId)
     {
-        Driver::where('id', $driverId)->update([
-            'is_banned' => DB::raw('NOT is_banned')
-        ]);
+        $driver = Driver::find($driverId);
+        if ($driver) {
+            $driver->is_banned = !$driver->is_banned;
+            $driver->save();
+
+            ActivityLog::log(
+                'update',
+                'Driver',
+                $driver->is_banned ? "تم حظر السائق {$driver->name}" : "تم فك حظر السائق {$driver->name}",
+                $driver->id
+            );
+        }
     }
 
     #[Computed]

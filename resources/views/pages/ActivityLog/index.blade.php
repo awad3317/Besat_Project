@@ -102,6 +102,13 @@
                         <th class="py-3">
                             <div class="flex items-center">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                    الجدول / السجل
+                                </p>
+                            </div>
+                        </th>
+                        <th class="py-3">
+                            <div class="flex items-center">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                     الوصف
                                 </p>
                             </div>
@@ -144,6 +151,19 @@
                                             {{ $log->action }}
                                         </p>
                                     </div>
+                                </div>
+                            </td>
+
+                            <td class="py-3">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                        {{ $log->model_name ?? '—' }}
+                                    </span>
+                                    @if($log->model_id)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                                            #{{ $log->model_id }}
+                                        </span>
+                                    @endif
                                 </div>
                             </td>
 

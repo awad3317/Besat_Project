@@ -52,8 +52,8 @@ class CouponController extends Controller
         try {
             $validatedData = $validator->validated();
             $validatedData['discount_rate'] = $validatedData['discount_rate'] / 100;
-            DiscountCode::create($validatedData);
-            ActivityLog::log('create', 'DiscountCode', 'تم إضافة كوبون خصم جديد');
+            $descout=DiscountCode::create($validatedData);
+            ActivityLog::log('create', 'DiscountCode', 'تم إضافة كوبون خصم جديد',$descout->id);
             return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة الكوبون بنجاح');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
@@ -114,7 +114,7 @@ class CouponController extends Controller
             $validatedData['discount_rate'] = $validatedData['discount_rate'] / 100;
 
             $this->DiscountCodeRepository->update($validatedData, $id);
-            ActivityLog::log('update', 'DiscountCode', 'تم تعديل كوبون خصم');
+            ActivityLog::log('update', 'DiscountCode', 'تم تعديل كوبون خصم',$coupon->id);
 
             return WebResponseClass::sendResponse('تم التعديل!', 'تم تعديل الكوبون بنجاح');
         } catch (Exception $e) {

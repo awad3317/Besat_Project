@@ -3,6 +3,7 @@
 namespace App\Livewire\Users;
 
 use App\Models\User;
+use App\Services\ActivityLog;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
@@ -51,6 +52,13 @@ class Index extends Component
         }
         $user->is_banned = !$user->is_banned;
         $user->save();
+
+        ActivityLog::log(
+            'update',
+            'User',
+            $user->is_banned ? "تم حظر العميل {$user->name}" : "تم فك حظر العميل {$user->name}",
+            $user->id
+        );
     }
     
     #[Computed]

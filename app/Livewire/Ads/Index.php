@@ -3,6 +3,7 @@
 namespace App\Livewire\Ads;
 
 use App\Models\ads;
+use App\Services\ActivityLog;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Url;
@@ -46,6 +47,13 @@ class Index extends Component
     {
         $ad = ads::findOrFail($id);
         $ad->update(['is_active' => !$ad->is_active]);
+
+        ActivityLog::log(
+            'update',
+            'Ad',
+            $ad->is_active ? "تم تفعيل ظهور الإعلان #{$ad->id}" : "تم إيقاف ظهور الإعلان #{$ad->id}",
+            $ad->id
+        );
 
         // Clear mobile cache
         app(\App\Repositories\AdRepository::class)->clearAdsCache();

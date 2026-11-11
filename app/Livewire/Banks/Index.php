@@ -3,6 +3,7 @@
 namespace App\Livewire\Banks;
 
 use App\Models\Bank;
+use App\Services\ActivityLog;
 use Livewire\Component;
 use Illuminate\Support\Facades\Cache;
 use Livewire\WithPagination;
@@ -49,6 +50,13 @@ class Index extends Component
         $bank->save();
         Cache::forget('active_banks_list');
         unset($this->stats);
+
+        ActivityLog::log(
+            'update',
+            'Bank',
+            $bank->is_active ? "تم تفعيل الحساب البنكي {$bank->name}" : "تم إيقاف الحساب البنكي {$bank->name}",
+            $bank->id
+        );
     }
     
     #[Computed]

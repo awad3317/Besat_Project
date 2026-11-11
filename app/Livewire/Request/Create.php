@@ -3,11 +3,12 @@
 namespace App\Livewire\Request;
 
 use Livewire\Component;
+use App\Models\DiscountCode;
 use App\Models\User;
 use App\Models\Vehicle;
-use App\Models\DiscountCode;
-use Livewire\Attributes\Computed;
+use App\Services\ActivityLog;
 use App\Services\DiscountCodeService;
+use Livewire\Attributes\Computed;
 use App\Services\PriceCalculationService;
 use Carbon\Carbon;
 
@@ -286,6 +287,13 @@ class Create extends Component
             'type' => 'user',
             'is_banned' => 0,
         ]);
+
+        ActivityLog::log(
+            'create',
+            'User',
+            "تم إنشاء مستخدم جديد ({$user->name}) من نافذة إنشاء الرحلة",
+            $user->id
+        );
 
         // تحديد المستخدم الجديد تلقائياً في خانة البحث
         $this->selectCustomer($user->id, $user->phone, $user->name, 0);

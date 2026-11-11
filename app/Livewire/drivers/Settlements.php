@@ -5,6 +5,7 @@ namespace App\Livewire\drivers;
 use App\Models\Driver;
 use App\Models\DriverSettlement;
 use App\Models\Request as TripRequest;
+use App\Services\ActivityLog;
 use App\Services\DriverSettlementService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -148,6 +149,13 @@ class Settlements extends Component
                 TripRequest::whereIn('id', $requests->pluck('id'))->update([
                     'driver_settlement_id' => $settlement->id
                 ]);
+
+                ActivityLog::log(
+                    'create',
+                    'DriverSettlement',
+                    "تمت تصفية حساب السائق #{$this->driverId} برقم تسوية #{$settlement->id} بمبلغ صافي {$netBalance} ر.ي لعدد {$requests->count()} رحلة",
+                    $settlement->id
+                );
             });
 
             $this->closeSettlementModal();

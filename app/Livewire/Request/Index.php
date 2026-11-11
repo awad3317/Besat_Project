@@ -289,7 +289,8 @@ class Index extends Component
             ActivityLog::log(
                 'update',
                 'Request',
-                "تم تعيين السائق #{$driverId} ({$driver->name}) للطلب #{$request->id} بواسطة المسؤول."
+                "تم تعيين السائق #{$driverId} ({$driver->name}) للطلب #{$request->id} بواسطة المسؤول.",
+                $request->id
             );
         });
 

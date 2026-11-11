@@ -221,7 +221,8 @@ class Index extends Component
             ActivityLog::log(
                 'update',
                 'SpecialOrder',
-                "تم تعيين السائق #{$driverId} ({$driver->name}) للطلب الخاص #{$order->id}"
+                "تم تعيين السائق #{$driverId} ({$driver->name}) للطلب الخاص #{$order->id}",
+                $order->id
             );
         });
 
@@ -286,7 +287,8 @@ class Index extends Component
         ActivityLog::log(
             'update',
             'SpecialOrder',
-            "تم إلغاء الطلب الخاص #{$order->id} - السبب: {$this->cancellationReason}"
+            "تم إلغاء الطلب الخاص #{$order->id} - السبب: {$this->cancellationReason}",
+            $order->id
         );
 
         $this->cancellingOrderId = null;
@@ -313,7 +315,8 @@ class Index extends Component
         ActivityLog::log(
             'update',
             'SpecialOrder',
-            "تم تحويل حالة الطلب الخاص #{$order->id} إلى مكتملة"
+            "تم تحويل حالة الطلب الخاص #{$order->id} إلى مكتملة",
+            $order->id
         );
 
         unset($this->stats, $this->orders);
@@ -384,7 +387,8 @@ class Index extends Component
         ActivityLog::log(
             'update',
             'SpecialOrder',
-            "تم تحديث بيانات الطلب الخاص #{$order->id}"
+            "تم تحديث بيانات الطلب الخاص #{$order->id}",
+            $order->id
         );
 
         $this->editingOrderId = null;

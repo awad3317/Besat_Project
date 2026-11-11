@@ -4,8 +4,9 @@ namespace App\Livewire\Notifications;
 
 use Livewire\Component;
 use Livewire\Attributes\Computed;
-use App\Models\UserDevice;
 use App\Models\Driver;
+use App\Models\UserDevice;
+use App\Services\ActivityLog;
 use App\Services\FirebaseService;
 use Illuminate\Support\Facades\Log;
 
@@ -102,6 +103,12 @@ class Index extends Component
                     ]);
                 }
             }
+
+            ActivityLog::log(
+                'create',
+                'Notification',
+                "تم إرسال إشعار جماعي ({$this->title}) إلى فئة ({$this->target}) بنجاح لـ {$successCount} جهاز"
+            );
 
             // Reset form
             $this->reset(['title', 'body']);

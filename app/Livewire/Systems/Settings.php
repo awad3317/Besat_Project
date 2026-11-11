@@ -3,10 +3,11 @@
 namespace App\Livewire\Systems;
 
 use App\Models\app_setting;
+use App\Models\Surcharge;
+use App\Services\ActivityLog;
 use App\Services\Evolution\EvolutionApiService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use App\Models\Surcharge;
 use Livewire\Component;
 
 class Settings extends Component
@@ -149,11 +150,23 @@ class Settings extends Component
                 default => $this->simpleKey
             };
             $appSettingsModel->update([$db_key => $this->simpleValue]);
+
+            ActivityLog::log(
+                'update',
+                'app_setting',
+                "تم تعديل إعداد ({$db_key}) لتطبيق {$this->selectedApp} إلى: {$this->simpleValue}",
+                $appSettingsModel->id
+            );
         } else { // modalType is 'surcharge'
             if (!empty($this->surchargeForm['id'])) {
-                Surcharge::find($this->surchargeForm['id'])->update($this->surchargeForm);
+                $sc = Surcharge::find($this->surchargeForm['id']);
+                if ($sc) {
+                    $sc->update($this->surchargeForm);
+                    ActivityLog::log('update', 'Surcharge', "تم تعديل قاعدة الرسوم ({$sc->name})", $sc->id);
+                }
             } else {
-                Surcharge::create($this->surchargeForm);
+                $sc = Surcharge::create($this->surchargeForm);
+                ActivityLog::log('create', 'Surcharge', "تم إضافة قاعدة رسوم جديدة ({$sc->name})", $sc->id);
             }
         }
 
@@ -203,6 +216,15 @@ class Settings extends Component
             $message = $key === 'auto_assign'
                 ? ($value ? 'تم تفعيل التوزيع التلقائي للسائقين بنجاح' : 'تم إيقاف التوزيع التلقائي وتفعيل إشعارات الداشبورد بنجاح')
                 : "تم تحديث الإعداد لـ {$appName} بنجاح";
+
+            $logDesc = match($key) {
+                'auto_assign'      => $value ? 'تم تفعيل التوزيع التلقائي للسائقين' : 'تم إيقاف التوزيع التلقائي للسائقين',
+                'maintenance_mode' => $value ? "تم تفعيل وضع الصيانة لـ {$appName}" : "تم إيقاف وضع الصيانة لـ {$appName}",
+                'otp_enabled'      => $value ? "تم تفعيل رمز التحقق OTP لـ {$appName}" : "تم تعطيل رمز التحقق OTP لـ {$appName}",
+                default            => "تم تحديث إعداد ({$key}) لـ {$appName}"
+            };
+            ActivityLog::log('update', 'app_setting', $logDesc, $appSettingsModel->id ?? null);
+
             $this->dispatch('notify', ['message' => $message]);
             $this->loadData();
         }
@@ -213,13 +235,22 @@ class Settings extends Component
         $surcharge = Surcharge::find($id);
         if ($surcharge) {
             $surcharge->update(['is_active' => !$surcharge->is_active]);
+            ActivityLog::log(
+                'update',
+                'Surcharge',
+                $surcharge->is_active ? "تم تفعيل قاعدة الرسوم {$surcharge->name}" : "تم تعطيل قاعدة الرسوم {$surcharge->name}",
+                $surcharge->id
+            );
             $this->loadData();
         }
     }
 
     public function deleteSurcharge($id)
     {
+        $surcharge = Surcharge::find($id);
+        $surchargeName = $surcharge ? $surcharge->name : "#{$id}";
         Surcharge::destroy($id);
+        ActivityLog::log('delete', 'Surcharge', "تم حذف قاعدة الرسوم {$surchargeName}", $id);
         $this->loadData();
         $this->dispatch('notify', ['message' => 'تم حذف القاعدة بنجاح']);
     }

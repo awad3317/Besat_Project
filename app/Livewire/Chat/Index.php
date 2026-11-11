@@ -5,6 +5,7 @@ namespace App\Livewire\Chat;
 use App\Events\MessageSent;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Services\ActivityLog;
 use App\Services\FirebaseService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -145,7 +146,10 @@ class Index extends Component
     {
         if (!$this->selectedConversationId) return;
 
-        Conversation::where('id', $this->selectedConversationId)->update(['status' => 'closed']);
+        $convId = $this->selectedConversationId;
+        Conversation::where('id', $convId)->update(['status' => 'closed']);
+
+        ActivityLog::log('update', 'Conversation', "تم إغلاق المحادثة رقم #{$convId}", $convId);
 
         $this->selectedConversationId = null;
     }
