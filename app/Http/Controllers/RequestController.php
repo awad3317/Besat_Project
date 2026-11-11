@@ -131,6 +131,13 @@ class RequestController extends Controller
                     return WebResponseClass::sendError('كود الخصم تم استخدامه من قبل هذا المستخدم.');
                 }
                 
+                if (!$this->discountCodeService->checkMinTripFare($coupon_object, (float) $orginal_price)) {
+                    $minFareFormatted = (float) $coupon_object->min_trip_fare == (int) $coupon_object->min_trip_fare
+                        ? number_format($coupon_object->min_trip_fare, 0)
+                        : number_format($coupon_object->min_trip_fare, 2);
+                    return WebResponseClass::sendError("هذا الكوبون صالح فقط للرحلات التي لا يقل سعرها عن {$minFareFormatted} ريال");
+                }
+                
                 // Recalculate with coupon applied
                 $priceDetailsWithCoupon = $this->priceCalculationService->getFullPriceDetails($validatData, $vehicle, $coupon_object);
                 $final_price = $priceDetailsWithCoupon['final_price'];

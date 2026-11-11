@@ -41,6 +41,42 @@
                     </div>
                 </div>
 
+                <!-- Max Discount Amount Card -->
+                <div
+                    class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+                    <div
+                        class="flex h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-lg border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                        </svg>
+                    </div>
+                    <div class="mt-3 w-full">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">السقف الأعلى للخصم</span>
+                        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                            {{ $coupon->max_discount_amount ? number_format($coupon->max_discount_amount, 2) . ' ريال' : 'بدون سقف' }}
+                        </h4>
+                    </div>
+                </div>
+
+                <!-- Min Trip Fare Card -->
+                <div
+                    class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+                    <div
+                        class="flex h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-lg border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                    <div class="mt-3 w-full">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">الحد الأدنى لسعر الرحلة</span>
+                        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                            {{ $coupon->min_trip_fare ? number_format($coupon->min_trip_fare, 2) . ' ريال' : 'بدون حد أدنى' }}
+                        </h4>
+                    </div>
+                </div>
+
                 <!-- Current Uses Card -->
                 <div
                     class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">

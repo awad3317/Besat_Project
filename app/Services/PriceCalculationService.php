@@ -211,16 +211,37 @@ class PriceCalculationService
         $coupon_for_response = null;
 
         if ($couponObject) {
-            $coupon_rate = $couponObject->discount_rate;
-            $coupon_for_response = number_format($coupon_rate * 100, 2) . '%';
-            $discount_amount = $this->roundPrice($original_price * $coupon_rate);
-            $final_price = max(0, $original_price - $discount_amount);
+            $minTripFare = !is_null($couponObject->min_trip_fare) ? (float) $couponObject->min_trip_fare : null;
 
-            $surcharges_details[] = [
-                'id'     => 'discount',
-                'name'   => "خصم قسيمة ({$coupon_for_response})",
-                'amount' => -$discount_amount
-            ];
+            if ($minTripFare !== null && $minTripFare > 0 && $original_price < $minTripFare) {
+                // إذا كان السعر الأصلي للرحلة أقل من الحد الأدنى لا يُطبق الخصم نهائياً
+                $discount_amount = 0;
+            } else {
+                $coupon_rate = (float) $couponObject->discount_rate;
+                $coupon_for_response = number_format($coupon_rate * 100, 2) . '%';
+
+                // 1. تطبيق دالة التقريب الحالية على الخصم المحسوب بالنسبة أولاً
+                $rounded_calculated_discount = $this->roundPrice($original_price * $coupon_rate);
+
+                // 2. تطبيق شرط السقف الأعلى بعد التقريب لضمان عدم تجاوز السقف الأقصى المحدد بالريال
+                if (!is_null($couponObject->max_discount_amount) && (float) $couponObject->max_discount_amount > 0) {
+                    $discount_amount = (int) min($rounded_calculated_discount, (float) $couponObject->max_discount_amount);
+                } else {
+                    $discount_amount = (int) $rounded_calculated_discount;
+                }
+
+                // 3. تأمين إضافي: ألا يتجاوز الخصم السعر الأصلي للرحلة
+                $discount_amount = min($discount_amount, (int) $original_price);
+                $final_price = max(0, $original_price - $discount_amount);
+
+                if ($discount_amount > 0) {
+                    $surcharges_details[] = [
+                        'id'     => 'discount',
+                        'name'   => "خصم قسيمة ({$coupon_for_response})",
+                        'amount' => -$discount_amount
+                    ];
+                }
+            }
         }
 
         // 2. حساب عمولة التطبيق من أصل السعر (original_price) لضمان عدم نقص عمولة المنصة

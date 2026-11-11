@@ -44,7 +44,19 @@ class DiscountCodeService{
         }
         return true;
     }
-    public function validateCoupon(string $code, int $userId): array
+
+    public function checkMinTripFare(DiscountCode $coupon, ?float $originalFare): bool
+    {
+        if ($originalFare === null) {
+            return true;
+        }
+        if (!is_null($coupon->min_trip_fare) && (float) $coupon->min_trip_fare > 0) {
+            return $originalFare >= (float) $coupon->min_trip_fare;
+        }
+        return true;
+    }
+
+    public function validateCoupon(string $code, int $userId, ?float $originalFare = null): array
     {
         $coupon = $this->getDiscountCode($code);
 
@@ -59,6 +71,16 @@ class DiscountCodeService{
         }
         if (!$this->checkUserEligibility($coupon, $userId)) {
             return ['is_valid' => false, 'message' => 'كود الخصم تم استخدامه من قبل هذا المستخدم مسبقاً.', 'status_code' => 400];
+        }
+        if (!$this->checkMinTripFare($coupon, $originalFare)) {
+            $minFareFormatted = (float) $coupon->min_trip_fare == (int) $coupon->min_trip_fare
+                ? number_format($coupon->min_trip_fare, 0)
+                : number_format($coupon->min_trip_fare, 2);
+            return [
+                'is_valid'    => false,
+                'message'     => "هذا الكوبون صالح فقط للرحلات التي لا يقل سعرها عن {$minFareFormatted} ريال",
+                'status_code' => 400
+            ];
         }
 
         return ['is_valid' => true, 'coupon' => $coupon];

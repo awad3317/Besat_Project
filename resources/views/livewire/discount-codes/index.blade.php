@@ -163,9 +163,17 @@
                                                 </h4>
 
                                                 <p class="text-theme-xs text-gray-500 font-medium">معدل الخصم:
-                                                    {{ number_format($coupon->discount_rate * 100, 2) }}%
+                                                    <span class="font-bold text-brand-600 dark:text-brand-400">{{ number_format($coupon->discount_rate * 100, 2) }}%</span>
                                                 </p>
-                                                <p class="text-[11px] text-gray-400 font-semibold">استخدم
+                                                <div class="flex flex-wrap gap-1 text-[11px] pt-1">
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium {{ $coupon->max_discount_amount ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/40' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                                                        السقف: {{ $coupon->max_discount_amount ? number_format($coupon->max_discount_amount, 0) . ' ر.ي' : 'بدون سقف' }}
+                                                    </span>
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium {{ $coupon->min_trip_fare ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/40' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                                                        الحد الأدنى: {{ $coupon->min_trip_fare ? number_format($coupon->min_trip_fare, 0) . ' ر.ي' : 'بدون حد أدنى' }}
+                                                    </span>
+                                                </div>
+                                                <p class="text-[11px] text-gray-400 font-semibold pt-0.5">استخدم
                                                     {{ $coupon->current_uses }} / {{ $coupon->max_uses }} مرة
                                                 </p>
                                             </div>

@@ -107,10 +107,21 @@ class RequestController extends Controller
                     return ApiResponseClass::sendError($couponCheck['message'], null, $couponCheck['status_code']);
                 }
                 $coupon_object = $couponCheck['coupon'];
+            }
+            $priceDetails = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
+
+            if ($coupon_object) {
+                // التحقق من الحد الأدنى لسعر الرحلة مع السعر الأصلي المحسوب
+                if (!$this->discountCodeService->checkMinTripFare($coupon_object, (float) $priceDetails['original_price'])) {
+                    $minFareFormatted = (float) $coupon_object->min_trip_fare == (int) $coupon_object->min_trip_fare
+                        ? number_format($coupon_object->min_trip_fare, 0)
+                        : number_format($coupon_object->min_trip_fare, 2);
+                    return ApiResponseClass::sendError("هذا الكوبون صالح فقط للرحلات التي لا يقل سعرها عن {$minFareFormatted} ريال", null, 400);
+                }
+
                 $validated['discount_code_id'] = $coupon_object->id;
                 unset($validated['discount_code']);
             }
-            $priceDetails = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
             unset($validated['stops']);
             $validated['distance_km'] = $priceDetails['distance_in_km'];
             $validated['original_price']  = $priceDetails['original_price'];
@@ -321,6 +332,13 @@ class RequestController extends Controller
                 $coupon_object = $couponCheck['coupon'];
             }
             $responseData = $this->priceCalculationService->getFullPriceDetails($validated, $vehicle, $coupon_object);
+
+            if ($coupon_object && !$this->discountCodeService->checkMinTripFare($coupon_object, (float) $responseData['original_price'])) {
+                $minFareFormatted = (float) $coupon_object->min_trip_fare == (int) $coupon_object->min_trip_fare
+                    ? number_format($coupon_object->min_trip_fare, 0)
+                    : number_format($coupon_object->min_trip_fare, 2);
+                return ApiResponseClass::sendError("هذا الكوبون صالح فقط للرحلات التي لا يقل سعرها عن {$minFareFormatted} ريال", null, 400);
+            }
             unset(
                 $responseData['ac_cost'],
                 $responseData['discount_amount'],

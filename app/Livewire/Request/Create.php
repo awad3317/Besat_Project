@@ -241,13 +241,34 @@ class Create extends Component
             if ($this->coupon_code && strpos($this->coupon_message, 'صالح') !== false) {
                 $coupon = $discountService->getDiscountCode($this->coupon_code);
                 if ($coupon) {
-                    $discount_amount = $priceService->roundPrice($original_price * $coupon->discount_rate);
-                    $final_price = max(0, $original_price - $discount_amount);
-                    $surcharges_details[] = [
-                        'id'     => 'discount',
-                        'name'   => 'خصم قسيمة',
-                        'amount' => -$discount_amount
-                    ];
+                    $minTripFare = !is_null($coupon->min_trip_fare) ? (float) $coupon->min_trip_fare : null;
+                    if ($minTripFare !== null && $minTripFare > 0 && $original_price < $minTripFare) {
+                        $minFareFormatted = (float) $coupon->min_trip_fare == (int) $coupon->min_trip_fare
+                            ? number_format($coupon->min_trip_fare, 0)
+                            : number_format($coupon->min_trip_fare, 2);
+                        $this->coupon_message = "هذا الكوبون صالح فقط للرحلات التي لا يقل سعرها عن {$minFareFormatted} ريال";
+                        $discount_amount = 0;
+                    } else {
+                        $coupon_rate = (float) $coupon->discount_rate;
+                        $rounded_calculated_discount = $priceService->roundPrice($original_price * $coupon_rate);
+
+                        if (!is_null($coupon->max_discount_amount) && (float) $coupon->max_discount_amount > 0) {
+                            $discount_amount = (int) min($rounded_calculated_discount, (float) $coupon->max_discount_amount);
+                        } else {
+                            $discount_amount = (int) $rounded_calculated_discount;
+                        }
+
+                        $discount_amount = min($discount_amount, (int) $original_price);
+                        $final_price = max(0, $original_price - $discount_amount);
+
+                        if ($discount_amount > 0) {
+                            $surcharges_details[] = [
+                                'id'     => 'discount',
+                                'name'   => 'خصم قسيمة',
+                                'amount' => -$discount_amount
+                            ];
+                        }
+                    }
                 }
             }
 

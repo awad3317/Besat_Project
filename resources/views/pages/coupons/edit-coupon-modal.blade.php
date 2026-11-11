@@ -47,6 +47,34 @@
                         </div>
 
                         <div>
+                            <label for="max_discount_amount"
+                                class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                السقف الأعلى للخصم بالريال <span class="mt-1 text-xs text-gray-500 dark:text-gray-400">(اختياري)</span>
+                            </label>
+                            <input type="number" id="max_discount_amount" name="max_discount_amount" step="0.01" min="0"
+                                placeholder="مثال: 1500"
+                                value="{{ old('max_discount_amount', $Coupon->max_discount_amount) }}"
+                                class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                أقصى مبلغ بالريال يمنحه الكوبون في الرحلة الواحدة (اتركه فارغاً ليعمل الكوبون بدون سقف)
+                            </p>
+                        </div>
+
+                        <div>
+                            <label for="min_trip_fare"
+                                class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                الحد الأدنى لسعر الرحلة لتفعيل الكوبون بالريال <span class="mt-1 text-xs text-gray-500 dark:text-gray-400">(اختياري)</span>
+                            </label>
+                            <input type="number" id="min_trip_fare" name="min_trip_fare" step="0.01" min="0"
+                                placeholder="مثال: 3000"
+                                value="{{ old('min_trip_fare', $Coupon->min_trip_fare) }}"
+                                class="hover:border-brand-500 dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                الحد الأدنى للسعر الأصلي للرحلة لتطبيق الكوبون (اتركه فارغاً ليعمل مع جميع الرحلات)
+                            </p>
+                        </div>
+
+                        <div>
                             <label for="max_uses" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                 الحد الأقصى للاستخدام <span
                                     class="mt-1 text-xs text-warning-500 dark:text-warning/90">*</span>

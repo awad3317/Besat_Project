@@ -42,6 +42,8 @@ class CouponController extends Controller
         $validator = Validator::make($request->all(), [
             'code' => ['required', 'string', 'max:50', Rule::unique(DiscountCode::class, 'code')],
             'discount_rate' => ['required', 'numeric', 'min:1', 'max:100'],
+            'max_discount_amount' => ['nullable', 'numeric', 'gt:0'],
+            'min_trip_fare' => ['nullable', 'numeric', 'gte:0'],
             'max_uses' => ['required', 'integer', 'min:1'],
             'usage_limit_per_user' => ['nullable', 'integer', 'min:1'],
             'is_active' => ['nullable', 'boolean'],
@@ -52,6 +54,9 @@ class CouponController extends Controller
         try {
             $validatedData = $validator->validated();
             $validatedData['discount_rate'] = $validatedData['discount_rate'] / 100;
+            $validatedData['max_discount_amount'] = (!empty($validatedData['max_discount_amount']) || (isset($validatedData['max_discount_amount']) && is_numeric($validatedData['max_discount_amount']) && $validatedData['max_discount_amount'] > 0)) ? $validatedData['max_discount_amount'] : null;
+            $validatedData['min_trip_fare'] = (isset($validatedData['min_trip_fare']) && $validatedData['min_trip_fare'] !== '' && $validatedData['min_trip_fare'] !== null) ? $validatedData['min_trip_fare'] : null;
+
             $descout=DiscountCode::create($validatedData);
             ActivityLog::log('create', 'DiscountCode', 'تم إضافة كوبون خصم جديد',$descout->id);
             return WebResponseClass::sendResponse('تم الإضافة!', 'تم إضافة الكوبون بنجاح');
@@ -93,6 +98,8 @@ class CouponController extends Controller
         $validator = Validator::make($request->all(), [
             'code' => ['required', 'string', 'max:50', 'unique:discount_codes,code,'.$id],
             'discount_rate' => ['required', 'numeric', 'min:1', 'max:100'],
+            'max_discount_amount' => ['nullable', 'numeric', 'gt:0'],
+            'min_trip_fare' => ['nullable', 'numeric', 'gte:0'],
             'max_uses' => ['required', 'integer', 'min:1'],
             'usage_limit_per_user' => ['nullable', 'integer', 'min:1'],
             'is_active' => ['nullable', 'boolean'],
@@ -112,6 +119,8 @@ class CouponController extends Controller
                 return WebResponseClass::sendError('يجب أن يكون حد الاستخدام لكل مستخدم أكبر من أو يساوي الحد السابق.', 'خطأ في حد الاستخدام لكل مستخدم');  
             }
             $validatedData['discount_rate'] = $validatedData['discount_rate'] / 100;
+            $validatedData['max_discount_amount'] = (!empty($validatedData['max_discount_amount']) || (isset($validatedData['max_discount_amount']) && is_numeric($validatedData['max_discount_amount']) && $validatedData['max_discount_amount'] > 0)) ? $validatedData['max_discount_amount'] : null;
+            $validatedData['min_trip_fare'] = (isset($validatedData['min_trip_fare']) && $validatedData['min_trip_fare'] !== '' && $validatedData['min_trip_fare'] !== null) ? $validatedData['min_trip_fare'] : null;
 
             $this->DiscountCodeRepository->update($validatedData, $id);
             ActivityLog::log('update', 'DiscountCode', 'تم تعديل كوبون خصم',$coupon->id);
