@@ -192,3 +192,4 @@ class CouponDiscountRulesTest extends TestCase
         $this->assertEquals(16000, $customerPayable, 'المطلوب من العميل يجب أن يكون 16000 ريال');
     }
 }
+
