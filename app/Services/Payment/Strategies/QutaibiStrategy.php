@@ -171,20 +171,20 @@ class QutaibiStrategy implements PaymentStrategy
             'message' => $body['description'] ?? 'تمت إعادة إرسال الرمز بنجاح.',
         ];
     }
-    private function formatPhoneNumber(?string $phone): string
+    private function formatPhoneNumber(?string $input): string
     {
-        if (empty($phone)) {
+        if (empty($input)) {
             return '';
         }
 
-        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-        if (str_starts_with($cleanPhone, '967')) {
-            $cleanPhone = substr($cleanPhone, 3);
+        $clean = preg_replace('/[^0-9]/', '', $input);
+        if (strlen($clean) === 12 && str_starts_with($clean, '9677')) {
+            return substr($clean, 3);
         }
-        if (str_starts_with($cleanPhone, '0')) {
-            $cleanPhone = substr($cleanPhone, 1);
+        if (strlen($clean) === 10 && str_starts_with($clean, '07')) {
+            return substr($clean, 1);
         }
 
-        return $cleanPhone;
+        return $clean;
     }
 }
