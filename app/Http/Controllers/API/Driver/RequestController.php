@@ -12,6 +12,7 @@ use App\Repositories\ChatRepository;
 use App\Repositories\DriverRepository;
 use App\Repositories\RequestRepository;
 use App\Services\FirebaseService;
+use App\Services\LoyaltyWalletService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,8 @@ class RequestController extends Controller
         private DriverRepository $driverRepository,
         private RequestRepository $requestRepository,
         private FirebaseService $firebaseService,
-        private ChatRepository $chatRepository) 
+        private ChatRepository $chatRepository,
+        private LoyaltyWalletService $loyaltyWalletService) 
     {}
     public function updateTripStatus(Request $request)
     {
@@ -163,6 +165,13 @@ class RequestController extends Controller
                     Conversation::where('request_id', $trip->id)
                         ->where('status', 'open')
                         ->update(['status' => 'closed']);
+
+                    // منح نقاط الولاء للعميل تلقائياً عند اكتمال الرحلة
+                    try {
+                        $this->loyaltyWalletService->awardPointsForTrip($trip);
+                    } catch (Exception $e) {
+                        Log::error("Failed to award loyalty points for trip ID {$trip->id}: " . $e->getMessage());
+                    }
                 }
                 $trip->update($updateData);
 

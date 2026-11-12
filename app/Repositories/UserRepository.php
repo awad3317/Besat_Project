@@ -67,4 +67,8 @@ class UserRepository implements RepositoriesInterface
         return $user;
     }
 
+    public function incrementLoyaltyPoints(int $userId, int $points): void
+    {
+        User::where('id', $userId)->increment('loyalty_points', $points);
+    }
 }

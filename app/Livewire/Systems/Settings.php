@@ -18,6 +18,7 @@ class Settings extends Component
     // خصائص لحفظ حالة الإعدادات والرسوم
     public array $settings = [];
     public $surcharges;
+    public $points_per_km = 0;
 
     // خصائص لإدارة النافذة المنبثقة (Modal)
     public $modalOpen = false;
@@ -44,6 +45,8 @@ class Settings extends Component
     // يتم استدعاؤها عند تحميل المكون لأول مرة
     public function mount()
     {
+        $userSetting = app_setting::where('app_type', 'user')->first();
+        $this->points_per_km = $userSetting ? (float) $userSetting->points_per_km : 0;
         $this->loadData();
         $this->loadWhatsAppStatus();
     }
@@ -81,8 +84,12 @@ class Settings extends Component
             );
         }
 
+        $userSetting = app_setting::where('app_type', 'user')->first();
+        $this->points_per_km = $userSetting ? (float) $userSetting->points_per_km : 0;
+
         $this->settings = [
             'commission_rate'    => $app_settings->commission_rate,
+            'points_per_km'      => $this->selectedApp === 'user' ? $this->points_per_km : null,
             'auto_assign'        => (bool) $app_settings->auto_assign_to_drivers,
             'whatsapp_support'   => $app_settings->company_whatsapp,
             'maintenance_mode'   => (bool) $app_settings->maintenance_mode,
@@ -143,20 +150,50 @@ class Settings extends Component
         }
 
         if ($this->modalType === 'simple') {
-            $db_key = match($this->simpleKey) {
-                'auto_assign' => 'auto_assign_to_drivers',
-                'whatsapp_support' => 'company_whatsapp',
-                'app_version' => 'version',
-                default => $this->simpleKey
-            };
-            $appSettingsModel->update([$db_key => $this->simpleValue]);
+            if ($this->simpleKey === 'points_per_km') {
+                $this->validate([
+                    'simpleValue' => ['nullable', 'numeric', 'min:0'],
+                ], [
+                    'simpleValue.numeric' => 'نقاط الولاء يجب أن تكون قيمة رقمية.',
+                    'simpleValue.min' => 'نقاط الولاء يجب أن تكون صفر أو أكثر.',
+                ]);
 
-            ActivityLog::log(
-                'update',
-                'app_setting',
-                "تم تعديل إعداد ({$db_key}) لتطبيق {$this->selectedApp} إلى: {$this->simpleValue}",
-                $appSettingsModel->id
-            );
+                $val = ($this->simpleValue !== '' && $this->simpleValue !== null) ? (float) $this->simpleValue : 0;
+
+                // تحديث سجل تطبيق المستخدم فقط
+                $userAppSetting = app_setting::where('app_type', 'user')->first();
+                if ($userAppSetting) {
+                    $userAppSetting->update(['points_per_km' => $val]);
+                }
+
+                // التأكد من بقاء سجل تطبيق السائق بدون نقاط ولاء نهائياً (null)
+                app_setting::where('app_type', 'driver')->update(['points_per_km' => null]);
+
+                $this->points_per_km = $val;
+                $this->settings['points_per_km'] = $val;
+
+                ActivityLog::log(
+                    'update',
+                    'app_setting',
+                    "تم تعديل نقاط الولاء لكل كيلومتر لتطبيق المستخدم إلى: {$val}",
+                    $userAppSetting?->id
+                );
+            } else {
+                $db_key = match($this->simpleKey) {
+                    'auto_assign' => 'auto_assign_to_drivers',
+                    'whatsapp_support' => 'company_whatsapp',
+                    'app_version' => 'version',
+                    default => $this->simpleKey
+                };
+                $appSettingsModel->update([$db_key => $this->simpleValue]);
+
+                ActivityLog::log(
+                    'update',
+                    'app_setting',
+                    "تم تعديل إعداد ({$db_key}) لتطبيق {$this->selectedApp} إلى: {$this->simpleValue}",
+                    $appSettingsModel->id
+                );
+            }
         } else { // modalType is 'surcharge'
             if (!empty($this->surchargeForm['id'])) {
                 $sc = Surcharge::find($this->surchargeForm['id']);

@@ -13,6 +13,7 @@ class app_setting extends Model
     protected $fillable = [
         'app_type',
         'commission_rate',
+        'points_per_km',
         'auto_assign_to_drivers',
         'version',
         'android_update_url',
@@ -29,5 +30,6 @@ class app_setting extends Model
         'auto_assign_to_drivers' => 'boolean',
         'maintenance_mode' => 'boolean',
         'otp_enabled' => 'boolean',
+        'points_per_km' => 'float',
     ];
 }

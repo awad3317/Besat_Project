@@ -40,4 +40,8 @@ class LoyaltyRepository implements RepositoriesInterface
         return LoyaltyPointTransaction::where('id', $id)->delete() > 0;
     }
 
+    public function hasTripAwardedPoints(int $tripId): bool
+    {
+        return LoyaltyPointTransaction::where('trip_id', $tripId)->exists();
+    }
 }
