@@ -60,25 +60,27 @@ class DiscountCodeController extends Controller
     {
         $validated = $request->validate([
             'discount_code'  => ['required', 'string', 'max:50'],
-            'trip_fare'      => ['nullable', 'numeric', 'min:0'],
             'original_price' => ['nullable', 'numeric', 'min:0'],
         ]);
+
         try {
             $userId = auth('sanctum')->id();
-            $fare = isset($validated['trip_fare']) ? (float) $validated['trip_fare'] : (isset($validated['original_price']) ? (float) $validated['original_price'] : null);
-            $couponCheck = $this->discountCodeService->validateCoupon($validated['discount_code'], $userId, $fare);
+            $originalPrice = isset($validated['original_price']) ? (float) $validated['original_price'] : null;
+            $couponCheck = $this->discountCodeService->validateCoupon($validated['discount_code'],$userId,$originalPrice);
+
             if (!$couponCheck['is_valid']) {
                 return ApiResponseClass::sendError($couponCheck['message'], null, $couponCheck['status_code']);
             }
             $coupon = $couponCheck['coupon'];
             $responseData = [
-                'id'                  => $coupon->id,
-                'code'                => $coupon->code,
-                'discount_rate'       => (float) ($coupon->discount_rate * 100),
+                'id' => $coupon->id,
+                'code' => $coupon->code,
+                'discount_rate' => (float) ($coupon->discount_rate * 100),
                 'max_discount_amount' => $coupon->max_discount_amount ? (float) $coupon->max_discount_amount : null,
-                'min_trip_fare'       => $coupon->min_trip_fare ? (float) $coupon->min_trip_fare : null,
-                'message'             => 'كود الخصم فعال وصالح للاستخدام.'
+                'min_trip_fare' => $coupon->min_trip_fare ? (float) $coupon->min_trip_fare : null,
+                'message' => 'كود الخصم فعال وصالح للاستخدام.'
             ];
+
             return ApiResponseClass::sendResponse($responseData, 'تم التحقق من كود الخصم بنجاح.');
         } catch (Exception $e) {
             Log::error('Error checking coupon: ' . $e->getMessage());

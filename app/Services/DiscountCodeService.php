@@ -78,16 +78,6 @@ class DiscountCodeService{
                 : number_format($coupon->min_trip_fare, 2);
             return ['is_valid' => false,'message' => "هذا الكوبون صالح فقط للرحلات التي لا يقل سعرها عن {$minFareFormatted} ريال",'status_code' => 400];
         }
-        if (!$this->checkMinTripFare($coupon, $originalFare)) {
-            $minFareFormatted = (float) $coupon->min_trip_fare == (int) $coupon->min_trip_fare
-                ? number_format($coupon->min_trip_fare, 0)
-                : number_format($coupon->min_trip_fare, 2);
-            return [
-                'is_valid'    => false,
-                'message'     => "هذا الكوبون صالح فقط للرحلات التي لا يقل سعرها عن {$minFareFormatted} ريال",
-                'status_code' => 400
-            ];
-        }
 
         return ['is_valid' => true, 'coupon' => $coupon];
     }
