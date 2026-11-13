@@ -87,6 +87,36 @@ class User extends Authenticatable
 
         return round($deposit - $withdraw, 2);
     }
+
+    public function getLoyaltyPointsAttribute(): int
+    {
+        if ($this->relationLoaded('loyaltyTransactions')) {
+            $earned = (int) $this->loyaltyTransactions
+                ->where('type', 'earned')
+                ->sum('points');
+            $converted = (int) $this->loyaltyTransactions
+                ->where('type', 'converted')
+                ->sum(fn ($tx) => abs((int) $tx->points));
+
+            return max(0, $earned - $converted);
+        }
+
+        if (!$this->exists) {
+            return (int) ($this->attributes['loyalty_points'] ?? 0);
+        }
+
+        $totals = $this->loyaltyTransactions()
+            ->selectRaw("
+                COALESCE(SUM(CASE WHEN type = 'earned' THEN points ELSE 0 END), 0) as earned_points,
+                COALESCE(SUM(CASE WHEN type = 'converted' THEN ABS(points) ELSE 0 END), 0) as converted_points
+            ")
+            ->first();
+
+        $earned = (int) ($totals->earned_points ?? 0);
+        $converted = (int) ($totals->converted_points ?? 0);
+
+        return max(0, $earned - $converted);
+    }
     
     public function usedDiscountCodes()
     {
