@@ -674,11 +674,15 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                        @forelse($user->pointsTransactions ?? [] as $point)
+                        @forelse($user->loyaltyTransactions ?? [] as $point)
+                            @php
+                                $isConverted = $point->type === 'converted' || $point->points < 0;
+                                $pointsAmount = abs((int) $point->points);
+                            @endphp
                             <tr>
                                 <td class="py-3 text-theme-sm text-gray-600 dark:text-gray-400">{{ $point->description }}</td>
-                                <td class="py-3 text-theme-sm font-semibold {{ $point->points > 0 ? 'text-warning-600' : 'text-gray-500' }}">
-                                    {{ $point->points > 0 ? '+' : '' }}{{ $point->points }}
+                                <td class="py-3 text-theme-sm font-semibold {{ $isConverted ? 'text-error-600' : 'text-warning-600' }}">
+                                    {{ $isConverted ? '-' : '+' }}{{ $pointsAmount }}
                                 </td>
                                 <td class="py-3 text-theme-sm text-gray-400">{{ $point->created_at?->format('Y/m/d') }}</td>
                             </tr>
@@ -686,7 +690,7 @@
                             <tr>
                                 <td colspan="3" class="py-4 text-center text-theme-sm text-gray-400">لا توجد نقاط مسجلة حالياً.</td>
                             </tr>
-                        @endempty
+                        @endforelse
                     </tbody>
                 </table>
             </div>

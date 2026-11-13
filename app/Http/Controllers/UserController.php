@@ -65,7 +65,12 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::withTrashed()->with(['requests', 'favoritePlaces'])->findOrFail($id);
+        $user = User::withTrashed()->with([
+            'requests',
+            'favoritePlaces',
+            'walletTransactions' => fn ($query) => $query->latest()->orderByDesc('id'),
+            'loyaltyTransactions' => fn ($query) => $query->latest()->orderByDesc('id'),
+        ])->findOrFail($id);
         return view('pages.users.show', compact('user'));
     }
 

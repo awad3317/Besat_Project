@@ -22,4 +22,22 @@ class LoyaltyPointTransaction extends Model
     {
         return $this->belongsTo(Request::class, 'trip_id');
     }
+
+    /**
+     * Get a readable Arabic description for a loyalty point transaction.
+     */
+    public function getDescriptionAttribute(): string
+    {
+        if (array_key_exists('description', $this->attributes) && $this->attributes['description'] !== null) {
+            return (string) $this->attributes['description'];
+        }
+
+        if ($this->type === 'converted') {
+            return 'تحويل نقاط إلى رصيد المحفظة';
+        }
+
+        return $this->trip_id
+            ? 'مكافأة نقاط ولاء عن الرحلة #' . $this->trip_id
+            : 'مكافأة نقاط ولاء';
+    }
 }
