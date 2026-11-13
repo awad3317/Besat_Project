@@ -6,6 +6,7 @@ use App\Classes\ApiResponseClass;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Request as TripRequest;
+use App\Notifications\LoyaltyPointsEarnedNotification;
 use App\Notifications\TripAcceptedNotification;
 use App\Notifications\TripCancelledNotification;
 use App\Repositories\ChatRepository;
@@ -42,8 +43,9 @@ class RequestController extends Controller
         $driver = auth('sanctum')->user();
         $targetStatus = $fields['status'];
         $requestId = $fields['request_id'];
+        $completedLoyaltyAward = null;
         try {
-             return DB::transaction(function () use ($driver, $requestId, $targetStatus) {
+             $response = DB::transaction(function () use ($driver, $requestId, $targetStatus, &$completedLoyaltyAward) {
                 $trip = TripRequest::where('id', $requestId)->lockForUpdate()->first();
                 if (!$trip) {
                     return ApiResponseClass::sendError('الرحلة غير موجودة.', null, 404);
@@ -157,6 +159,7 @@ class RequestController extends Controller
                 }
 
                 $updateData = ['status' => $targetStatus];
+                $loyaltyTransaction = null;
                 
                 if ($targetStatus === 'completed') {
                     if ($trip->payment_method === 'cash') {
@@ -168,18 +171,95 @@ class RequestController extends Controller
 
                     // منح نقاط الولاء للعميل تلقائياً عند اكتمال الرحلة
                     try {
-                        $this->loyaltyWalletService->awardPointsForTrip($trip);
+                        $loyaltyTransaction = $this->loyaltyWalletService->awardPointsForTrip($trip);
                     } catch (Exception $e) {
                         Log::error("Failed to award loyalty points for trip ID {$trip->id}: " . $e->getMessage());
                     }
                 }
                 $trip->update($updateData);
 
+                if ($targetStatus === 'completed' && $loyaltyTransaction) {
+                    $completedLoyaltyAward = [
+                        'trip'   => $trip,
+                        'points' => (int) $loyaltyTransaction->points,
+                    ];
+                }
+
                 return ApiResponseClass::sendResponse($trip->fresh(), 'تم تحديث حالة الرحلة بنجاح.');
             });
+
+            if ($completedLoyaltyAward) {
+                $this->sendLoyaltyPointsNotification(
+                    $completedLoyaltyAward['trip'],
+                    $completedLoyaltyAward['points']
+                );
+            }
+
+            return $response;
         }catch(Exception $e){
             return ApiResponseClass::sendError('حدث خطأ أثناء تحديث حالة الرحلة.', $e->getMessage(), 500);
         }
     }
-    
+
+    /**
+     * إرسال إشعار للعميل (في قاعدة البيانات وعبر Firebase) عند كسب نقاط ولاء بعد اكتمال الرحلة.
+     */
+    private function sendLoyaltyPointsNotification(TripRequest $trip, int $earnedPoints): void
+    {
+        if ($earnedPoints <= 0) {
+            return;
+        }
+
+        $user = $trip->user;
+        if ($user && $user->exists) {
+            $user = $user->fresh(['devices']) ?? $user;
+        }
+        if (!$user || !$user->is_notifications_enabled) {
+            return;
+        }
+
+        $notification = new LoyaltyPointsEarnedNotification($trip, $earnedPoints);
+
+        try {
+            $user->notify($notification);
+        } catch (\Throwable $e) {
+            Log::error("Database loyalty notification error for trip ID {$trip->id}: " . $e->getMessage());
+        }
+
+        $deviceTokens = $user->devices
+            ->pluck('device_token')
+            ->filter()
+            ->all();
+
+        if (!empty($user->fcm_token)) {
+            $deviceTokens[] = $user->fcm_token;
+        }
+
+        $deviceTokens = array_values(array_unique(array_filter($deviceTokens)));
+        if (empty($deviceTokens)) {
+            return;
+        }
+
+        $data = [
+            'type'         => 'loyalty_points',
+            'new_request'  => 'false',
+            'new_message'  => 'false',
+            'request_id'   => (string) $trip->id,
+            'points'       => (string) $earnedPoints,
+            'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+        ];
+
+        foreach ($deviceTokens as $token) {
+            try {
+                $this->firebaseService->sendNotification(
+                    $token,
+                    $notification->getTitle(),
+                    $notification->getBody(),
+                    $data
+                );
+            } catch (\Throwable $e) {
+                Log::error("FCM Loyalty Points Error for trip ID {$trip->id}: " . $e->getMessage());
+            }
+        }
+    }
 }

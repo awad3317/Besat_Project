@@ -115,7 +115,7 @@ class LoyaltyWalletService
         ]);
 
         // زيادة رصيد نقاط العميل loyalty_points في جدول users
-        $this->userRepo->incrementLoyaltyPoints($trip->user_id, $points);
+        // $this->userRepo->incrementLoyaltyPoints($trip->user_id, $points);
 
         return $transaction;
     }
