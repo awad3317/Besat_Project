@@ -314,32 +314,52 @@
                     <!-- Customer Info -->
                     <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">العميل</h3>
-                            <a href="{{ route('users.show', $request->user_id) }}"
-                                class="text-xs text-brand-500 hover:text-brand-600">عرض الملف</a>
-                        </div>
-                        <div class="flex gap-4 items-center">
-                            <div class="relative w-14 h-14 shrink-0">
-                                @if ($request->user->image)
-                                    <img src="{{ url($request->user->image) }}"
-                                        class="object-cover w-full h-full rounded-full border border-gray-100 dark:border-gray-700"
-                                        alt="{{ $request->user->name }}">
-                                @else
-                                    <div
-                                        class="flex justify-center items-center w-full h-full text-gray-400 bg-gray-100 rounded-full dark:bg-gray-800">
-                                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                                        </svg>
-                                    </div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">العميل</h3>
+                                @if ($request->user && $request->user->trashed())
+                                    <span
+                                        class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-600 dark:bg-red-500/15 dark:text-red-400">
+                                        حساب محذوف
+                                    </span>
                                 @endif
                             </div>
-                            <div>
-                                <h4 class="text-base font-medium text-gray-800 dark:text-white">{{ $request->user->name }}
-                                </h4>
-                                <p class="text-sm text-gray-500">{{ $request->user->phone }}</p>
-                            </div>
+                            @if ($request->user)
+                                <a href="{{ route('users.show', $request->user_id) }}"
+                                    class="text-xs text-brand-500 hover:text-brand-600">عرض الملف</a>
+                            @endif
                         </div>
+                        @if ($request->user)
+                            @php
+                                $customerPhone = preg_replace('/_deleted_\d+$/', '', $request->user->phone ?? '');
+                            @endphp
+                            <div class="flex gap-4 items-center">
+                                <div class="relative w-14 h-14 shrink-0">
+                                    @if ($request->user->image)
+                                        <img src="{{ url($request->user->image) }}"
+                                            class="object-cover w-full h-full rounded-full border border-gray-100 dark:border-gray-700"
+                                            alt="{{ $request->user->name }}">
+                                    @else
+                                        <div
+                                            class="flex justify-center items-center w-full h-full text-gray-400 bg-gray-100 rounded-full dark:bg-gray-800">
+                                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div>
+                                    <h4 class="text-base font-medium text-gray-800 dark:text-white">{{ $request->user->name }}
+                                    </h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $customerPhone }}</p>
+                                </div>
+                            </div>
+                        @else
+                            <div class="py-4 text-center text-gray-500 dark:text-gray-400">
+                                <p class="font-medium text-gray-700 dark:text-gray-300">حساب محذوف</p>
+                                <p class="mt-1 text-xs">قام العميل بحذف حسابه أو لم يعد متوفراً</p>
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Driver Info -->

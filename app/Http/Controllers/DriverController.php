@@ -43,6 +43,7 @@ class DriverController extends Controller
     public function show($id)
     {
         $driver=$this->driverRepository->getById($id);
+        $driver->load(['requests.user' => fn ($query) => $query->withTrashed()]);
         $ratings = $driver->ratings;
         $ratingsCount = $ratings->count();
         $averageRating = 0;

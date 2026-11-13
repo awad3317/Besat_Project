@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\WebResponseClass;
+use App\Models\User;
 use App\Models\WalletTransaction;
 use App\Repositories\UserRepository;
 use App\Services\ActivityLog;
@@ -64,8 +65,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = $this->userRepository->getById($id);
-        $user->load('favoritePlaces');
+        $user = User::withTrashed()->with(['requests', 'favoritePlaces'])->findOrFail($id);
         return view('pages.users.show', compact('user'));
     }
 

@@ -58,7 +58,11 @@ class Index extends Component
     #[Computed]
     public function requests()
     {
-        return RequestModel::with(['driver', 'user', 'vehicle'])
+        return RequestModel::with([
+            'driver',
+            'user' => fn ($query) => $query->withTrashed(),
+            'vehicle',
+        ])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('start_address', 'like', '%' . $this->search . '%')

@@ -76,11 +76,13 @@
               {{ number_format($user->wallet_balance ?? 0, 2) }}
             </h4>
           </div>
-          <button @click="isAddBalanceModalOpen = true" class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition-colors shadow-sm" title="إضافة رصيد">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-          </button>
+          @unless ($user->trashed())
+            <button @click="isAddBalanceModalOpen = true" class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition-colors shadow-sm" title="إضافة رصيد">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+            </button>
+          @endunless
         </div>
       </div>
 
@@ -97,13 +99,23 @@
 
           <div class="flex flex-col w-full xl:flex-row xl:justify-between">
             <div class="flex gap-6">
+              @php
+                $displayPhone = preg_replace('/_deleted_\d+$/', '', $user->phone ?? '');
+              @endphp
               <div>
-                <h4 class="mb-2 text-lg font-semibold text-gray-800 dark:text-white/90">
-                  {{ $user->name }}
-                </h4>
+                <div class="mb-2 flex items-center gap-2">
+                  <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                    {{ $user->name }}
+                  </h4>
+                  @if ($user->trashed())
+                    <span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-600 dark:bg-red-500/15 dark:text-red-400">
+                      حساب محذوف
+                    </span>
+                  @endif
+                </div>
                 <div class="flex items-center gap-3">
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ $user->phone }}
+                    {{ $displayPhone }}
                   </p>
                 </div>
 
@@ -683,6 +695,7 @@
     </div>
 
     {{-- مودال إضافة رصيد للمحفظة --}}
+    @unless ($user->trashed())
     <div x-show="isAddBalanceModalOpen" class="fixed inset-0 flex items-center justify-center p-5 overflow-y-auto modal z-99999"
         style="display: none;" x-transition x-cloak>
         
@@ -706,7 +719,7 @@
                             المستخدم
                         </label>
                         <div class="font-semibold text-gray-800 dark:text-white/90">
-                            {{ $user->name }} ({{ $user->phone }})
+                            {{ $user->name }} ({{ $displayPhone }})
                         </div>
                     </div>
 
@@ -739,6 +752,7 @@
             </form>
         </div>
     </div>
+    @endunless
   </div>
 @endsection
 
