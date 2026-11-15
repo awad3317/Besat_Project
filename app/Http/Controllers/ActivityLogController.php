@@ -16,9 +16,14 @@ class ActivityLogController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $logs = $this->activityLogRepository->index();
+        $validFilters = ['all', 'today', 'yesterday', 'last_week'];
+        $activeFilter = in_array($request->query('filter'), $validFilters, true)
+            ? $request->query('filter')
+            : 'all';
+
+        $logs = $this->activityLogRepository->index($activeFilter);
 
         $today = Carbon::today()->toDateString();
         $yesterday = Carbon::yesterday()->toDateString();
@@ -30,7 +35,7 @@ class ActivityLogController extends Controller
             COUNT(CASE WHEN created_at >= ? THEN 1 END) as last_week
         ", [$today, $yesterday, $lastWeek])->first()->toArray();
 
-        return view('pages.ActivityLog.index', compact('logs', 'stats'));
+        return view('pages.ActivityLog.index', compact('logs', 'stats', 'activeFilter'));
     }
     /**
      * Show the form for creating a new resource.

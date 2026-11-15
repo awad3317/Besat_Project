@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\RepositoriesInterface;
 use App\Models\activity_log;
+use Carbon\Carbon;
 
 class ActivityLogRepository implements RepositoriesInterface
 {
@@ -14,9 +15,15 @@ class ActivityLogRepository implements RepositoriesInterface
     {
         //
     }
-    public function index()
+    public function index(?string $filter = 'all')
     {
-        return activity_log::latest()->paginate(10);
+        return activity_log::query()
+            ->when($filter === 'today', fn ($q) => $q->whereDate('created_at', Carbon::today()))
+            ->when($filter === 'yesterday', fn ($q) => $q->whereDate('created_at', Carbon::yesterday()))
+            ->when($filter === 'last_week', fn ($q) => $q->where('created_at', '>=', Carbon::now()->subDays(7)->toDateTimeString()))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function getById($id): activity_log

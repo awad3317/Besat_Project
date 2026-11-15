@@ -8,11 +8,18 @@
 
 @endsection
 @section('content')
-    {{-- كروت الإحصائيات --}}
-    <div class="flex flex-col flex-wrap gap-4 mb-6 sm:flex-row md:gap-6">
+    {{-- كروت الإحصائيات والفلاتر --}}
+    @php
+        $currentFilter = $activeFilter ?? request('filter', 'all');
+    @endphp
+    <div x-data="{ loadingFilter: null }" class="flex flex-col flex-wrap gap-4 mb-6 sm:flex-row md:gap-6">
         {{-- إجمالي النشاطات --}}
-        <div
-            class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div @click="loadingFilter = 'all'; window.location.href = '{{ route('log.index') }}'"
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            <div x-show="loadingFilter === 'all'" x-cloak
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+            </div>
             <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
                 <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" stroke-width="2.5"
                     viewBox="0 0 24 24">
@@ -28,8 +35,12 @@
         </div>
 
         {{-- نشاطات اليوم --}}
-        <div
-            class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div @click="loadingFilter = 'today'; window.location.href = '{{ route('log.index', ['filter' => 'today']) }}'"
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'today') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            <div x-show="loadingFilter === 'today'" x-cloak
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+            </div>
             <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
                 <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor"
                     stroke-width="2.5" viewBox="0 0 24 24">
@@ -45,8 +56,12 @@
         </div>
 
         {{-- نشاطات أمس --}}
-        <div
-            class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div @click="loadingFilter = 'yesterday'; window.location.href = '{{ route('log.index', ['filter' => 'yesterday']) }}'"
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'yesterday') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            <div x-show="loadingFilter === 'yesterday'" x-cloak
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+            </div>
             <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
                 <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor"
                     stroke-width="2.5" viewBox="0 0 24 24">
@@ -61,8 +76,12 @@
         </div>
 
         {{-- نشاطات الأسبوع الماضي --}}
-        <div
-            class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-gray-200 dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div @click="loadingFilter = 'last_week'; window.location.href = '{{ route('log.index', ['filter' => 'last_week']) }}'"
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'last_week') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            <div x-show="loadingFilter === 'last_week'" x-cloak
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+            </div>
             <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
                 <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor"
                     stroke-width="2.5" viewBox="0 0 24 24">
