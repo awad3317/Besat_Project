@@ -10,11 +10,15 @@ use Exception;
 use App\Models\Request as TripRequest;
 use Illuminate\Support\Facades\Log;
 use App\Services\DriverSettlementService;
+use App\Services\ImageService;
 
 class DriverController extends Controller
 {
-    public function __construct(private DriverRepository $driverRepository,private DriverSettlementService $settlementService)
-    {
+    public function __construct(
+        private DriverRepository $driverRepository,
+        private DriverSettlementService $settlementService,
+        private ImageService $imageService
+    ) {
         //
     }
     public function updateDeviceToken(Request $request)
@@ -67,10 +71,14 @@ class DriverController extends Controller
 
         try {
             $driver = auth('sanctum')->user();
-            $imageFields = ['driver_image', 'vehicle_image', 'identity_image'];
-            foreach ($imageFields as $imageField) {
+            $imageFolders = [
+                'driver_image'   => 'drivers/avatars',
+                'vehicle_image'  => 'drivers/vehicles',
+                'identity_image' => 'drivers/identities',
+            ];
+            foreach ($imageFolders as $imageField => $folder) {
                 if ($request->hasFile($imageField)) {
-                    $fields[$imageField] = $request->file($imageField)->store('drivers/' . $imageField, 'public');
+                    $fields[$imageField] = $this->imageService->saveImage($request->file($imageField), $folder);
                 }
             }
             $updatedDriver = $this->driverRepository->update($fields, $driver->id);

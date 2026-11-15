@@ -245,6 +245,7 @@ class RequestController extends Controller
             'new_request'  => 'false',
             'new_message'  => 'false',
             'request_id'   => (string) $trip->id,
+            'driver_id'    => (string) ($trip->driver_id ?? ''),
             'points'       => (string) $earnedPoints,
             'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
         ];

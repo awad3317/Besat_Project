@@ -56,6 +56,7 @@ class LoyaltyPointsEarnedNotification extends Notification
         return [
             'type'       => 'loyalty_points',
             'request_id' => $this->tripRequest->id,
+            'driver_id'  => $this->tripRequest->driver_id,
             'points'     => $this->earnedPoints,
             'title'      => $this->title,
             'body'       => $this->body,
