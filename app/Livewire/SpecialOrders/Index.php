@@ -56,7 +56,8 @@ class Index extends Component
             SUM(CASE WHEN service_type = 'zafona' THEN 1 ELSE 0 END) as zafona,
             SUM(CASE WHEN service_type = 'rehla' THEN 1 ELSE 0 END) as rehla,
             SUM(CASE WHEN service_type = 'safety_airport' THEN 1 ELSE 0 END) as safety_airport,
-            SUM(CASE WHEN service_type = 'dawam' THEN 1 ELSE 0 END) as dawam
+            SUM(CASE WHEN service_type = 'dawam' THEN 1 ELSE 0 END) as dawam,
+            SUM(CASE WHEN service_type = 'moshwarana' THEN 1 ELSE 0 END) as moshwarana
         ")->first();
 
         return [
@@ -66,6 +67,7 @@ class Index extends Component
             'rehla'          => (int) ($counts->rehla ?? 0),
             'safety_airport' => (int) ($counts->safety_airport ?? 0),
             'dawam'          => (int) ($counts->dawam ?? 0),
+            'moshwarana'     => (int) ($counts->moshwarana ?? 0),
         ];
     }
 
@@ -250,7 +252,7 @@ class Index extends Component
     public function updateOrder()
     {
         $validated = $this->validate([
-            'editServiceType'    => ['required', 'in:events,zafona,rehla,safety_airport,dawam'],
+            'editServiceType'    => ['required', 'in:events,zafona,rehla,safety_airport,dawam,moshwarana'],
             'editClientName'     => ['required', 'string', 'max:255'],
             'editPassengerCount' => ['required', 'integer', 'min:1'],
             'editVehiclesCount'  => ['required', 'integer', 'min:1'],

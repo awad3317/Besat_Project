@@ -1,9 +1,9 @@
 <div>
     {{-- 1. بطاقات الإحصائيات والفلاتر حسب نوع الخدمة (service_type) --}}
-    <div class="grid grid-cols-2 gap-4 mb-4 sm:grid-cols-3 lg:grid-cols-6 md:gap-4">
+    <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-4">
         {{-- فلتر: الكل --}}
         <div wire:click.debounce.150ms="applyFilter('all')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 min-w-[135px] @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('all')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
@@ -19,9 +19,9 @@
             </div>
         </div>
 
-        {{-- فلتر: مناسبات (events) --}}
+        {{-- فلتر: فعالياتنا (events) --}}
         <div wire:click.debounce.150ms="applyFilter('events')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] @if ($activeFilter == 'events') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 min-w-[135px] @if ($activeFilter == 'events') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('events')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
@@ -32,14 +32,14 @@
                 </svg>
             </div>
             <div class="mt-3 w-full">
-                <span class="text-xs text-gray-500 dark:text-gray-400">مناسبات</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">فعالياتنا</span>
                 <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['events'] ?? 0 }}</h4>
             </div>
         </div>
 
         {{-- فلتر: زفونا (zafona) --}}
         <div wire:click.debounce.150ms="applyFilter('zafona')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] @if ($activeFilter == 'zafona') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 min-w-[135px] @if ($activeFilter == 'zafona') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('zafona')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
@@ -57,7 +57,7 @@
 
         {{-- فلتر: رحلة (rehla) --}}
         <div wire:click.debounce.150ms="applyFilter('rehla')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] @if ($activeFilter == 'rehla') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 min-w-[135px] @if ($activeFilter == 'rehla') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('rehla')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
@@ -73,9 +73,9 @@
             </div>
         </div>
 
-        {{-- فلتر: توصيل المطار (safety_airport) --}}
+        {{-- فلتر: بالسلامة (safety_airport) --}}
         <div wire:click.debounce.150ms="applyFilter('safety_airport')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] @if ($activeFilter == 'safety_airport') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 min-w-[135px] @if ($activeFilter == 'safety_airport') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('safety_airport')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
@@ -86,14 +86,14 @@
                 </svg>
             </div>
             <div class="mt-3 w-full">
-                <span class="text-xs text-gray-500 dark:text-gray-400">توصيل المطار</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">بالسلامة</span>
                 <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['safety_airport'] ?? 0 }}</h4>
             </div>
         </div>
 
         {{-- فلتر: دوام (dawam) --}}
         <div wire:click.debounce.150ms="applyFilter('dawam')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] @if ($activeFilter == 'dawam') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 min-w-[135px] @if ($activeFilter == 'dawam') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('dawam')"
                 class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
@@ -106,6 +106,25 @@
             <div class="mt-3 w-full">
                 <span class="text-xs text-gray-500 dark:text-gray-400">دوام</span>
                 <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['dawam'] ?? 0 }}</h4>
+            </div>
+        </div>
+
+        {{-- فلتر: مشوارنا (moshwarana) --}}
+        <div wire:click.debounce.150ms="applyFilter('moshwarana')" wire:loading.class="opacity-50" wire:target="applyFilter"
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 min-w-[135px] @if ($activeFilter == 'moshwarana') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            <div wire:loading wire:target="applyFilter('moshwarana')"
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+            </div>
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg class="w-5 h-5" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </div>
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">مشوارنا</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['moshwarana'] ?? 0 }}</h4>
             </div>
         </div>
     </div>
