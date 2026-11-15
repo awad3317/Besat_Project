@@ -3,12 +3,8 @@
 namespace App\Livewire\SpecialOrders;
 
 use App\Models\Conversation;
-use App\Models\Driver;
-use App\Models\SpecialOrder;
+use App\Models\ServiceBooking;
 use App\Services\ActivityLog;
-use App\Services\FirebaseService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -24,30 +20,23 @@ class Index extends Component
     public $search = '';
     public $perPage = 10;
 
-    // ── خصائص نافذة تعيين السائق ──
-    public $selectedOrderId = null;
-    public $driverSearch = '';
-    public bool $onlineDriversOnly = false;
-    public $assignOrderPrice = null;
-
-    // ── خصائص نافذة إلغاء الطلب ──
+    // ── خصائص نافذة إلغاء الحجز ──
     public $cancellingOrderId = null;
     public $cancellationReason = '';
 
-    // ── خصائص نافذة تعديل الطلب والتسعيرة ──
+    // ── خصائص نافذة تعديل الحجز والتسعيرة ──
     public $editingOrderId = null;
-    public $editTitle = '';
-    public $editCustomerName = '';
-    public $editCustomerPhone = '';
-    public $editCustomerWhatsapp = '';
+    public $editServiceType = 'events';
+    public $editClientName = '';
+    public $editPassengerCount = 1;
+    public $editVehiclesCount = 1;
+    public bool $editWantsAc = false;
     public $editStartAddress = '';
     public $editEndAddress = '';
-    public $editPrice = null;
-    public $editDescription = '';
+    public $editTotalPrice = null;
+    public $editPaymentStatus = 'unpaid';
     public $editStatus = 'pending';
-
-    // ── خصائص نافذة عرض التفاصيل السريع ──
-    public $viewingOrderId = null;
+    public $editNotes = '';
 
     protected $queryString = [
         'search' => ['except' => '', 'as' => 'q'],
@@ -56,26 +45,37 @@ class Index extends Component
     ];
 
     // ═══════════════════════════════════════════
-    //  دالة الإحصائيات (Stats)
+    //  دالة الإحصائيات حسب نوع الخدمة (service_type)
     // ═══════════════════════════════════════════
     #[Computed(cache: true)]
     public function stats()
     {
+        $counts = ServiceBooking::selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN service_type = 'events' THEN 1 ELSE 0 END) as events,
+            SUM(CASE WHEN service_type = 'zafona' THEN 1 ELSE 0 END) as zafona,
+            SUM(CASE WHEN service_type = 'rehla' THEN 1 ELSE 0 END) as rehla,
+            SUM(CASE WHEN service_type = 'safety_airport' THEN 1 ELSE 0 END) as safety_airport,
+            SUM(CASE WHEN service_type = 'dawam' THEN 1 ELSE 0 END) as dawam
+        ")->first();
+
         return [
-            'total'       => SpecialOrder::count(),
-            'in_progress' => SpecialOrder::whereIn('status', ['in_progress', 'pending', 'searching_driver', 'paused'])->count(),
-            'completed'   => SpecialOrder::where('status', 'completed')->count(),
-            'cancelled'   => SpecialOrder::where('status', 'cancelled')->count(),
+            'total'          => (int) ($counts->total ?? 0),
+            'events'         => (int) ($counts->events ?? 0),
+            'zafona'         => (int) ($counts->zafona ?? 0),
+            'rehla'          => (int) ($counts->rehla ?? 0),
+            'safety_airport' => (int) ($counts->safety_airport ?? 0),
+            'dawam'          => (int) ($counts->dawam ?? 0),
         ];
     }
 
     // ═══════════════════════════════════════════
-    //  دالة الفلترة (applyFilter)
+    //  دالة الفلترة حسب نوع الخدمة (applyFilter)
     // ═══════════════════════════════════════════
     public function applyFilter($filter)
     {
-        $validFilters = ['all', 'in_progress', 'completed', 'cancelled'];
-        if (in_array($filter, $validFilters)) {
+        $validFilters = array_merge(['all'], array_keys(ServiceBooking::serviceTypes()));
+        if (in_array($filter, $validFilters, true)) {
             $this->activeFilter = $filter;
             $this->resetPage();
         }
@@ -95,165 +95,84 @@ class Index extends Component
     #[Computed]
     public function orders()
     {
-        return SpecialOrder::with(['driver', 'user'])
+        return ServiceBooking::with([
+                'user' => fn ($q) => $q->withTrashed(),
+                'vehicle',
+                'stops',
+            ])
+            ->withCount('stops')
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('customer_name', 'like', '%' . $this->search . '%')
-                        ->orWhere('customer_phone', 'like', '%' . $this->search . '%')
-                        ->orWhere('title', 'like', '%' . $this->search . '%')
-                        ->orWhere('start_address', 'like', '%' . $this->search . '%')
-                        ->orWhere('end_address', 'like', '%' . $this->search . '%')
-                        ->orWhereHas('driver', fn ($driverQuery) => $driverQuery
-                            ->where('name', 'like', '%' . $this->search . '%')
-                            ->orWhere('phone', 'like', '%' . $this->search . '%'))
-                        ->orWhereHas('user', fn ($userQuery) => $userQuery
-                            ->where('name', 'like', '%' . $this->search . '%')
-                            ->orWhere('phone', 'like', '%' . $this->search . '%'));
+                $search = '%' . $this->search . '%';
+                $query->where(function ($q) use ($search) {
+                    $q->where('id', 'like', $search)
+                        ->orWhere('client_name', 'like', $search)
+                        ->orWhere('service_type', 'like', $search)
+                        ->orWhere('start_address', 'like', $search)
+                        ->orWhere('end_address', 'like', $search)
+                        ->orWhere('notes', 'like', $search)
+                        ->orWhereHas('user', fn ($userQuery) => $userQuery->withTrashed()
+                            ->where(function ($sub) use ($search) {
+                                $sub->where('name', 'like', $search)
+                                    ->orWhere('phone', 'like', $search);
+                            }))
+                        ->orWhereHas('vehicle', fn ($vehicleQuery) => $vehicleQuery
+                            ->where('type', 'like', $search));
                 });
             })
             ->when($this->activeFilter !== 'all', function ($q) {
-                if ($this->activeFilter === 'in_progress') {
-                    return $q->whereIn('status', ['in_progress', 'pending', 'searching_driver', 'paused']);
-                }
-                return $q->where('status', $this->activeFilter);
+                return $q->where('service_type', $this->activeFilter);
             })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
     }
 
     // ═══════════════════════════════════════════
-    //  الطلب المحدد لتعيين سائق وقائمة السائقين
+    //  إجراءات اعتماد أو إكمال الحجز
     // ═══════════════════════════════════════════
-    #[Computed]
-    public function selectedOrder()
+    public function approveOrder($orderId)
     {
-        if (! $this->selectedOrderId) {
-            return null;
-        }
-
-        return SpecialOrder::with(['user', 'driver'])->find($this->selectedOrderId);
-    }
-
-    #[Computed]
-    public function viewingOrder()
-    {
-        if (! $this->viewingOrderId) {
-            return null;
-        }
-
-        return SpecialOrder::with(['user', 'driver', 'creator', 'canceller'])->find($this->viewingOrderId);
-    }
-
-    #[Computed]
-    public function drivers()
-    {
-        if (! $this->selectedOrderId) {
-            return collect();
-        }
-
-        return Driver::where('is_banned', false)
-            ->where('is_active', true)
-            ->with('vehicle:id,type')
-            ->when($this->onlineDriversOnly, fn ($q) => $q->where('is_online', true))
-            ->when($this->driverSearch, function ($q) {
-                $q->where(function ($sub) {
-                    $sub->where('name', 'like', "%{$this->driverSearch}%")
-                        ->orWhere('phone', 'like', "%{$this->driverSearch}%")
-                        ->orWhere('plate_number', 'like', "%{$this->driverSearch}%");
-                });
-            })
-            ->orderByDesc('is_online')
-            ->limit(30)
-            ->get();
-    }
-
-    // ═══════════════════════════════════════════
-    //  إجراءات تعيين السائق
-    // ═══════════════════════════════════════════
-    public function openAssignDriverModal($orderId)
-    {
-        $order = SpecialOrder::find($orderId);
-        if (! $order) {
+        $order = ServiceBooking::find($orderId);
+        if (! $order || in_array($order->status, ['cancelled', 'completed'], true)) {
             return;
         }
 
-        $this->selectedOrderId = $orderId;
-        $this->driverSearch = '';
-        $this->onlineDriversOnly = false;
-        $this->assignOrderPrice = $order->price;
+        $order->update([
+            'status' => 'approved',
+        ]);
 
-        unset($this->selectedOrder, $this->drivers);
+        ActivityLog::log(
+            'update',
+            'ServiceBooking',
+            "تمت الموافقة على حجز الخدمة #{$order->id} ({$order->service_type_text})",
+            $order->id
+        );
 
-        $this->dispatch('open-modal', 'assign-special-driver-modal');
+        unset($this->stats, $this->orders);
     }
 
-    public function assignDriver(int $driverId, FirebaseService $firebaseService)
+    public function completeOrder($orderId)
     {
-        if (! $this->selectedOrderId) {
+        $order = ServiceBooking::find($orderId);
+        if (! $order || $order->status === 'cancelled') {
             return;
         }
 
-        $order = null;
-        $driver = Driver::find($driverId);
+        $order->update([
+            'status' => 'completed',
+        ]);
 
-        if (! $driver) {
-            return;
-        }
+        ActivityLog::log(
+            'update',
+            'ServiceBooking',
+            "تم تحويل حالة حجز الخدمة #{$order->id} إلى مكتملة",
+            $order->id
+        );
 
-        DB::transaction(function () use ($driverId, $driver, &$order) {
-            $order = SpecialOrder::where('id', $this->selectedOrderId)->lockForUpdate()->first();
-
-            if (! $order || $order->status === 'cancelled') {
-                return;
-            }
-
-            $updateData = [
-                'driver_id' => $driverId,
-                'status'    => 'in_progress',
-            ];
-
-            if ($this->assignOrderPrice !== null && $this->assignOrderPrice !== '') {
-                $updateData['price'] = (int) $this->assignOrderPrice;
-            }
-
-            $order->update($updateData);
-
-            ActivityLog::log(
-                'update',
-                'SpecialOrder',
-                "تم تعيين السائق #{$driverId} ({$driver->name}) للطلب الخاص #{$order->id}",
-                $order->id
-            );
-        });
-
-        // إرسال إشعار للسائق إذا توفر التوكن
-        if ($order && $driver && ! empty($driver->device_token)) {
-            try {
-                $firebaseService->sendNotification(
-                    $driver->device_token,
-                    'طلب خاص جديد مسند إليك!',
-                    "تم إسناد الطلب الخاص #{$order->id} ({$order->title}) إليك بنجاح.",
-                    [
-                        'new_request'   => 'true',
-                        'new_message'   => 'false',
-                        'special_order_id' => (string) $order->id,
-                        'status'        => 'in_progress',
-                        'start_address' => (string) ($order->start_address ?? ''),
-                        'end_address'   => (string) ($order->end_address ?? ''),
-                        'click_action'  => 'FLUTTER_NOTIFICATION_CLICK',
-                    ]
-                );
-            } catch (\Exception $e) {
-                Log::error("Failed to send FCM to driver {$driver->id} for SpecialOrder: " . $e->getMessage());
-            }
-        }
-
-        unset($this->stats, $this->orders, $this->selectedOrder);
-        $this->dispatch('special-driver-assigned');
+        unset($this->stats, $this->orders);
     }
 
     // ═══════════════════════════════════════════
-    //  إجراءات إلغاء الطلب
+    //  إجراءات إلغاء الحجز
     // ═══════════════════════════════════════════
     public function openCancelModal($orderId)
     {
@@ -268,26 +187,29 @@ class Index extends Component
         $this->validate([
             'cancellationReason' => ['required', 'string', 'min:3', 'max:500'],
         ], [
-            'cancellationReason.required' => 'يرجى إدخال سبب إلغاء الطلب.',
+            'cancellationReason.required' => 'يرجى إدخال سبب إلغاء الحجز.',
             'cancellationReason.min'      => 'سبب الإلغاء يجب أن لا يقل عن 3 أحرف.',
         ]);
 
-        $order = SpecialOrder::find($this->cancellingOrderId);
+        $order = ServiceBooking::find($this->cancellingOrderId);
         if (! $order) {
             $this->dispatch('close-modal', 'cancel-special-order-modal');
             return;
         }
 
+        $serviceDetails = is_array($order->service_details) ? $order->service_details : [];
+        $serviceDetails['cancellation_reason'] = $this->cancellationReason;
+        $serviceDetails['cancelled_by'] = auth()->id();
+
         $order->update([
-            'status'              => 'cancelled',
-            'cancellation_reason' => $this->cancellationReason,
-            'cancelled_by'        => auth()->id(),
+            'status'          => 'cancelled',
+            'service_details' => $serviceDetails,
         ]);
 
         ActivityLog::log(
             'update',
-            'SpecialOrder',
-            "تم إلغاء الطلب الخاص #{$order->id} - السبب: {$this->cancellationReason}",
+            'ServiceBooking',
+            "تم إلغاء حجز الخدمة #{$order->id} - السبب: {$this->cancellationReason}",
             $order->id
         );
 
@@ -299,49 +221,27 @@ class Index extends Component
     }
 
     // ═══════════════════════════════════════════
-    //  إجراءات إكمال الطلب
-    // ═══════════════════════════════════════════
-    public function completeOrder($orderId)
-    {
-        $order = SpecialOrder::find($orderId);
-        if (! $order || $order->status === 'cancelled') {
-            return;
-        }
-
-        $order->update([
-            'status' => 'completed',
-        ]);
-
-        ActivityLog::log(
-            'update',
-            'SpecialOrder',
-            "تم تحويل حالة الطلب الخاص #{$order->id} إلى مكتملة",
-            $order->id
-        );
-
-        unset($this->stats, $this->orders);
-    }
-
-    // ═══════════════════════════════════════════
-    //  إجراءات تعديل الطلب والتسعيرة
+    //  إجراءات تعديل الحجز والتسعيرة
     // ═══════════════════════════════════════════
     public function openEditModal($orderId)
     {
-        $order = SpecialOrder::with('user')->find($orderId);
+        $order = ServiceBooking::with(['user' => fn ($q) => $q->withTrashed()])->find($orderId);
         if (! $order) {
             return;
         }
 
         $this->editingOrderId = $order->id;
-        $this->editTitle = $order->title ?? '';
-        $this->editCustomerName = $order->customer_name ?? ($order->user?->name ?? '');
-        $this->editCustomerPhone = $order->customer_phone ?? ($order->user?->phone ?? '');
-        $this->editCustomerWhatsapp = $order->customer_whatsapp ?? ($order->user?->whatsapp_number ?? '');
+        $this->editServiceType = $order->service_type ?? 'events';
+        $this->editClientName = $order->client_name ?? ($order->user?->name ?? '');
+        $this->editPassengerCount = $order->passenger_count ?? 1;
+        $this->editVehiclesCount = $order->vehicles_count ?? 1;
+        $this->editWantsAc = (bool) $order->wants_ac;
         $this->editStartAddress = $order->start_address ?? '';
         $this->editEndAddress = $order->end_address ?? '';
-        $this->editPrice = $order->price;
-        $this->editDescription = $order->description ?? '';
+        $this->editTotalPrice = $order->total_price;
+        $this->editPaymentStatus = $order->payment_status ?? 'unpaid';
         $this->editStatus = $order->status ?? 'pending';
+        $this->editNotes = $order->notes ?? '';
 
         $this->resetValidation();
         $this->dispatch('open-modal', 'edit-special-order-modal');
@@ -350,44 +250,48 @@ class Index extends Component
     public function updateOrder()
     {
         $validated = $this->validate([
-            'editTitle'            => ['required', 'string', 'max:255'],
-            'editCustomerName'     => ['nullable', 'string', 'max:255'],
-            'editCustomerPhone'    => ['nullable', 'string', 'max:30'],
-            'editCustomerWhatsapp' => ['nullable', 'string', 'max:30'],
-            'editStartAddress'     => ['required', 'string', 'max:255'],
-            'editEndAddress'       => ['required', 'string', 'max:255'],
-            'editPrice'            => ['nullable', 'numeric', 'min:0'],
-            'editDescription'      => ['nullable', 'string', 'max:1000'],
-            'editStatus'           => ['required', 'in:pending,searching_driver,paused,in_progress,completed,cancelled'],
+            'editServiceType'    => ['required', 'in:events,zafona,rehla,safety_airport,dawam'],
+            'editClientName'     => ['required', 'string', 'max:255'],
+            'editPassengerCount' => ['required', 'integer', 'min:1'],
+            'editVehiclesCount'  => ['required', 'integer', 'min:1'],
+            'editWantsAc'        => ['boolean'],
+            'editStartAddress'   => ['required', 'string', 'max:255'],
+            'editEndAddress'     => ['required', 'string', 'max:255'],
+            'editTotalPrice'     => ['nullable', 'numeric', 'min:0'],
+            'editPaymentStatus'  => ['required', 'in:unpaid,partially_paid,paid'],
+            'editStatus'         => ['required', 'in:pending,approved,rejected,in_progress,completed,cancelled'],
+            'editNotes'          => ['nullable', 'string', 'max:1000'],
         ], [
-            'editTitle.required'        => 'عنوان الطلب مطلوب.',
+            'editClientName.required'   => 'اسم العميل مطلوب.',
             'editStartAddress.required' => 'نقطة الانطلاق مطلوبة.',
             'editEndAddress.required'   => 'نقطة الوصول مطلوبة.',
-            'editPrice.numeric'         => 'السعر يجب أن يكون رقماً صحيحاً.',
+            'editTotalPrice.numeric'    => 'السعر يجب أن يكون رقماً صحيحاً.',
         ]);
 
-        $order = SpecialOrder::find($this->editingOrderId);
+        $order = ServiceBooking::find($this->editingOrderId);
         if (! $order) {
             $this->dispatch('close-modal', 'edit-special-order-modal');
             return;
         }
 
         $order->update([
-            'title'             => $validated['editTitle'],
-            'customer_name'     => $validated['editCustomerName'],
-            'customer_phone'    => $validated['editCustomerPhone'],
-            'customer_whatsapp' => $validated['editCustomerWhatsapp'],
-            'start_address'     => $validated['editStartAddress'],
-            'end_address'       => $validated['editEndAddress'],
-            'price'             => $validated['editPrice'] !== '' && $validated['editPrice'] !== null ? (int) $validated['editPrice'] : null,
-            'description'       => $validated['editDescription'],
-            'status'            => $validated['editStatus'],
+            'service_type'    => $validated['editServiceType'],
+            'client_name'     => $validated['editClientName'],
+            'passenger_count' => (int) $validated['editPassengerCount'],
+            'vehicles_count'  => (int) $validated['editVehiclesCount'],
+            'wants_ac'        => (bool) $validated['editWantsAc'],
+            'start_address'   => $validated['editStartAddress'],
+            'end_address'     => $validated['editEndAddress'],
+            'total_price'     => $validated['editTotalPrice'] !== '' && $validated['editTotalPrice'] !== null ? (float) $validated['editTotalPrice'] : null,
+            'payment_status'  => $validated['editPaymentStatus'],
+            'status'          => $validated['editStatus'],
+            'notes'           => $validated['editNotes'],
         ]);
 
         ActivityLog::log(
             'update',
-            'SpecialOrder',
-            "تم تحديث بيانات الطلب الخاص #{$order->id}",
+            'ServiceBooking',
+            "تم تحديث بيانات حجز الخدمة #{$order->id}",
             $order->id
         );
 
@@ -398,21 +302,11 @@ class Index extends Component
     }
 
     // ═══════════════════════════════════════════
-    //  نافذة عرض التفاصيل السريع
-    // ═══════════════════════════════════════════
-    public function openDetailsModal($orderId)
-    {
-        $this->viewingOrderId = $orderId;
-        unset($this->viewingOrder);
-        $this->dispatch('open-modal', 'view-special-order-modal');
-    }
-
-    // ═══════════════════════════════════════════
-    //  محادثات الدعم المباشر مع العميل أو السائق
+    //  محادثات الدعم المباشر مع العميل
     // ═══════════════════════════════════════════
     public function startChatWithCustomer($orderId)
     {
-        $order = SpecialOrder::find($orderId);
+        $order = ServiceBooking::find($orderId);
         if (! $order || ! $order->user_id) {
             return;
         }
@@ -423,29 +317,6 @@ class Index extends Component
         );
 
         return redirect()->route('chats.index', ['c' => $conversation->id, 'tab' => 'clients']);
-    }
-
-    public function startChatWithDriver($orderId)
-    {
-        $order = SpecialOrder::find($orderId);
-        if (! $order || ! $order->driver_id) {
-            return;
-        }
-
-        $conversation = Conversation::firstOrCreate(
-            ['driver_id' => $order->driver_id, 'user_id' => null, 'type' => 'support'],
-            ['status' => 'open']
-        );
-
-        return redirect()->route('chats.index', ['c' => $conversation->id, 'tab' => 'drivers']);
-    }
-
-    public function clearSelectedOrder()
-    {
-        $this->selectedOrderId = null;
-        $this->driverSearch = '';
-        $this->onlineDriversOnly = false;
-        $this->assignOrderPrice = null;
     }
 
     public function render()

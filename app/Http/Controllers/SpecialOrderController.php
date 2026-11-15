@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\ServiceBooking;
 use Illuminate\Http\Request;
 use App\Services\ActivityLog;
 use Illuminate\Validation\Rule;
@@ -105,7 +106,11 @@ class SpecialOrderController extends Controller
     public function show(string $id)
     {
         try {
-            $order = $this->specialOrderRepository->getById($id);
+            $order = ServiceBooking::with([
+                'user' => fn ($q) => $q->withTrashed(),
+                'vehicle',
+                'stops',
+            ])->findOrFail($id);
             return view('pages.specialOrder.show', compact('order'));
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
@@ -165,11 +170,12 @@ class SpecialOrderController extends Controller
     public function destroy(string $id)
     {
         try {
-            $this->specialOrderRepository->delete($id);
+            $booking = ServiceBooking::findOrFail($id);
+            $booking->delete();
 
-            ActivityLog::log('delete', 'SpecialOrder', "تم حذف الطلب الخاص #{$id}");
+            ActivityLog::log('delete', 'ServiceBooking', "تم حذف حجز الخدمة #{$id}");
 
-            return WebResponseClass::sendResponse('تم الحذف!', 'تم حذف الطلب بنجاح', 'حسناً', 'specialOrder.index');
+            return WebResponseClass::sendResponse('تم الحذف!', 'تم حذف الحجز بنجاح', 'حسناً', 'specialOrder.index');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
         }
