@@ -32,8 +32,8 @@ class Index extends Component
     // ── Assign Driver Modal ──
     public $selectedRequestId = null;
     public $driverSearch = '';
-    public bool $onlineDriversOnly = false;
-    public bool $matchVehicleOnly = false;
+    public bool $onlineDriversOnly = true;
+    public bool $matchVehicleOnly = true;
 
     protected $queryString = [
         'search' => ['except' => '', 'as' => 'q'],
@@ -132,7 +132,7 @@ class Index extends Component
                 ->where('is_active', true)
                 ->with('vehicle:id,type')
                 ->when($this->onlineDriversOnly, fn ($q) => $q->where('is_online', true))
-                ->when($this->matchVehicleOnly && $request->vehicle_id, fn ($q) => $q->where('vehicle_id', $request->vehicle_id))
+                ->when($request->vehicle_id, fn ($q) => $q->where('vehicle_id', $request->vehicle_id))
                 ->when($this->driverSearch, function ($q) {
                     $q->where(function ($sub) {
                         $sub->where('name', 'like', "%{$this->driverSearch}%")
@@ -152,7 +152,7 @@ class Index extends Component
             longitude: (float) $lng,
             search: $this->driverSearch,
             onlineOnly: $this->onlineDriversOnly,
-            vehicleId: $this->matchVehicleOnly ? $request->vehicle_id : null,
+            vehicleId: $request->vehicle_id ? (int) $request->vehicle_id : null,
             limit: 30,
         );
     }
@@ -180,8 +180,8 @@ class Index extends Component
 
         $this->selectedRequestId = $requestId;
         $this->driverSearch = '';
-        $this->onlineDriversOnly = false;
-        $this->matchVehicleOnly = false;
+        $this->onlineDriversOnly = true;
+        $this->matchVehicleOnly = true;
 
         // Clear cached computed properties so they re-evaluate
         unset($this->selectedRequest, $this->drivers);
@@ -258,6 +258,7 @@ class Index extends Component
 
     public function updatedMatchVehicleOnly()
     {
+        $this->matchVehicleOnly = true;
         unset($this->drivers);
         $this->dispatchMapUpdate();
     }
@@ -310,6 +311,11 @@ class Index extends Component
             $driver = Driver::find($driverId);
             if (! $driver) {
                 $errorMessage = 'السائق غير موجود.';
+                return;
+            }
+
+            if ($request->vehicle_id && (int) $driver->vehicle_id !== (int) $request->vehicle_id) {
+                $errorMessage = 'لا يمكن تعيين سائق بمركبة تختلف عن نوع المركبة التي اختارها العميل في الطلب.';
                 return;
             }
 
@@ -456,8 +462,8 @@ class Index extends Component
     {
         $this->selectedRequestId = null;
         $this->driverSearch = '';
-        $this->onlineDriversOnly = false;
-        $this->matchVehicleOnly = false;
+        $this->onlineDriversOnly = true;
+        $this->matchVehicleOnly = true;
     }
 
     public function render()

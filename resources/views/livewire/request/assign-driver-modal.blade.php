@@ -113,11 +113,12 @@
                             <span class="w-2 h-2 rounded-full bg-success-500" style="flex-shrink: 0;"></span>
                             <span>المتصلون فقط</span>
                         </label>
-                        <label class="flex flex-1 gap-2 justify-center items-center px-3 py-2 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-200 cursor-pointer select-none shadow-theme-xs hover:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                            <input type="checkbox" wire:model.live="matchVehicleOnly"
-                                   class="rounded border-gray-300 text-brand-500 focus:ring-1 focus:ring-brand-500" style="width: 16px; height: 16px;" />
-                            <span>نفس المركبة</span>
-                        </label>
+                        <div class="flex flex-1 gap-1.5 justify-center items-center px-3 py-2 text-xs font-semibold rounded-lg border select-none border-brand-500/30 bg-brand-50 text-brand-600 dark:border-brand-500/30 dark:bg-brand-500/15 dark:text-brand-400">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="truncate">نفس المركبة{{ $req?->vehicle?->type ? ' (' . $req->vehicle->type . ')' : '' }}</span>
+                        </div>
                     </div>
 
                     {{-- Counter Bar --}}
