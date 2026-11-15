@@ -1,83 +1,93 @@
 <div>
-    {{-- ════════════ 1. بطاقات الإحصائيات والفلترة التفاعلية (4 Interactive Stat Cards) ════════════ --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 special-orders-stats-grid">
-        {{-- 1. إجمالي الطلبات --}}
-        <div wire:click="applyFilter('all')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex flex-col items-start justify-between rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:shadow-md {{ $activeFilter === 'all' ? 'border-2 border-orange-500 border-brand-500 bg-orange-50/10 dark:bg-gray-800' : 'border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700' }}">
+    {{-- 1. بطاقات الإحصائيات والفلاتر --}}
+    <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
+        {{-- فلتر: الكل --}}
+        <div wire:click.debounce.150ms="applyFilter('all')" wire:loading.class="opacity-50" wire:target="applyFilter"
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('all')"
-                class="flex absolute inset-0 z-10 justify-center items-center rounded-2xl bg-white/70 dark:bg-gray-900/70">
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
             </div>
-            <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 dark:bg-gray-700 flex items-center justify-center">
-                <svg fill="#F59E0B" width="22" height="22" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg fill="#dc6803" width="20" height="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                     <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
                 </svg>
             </div>
-            <div class="mt-4 w-full text-right">
-                <span class="block text-sm text-gray-500 dark:text-gray-400">إجمالي الطلبات</span>
-                <h4 class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
-                    {{ $this->stats['total'] ?? 0 }}
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي الطلبات</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['total'] ?? 0 }}
                 </h4>
             </div>
         </div>
 
-        {{-- 2. الطلبات الجارية --}}
-        <div wire:click="applyFilter('in_progress')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex flex-col items-start justify-between rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:shadow-md {{ $activeFilter === 'in_progress' ? 'border-2 border-orange-500 border-brand-500 bg-orange-50/10 dark:bg-gray-800' : 'border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700' }}">
+        {{-- فلتر: الطلبات الجارية --}}
+        <div wire:click.debounce.150ms="applyFilter('in_progress')" wire:loading.class="opacity-50"
+            wire:target="applyFilter"
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'in_progress') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('in_progress')"
-                class="flex absolute inset-0 z-10 justify-center items-center rounded-2xl bg-white/70 dark:bg-gray-900/70">
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
             </div>
-            <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 dark:bg-gray-700 flex items-center justify-center">
-                <svg fill="#F59E0B" width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.7,2c-0.1,0-0.1,0-0.2,0c0,0,0,0-0.1,0v0c-0.2,0-0.3,0-0.5,0l0.2,2c0.4,0,0.9,0,1.3,0c4,0.3,7.3,3.5,7.5,7.6 c0.2,4.4-3.2,8.2-7.6,8.4c0,0-0.1,0-0.2,0c-0.3,0-0.7,0-1,0L11,22c0.4,0,0.8,0,1.3,0c0.1,0,0.3,0,0.4,0v0c5.4-0.4,9.5-5,9.3-10.4 c-0.2-5.1-4.3-9.1-9.3-9.5v0c0,0,0,0,0,0c-0.2,0-0.3,0-0.5,0C12,2,11.9,2,11.7,2z M8.2,2.7C7.7,3,7.2,3.2,6.7,3.5l1.1,1.7 C8.1,5,8.5,4.8,8.9,4.6L8.2,2.7z M4.5,5.4c-0.4,0.4-0.7,0.9-1,1.3l1.7,1C5.4,7.4,5.7,7.1,6,6.7L4.5,5.4z M15.4,8.4l-4.6,5.2 l-2.7-2.1L7,13.2l4.2,3.2l5.8-6.6L15.4,8.4z M2.4,9c-0.2,0.5-0.3,1.1-0.3,1.6l2,0.3c0.1-0.4,0.1-0.9,0.3-1.3L2.4,9z M4.1,13l-2,0.2 c0,0.1,0,0.2,0,0.3c0.1,0.4,0.2,0.9,0.3,1.3l1.9-0.6c-0.1-0.3-0.2-0.7-0.2-1.1L4.1,13z M5.2,16.2l-1.7,1.1c0.3,0.5,0.6,0.9,1,1.3 L6,17.3C5.7,16.9,5.4,16.6,5.2,16.2z M7.8,18.8l-1.1,1.7c0.5,0.3,1,0.5,1.5,0.8l0.8-1.8C8.5,19.2,8.1,19,7.8,18.8z"></path>
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg fill="#dc6803" width="20" height="20" version="1.1" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M11.7,2c-0.1,0-0.1,0-0.2,0c0,0,0,0-0.1,0v0c-0.2,0-0.3,0-0.5,0l0.2,2c0.4,0,0.9,0,1.3,0c4,0.3,7.3,3.5,7.5,7.6 c0.2,4.4-3.2,8.2-7.6,8.4c0,0-0.1,0-0.2,0c-0.3,0-0.7,0-1,0L11,22c0.4,0,0.8,0,1.3,0c0.1,0,0.3,0,0.4,0v0c5.4-0.4,9.5-5,9.3-10.4 c-0.2-5.1-4.3-9.1-9.3-9.5v0c0,0,0,0,0,0c-0.2,0-0.3,0-0.5,0C12,2,11.9,2,11.7,2z M8.2,2.7C7.7,3,7.2,3.2,6.7,3.5l1.1,1.7 C8.1,5,8.5,4.8,8.9,4.6L8.2,2.7z M4.5,5.4c-0.4,0.4-0.7,0.9-1,1.3l1.7,1C5.4,7.4,5.7,7.1,6,6.7L4.5,5.4z M15.4,8.4l-4.6,5.2 l-2.7-2.1L7,13.2l4.2,3.2l5.8-6.6L15.4,8.4z M2.4,9c-0.2,0.5-0.3,1.1-0.3,1.6l2,0.3c0.1-0.4,0.1-0.9,0.3-1.3L2.4,9z M4.1,13l-2,0.2 c0,0.1,0,0.2,0,0.3c0.1,0.4,0.2,0.9,0.3,1.3l1.9-0.6c-0.1-0.3-0.2-0.7-0.2-1.1L4.1,13z M5.2,16.2l-1.7,1.1c0.3,0.5,0.6,0.9,1,1.3 L6,17.3C5.7,16.9,5.4,16.6,5.2,16.2z M7.8,18.8l-1.1,1.7c0.5,0.3,1,0.5,1.5,0.8l0.8-1.8C8.5,19.2,8.1,19,7.8,18.8z">
+                    </path>
                 </svg>
             </div>
-            <div class="mt-4 w-full text-right">
-                <span class="block text-sm text-gray-500 dark:text-gray-400">الطلبات الجارية</span>
-                <h4 class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
-                    {{ $this->stats['in_progress'] ?? 0 }}
-                </h4>
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات الجارية</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                    {{ $this->stats['in_progress'] ?? 0 }}</h4>
             </div>
         </div>
 
-        {{-- 3. الطلبات المكتملة --}}
-        <div wire:click="applyFilter('completed')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex flex-col items-start justify-between rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:shadow-md {{ $activeFilter === 'completed' ? 'border-2 border-orange-500 border-brand-500 bg-orange-50/10 dark:bg-gray-800' : 'border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700' }}">
+        {{-- فلتر: المكتملة --}}
+        <div wire:click.debounce.150ms="applyFilter('completed')" wire:loading.class="opacity-50"
+            wire:target="applyFilter"
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'completed') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('completed')"
-                class="flex absolute inset-0 z-10 justify-center items-center rounded-2xl bg-white/70 dark:bg-gray-900/70">
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
             </div>
-            <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 dark:bg-gray-700 flex items-center justify-center">
-                <svg width="22" height="22" viewBox="0 0 1024 1024" fill="#F59E0B" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M824.8 1003.2H203.2c-12.8 0-25.6-2.4-37.6-7.2-11.2-4.8-21.6-12-30.4-20.8-8.8-8.8-16-19.2-20.8-30.4-4.8-12-7.2-24-7.2-37.6V260c0-12.8 2.4-25.6 7.2-37.6 4.8-11.2 12-21.6 20.8-30.4 8.8-8.8 19.2-16 30.4-20.8 12-4.8 24-7.2 37.6-7.2h94.4v48H203.2c-26.4 0-48 21.6-48 48v647.2c0 26.4 21.6 48 48 48h621.6c26.4 0 48-21.6 48-48V260c0-26.4-21.6-48-48-48H730.4v-48H824c12.8 0 25.6 2.4 37.6 7.2 11.2 4.8 21.6 12 30.4 20.8 8.8 8.8 16 19.2 20.8 30.4 4.8 12 7.2 24 7.2 37.6v647.2c0 12.8-2.4 25.6-7.2 37.6-4.8 11.2-12 21.6-20.8 30.4-8.8 8.8-19.2 16-30.4 20.8-11.2 4.8-24 7.2-36.8 7.2z"></path>
-                    <path d="M752.8 308H274.4V152.8c0-32.8 26.4-60 60-60h61.6c22.4-44 67.2-72.8 117.6-72.8 50.4 0 95.2 28.8 117.6 72.8h61.6c32.8 0 60 26.4 60 60v155.2m-430.4-48h382.4V152.8c0-6.4-5.6-12-12-12H598.4l-5.6-16c-12-33.6-43.2-56-79.2-56s-67.2 22.4-79.2 56l-5.6 16H334.4c-6.4 0-12 5.6-12 12v107.2zM432.8 792c-6.4 0-12-2.4-16.8-7.2L252.8 621.6c-4.8-4.8-7.2-10.4-7.2-16.8s2.4-12 7.2-16.8c4.8-4.8 10.4-7.2 16.8-7.2s12 2.4 16.8 7.2L418.4 720c4 4 8.8 5.6 13.6 5.6s10.4-1.6 13.6-5.6l295.2-295.2c4.8-4.8 10.4-7.2 16.8-7.2s12 2.4 16.8 7.2c9.6 9.6 9.6 24 0 33.6L449.6 784.8c-4.8 4-11.2 7.2-16.8 7.2z"></path>
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="20" height="20" viewBox="0 0 1024 1024" fill="#dc6803" class="icon" version="1.1"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M824.8 1003.2H203.2c-12.8 0-25.6-2.4-37.6-7.2-11.2-4.8-21.6-12-30.4-20.8-8.8-8.8-16-19.2-20.8-30.4-4.8-12-7.2-24-7.2-37.6V260c0-12.8 2.4-25.6 7.2-37.6 4.8-11.2 12-21.6 20.8-30.4 8.8-8.8 19.2-16 30.4-20.8 12-4.8 24-7.2 37.6-7.2h94.4v48H203.2c-26.4 0-48 21.6-48 48v647.2c0 26.4 21.6 48 48 48h621.6c26.4 0 48-21.6 48-48V260c0-26.4-21.6-48-48-48H730.4v-48H824c12.8 0 25.6 2.4 37.6 7.2 11.2 4.8 21.6 12 30.4 20.8 8.8 8.8 16 19.2 20.8 30.4 4.8 12 7.2 24 7.2 37.6v647.2c0 12.8-2.4 25.6-7.2 37.6-4.8 11.2-12 21.6-20.8 30.4-8.8 8.8-19.2 16-30.4 20.8-11.2 4.8-24 7.2-36.8 7.2z">
+                    </path>
+                    <path
+                        d="M752.8 308H274.4V152.8c0-32.8 26.4-60 60-60h61.6c22.4-44 67.2-72.8 117.6-72.8 50.4 0 95.2 28.8 117.6 72.8h61.6c32.8 0 60 26.4 60 60v155.2m-430.4-48h382.4V152.8c0-6.4-5.6-12-12-12H598.4l-5.6-16c-12-33.6-43.2-56-79.2-56s-67.2 22.4-79.2 56l-5.6 16H334.4c-6.4 0-12 5.6-12 12v107.2zM432.8 792c-6.4 0-12-2.4-16.8-7.2L252.8 621.6c-4.8-4.8-7.2-10.4-7.2-16.8s2.4-12 7.2-16.8c4.8-4.8 10.4-7.2 16.8-7.2s12 2.4 16.8 7.2L418.4 720c4 4 8.8 5.6 13.6 5.6s10.4-1.6 13.6-5.6l295.2-295.2c4.8-4.8 10.4-7.2 16.8-7.2s12 2.4 16.8 7.2c9.6 9.6 9.6 24 0 33.6L449.6 784.8c-4.8 4-11.2 7.2-16.8 7.2z">
+                    </path>
                 </svg>
             </div>
-            <div class="mt-4 w-full text-right">
-                <span class="block text-sm text-gray-500 dark:text-gray-400">الطلبات المكتملة</span>
-                <h4 class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
-                    {{ $this->stats['completed'] ?? 0 }}
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات المكتملة</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['completed'] ?? 0 }}
                 </h4>
             </div>
         </div>
 
-        {{-- 4. الطلبات الملغية --}}
-        <div wire:click="applyFilter('cancelled')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex flex-col items-start justify-between rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:shadow-md {{ $activeFilter === 'cancelled' ? 'border-2 border-orange-500 border-brand-500 bg-orange-50/10 dark:bg-gray-800' : 'border border-gray-100 bg-white dark:bg-gray-800 dark:border-gray-700' }}">
+        {{-- فلتر: الملغية --}}
+        <div wire:click.debounce.150ms="applyFilter('cancelled')" wire:loading.class="opacity-50"
+            wire:target="applyFilter"
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'cancelled') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <div wire:loading wire:target="applyFilter('cancelled')"
-                class="flex absolute inset-0 z-10 justify-center items-center rounded-2xl bg-white/70 dark:bg-gray-900/70">
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                 <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
             </div>
-            <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 dark:bg-gray-700 flex items-center justify-center">
-                <svg width="22" height="22" viewBox="0 0 512 512" fill="#F59E0B" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z"></path>
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="20" height="20" viewBox="0 0 512 512" version="1.1"
+                    xmlns="http://www.w3.org/2000/svg" fill="#dc6803">
+                    <path
+                        d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z">
+                    </path>
                 </svg>
             </div>
-            <div class="mt-4 w-full text-right">
-                <span class="block text-sm text-gray-500 dark:text-gray-400">الطلبات الملغية</span>
-                <h4 class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
-                    {{ $this->stats['cancelled'] ?? 0 }}
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات الملغية</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['cancelled'] ?? 0 }}
                 </h4>
             </div>
         </div>
@@ -641,34 +651,4 @@
             </form>
         </div>
     </div>
-
-    <style>
-        .special-orders-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-            gap: 1rem;
-        }
-        @media (min-width: 640px) {
-            .special-orders-stats-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-        @media (min-width: 1024px) {
-            .special-orders-stats-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-        }
-        .border-orange-500 {
-            border-color: #F59E0B !important;
-        }
-        .bg-orange-50 {
-            background-color: #FFFBEB;
-        }
-        .bg-orange-50\/10 {
-            background-color: rgba(245, 158, 11, 0.06);
-        }
-        .text-orange-500 {
-            color: #F59E0B;
-        }
-    </style>
 </div>
