@@ -161,29 +161,35 @@
                                         </div>
                                     </div>
                                 @else
-                                    <button wire:click="openAssignDriverModal({{ $request->id }})"
-                                        wire:loading.attr="disabled"
-                                        class="inline-flex gap-1 items-center px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait">
-                                        <svg wire:loading.remove
-                                            wire:target="openAssignDriverModal({{ $request->id }})"
-                                            xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="8.5" cy="7" r="4"></circle>
-                                            <line x1="20" y1="8" x2="20" y2="14">
-                                            </line>
-                                            <line x1="23" y1="11" x2="17" y2="11">
-                                            </line>
-                                        </svg>
-                                        <div wire:loading wire:target="openAssignDriverModal({{ $request->id }})"
-                                            class="w-3.5 h-3.5 rounded-full border-2 border-gray-500 animate-spin border-t-transparent dark:border-gray-400">
-                                        </div>
-                                        <span wire:loading.remove
-                                            wire:target="openAssignDriverModal({{ $request->id }})">تعيين سائق</span>
-                                        <span wire:loading
-                                            wire:target="openAssignDriverModal({{ $request->id }})">جاري...</span>
-                                    </button>
+                                    @if ($request->canAssignDriver())
+                                        <button wire:click="openAssignDriverModal({{ $request->id }})"
+                                            wire:loading.attr="disabled"
+                                            class="inline-flex gap-1 items-center px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait">
+                                            <svg wire:loading.remove
+                                                wire:target="openAssignDriverModal({{ $request->id }})"
+                                                xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="8.5" cy="7" r="4"></circle>
+                                                <line x1="20" y1="8" x2="20" y2="14">
+                                                </line>
+                                                <line x1="23" y1="11" x2="17" y2="11">
+                                                </line>
+                                            </svg>
+                                            <div wire:loading wire:target="openAssignDriverModal({{ $request->id }})"
+                                                class="w-3.5 h-3.5 rounded-full border-2 border-gray-500 animate-spin border-t-transparent dark:border-gray-400">
+                                            </div>
+                                            <span wire:loading.remove
+                                                wire:target="openAssignDriverModal({{ $request->id }})">تعيين سائق</span>
+                                            <span wire:loading
+                                                wire:target="openAssignDriverModal({{ $request->id }})">جاري...</span>
+                                        </button>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium text-gray-500 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-gray-400">
+                                            لم يتم التعيين
+                                        </span>
+                                    @endif
                                 @endif
                             </td>
                             <td class="py-3">
@@ -293,6 +299,7 @@
                                             محادثة السائق
                                         </button>
 
+                                        @if ($request->canAssignDriver())
                                         <!-- إعادة تعيين سائق -->
                                         <button wire:click="openAssignDriverModal({{ $request->id }})"
                                             @click="openOptions = false"
@@ -302,6 +309,7 @@
                                             </svg>
                                             إعادة تعيين سائق
                                         </button>
+                                        @endif
                                         @endif
 
                                     </div>

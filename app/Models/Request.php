@@ -89,6 +89,14 @@ class Request extends Model
         return $this->belongsTo(DriverSettlement::class, 'driver_settlement_id');
     }
 
+    /**
+     * التحقق مما إذا كانت حالة الرحلة تسمح بتعيين أو إعادة تعيين سائق.
+     */
+    public function canAssignDriver(): bool
+    {
+        return ! in_array($this->status, ['completed', 'cancelled'], true);
+    }
+
     public static function statusConfig()
     {
         return [

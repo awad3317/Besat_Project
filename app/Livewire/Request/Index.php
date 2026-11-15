@@ -148,6 +148,17 @@ class Index extends Component
     // ═══════════════════════════════════════════
     public function openAssignDriverModal($requestId)
     {
+        $request = RequestModel::find($requestId);
+        if (! $request) {
+            $this->dispatchError('الطلب غير موجود.');
+            return;
+        }
+
+        if (! $request->canAssignDriver()) {
+            $this->dispatchError($this->driverAssignmentBlockedMessage($request), 'غير مسموح!');
+            return;
+        }
+
         $this->selectedRequestId = $requestId;
         $this->driverSearch = '';
         $this->onlineDriversOnly = false;
@@ -254,25 +265,32 @@ class Index extends Component
     // ═══════════════════════════════════════════
     public function assignDriver(int $driverId, FirebaseService $firebaseService, ChatRepository $chatRepository)
     {
-        DB::transaction(function () use ($driverId, $chatRepository) {
+        if (! $this->selectedRequestId) {
+            $this->dispatch('close-modal', 'assign-driver-modal');
+            $this->dispatchError('لم يتم تحديد أي رحلة.');
+            return;
+        }
+
+        $errorMessage = null;
+        $assigned = false;
+
+        DB::transaction(function () use ($driverId, $chatRepository, &$errorMessage, &$assigned) {
             // Lock the request row to prevent race conditions
             $request = RequestModel::where('id', $this->selectedRequestId)->lockForUpdate()->first();
 
             if (! $request) {
-                $this->dispatch('close-modal', 'assign-driver-modal');
-                session()->flash('error', 'الطلب غير موجود.');
+                $errorMessage = 'الطلب غير موجود.';
                 return;
             }
 
-            if ($request->status === 'cancelled') {
-                $this->dispatch('close-modal', 'assign-driver-modal');
-                session()->flash('error', 'لا يمكن تعيين سائق لطلب ملغي.');
+            if (! $request->canAssignDriver()) {
+                $errorMessage = $this->driverAssignmentBlockedMessage($request);
                 return;
             }
 
             $driver = Driver::find($driverId);
             if (! $driver) {
-                session()->flash('error', 'السائق غير موجود.');
+                $errorMessage = 'السائق غير موجود.';
                 return;
             }
 
@@ -296,7 +314,17 @@ class Index extends Component
                 "تم تعيين السائق #{$driverId} ({$driver->name}) للطلب #{$request->id} بواسطة المسؤول.",
                 $request->id
             );
+
+            $assigned = true;
         });
+
+        if (! $assigned) {
+            $this->clearSelectedRequest();
+            unset($this->selectedRequest, $this->drivers);
+            $this->dispatch('close-modal', 'assign-driver-modal');
+            $this->dispatchError($errorMessage ?? 'تعذر تعيين السائق للرحلة.', 'غير مسموح!');
+            return;
+        }
 
         // ── Post-Transaction: Notifications (outside DB::transaction so FCM failures don't rollback) ──
         $request = RequestModel::with(['user.devices'])->find($this->selectedRequestId);
@@ -329,7 +357,7 @@ class Index extends Component
         }
 
         // FCM push to driver
-        if ($driver && ! empty($driver->device_token)) {
+        if ($request && $driver && ! empty($driver->device_token)) {
             $driverTitle = 'طلب جديد مسند إليك!';
             $driverBody = 'تم إسناد الطلب رقم #' . $request->id . ' إليك بنجاح.';
             $driverData = [
@@ -352,6 +380,21 @@ class Index extends Component
         }
 
         $this->dispatch('driver-assigned');
+    }
+
+    private function driverAssignmentBlockedMessage(RequestModel $request): string
+    {
+        return match ($request->status) {
+            'completed' => 'لا يمكن تعيين سائق لرحلة مكتملة.',
+            'cancelled' => 'لا يمكن تعيين سائق لرحلة ملغية.',
+            default => 'لا يمكن تعيين سائق لهذه الرحلة في حالتها الحالية.',
+        };
+    }
+
+    private function dispatchError(string $message, string $title = 'خطأ!'): void
+    {
+        session()->flash('error', $message);
+        $this->dispatch('open-error-modal', title: $title, message: $message);
     }
 
     // ═══════════════════════════════════════════

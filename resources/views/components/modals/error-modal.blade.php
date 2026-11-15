@@ -1,6 +1,18 @@
-<div x-data="{ isErrorModalOpen: @if(session('error')) true @else false @endif }">
-    <div x-show="isErrorModalOpen" class="fixed inset-0 flex items-center justify-center p-5 z-99999">
-        <div class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"></div>
+<div x-data="{
+        isErrorModalOpen: @if(session('error')) true @else false @endif,
+        errorTitle: @js(session('error_title') ?? 'خطأ!'),
+        errorMessage: @js(session('error_message') ?? (is_string(session('error')) ? session('error') : 'حدث خطأ ما.')),
+        errorButtonText: @js(session('error_buttonText') ?? 'حسناً')
+    }"
+    x-on:open-error-modal.window="
+        const detail = Array.isArray($event.detail) ? ($event.detail[0] || {}) : ($event.detail || {});
+        errorTitle = detail.title || 'خطأ!';
+        errorMessage = detail.message || 'حدث خطأ ما.';
+        errorButtonText = detail.buttonText || 'حسناً';
+        isErrorModalOpen = true;
+    ">
+    <div x-show="isErrorModalOpen" style="display: none;" class="fixed inset-0 flex items-center justify-center p-5 z-99999">
+        <div class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]" @click="isErrorModalOpen = false"></div>
 
         <div class="relative w-full max-w-md rounded-2xl bg-white p-6 dark:bg-gray-900 shadow-xl">
             <div class="text-center py-4">
@@ -22,17 +34,13 @@
                     </span>
                 </div>
 
-                <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90 sm:text-title-sm">
-                    {{session('error_title')  ?? 'خطأ!' }}
-                </h4>
-                <p class="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                    {{session('error_message')  ?? 'حدث خطأ ما.' }}
-                </p>
+                <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90 sm:text-title-sm" x-text="errorTitle"></h4>
+                <p class="text-sm leading-6 text-gray-500 dark:text-gray-400" x-text="errorMessage"></p>
 
                 <div class="flex justify-center mt-6">
                     <button @click="isErrorModalOpen = false" type="button"
-                        class="px-6 py-2 text-sm font-medium text-error-500 rounded-lg bg-error-500/[0.08] hover:bg-error-500 hover:text-white transition-colors duration-200">
-                        {{ session('error_buttonText') ?? 'حسناً' }}
+                        class="px-6 py-2 text-sm font-medium text-error-500 rounded-lg bg-error-500/[0.08] hover:bg-error-500 hover:text-white transition-colors duration-200"
+                        x-text="errorButtonText">
                     </button>
                 </div>
             </div>

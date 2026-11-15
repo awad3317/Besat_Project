@@ -1,5 +1,6 @@
 @php
     $req = $this->selectedRequest;
+    $canAssign = $req ? $req->canAssignDriver() : false;
 @endphp
 
 <div x-data="assignDriverDispatch()"
@@ -7,7 +8,7 @@
         show = true; isLoading = false; isSuccess = false; clearSelection();
         $nextTick(() => { initMap(); setTimeout(() => { invalidateMap(); }, 300); });
      }"
-     x-on:close-modal.window="if ($event.detail == 'assign-driver-modal') { show = false; clearSelection(); }"
+     x-on:close-modal.window="if ($event.detail == 'assign-driver-modal') { show = false; isLoading = false; clearSelection(); }"
      x-on:driver-assigned.window="isLoading = false; isSuccess = true; setTimeout(() => { show = false; isSuccess = false; $wire.clearSelectedRequest(); }, 2000)"
      x-on:sync-dispatch-map.window="syncMap($event.detail[0] || $event.detail)"
      x-on:close.stop="if (!isLoading && !isSuccess) { show = false; }"
@@ -197,12 +198,18 @@
                                 </div>
                             </div>
 
-                            <button @click.stop="isLoading = true"
-                                    wire:click="assignDriver({{ $driver->id }})"
-                                    wire:loading.attr="disabled"
-                                    class="px-4 py-2 mr-2 text-xs font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 shadow-theme-xs" style="flex-shrink: 0;">
-                                <span>تعيين</span>
-                            </button>
+                            @if ($canAssign)
+                                <button @click.stop="isLoading = true"
+                                        wire:click="assignDriver({{ $driver->id }})"
+                                        wire:loading.attr="disabled"
+                                        class="px-4 py-2 mr-2 text-xs font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 shadow-theme-xs" style="flex-shrink: 0;">
+                                    <span>تعيين</span>
+                                </button>
+                            @else
+                                <span class="px-3 py-1.5 mr-2 text-xs font-medium text-gray-400 bg-gray-100 rounded-lg dark:bg-gray-700 dark:text-gray-400" style="flex-shrink: 0;">
+                                    غير متاح
+                                </span>
+                            @endif
                         </div>
                     @empty
                         <div class="flex flex-col justify-center items-center py-8 text-center bg-white rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800" style="border-style: dashed;">
@@ -293,15 +300,21 @@
                         </div>
 
                         <div class="pt-3 mt-3 border-t border-gray-100 dark:border-gray-800">
-                            <button @click="isLoading = true"
-                                    x-on:click="$wire.assignDriver(selectedDriverId)"
-                                    wire:loading.attr="disabled"
-                                    class="flex gap-2 justify-center items-center w-full h-10 text-xs font-medium text-white rounded-lg transition bg-brand-500 shadow-theme-xs hover:bg-brand-600">
-                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>تعيين هذا السائق للرحلة الآن</span>
-                            </button>
+                            @if ($canAssign)
+                                <button @click="isLoading = true"
+                                        x-on:click="$wire.assignDriver(selectedDriverId)"
+                                        wire:loading.attr="disabled"
+                                        class="flex gap-2 justify-center items-center w-full h-10 text-xs font-medium text-white rounded-lg transition bg-brand-500 shadow-theme-xs hover:bg-brand-600">
+                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>تعيين هذا السائق للرحلة الآن</span>
+                                </button>
+                            @else
+                                <div class="px-3 py-2 text-xs font-medium text-center text-error-600 bg-error-50 rounded-lg dark:bg-error-500/15 dark:text-error-400">
+                                    لا يمكن تعيين سائق لرحلة مكتملة أو ملغية.
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
