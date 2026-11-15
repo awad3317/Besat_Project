@@ -27,6 +27,7 @@ class Index extends Component
     public $search = '';
     public $perPage = 10;
     public bool $modalOnly = false;
+    public bool $dashboardMode = false;
 
     // ── Assign Driver Modal ──
     public $selectedRequestId = null;
@@ -60,6 +61,17 @@ class Index extends Component
     #[Computed]
     public function requests()
     {
+        if ($this->dashboardMode) {
+            return RequestModel::with([
+                'driver',
+                'user' => fn ($query) => $query->withTrashed(),
+                'vehicle',
+            ])
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+        }
+
         return RequestModel::with([
             'driver',
             'user' => fn ($query) => $query->withTrashed(),

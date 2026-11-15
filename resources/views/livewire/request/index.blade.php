@@ -1,5 +1,6 @@
 <div>
     @unless ($modalOnly)
+    @unless ($dashboardMode)
     {{-- 1. بطاقات الإحصائيات والفلاتر --}}
     <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
         {{-- فلتر: الكل --}}
@@ -92,22 +93,33 @@
             </div>
         </div>
     </div>
+    @endunless
 
     <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
-        <div class="mb-5">
-            <label class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">البحث</label>
-            <div class="relative">
-                <input wire:model.live.debounce.300ms="search" type="text"
-                    class="px-4 py-2.5 w-full h-10 text-sm text-right text-gray-800 bg-transparent rounded-lg border border-gray-300 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
-                    placeholder="ابحث باسم العميل، الهاتف، السائق..." />
-                <div class="flex absolute top-0 bottom-0 left-0 items-center px-3">
-                    <div wire:loading wire:target="search" class="mt-2">
-                        <div class="w-5 h-5 rounded-full border-2 animate-spin border-brand-500 border-t-transparent">
+        @if ($dashboardMode)
+            <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                        الطلبات خلال <span class="text-warning-500 dark:text-warning/90">24</span> ساعة
+                    </h3>
+                </div>
+            </div>
+        @else
+            <div class="mb-5">
+                <label class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">البحث</label>
+                <div class="relative">
+                    <input wire:model.live.debounce.300ms="search" type="text"
+                        class="px-4 py-2.5 w-full h-10 text-sm text-right text-gray-800 bg-transparent rounded-lg border border-gray-300 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                        placeholder="ابحث باسم العميل، الهاتف، السائق..." />
+                    <div class="flex absolute top-0 bottom-0 left-0 items-center px-3">
+                        <div wire:loading wire:target="search" class="mt-2">
+                            <div class="w-5 h-5 rounded-full border-2 animate-spin border-brand-500 border-t-transparent">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
 
         <div wire:loading.class="opacity-50" wire:target="search,applyFilter"
             class="overflow-x-auto max-w-full table-responsive-container">
@@ -329,7 +341,7 @@
         </div>
 
         {{-- 3. روابط التنقل بين الصفحات --}}
-        @if ($this->requests->hasPages())
+        @if (! $dashboardMode && $this->requests->hasPages())
             <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                 {{ $this->requests->links() }}
             </div>
