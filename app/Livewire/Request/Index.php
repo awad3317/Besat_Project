@@ -4,11 +4,15 @@ namespace App\Livewire\Request;
 
 use App\Models\Driver;
 use App\Models\Request as RequestModel;
+use App\Models\Vehicle;
 use App\Notifications\DriverAssignedNotification;
+use App\Notifications\RequestVehicleChangedNotification;
 use App\Repositories\ChatRepository;
 use App\Services\ActivityLog;
 use App\Services\DriverLocationService;
 use App\Services\FirebaseService;
+use App\Services\PriceCalculationService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -110,6 +114,12 @@ class Index extends Component
 
         return RequestModel::with(['user:id,name,phone', 'vehicle:id,type', 'stops'])
             ->find($this->selectedRequestId);
+    }
+
+    #[Computed]
+    public function vehicles()
+    {
+        return Vehicle::select('id', 'type')->orderBy('id')->get();
     }
 
     // ═══════════════════════════════════════════
@@ -405,6 +415,295 @@ class Index extends Component
         }
 
         $this->dispatch('driver-assigned');
+    }
+
+    // ═══════════════════════════════════════════
+    //  Change Request Vehicle Type
+    // ═══════════════════════════════════════════
+    public function changeRequestVehicle(
+        $newVehicleId,
+        $requestId = null,
+        ?FirebaseService $firebaseService = null,
+        ?PriceCalculationService $priceCalculationService = null
+    ) {
+        $targetRequestId = $requestId ?: $this->selectedRequestId;
+        if (! $targetRequestId) {
+            $this->dispatchError('لم يتم تحديد أي رحلة.');
+            return;
+        }
+
+        $firebaseService = $firebaseService ?? app(FirebaseService::class);
+        $priceCalculationService = $priceCalculationService ?? app(PriceCalculationService::class);
+        $errorMessage = null;
+        $changed = false;
+        $oldVehicleId = null;
+        $oldVehicleType = 'غير محدد';
+        $newVehicleType = 'غير محدد';
+        $oldFinalPrice = 0;
+        $newFinalPrice = 0;
+        $adminName = 'الدعم الفني';
+
+        DB::transaction(function () use (
+            $targetRequestId,
+            $newVehicleId,
+            $priceCalculationService,
+            &$errorMessage,
+            &$changed,
+            &$oldVehicleId,
+            &$oldVehicleType,
+            &$newVehicleType,
+            &$oldFinalPrice,
+            &$newFinalPrice,
+            &$adminName
+        ) {
+            $request = RequestModel::with(['vehicle:id,type', 'stops', 'discountCode'])
+                ->where('id', $targetRequestId)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $request) {
+                $errorMessage = 'الطلب غير موجود.';
+                return;
+            }
+
+            if (! $request->canAssignDriver()) {
+                $errorMessage = 'لا يمكن تغيير نوع المركبة لرحلة مكتملة أو ملغية.';
+                return;
+            }
+
+            $newVehicle = Vehicle::with('pricing')->find($newVehicleId);
+            if (! $newVehicle) {
+                $errorMessage = 'نوع المركبة المختار غير موجود.';
+                return;
+            }
+
+            if ((int) $request->vehicle_id === (int) $newVehicle->id) {
+                return;
+            }
+
+            $oldVehicleId = $request->vehicle_id;
+            $oldVehicleType = $request->vehicle?->type ?? 'غير محدد';
+            $newVehicleType = $newVehicle->type;
+            $oldFinalPrice = (float) $request->final_price;
+
+            $tripDatetime = $request->trip_datetime
+                ? $request->trip_datetime->format('Y-m-d H:i:s')
+                : ($request->created_at ? $request->created_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'));
+
+            $dataForPricing = [
+                'start_latitude'  => (float) $request->start_latitude,
+                'start_longitude' => (float) $request->start_longitude,
+                'end_latitude'    => (float) $request->end_latitude,
+                'end_longitude'   => (float) $request->end_longitude,
+                'stops'           => $request->stops->map(fn ($s) => [
+                    'latitude'  => (float) $s->latitude,
+                    'longitude' => (float) $s->longitude,
+                ])->toArray(),
+                'wants_ac'        => (bool) $request->wants_ac,
+                'trip_datetime'   => $tripDatetime,
+            ];
+
+            try {
+                $priceDetails = $priceCalculationService->getFullPriceDetails(
+                    $dataForPricing,
+                    $newVehicle,
+                    $request->discountCode
+                );
+            } catch (\Throwable $e) {
+                // في حال تعذر الاتصال بخدمة المسافات الخارجية مع وجود المسافة محفوظة مسبقاً في الطلب، نستخدم دوال PriceCalculationService نفسها
+                $distanceInKm = (float) ($request->distance_km ?? 0);
+                if ($distanceInKm <= 0) {
+                    $errorMessage = $e->getMessage();
+                    return;
+                }
+
+                $pricePerKm = $priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $newVehicle);
+                $basePrice = $priceCalculationService->calculatePrice($distanceInKm, $pricePerKm, $newVehicle->min_price);
+
+                $surchargesDetails = [];
+                $acCost = 0;
+                $acApplied = false;
+
+                if ($request->wants_ac && $newVehicle->has_ac_option) {
+                    $acCost = $priceCalculationService->roundPrice($distanceInKm * $newVehicle->ac_price_per_km);
+                    $acApplied = true;
+                    $surchargesDetails[] = [
+                        'id'     => 'ac_cost',
+                        'name'   => 'رسوم تشغيل التكييف',
+                        'amount' => $acCost,
+                    ];
+                }
+
+                $surchargesData = $priceCalculationService->calculateSurcharges($tripDatetime);
+                $totalSurchargeAmount = (int) $surchargesData['total_amount'];
+
+                if (! empty($surchargesData['details'])) {
+                    $surchargesDetails = array_merge($surchargesDetails, $surchargesData['details']);
+                }
+
+                $originalPrice = $priceCalculationService->roundPrice($basePrice + $acCost + $totalSurchargeAmount);
+                $finalPrice = $originalPrice;
+                $discountAmount = 0;
+                $couponForResponse = null;
+                $couponObject = $request->discountCode;
+
+                if ($couponObject) {
+                    $minTripFare = ! is_null($couponObject->min_trip_fare) ? (float) $couponObject->min_trip_fare : null;
+                    if ($minTripFare === null || $minTripFare <= 0 || $originalPrice >= $minTripFare) {
+                        $couponRate = (float) $couponObject->discount_rate;
+                        $couponForResponse = number_format($couponRate * 100, 2) . '%';
+                        $roundedDiscount = $priceCalculationService->roundPrice($originalPrice * $couponRate);
+
+                        if (! is_null($couponObject->max_discount_amount) && (float) $couponObject->max_discount_amount > 0) {
+                            $discountAmount = (int) min($roundedDiscount, (float) $couponObject->max_discount_amount);
+                        } else {
+                            $discountAmount = (int) $roundedDiscount;
+                        }
+
+                        $discountAmount = min($discountAmount, (int) $originalPrice);
+                        $finalPrice = max(0, $originalPrice - $discountAmount);
+
+                        if ($discountAmount > 0) {
+                            $surchargesDetails[] = [
+                                'id'     => 'discount',
+                                'name'   => "خصم قسيمة ({$couponForResponse})",
+                                'amount' => -$discountAmount,
+                            ];
+                        }
+                    }
+                }
+
+                $appCommissionAmount = $priceCalculationService->calculateCommission($originalPrice);
+                $driverAmount = $originalPrice - $appCommissionAmount;
+                $companyNetRevenue = $appCommissionAmount - $discountAmount;
+
+                $priceDetails = [
+                    'distance_in_km'        => round($distanceInKm, 2),
+                    'price_per_km'          => round((float) $pricePerKm, 2),
+                    'base_price'            => (int) $basePrice,
+                    'original_price'        => (int) $originalPrice,
+                    'final_price'           => (int) $finalPrice,
+                    'vehicle'               => $newVehicle->type,
+                    'coupon'                => $couponForResponse,
+                    'ac_applied'            => $acApplied,
+                    'ac_cost'               => (int) $acCost,
+                    'total_surcharges'      => (int) $totalSurchargeAmount,
+                    'discount_amount'       => (int) $discountAmount,
+                    'app_commission_amount' => (int) $appCommissionAmount,
+                    'driver_amount'         => (int) $driverAmount,
+                    'company_net_revenue'   => (int) $companyNetRevenue,
+                    'surcharges_details'    => $surchargesDetails,
+                ];
+            }
+
+            $newFinalPrice = (float) $priceDetails['final_price'];
+
+            $adminUser = Auth::user() ?? auth()->user() ?? auth('web')->user();
+            $adminName = $adminUser?->name ?? 'الدعم الفني';
+
+            $request->update([
+                'vehicle_id'            => $newVehicle->id,
+                'distance_km'           => $priceDetails['distance_in_km'],
+                'original_price'        => $priceDetails['original_price'],
+                'final_price'           => $priceDetails['final_price'],
+                'discount_amount'       => $priceDetails['discount_amount'],
+                'surcharge_amount'      => $priceDetails['total_surcharges'],
+                'ac_cost'               => $priceDetails['ac_cost'],
+                'app_commission_amount' => $priceDetails['app_commission_amount'],
+                'pricing_snapshot'      => [
+                    'vehicle_id'            => $newVehicle->id,
+                    'vehicle_type'          => $newVehicle->type,
+                    'vehicle_min_price'     => (float) $newVehicle->min_price,
+                    'applied_price_per_km'  => (float) ($priceDetails['price_per_km'] ?? 0),
+                    'ac_price_per_km'       => (float) ($newVehicle->ac_price_per_km ?? 0),
+                    'calculated_ac_cost'    => (float) $priceDetails['ac_cost'],
+                    'distance_km'           => (float) $priceDetails['distance_in_km'],
+                    'base_price'            => (float) $priceDetails['base_price'],
+                    'original_price'        => (float) $priceDetails['original_price'],
+                    'discount_amount'       => (float) $priceDetails['discount_amount'],
+                    'surcharge_amount'      => (float) $priceDetails['total_surcharges'],
+                    'driver_amount'         => (float) $priceDetails['driver_amount'],
+                    'company_net_revenue'   => (float) $priceDetails['company_net_revenue'],
+                    'surcharges_breakdown'  => $priceDetails['surcharges_details'] ?? [],
+                    'app_commission_amount' => (float) $priceDetails['app_commission_amount'],
+                    'final_price'           => (float) $priceDetails['final_price'],
+                ],
+            ]);
+
+            $priceCalculationService->attachSurcharges($request, $priceDetails['surcharges_details'] ?? []);
+
+            ActivityLog::log(
+                'update',
+                'Request',
+                "تم تغيير نوع المركبة في الطلب #{$request->id} من ({$oldVehicleType}) إلى ({$newVehicleType}) وإعادة احتساب السعر من ({$oldFinalPrice}) إلى ({$newFinalPrice})، الدعم الفني: {$adminName}",
+                $request->id
+            );
+
+            $changed = true;
+        });
+
+        if ($errorMessage) {
+            $this->dispatchError($errorMessage, 'غير مسموح!');
+            return;
+        }
+
+        if (! $changed) {
+            return;
+        }
+
+        // Send Database + Firebase Notifications to Customer
+        $request = RequestModel::with(['user.devices', 'vehicle:id,type'])->find($targetRequestId);
+
+        if ($request && $request->user) {
+            $title = 'تم تغيير نوع المركبة في طلبك';
+            $body = "تم تغيير نوع المركبة في الطلب رقم #{$request->id} من ({$oldVehicleType}) إلى ({$newVehicleType}) وأصبح سعر الرحلة ({$newFinalPrice} ريال)، الدعم الفني: {$adminName}";
+
+            // 1. Database notification
+            $request->user->notify(new RequestVehicleChangedNotification(
+                tripRequest: $request,
+                oldVehicleType: $oldVehicleType,
+                newVehicleType: $newVehicleType,
+                adminName: $adminName,
+                oldVehicleId: $oldVehicleId ? (int) $oldVehicleId : null,
+                newVehicleId: (int) $newVehicleId,
+                oldFinalPrice: $oldFinalPrice,
+                newFinalPrice: $newFinalPrice,
+            ));
+
+            // 2. Firebase FCM push notification
+            if ($request->user->is_notifications_enabled ?? true) {
+                $deviceTokens = $request->user->devices->pluck('device_token')->filter()->toArray();
+                if (! empty($deviceTokens)) {
+                    $data = [
+                        'new_request'      => 'false',
+                        'new_message'      => 'false',
+                        'request_id'       => (string) $request->id,
+                        'status'           => (string) $request->status,
+                        'old_vehicle_id'   => (string) ($oldVehicleId ?? ''),
+                        'new_vehicle_id'   => (string) $newVehicleId,
+                        'old_vehicle_type' => (string) $oldVehicleType,
+                        'new_vehicle_type' => (string) $newVehicleType,
+                        'old_final_price'  => (string) $oldFinalPrice,
+                        'new_final_price'  => (string) $newFinalPrice,
+                        'changed_by'       => (string) $adminName,
+                        'click_action'     => 'FLUTTER_NOTIFICATION_CLICK',
+                    ];
+                    foreach ($deviceTokens as $token) {
+                        try {
+                            $firebaseService->sendNotification($token, $title, $body, $data);
+                        } catch (\Exception $e) {
+                            \Log::error("Failed to send vehicle change FCM to customer token: {$token}. Error: " . $e->getMessage());
+                        }
+                    }
+                }
+            }
+        }
+
+        // Refresh computed properties & map if modal is open for this request
+        unset($this->selectedRequest, $this->drivers, $this->requests);
+        if ((int) $this->selectedRequestId === (int) $targetRequestId) {
+            $this->dispatchMapUpdate();
+        }
     }
 
     private function driverAssignmentBlockedMessage(RequestModel $request): string

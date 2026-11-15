@@ -241,8 +241,22 @@
                                     {{ $request->status_text }}
                                 </p>
                             </td>
-                            <td class="py-3">
-                                @if ($request->vehicle)
+                            <td class="py-3 text-center">
+                                @if ($request->canAssignDriver())
+                                    <select wire:change="changeRequestVehicle($event.target.value, {{ $request->id }})"
+                                        wire:loading.attr="disabled"
+                                        wire:target="changeRequestVehicle"
+                                        class="px-2.5 py-1 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-200 cursor-pointer shadow-theme-xs hover:border-brand-500 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                        @if (! $request->vehicle_id)
+                                            <option value="">غير محدد</option>
+                                        @endif
+                                        @foreach ($this->vehicles as $vehicleOption)
+                                            <option value="{{ $vehicleOption->id }}" @selected((int) $request->vehicle_id === (int) $vehicleOption->id)>
+                                                {{ $vehicleOption->type }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @elseif ($request->vehicle)
                                     <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
                                         {{ $request->vehicle->type }}</p>
                                 @else

@@ -57,13 +57,32 @@
                     </svg>
                 </div>
                 <div>
-                    <div class="flex gap-2 items-center">
+                    <div class="flex flex-wrap gap-2 items-center">
                         <h4 class="text-lg font-bold text-gray-800 dark:text-white/90">
                             تعيين سائق للطلب #{{ $selectedRequestId }}
                         </h4>
-                        @if($req?->vehicle)
+                        @if($req && $canAssign)
+                            <div class="inline-flex gap-1.5 items-center">
+                                <span class="text-xs text-gray-500 dark:text-gray-400">نوع المركبة:</span>
+                                <select wire:change="changeRequestVehicle($event.target.value)"
+                                        wire:loading.attr="disabled"
+                                        wire:target="changeRequestVehicle"
+                                        class="px-2.5 py-1 text-xs font-semibold rounded-lg border cursor-pointer border-brand-500/40 bg-brand-50 text-brand-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-brand-400 dark:border-gray-700">
+                                    @foreach($this->vehicles as $vehicleOption)
+                                        <option value="{{ $vehicleOption->id }}" @selected((int) $req->vehicle_id === (int) $vehicleOption->id)>
+                                            {{ $vehicleOption->type }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @elseif($req?->vehicle)
                             <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-light-50 text-blue-light-500">
                                 {{ $req->vehicle->type }}
+                            </span>
+                        @endif
+                        @if($req)
+                            <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400">
+                                السعر: {{ $req->final_price }} ريال
                             </span>
                         @endif
                     </div>
@@ -129,7 +148,7 @@
                 </div>
 
                 {{-- Driver List --}}
-                <div class="overflow-y-auto flex-1 px-1 py-1 space-y-1 custom-scrollbar" wire:loading.class="opacity-75" wire:target="driverSearch, onlineDriversOnly, matchVehicleOnly">
+                <div class="overflow-y-auto flex-1 px-1 py-1 space-y-1 custom-scrollbar" wire:loading.class="opacity-75" wire:target="driverSearch, onlineDriversOnly, matchVehicleOnly, changeRequestVehicle">
                     @forelse($this->drivers as $driver)
                         @php
                             $distKm = isset($driver->distance_km) ? round($driver->distance_km, 1) : null;
