@@ -46,21 +46,28 @@ class UserAuthController extends Controller
             $fields['phone_verified_at'] = now();
         }
         $user = $this->UserRepository->store($fields);
-        if (!$isOtpEnabled) {
-            $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
-            return ApiResponseClass::sendResponse([
-                'user'         => $user,
-                'token'        => $token,
-                'token_type'   => 'Bearer',
-                'otp_required' => false
-            ], 'تم إنشاء الحساب وتفعيله مباشرة لعدم تفعيل نظام التحقق.');
+        if ($isOtpEnabled) {
+            $otp = $this->otpService->generateOTP($fields['phone'], 'account_creation');
+            $isOtpSent = $this->otpService->sendOtp($fields['phone'], $otp);
+
+            if ($isOtpSent) {
+                return ApiResponseClass::sendResponse([
+                    'phone'        => $fields['phone'],
+                    'otp_required' => true 
+                ], 'تم إرسال رمز التحقق إلى الواتساب للرقم: ' . $fields['phone']);
+            }
         }
-        $otp = $this->otpService->generateOTP($fields['phone'], 'account_creation');
-        $this->otpService->sendOtp($fields['phone'], $otp);
+
+        if (is_null($user->phone_verified_at)) {
+            $user->update(['phone_verified_at' => now()]);
+        }
+        $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
         return ApiResponseClass::sendResponse([
-            'phone'        => $fields['phone'],
-            'otp_required' => true 
-        ], 'تم إرسال رمز التحقق إلى الواتساب للرقم: ' . $fields['phone']);
+            'user'         => $user,
+            'token'        => $token,
+            'token_type'   => 'Bearer',
+            'otp_required' => false
+        ], 'تم إنشاء الحساب وتفعيله مباشرة لعدم تفعيل نظام التحقق.');
 
     } catch (Exception $e) {
         Log::error('Error in user registration: ' . $e->getMessage());
@@ -101,15 +108,15 @@ class UserAuthController extends Controller
             return ApiResponseClass::sendError('الحساب محظور', null, 401);
         }
         if ($isOtpEnabled) {
-            
             $otp = $this->otpService->generateOTP($user->phone, 'login_verification');
-            $this->otpService->sendOtp($user->phone, $otp);
+            $isOtpSent = $this->otpService->sendOtp($user->phone, $otp);
 
-            return ApiResponseClass::sendResponse([
-                'phone' => $user->phone,
-                'otp_required' => true 
-            ], 'تم إرسال رمز التحقق (OTP) إلى رقمك.');
-
+            if ($isOtpSent) {
+                return ApiResponseClass::sendResponse([
+                    'phone' => $user->phone,
+                    'otp_required' => true 
+                ], 'تم إرسال رمز التحقق (OTP) إلى رقمك.');
+            }
         } 
         
         if (is_null($user->phone_verified_at)) {
@@ -117,9 +124,9 @@ class UserAuthController extends Controller
         }
         $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
         return ApiResponseClass::sendResponse([
-            'user'         => $user,
-            'token'        => $token,
-            'token_type'   => 'Bearer',
+            'user' => $user,
+            'token' => $token,
+            'token_type'=> 'Bearer',
             'otp_required' => false 
         ], 'تم تسجيل الدخول بنجاح');
 
