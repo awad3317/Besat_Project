@@ -64,7 +64,19 @@
                         @if($req && $canAssign)
                             <div class="inline-flex gap-1.5 items-center">
                                 <span class="text-xs text-gray-500 dark:text-gray-400">نوع المركبة:</span>
-                                <select wire:change="changeRequestVehicle($event.target.value)"
+                                <select x-on:change="
+                                            const newId = $event.target.value;
+                                            const newText = $event.target.options[$event.target.selectedIndex].text.trim();
+                                            $event.target.value = '{{ $req->vehicle_id ?? '' }}';
+                                            if (newId && String(newId) !== String('{{ $req->vehicle_id ?? '' }}')) {
+                                                $dispatch('confirm-vehicle-change', {
+                                                    requestId: {{ $req->id }},
+                                                    oldVehicleType: '{{ addslashes($req->vehicle?->type ?? 'غير محدد') }}',
+                                                    newVehicleId: newId,
+                                                    newVehicleType: newText
+                                                });
+                                            }
+                                        "
                                         wire:loading.attr="disabled"
                                         wire:target="changeRequestVehicle"
                                         class="px-2.5 py-1 text-xs font-semibold rounded-lg border cursor-pointer border-brand-500/40 bg-brand-50 text-brand-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-brand-400 dark:border-gray-700">

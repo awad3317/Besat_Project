@@ -704,6 +704,8 @@ class Index extends Component
         if ((int) $this->selectedRequestId === (int) $targetRequestId) {
             $this->dispatchMapUpdate();
         }
+
+        $this->dispatch('vehicle-changed');
     }
 
     private function driverAssignmentBlockedMessage(RequestModel $request): string

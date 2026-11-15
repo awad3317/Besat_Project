@@ -243,7 +243,19 @@
                             </td>
                             <td class="py-3 text-center">
                                 @if ($request->canAssignDriver())
-                                    <select wire:change="changeRequestVehicle($event.target.value, {{ $request->id }})"
+                                    <select x-on:change="
+                                            const newId = $event.target.value;
+                                            const newText = $event.target.options[$event.target.selectedIndex].text.trim();
+                                            $event.target.value = '{{ $request->vehicle_id ?? '' }}';
+                                            if (newId && String(newId) !== String('{{ $request->vehicle_id ?? '' }}')) {
+                                                $dispatch('confirm-vehicle-change', {
+                                                    requestId: {{ $request->id }},
+                                                    oldVehicleType: '{{ addslashes($request->vehicle?->type ?? 'غير محدد') }}',
+                                                    newVehicleId: newId,
+                                                    newVehicleType: newText
+                                                });
+                                            }
+                                        "
                                         wire:loading.attr="disabled"
                                         wire:target="changeRequestVehicle"
                                         class="px-2.5 py-1 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-200 cursor-pointer shadow-theme-xs hover:border-brand-500 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
@@ -364,5 +376,90 @@
     @endunless
 
      @include('livewire.request.assign-driver-modal')
+
+     {{-- موديل تأكيد تغيير نوع المركبة مع مؤشر التحميل وتحديث الصفحة --}}
+     <div x-data="{
+            open: false,
+            isSaving: false,
+            requestId: null,
+            oldVehicleType: '',
+            newVehicleId: null,
+            newVehicleType: ''
+         }"
+         x-on:confirm-vehicle-change.window="
+            requestId = $event.detail.requestId;
+            oldVehicleType = $event.detail.oldVehicleType;
+            newVehicleId = $event.detail.newVehicleId;
+            newVehicleType = $event.detail.newVehicleType;
+            isSaving = false;
+            open = true;
+         "
+         x-on:vehicle-changed.window="
+            isSaving = true;
+            setTimeout(() => { window.location.reload(); }, 400);
+         "
+         x-on:open-error-modal.window="
+            isSaving = false;
+            open = false;
+         ">
+         <div x-show="open"
+              x-transition.opacity.duration.200ms
+              class="flex fixed inset-0 justify-center items-center p-5 z-99999"
+              style="display: none;">
+             <div class="fixed inset-0 w-full h-full bg-gray-400/50 backdrop-blur-[32px]"
+                  @click="if (!isSaving) open = false"></div>
+
+             <div class="overflow-hidden relative p-6 w-full max-w-md bg-white rounded-2xl shadow-xl dark:bg-gray-900" dir="rtl">
+                 {{-- Loading Overlay أثناء التغيير وإعادة احتساب السعر --}}
+                 <div x-show="isSaving"
+                      class="flex absolute inset-0 z-50 flex-col justify-center items-center rounded-2xl bg-white/95 dark:bg-gray-900/95">
+                     <div class="mb-3 w-11 h-11 rounded-full border-4 border-solid animate-spin border-brand-500 border-t-transparent"></div>
+                     <p class="text-sm font-bold text-gray-800 dark:text-white">جاري تغيير نوع المركبة وإعادة احتساب السعر...</p>
+                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">يرجى الانتظار، سيتم تحديث الصفحة تلقائياً</p>
+                 </div>
+
+                 <div class="py-2 text-center">
+                     <div class="flex relative justify-center items-center mb-5 z-1">
+                         <div class="flex justify-center items-center w-16 h-16 rounded-full bg-warning-50 text-warning-500 dark:bg-warning-500/15">
+                             <svg class="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                             </svg>
+                         </div>
+                     </div>
+
+                     <h4 class="mb-2 text-xl font-bold text-gray-800 dark:text-white/90">
+                         تأكيد تغيير نوع المركبة
+                     </h4>
+                     <p class="text-sm leading-6 text-gray-500 dark:text-gray-400">
+                         هل أنت متأكد من تغيير نوع المركبة في الطلب رقم
+                         <span class="font-bold text-gray-800 dark:text-white" x-text="'#' + requestId"></span>
+                         من
+                         (<span class="font-bold text-gray-800 dark:text-white" x-text="oldVehicleType"></span>)
+                         إلى
+                         (<span class="font-bold text-brand-500" x-text="newVehicleType"></span>)؟
+                     </p>
+                     <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                         سيتم إعادة احتساب تسعيرة الرحلة تلقائياً وإرسال إشعار للعميل.
+                     </p>
+
+                     <div class="flex gap-3 justify-center mt-6">
+                         <button type="button"
+                                 @click="if (!isSaving) open = false"
+                                 :disabled="isSaving"
+                                 class="px-6 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 transition-colors duration-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50">
+                             إلغاء
+                         </button>
+
+                         <button type="button"
+                                 @click="isSaving = true; $wire.changeRequestVehicle(newVehicleId, requestId)"
+                                 :disabled="isSaving"
+                                 class="inline-flex gap-2 justify-center items-center px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors duration-200 bg-brand-500 hover:bg-brand-600 disabled:opacity-50">
+                             <span>موافق</span>
+                         </button>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
 
 </div>
