@@ -11,6 +11,7 @@ use App\Services\DriverLocationService;
 use App\Services\FirebaseService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -25,6 +26,7 @@ class Index extends Component
     public $activeFilter = 'all';
     public $search = '';
     public $perPage = 10;
+    public bool $modalOnly = false;
 
     // ── Assign Driver Modal ──
     public $selectedRequestId = null;
@@ -146,8 +148,13 @@ class Index extends Component
     // ═══════════════════════════════════════════
     //  Open Assign Driver Modal
     // ═══════════════════════════════════════════
-    public function openAssignDriverModal($requestId)
+    #[On('open-assign-driver-modal')]
+    public function openAssignDriverModal($requestId = null)
     {
+        if (is_array($requestId)) {
+            $requestId = $requestId['requestId'] ?? $requestId['id'] ?? reset($requestId);
+        }
+
         $request = RequestModel::find($requestId);
         if (! $request) {
             $this->dispatchError('الطلب غير موجود.');

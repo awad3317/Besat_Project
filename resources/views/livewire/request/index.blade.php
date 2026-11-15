@@ -1,4 +1,5 @@
 <div>
+    @unless ($modalOnly)
     {{-- 1. بطاقات الإحصائيات والفلاتر --}}
     <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
         {{-- فلتر: الكل --}}
@@ -334,6 +335,7 @@
             </div>
         @endif
     </div>
+    @endunless
 
      @include('livewire.request.assign-driver-modal')
 
