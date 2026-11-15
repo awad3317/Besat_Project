@@ -190,12 +190,12 @@
                             </td>
 
                             <td class="py-3">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <div class="flex gap-1.5 items-center">
+                                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold text-gray-700 bg-gray-100 rounded-md dark:bg-gray-800 dark:text-gray-400">
                                         {{ $log->model_name ?? '—' }}
                                     </span>
                                     @if($log->model_id)
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                                        <span class="inline-flex items-center px-1.5 py-0.5 text-xs font-bold rounded bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
                                             #{{ $log->model_id }}
                                         </span>
                                     @endif

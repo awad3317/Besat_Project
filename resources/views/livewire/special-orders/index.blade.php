@@ -130,13 +130,13 @@
     </div>
 
     {{-- ════════════ 2. الحاوية الرئيسية للبحث والجدول (Main Content Card) ════════════ --}}
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
+    <div class="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700">
         {{-- قسم البحث --}}
         <div class="mb-5 text-right">
-            <label class="block mb-1.5 font-medium text-gray-500 text-theme-xs dark:text-gray-400 text-right">البحث</label>
+            <label class="block mb-1.5 font-medium text-right text-gray-500 text-theme-xs dark:text-gray-400">البحث</label>
             <div class="relative">
                 <input wire:model.live.debounce.300ms="search" type="text"
-                    class="w-full rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-orange-500 text-right shadow-theme-xs h-10 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                    class="px-4 py-2.5 w-full h-10 text-sm text-right text-gray-800 bg-transparent rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-orange-500 shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
                     placeholder="ابحث برقم الحجز، اسم العميل، الهاتف، العنوان، أو نوع المركبة..." />
                 <div class="flex absolute top-0 bottom-0 left-0 items-center px-3">
                     <div wire:loading wire:target="search">
@@ -151,26 +151,26 @@
             class="overflow-x-auto max-w-full table-responsive-container">
             <table class="min-w-full">
                 <thead>
-                    <tr class="border-y border-gray-100 dark:border-gray-800">
-                        <th class="py-3 text-right px-3">
+                    <tr class="border-gray-100 border-y dark:border-gray-800">
+                        <th class="px-3 py-3 text-right">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">رقم الحجز / الخدمة</p>
                         </th>
-                        <th class="py-3 text-right px-3">
+                        <th class="px-3 py-3 text-right">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">العميل</p>
                         </th>
-                        <th class="py-3 text-right px-3">
+                        <th class="px-3 py-3 text-right">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">تفاصيل الحجز والمركبة</p>
                         </th>
-                        <th class="py-3 text-center px-3">
+                        <th class="px-3 py-3 text-center">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">السعر والدفع</p>
                         </th>
-                        <th class="py-3 text-center px-3">
+                        <th class="px-3 py-3 text-center">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">حالة الحجز</p>
                         </th>
-                        <th class="py-3 text-center px-3">
+                        <th class="px-3 py-3 text-center">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">من - إلى</p>
                         </th>
-                        <th class="py-3 text-center px-3">
+                        <th class="px-3 py-3 text-center">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">الإجراءات</p>
                         </th>
                     </tr>
@@ -179,10 +179,10 @@
                     @forelse ($this->orders as $order)
                         <tr wire:key="service-booking-{{ $order->id }}" class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition">
                             {{-- 1. رقم الحجز ونوع الخدمة --}}
-                            <td class="py-3 px-3">
-                                <div class="flex flex-col items-start gap-1">
+                            <td class="px-3 py-3">
+                                <div class="flex flex-col gap-1 items-start">
                                     <span class="font-bold text-gray-800 text-theme-sm dark:text-white/90">#{{ $order->id }}</span>
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
                                         {{ $order->service_type_text }}
                                     </span>
                                     <span class="text-[11px] text-gray-400" dir="ltr">
@@ -192,13 +192,13 @@
                             </td>
 
                             {{-- 2. العميل --}}
-                            <td class="py-3 px-3">
-                                <div class="flex items-center gap-3">
+                            <td class="px-3 py-3">
+                                <div class="flex gap-3 items-center">
                                     <div>
                                         <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                             {{ $order->client_name ?: ($order->user?->name ?? 'عميل غير محدد') }}
                                         </p>
-                                        <span class="text-gray-500 text-theme-xs dark:text-gray-400 block" dir="ltr">
+                                        <span class="block text-gray-500 text-theme-xs dark:text-gray-400" dir="ltr">
                                             {{ $order->user?->phone ?? '—' }}
                                         </span>
                                     </div>
@@ -206,16 +206,16 @@
                             </td>
 
                             {{-- 3. تفاصيل الحجز والمركبة --}}
-                            <td class="py-3 px-3">
+                            <td class="px-3 py-3">
                                 <div class="flex flex-col gap-1 text-xs text-gray-600 dark:text-gray-300">
-                                    <div class="flex flex-wrap items-center gap-1.5">
+                                    <div class="flex flex-wrap gap-1.5 items-center">
                                         @if ($order->vehicle)
                                             <span class="font-semibold text-gray-800 dark:text-white">{{ $order->vehicle->type }}</span>
                                             <span>•</span>
                                         @endif
-                                        <span>{{ $order->vehicles_count }} مركبة</span>
+                                        <span class="text-[11px] text-gray-500 dark:text-gray-400">{{ $order->vehicles_count }} مركبة</span>
                                         <span>•</span>
-                                        <span>{{ $order->passenger_count }} ركاب</span>
+                                        <span class="text-[11px] text-gray-500 dark:text-gray-400" >{{ $order->passenger_count }} ركاب</span>
                                         <span>•</span>
                                         <span class="{{ $order->wants_ac ? 'text-blue-light-500 font-medium' : 'text-gray-400' }}">
                                             {{ $order->wants_ac ? 'مكيف' : 'بدون تكييف' }}
@@ -252,8 +252,8 @@
                             </td>
 
                             {{-- 4. السعر والدفع --}}
-                            <td class="py-3 px-3 text-center">
-                                <div class="flex flex-col items-center gap-1">
+                            <td class="px-3 py-3 text-center">
+                                <div class="flex flex-col gap-1 items-center">
                                     @if ($order->total_price !== null && $order->total_price > 0)
                                         <span class="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
                                             {{ number_format($order->total_price) }}
@@ -264,7 +264,7 @@
                                         </span>
                                     @else
                                         <button wire:click="openEditModal({{ $order->id }})"
-                                            class="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-brand-50 hover:text-brand-600 dark:bg-gray-700 dark:text-gray-300 transition">
+                                            class="inline-flex gap-1 items-center px-2.5 py-0.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-full transition hover:bg-brand-50 hover:text-brand-600 dark:bg-gray-700 dark:text-gray-300">
                                             <span>تحديد السعر</span>
                                         </button>
                                     @endif
@@ -272,24 +272,24 @@
                             </td>
 
                             {{-- 5. حالة الحجز --}}
-                            <td class="py-3 px-3 text-center">
+                            <td class="px-3 py-3 text-center">
                                 <span class="inline-flex rounded-full px-2.5 py-0.5 text-theme-xs font-medium {{ $order->status_class }}">
                                     {{ $order->status_text }}
                                 </span>
                             </td>
 
                             {{-- 6. من - إلى --}}
-                            <td class="py-3 px-3">
-                                <div class="flex flex-col items-center gap-1">
-                                    <div class="flex items-center justify-center gap-2 flex-wrap">
-                                        <span class="rounded-full bg-warning-50 px-2.5 py-0.5 text-theme-xs font-medium text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
+                            <td class="px-3 py-3">
+                                <div class="flex flex-col gap-1 items-center">
+                                    <div class="flex flex-wrap gap-2 justify-center items-center">
+                                        <span class="px-2.5 py-0.5 font-medium rounded-full bg-warning-50 text-theme-xs text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
                                             {{ $order->start_address ?: 'غير محدد' }}
                                         </span>
                                         <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                         </svg>
-                                        <span class="rounded-full px-2.5 py-0.5 text-theme-xs font-medium bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
+                                        <span class="px-2.5 py-0.5 font-medium rounded-full text-theme-xs bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
                                             {{ $order->end_address ?: 'غير محدد' }}
                                         </span>
                                     </div>
@@ -329,15 +329,15 @@
                                         </a>
 
                                         {{-- تعديل الحجز / التسعيرة --}}
-                                        <button wire:click="openEditModal({{ $order->id }})"
+                                        <a href="{{ route('specialOrder.edit', $order->id) }}"
                                             @click="openOptions = false"
-                                            class="actions-dropdown-item text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">
+                                            class="actions-dropdown-item edit-data">
                                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
                                             تعديل الحجز والتسعيرة
-                                        </button>
+                                        </a>
 
                                         {{-- الموافقة على الحجز --}}
                                         @if ($order->status === 'pending')
@@ -415,153 +415,23 @@
     </div>
 
     {{-- ══════════════════════════════════════════════════════════════════
-         النوافذ المنبثقة (Modals): تعديل الحجز وإلغاء الحجز
+         النوافذ المنبثقة (Modals): إلغاء الحجز
        ══════════════════════════════════════════════════════════════════ --}}
 
-    {{-- 1. نافذة تعديل الحجز والتسعيرة --}}
+    {{-- نافذة إلغاء الحجز --}}
     <div x-data="{ show: false }"
-         x-on:open-modal.window="if ($event.detail === 'edit-special-order-modal') { show = true; }"
-         x-on:close-modal.window="if ($event.detail === 'edit-special-order-modal') { show = false; }"
+         x-on:open-modal.window="if ($event.detail == 'cancel-special-order-modal' || $event.detail?.[0] == 'cancel-special-order-modal') { show = true; }"
+         x-on:close-modal.window="if ($event.detail == 'cancel-special-order-modal' || $event.detail?.[0] == 'cancel-special-order-modal') { show = false; }"
          x-show="show"
          class="flex overflow-y-auto fixed inset-0 justify-center items-center p-4 modal z-99999"
          style="display: none;">
         <div class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]" @click="show = false"></div>
 
         <div @click.outside="show = false"
-             class="relative z-10 w-full max-w-xl bg-white rounded-3xl border border-gray-200 p-6 shadow-theme-lg dark:bg-gray-900 dark:border-gray-800"
-             dir="rtl">
-            <div class="flex justify-between items-center pb-4 mb-5 border-b border-gray-100 dark:border-gray-800">
-                <h4 class="text-lg font-bold text-gray-800 dark:text-white">
-                    تعديل حجز الخدمة #{{ $editingOrderId }}
-                </h4>
-                <button @click="show = false"
-                        class="flex justify-center items-center w-8 h-8 text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <form wire:submit.prevent="updateOrder" class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">نوع الخدمة *</label>
-                        <select wire:model="editServiceType"
-                            class="w-full h-10 px-3 py-2 text-sm rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:border-brand-500">
-                            @foreach (\App\Models\ServiceBooking::serviceTypes() as $typeKey => $typeLabel)
-                                <option value="{{ $typeKey }}">{{ $typeLabel }}</option>
-                            @endforeach
-                        </select>
-                        @error('editServiceType') <span class="text-xs text-error-500">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">اسم العميل *</label>
-                        <input type="text" wire:model="editClientName"
-                            class="w-full h-10 px-3 py-2 text-sm rounded-lg border border-gray-300 bg-transparent dark:border-gray-700 dark:text-white focus:border-brand-500" />
-                        @error('editClientName') <span class="text-xs text-error-500">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">السعر الإجمالي ({{ config('app.currency_symbol', 'ر.ي') }})</label>
-                        <input type="number" step="0.01" wire:model="editTotalPrice" placeholder="أدخل السعر"
-                            class="w-full h-10 px-3 py-2 text-sm rounded-lg border border-gray-300 bg-transparent dark:border-gray-700 dark:text-white focus:border-brand-500" />
-                        @error('editTotalPrice') <span class="text-xs text-error-500">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">حالة الدفع</label>
-                        <select wire:model="editPaymentStatus"
-                            class="w-full h-10 px-3 py-2 text-sm rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:border-brand-500">
-                            <option value="unpaid">غير مدفوع</option>
-                            <option value="partially_paid">مدفوع جزئياً</option>
-                            <option value="paid">مدفوع</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">عدد الركاب</label>
-                        <input type="number" min="1" wire:model="editPassengerCount"
-                            class="w-full h-10 px-3 py-2 text-sm rounded-lg border border-gray-300 bg-transparent dark:border-gray-700 dark:text-white focus:border-brand-500" />
-                    </div>
-
-                    <div>
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">عدد المركبات</label>
-                        <input type="number" min="1" wire:model="editVehiclesCount"
-                            class="w-full h-10 px-3 py-2 text-sm rounded-lg border border-gray-300 bg-transparent dark:border-gray-700 dark:text-white focus:border-brand-500" />
-                    </div>
-
-                    <div>
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">نقطة الانطلاق *</label>
-                        <input type="text" wire:model="editStartAddress"
-                            class="w-full h-10 px-3 py-2 text-sm rounded-lg border border-gray-300 bg-transparent dark:border-gray-700 dark:text-white focus:border-brand-500" />
-                        @error('editStartAddress') <span class="text-xs text-error-500">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">نقطة الوصول *</label>
-                        <input type="text" wire:model="editEndAddress"
-                            class="w-full h-10 px-3 py-2 text-sm rounded-lg border border-gray-300 bg-transparent dark:border-gray-700 dark:text-white focus:border-brand-500" />
-                        @error('editEndAddress') <span class="text-xs text-error-500">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">حالة الحجز</label>
-                        <select wire:model="editStatus"
-                            class="w-full h-10 px-3 py-2 text-sm rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:border-brand-500">
-                            <option value="pending">قيد الانتظار</option>
-                            <option value="approved">تمت الموافقة</option>
-                            <option value="in_progress">قيد التنفيذ</option>
-                            <option value="completed">مكتملة</option>
-                            <option value="rejected">مرفوض</option>
-                            <option value="cancelled">ملغية</option>
-                        </select>
-                    </div>
-
-                    <div class="flex items-center pt-5">
-                        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
-                            <input type="checkbox" wire:model="editWantsAc"
-                                class="rounded border-gray-300 text-brand-500 focus:ring-brand-500" />
-                            <span>طلب تكييف للمركبة</span>
-                        </label>
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <label class="block mb-1 text-xs font-medium text-gray-700 dark:text-gray-300">الملاحظات</label>
-                        <textarea wire:model="editNotes" rows="3"
-                            class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 bg-transparent dark:border-gray-700 dark:text-white focus:border-brand-500"></textarea>
-                    </div>
-                </div>
-
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
-                    <button type="button" @click="show = false"
-                        class="px-5 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300">
-                        إلغاء
-                    </button>
-                    <button type="submit" wire:loading.attr="disabled"
-                        class="px-5 py-2 text-sm font-medium text-white rounded-lg bg-brand-500 hover:bg-brand-600">
-                        <span wire:loading.remove wire:target="updateOrder">حفظ التعديلات</span>
-                        <span wire:loading wire:target="updateOrder">جاري الحفظ...</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- 2. نافذة إلغاء الحجز --}}
-    <div x-data="{ show: false }"
-         x-on:open-modal.window="if ($event.detail === 'cancel-special-order-modal') { show = true; }"
-         x-on:close-modal.window="if ($event.detail === 'cancel-special-order-modal') { show = false; }"
-         x-show="show"
-         class="flex overflow-y-auto fixed inset-0 justify-center items-center p-4 modal z-99999"
-         style="display: none;">
-        <div class="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]" @click="show = false"></div>
-
-        <div @click.outside="show = false"
-             class="relative z-10 w-full max-w-md bg-white rounded-3xl border border-gray-200 p-6 shadow-theme-lg dark:bg-gray-900 dark:border-gray-800"
+             class="relative z-10 p-6 w-full max-w-md bg-white rounded-3xl border border-gray-200 shadow-theme-lg dark:bg-gray-900 dark:border-gray-800"
              dir="rtl">
             <div class="text-center">
-                <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-error-50 text-error-500 dark:bg-error-500/15">
+                <div class="flex justify-center items-center mx-auto mb-4 w-14 h-14 rounded-full bg-error-50 text-error-500 dark:bg-error-500/15">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
@@ -581,19 +451,19 @@
                     </label>
                     <textarea wire:model="cancellationReason" rows="3"
                         placeholder="اكتب سبب الإلغاء هنا..."
-                        class="w-full px-3 py-2 text-sm text-right rounded-xl border border-gray-300 bg-transparent dark:border-gray-700 dark:text-white focus:border-error-500 focus:ring-1 focus:ring-error-500"></textarea>
+                        class="px-3 py-2 w-full text-sm text-right bg-transparent rounded-xl border border-gray-300 dark:border-gray-700 dark:text-white focus:border-error-500 focus:ring-1 focus:ring-error-500"></textarea>
                     @error('cancellationReason')
                         <span class="block mt-1 text-xs text-right text-error-500">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <div class="flex justify-center gap-3 pt-2">
+                <div class="flex gap-3 justify-center pt-2">
                     <button type="button" @click="show = false"
                         class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300">
                         تراجع
                     </button>
                     <button type="submit" wire:loading.attr="disabled"
-                        class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-error-600 rounded-xl hover:bg-error-700 transition">
+                        class="flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-xl transition bg-error-600 hover:bg-error-700">
                         <span wire:loading.remove wire:target="cancelOrder">تأكيد الإلغاء</span>
                         <span wire:loading wire:target="cancelOrder">جاري الإلغاء...</span>
                     </button>

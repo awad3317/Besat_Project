@@ -52,8 +52,16 @@ class DriverRepository implements RepositoriesInterface
 
     public function getIsBanned()
     {
-        return Driver::where('is_online', true)->get();
+        return Driver::where('is_banned', true)->get();
     }
 
+    public function count(): int
+    {
+        return Driver::count();
+    }
 
+    public function countOnline(): int
+    {
+        return Driver::where('is_online', true)->count();
+    }
 }

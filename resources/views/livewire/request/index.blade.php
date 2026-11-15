@@ -1,249 +1,258 @@
 <div>
     @unless ($modalOnly)
-    @unless ($dashboardMode)
-    {{-- 1. بطاقات الإحصائيات والفلاتر --}}
-    <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
-        {{-- فلتر: الكل --}}
-        <div wire:click.debounce.150ms="applyFilter('all')" wire:loading.class="opacity-50" wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
-            <div wire:loading wire:target="applyFilter('all')"
-                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
-                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
-            </div>
-            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
-                <svg fill="#dc6803" width="20" height="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
-                </svg>
-            </div>
-            <div class="mt-3 w-full">
-                <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي الطلبات</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['total'] ?? 0 }}
-                </h4>
-            </div>
-        </div>
+        @unless ($dashboardMode)
+            {{-- 1. بطاقات الإحصائيات والفلاتر --}}
+            <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
+                {{-- فلتر: الكل --}}
+                <div wire:click.debounce.150ms="applyFilter('all')" wire:loading.class="opacity-50" wire:target="applyFilter"
+                    class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+                    <div wire:loading wire:target="applyFilter('all')"
+                        class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                        <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+                    </div>
+                    <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                        <svg fill="#dc6803" width="20" height="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
+                        </svg>
+                    </div>
+                    <div class="mt-3 w-full">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي الطلبات</span>
+                        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['total'] ?? 0 }}
+                        </h4>
+                    </div>
+                </div>
 
-        {{-- فلتر: الطلبات الجارية --}}
-        <div wire:click.debounce.150ms="applyFilter('in_progress')" wire:loading.class="opacity-50"
-            wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'in_progress') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
-            <div wire:loading wire:target="applyFilter('in_progress')"
-                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
-                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
-            </div>
-            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
-                <svg fill="#dc6803" width="20" height="20" version="1.1" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M11.7,2c-0.1,0-0.1,0-0.2,0c0,0,0,0-0.1,0v0c-0.2,0-0.3,0-0.5,0l0.2,2c0.4,0,0.9,0,1.3,0c4,0.3,7.3,3.5,7.5,7.6 c0.2,4.4-3.2,8.2-7.6,8.4c0,0-0.1,0-0.2,0c-0.3,0-0.7,0-1,0L11,22c0.4,0,0.8,0,1.3,0c0.1,0,0.3,0,0.4,0v0c5.4-0.4,9.5-5,9.3-10.4 c-0.2-5.1-4.3-9.1-9.3-9.5v0c0,0,0,0,0,0c-0.2,0-0.3,0-0.5,0C12,2,11.9,2,11.7,2z M8.2,2.7C7.7,3,7.2,3.2,6.7,3.5l1.1,1.7 C8.1,5,8.5,4.8,8.9,4.6L8.2,2.7z M4.5,5.4c-0.4,0.4-0.7,0.9-1,1.3l1.7,1C5.4,7.4,5.7,7.1,6,6.7L4.5,5.4z M15.4,8.4l-4.6,5.2 l-2.7-2.1L7,13.2l4.2,3.2l5.8-6.6L15.4,8.4z M2.4,9c-0.2,0.5-0.3,1.1-0.3,1.6l2,0.3c0.1-0.4,0.1-0.9,0.3-1.3L2.4,9z M4.1,13l-2,0.2 c0,0.1,0,0.2,0,0.3c0.1,0.4,0.2,0.9,0.3,1.3l1.9-0.6c-0.1-0.3-0.2-0.7-0.2-1.1L4.1,13z M5.2,16.2l-1.7,1.1c0.3,0.5,0.6,0.9,1,1.3 L6,17.3C5.7,16.9,5.4,16.6,5.2,16.2z M7.8,18.8l-1.1,1.7c0.5,0.3,1,0.5,1.5,0.8l0.8-1.8C8.5,19.2,8.1,19,7.8,18.8z">
-                    </path>
-                </svg>
-            </div>
-            <div class="mt-3 w-full">
-                <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات الجارية</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
-                    {{ $this->stats['in_progress'] ?? 0 }}</h4>
-            </div>
-        </div>
+                {{-- فلتر: الطلبات الجارية --}}
+                <div wire:click.debounce.150ms="applyFilter('in_progress')" wire:loading.class="opacity-50"
+                    wire:target="applyFilter"
+                    class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'in_progress') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+                    <div wire:loading wire:target="applyFilter('in_progress')"
+                        class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                        <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+                    </div>
+                    <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                        <svg fill="#dc6803" width="20" height="20" version="1.1" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M11.7,2c-0.1,0-0.1,0-0.2,0c0,0,0,0-0.1,0v0c-0.2,0-0.3,0-0.5,0l0.2,2c0.4,0,0.9,0,1.3,0c4,0.3,7.3,3.5,7.5,7.6 c0.2,4.4-3.2,8.2-7.6,8.4c0,0-0.1,0-0.2,0c-0.3,0-0.7,0-1,0L11,22c0.4,0,0.8,0,1.3,0c0.1,0,0.3,0,0.4,0v0c5.4-0.4,9.5-5,9.3-10.4 c-0.2-5.1-4.3-9.1-9.3-9.5v0c0,0,0,0,0,0c-0.2,0-0.3,0-0.5,0C12,2,11.9,2,11.7,2z M8.2,2.7C7.7,3,7.2,3.2,6.7,3.5l1.1,1.7 C8.1,5,8.5,4.8,8.9,4.6L8.2,2.7z M4.5,5.4c-0.4,0.4-0.7,0.9-1,1.3l1.7,1C5.4,7.4,5.7,7.1,6,6.7L4.5,5.4z M15.4,8.4l-4.6,5.2 l-2.7-2.1L7,13.2l4.2,3.2l5.8-6.6L15.4,8.4z M2.4,9c-0.2,0.5-0.3,1.1-0.3,1.6l2,0.3c0.1-0.4,0.1-0.9,0.3-1.3L2.4,9z M4.1,13l-2,0.2 c0,0.1,0,0.2,0,0.3c0.1,0.4,0.2,0.9,0.3,1.3l1.9-0.6c-0.1-0.3-0.2-0.7-0.2-1.1L4.1,13z M5.2,16.2l-1.7,1.1c0.3,0.5,0.6,0.9,1,1.3 L6,17.3C5.7,16.9,5.4,16.6,5.2,16.2z M7.8,18.8l-1.1,1.7c0.5,0.3,1,0.5,1.5,0.8l0.8-1.8C8.5,19.2,8.1,19,7.8,18.8z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="mt-3 w-full">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات الجارية</span>
+                        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                            {{ $this->stats['in_progress'] ?? 0 }}</h4>
+                    </div>
+                </div>
 
-        {{-- فلتر: المكتملة --}}
-        <div wire:click.debounce.150ms="applyFilter('completed')" wire:loading.class="opacity-50"
-            wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'completed') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
-            <div wire:loading wire:target="applyFilter('completed')"
-                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
-                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
-            </div>
-            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
-                <svg width="20" height="20" viewBox="0 0 1024 1024" fill="#dc6803" class="icon" version="1.1"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M824.8 1003.2H203.2c-12.8 0-25.6-2.4-37.6-7.2-11.2-4.8-21.6-12-30.4-20.8-8.8-8.8-16-19.2-20.8-30.4-4.8-12-7.2-24-7.2-37.6V260c0-12.8 2.4-25.6 7.2-37.6 4.8-11.2 12-21.6 20.8-30.4 8.8-8.8 19.2-16 30.4-20.8 12-4.8 24-7.2 37.6-7.2h94.4v48H203.2c-26.4 0-48 21.6-48 48v647.2c0 26.4 21.6 48 48 48h621.6c26.4 0 48-21.6 48-48V260c0-26.4-21.6-48-48-48H730.4v-48H824c12.8 0 25.6 2.4 37.6 7.2 11.2 4.8 21.6 12 30.4 20.8 8.8 8.8 16 19.2 20.8 30.4 4.8 12 7.2 24 7.2 37.6v647.2c0 12.8-2.4 25.6-7.2 37.6-4.8 11.2-12 21.6-20.8 30.4-8.8 8.8-19.2 16-30.4 20.8-11.2 4.8-24 7.2-36.8 7.2z">
-                    </path>
-                    <path
-                        d="M752.8 308H274.4V152.8c0-32.8 26.4-60 60-60h61.6c22.4-44 67.2-72.8 117.6-72.8 50.4 0 95.2 28.8 117.6 72.8h61.6c32.8 0 60 26.4 60 60v155.2m-430.4-48h382.4V152.8c0-6.4-5.6-12-12-12H598.4l-5.6-16c-12-33.6-43.2-56-79.2-56s-67.2 22.4-79.2 56l-5.6 16H334.4c-6.4 0-12 5.6-12 12v107.2zM432.8 792c-6.4 0-12-2.4-16.8-7.2L252.8 621.6c-4.8-4.8-7.2-10.4-7.2-16.8s2.4-12 7.2-16.8c4.8-4.8 10.4-7.2 16.8-7.2s12 2.4 16.8 7.2L418.4 720c4 4 8.8 5.6 13.6 5.6s10.4-1.6 13.6-5.6l295.2-295.2c4.8-4.8 10.4-7.2 16.8-7.2s12 2.4 16.8 7.2c9.6 9.6 9.6 24 0 33.6L449.6 784.8c-4.8 4-11.2 7.2-16.8 7.2z">
-                    </path>
-                </svg>
-            </div>
-            <div class="mt-3 w-full">
-                <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات المكتملة</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['completed'] ?? 0 }}
-                </h4>
-            </div>
-        </div>
+                {{-- فلتر: المكتملة --}}
+                <div wire:click.debounce.150ms="applyFilter('completed')" wire:loading.class="opacity-50"
+                    wire:target="applyFilter"
+                    class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'completed') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+                    <div wire:loading wire:target="applyFilter('completed')"
+                        class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                        <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+                    </div>
+                    <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                        <svg width="20" height="20" viewBox="0 0 1024 1024" fill="#dc6803" class="icon" version="1.1"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M824.8 1003.2H203.2c-12.8 0-25.6-2.4-37.6-7.2-11.2-4.8-21.6-12-30.4-20.8-8.8-8.8-16-19.2-20.8-30.4-4.8-12-7.2-24-7.2-37.6V260c0-12.8 2.4-25.6 7.2-37.6 4.8-11.2 12-21.6 20.8-30.4 8.8-8.8 19.2-16 30.4-20.8 12-4.8 24-7.2 37.6-7.2h94.4v48H203.2c-26.4 0-48 21.6-48 48v647.2c0 26.4 21.6 48 48 48h621.6c26.4 0 48-21.6 48-48V260c0-26.4-21.6-48-48-48H730.4v-48H824c12.8 0 25.6 2.4 37.6 7.2 11.2 4.8 21.6 12 30.4 20.8 8.8 8.8 16 19.2 20.8 30.4 4.8 12 7.2 24 7.2 37.6v647.2c0 12.8-2.4 25.6-7.2 37.6-4.8 11.2-12 21.6-20.8 30.4-8.8 8.8-19.2 16-30.4 20.8-11.2 4.8-24 7.2-36.8 7.2z">
+                            </path>
+                            <path
+                                d="M752.8 308H274.4V152.8c0-32.8 26.4-60 60-60h61.6c22.4-44 67.2-72.8 117.6-72.8 50.4 0 95.2 28.8 117.6 72.8h61.6c32.8 0 60 26.4 60 60v155.2m-430.4-48h382.4V152.8c0-6.4-5.6-12-12-12H598.4l-5.6-16c-12-33.6-43.2-56-79.2-56s-67.2 22.4-79.2 56l-5.6 16H334.4c-6.4 0-12 5.6-12 12v107.2zM432.8 792c-6.4 0-12-2.4-16.8-7.2L252.8 621.6c-4.8-4.8-7.2-10.4-7.2-16.8s2.4-12 7.2-16.8c4.8-4.8 10.4-7.2 16.8-7.2s12 2.4 16.8 7.2L418.4 720c4 4 8.8 5.6 13.6 5.6s10.4-1.6 13.6-5.6l295.2-295.2c4.8-4.8 10.4-7.2 16.8-7.2s12 2.4 16.8 7.2c9.6 9.6 9.6 24 0 33.6L449.6 784.8c-4.8 4-11.2 7.2-16.8 7.2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="mt-3 w-full">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات المكتملة</span>
+                        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['completed'] ?? 0 }}
+                        </h4>
+                    </div>
+                </div>
 
-        <div wire:click.debounce.150ms="applyFilter('cancelled')" wire:loading.class="opacity-50"
-            wire:target="applyFilter"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'cancelled') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
-            <div wire:loading wire:target="applyFilter('cancelled')"
-                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
-                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
-            </div>
-            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
-                <svg width="20" height="20" viewBox="0 0 512 512" version="1.1"
-                    xmlns="http://www.w3.org/2000/svg" fill="#dc6803">
-                    <path
-                        d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z">
-                    </path>
-                </svg>
-            </div>
-            <div class="mt-3 w-full">
-                <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات الملغية</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['cancelled'] ?? 0 }}
-                </h4>
-            </div>
-        </div>
-    </div>
-    @endunless
-
-    <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
-        @if ($dashboardMode)
-            <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        الطلبات خلال <span class="text-warning-500 dark:text-warning/90">24</span> ساعة
-                    </h3>
+                <div wire:click.debounce.150ms="applyFilter('cancelled')" wire:loading.class="opacity-50"
+                    wire:target="applyFilter"
+                    class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl p-4 transition hover:shadow-md bg-white dark:bg-white/[0.03] flex-1 @if ($activeFilter == 'cancelled') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+                    <div wire:loading wire:target="applyFilter('cancelled')"
+                        class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                        <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+                    </div>
+                    <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                        <svg width="20" height="20" viewBox="0 0 512 512" version="1.1"
+                            xmlns="http://www.w3.org/2000/svg" fill="#dc6803">
+                            <path
+                                d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="mt-3 w-full">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">الطلبات الملغية</span>
+                        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['cancelled'] ?? 0 }}
+                        </h4>
+                    </div>
                 </div>
             </div>
-        @else
-            <div class="mb-5">
-                <label class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">البحث</label>
-                <div class="relative">
-                    <input wire:model.live.debounce.300ms="search" type="text"
-                        class="px-4 py-2.5 w-full h-10 text-sm text-right text-gray-800 bg-transparent rounded-lg border border-gray-300 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
-                        placeholder="ابحث باسم العميل، الهاتف، السائق..." />
-                    <div class="flex absolute top-0 bottom-0 left-0 items-center px-3">
-                        <div wire:loading wire:target="search" class="mt-2">
-                            <div class="w-5 h-5 rounded-full border-2 animate-spin border-brand-500 border-t-transparent">
+        @endunless
+
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+            @if ($dashboardMode)
+                <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                            الطلبات خلال <span class="text-warning-500 dark:text-warning/90">24</span> ساعة
+                        </h3>
+                    </div>
+                </div>
+            @else
+                <div class="mb-5">
+                    <label class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">البحث</label>
+                    <div class="relative">
+                        <input wire:model.live.debounce.300ms="search" type="text"
+                            class="px-4 py-2.5 w-full h-10 text-sm text-right text-gray-800 bg-transparent rounded-lg border border-gray-300 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
+                            placeholder="ابحث باسم العميل، الهاتف، السائق..." />
+                        <div class="flex absolute top-0 bottom-0 left-0 items-center px-3">
+                            <div wire:loading wire:target="search" class="mt-2">
+                                <div
+                                    class="w-5 h-5 rounded-full border-2 animate-spin border-brand-500 border-t-transparent">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        @endif
+            @endif
 
-        <div wire:loading.class="opacity-50" wire:target="search,applyFilter"
-            class="overflow-x-auto max-w-full table-responsive-container">
-            <table class="min-w-full">
-                <thead>
-                    <tr class="border-gray-100 border-y dark:border-gray-800">
-                        <th class="py-3 text-center">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">رقم الطلب</p>
-                        </th>
-                        <th class="py-3">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">السائق</p>
-                        </th>
-                        <th class="py-3">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">العميل</p>
-                        </th>
-                        <th class="py-3 text-center">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">السعر النهائي</p>
-                        </th>
-                        <th class="py-3 text-center">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">حالة الطلب</p>
-                        </th>
-                        <th class="py-3 text-center">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">نوع المركبه</p>
-                        </th>
-                        <th class="py-3 text-center">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">من - الى</p>
-                        </th>
-                        <th class="py-3 text-center">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">الإجراءات</p>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                    @forelse ($this->requests as $request)
-                        <tr wire:key="request-{{ $request->id }}">
-                            <td class="py-3">
-                                <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
-                                    {{ $request->id }}</p>
-                            </td>
-                            <td class="py-3">
-                                @if ($request->driver)
-                                    <div class="flex gap-3 items-center">
-                                        <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
-                                            <img src="{{ $request->driver->driver_image ? url($request->driver->driver_image) : asset('tailadmin/build/src/images/user/SO.jpg') }}"
-                                                alt="Driver" />
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                                {{ $request->driver->name }}</p>
-                                            <span
-                                                class="text-gray-500 text-theme-xs dark:text-gray-400">{{ $request->driver->phone }}</span>
-                                        </div>
-                                    </div>
-                                @else
-                                    @if ($request->canAssignDriver())
-                                        <button wire:click="openAssignDriverModal({{ $request->id }})"
-                                            wire:loading.attr="disabled"
-                                            class="inline-flex gap-1 items-center px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait">
-                                            <svg wire:loading.remove
-                                                wire:target="openAssignDriverModal({{ $request->id }})"
-                                                xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                                <circle cx="8.5" cy="7" r="4"></circle>
-                                                <line x1="20" y1="8" x2="20" y2="14">
-                                                </line>
-                                                <line x1="23" y1="11" x2="17" y2="11">
-                                                </line>
-                                            </svg>
-                                            <div wire:loading wire:target="openAssignDriverModal({{ $request->id }})"
-                                                class="w-3.5 h-3.5 rounded-full border-2 border-gray-500 animate-spin border-t-transparent dark:border-gray-400">
+            <div wire:loading.class="opacity-50" wire:target="search,applyFilter"
+                class="overflow-x-auto max-w-full table-responsive-container">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-gray-100 border-y dark:border-gray-800">
+                            <th class="py-3 text-center">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">رقم الطلب</p>
+                            </th>
+                            <th class="py-3">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">السائق</p>
+                            </th>
+                            <th class="py-3">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">العميل</p>
+                            </th>
+                            <th class="py-3 text-center">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">السعر النهائي</p>
+                            </th>
+                            <th class="py-3 text-center">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">حالة الطلب</p>
+                            </th>
+                            <th class="py-3 text-center">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">نوع المركبه</p>
+                            </th>
+                            <th class="py-3 text-center">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">من - الى</p>
+                            </th>
+                            <th class="py-3 text-center">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">الإجراءات</p>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                        @forelse ($this->requests as $request)
+                            <tr wire:key="request-{{ $request->id }}">
+                                <td class="py-3">
+                                    <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
+                                        {{ $request->id }}</p>
+                                </td>
+                                <td class="py-3">
+                                    @if ($request->driver)
+                                        <div class="flex gap-3 items-center">
+                                            <div class="h-[50px] w-[50px] overflow-hidden rounded-md">
+                                                <img src="{{ $request->driver->driver_image ? url($request->driver->driver_image) : asset('tailadmin/build/src/images/user/SO.jpg') }}"
+                                                    alt="Driver" />
                                             </div>
-                                            <span wire:loading.remove
-                                                wire:target="openAssignDriverModal({{ $request->id }})">تعيين سائق</span>
-                                            <span wire:loading
-                                                wire:target="openAssignDriverModal({{ $request->id }})">جاري...</span>
-                                        </button>
-                                    @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium text-gray-500 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-gray-400">
-                                            لم يتم التعيين
-                                        </span>
-                                    @endif
-                                @endif
-                            </td>
-                            <td class="py-3">
-                                @if ($request->user)
-                                    @php
-                                        $customerPhone = preg_replace('/_deleted_\d+$/', '', $request->user->phone ?? '');
-                                    @endphp
-                                    <div class="flex gap-3 items-center">
-                                        <div>
-                                            <div class="flex items-center gap-1.5">
+                                            <div>
                                                 <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                                    {{ $request->user->name }}
-                                                </p>
-                                                @if ($request->user->trashed())
-                                                    <span class="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600 dark:bg-red-500/15 dark:text-red-400">
-                                                        محذوف
-                                                    </span>
-                                                @endif
+                                                    {{ $request->driver->name }}</p>
+                                                <span
+                                                    class="text-gray-500 text-theme-xs dark:text-gray-400">{{ $request->driver->phone }}</span>
                                             </div>
-                                            <span class="text-gray-500 text-theme-xs dark:text-gray-400">
-                                                {{ $customerPhone }}
-                                            </span>
                                         </div>
-                                    </div>
-                                @else
-                                    <span class="text-gray-500 text-theme-sm dark:text-gray-400">مستخدم محذوف</span>
-                                @endif
-                            </td>
-                            <td class="py-3">
-                                <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
-                                    {{ $request->final_price }}</p>
-                            </td>
-                            <td class="py-3">
-                                <p
-                                    class="rounded-full text-center px-2 py-0.5 text-theme-xs font-medium {{ $request->status_class }}">
-                                    {{ $request->status_text }}
-                                </p>
-                            </td>
-                            <td class="py-3 text-center">
-                                @if ($request->canAssignDriver())
-                                    <select x-on:change="
+                                    @else
+                                        @if ($request->canAssignDriver())
+                                            <button wire:click="openAssignDriverModal({{ $request->id }})"
+                                                wire:loading.attr="disabled"
+                                                class="inline-flex gap-1 items-center px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full transition hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait">
+                                                <svg wire:loading.remove
+                                                    wire:target="openAssignDriverModal({{ $request->id }})"
+                                                    xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="8.5" cy="7" r="4"></circle>
+                                                    <line x1="20" y1="8" x2="20" y2="14">
+                                                    </line>
+                                                    <line x1="23" y1="11" x2="17" y2="11">
+                                                    </line>
+                                                </svg>
+                                                <div wire:loading wire:target="openAssignDriverModal({{ $request->id }})"
+                                                    class="w-3.5 h-3.5 rounded-full border-2 border-gray-500 animate-spin border-t-transparent dark:border-gray-400">
+                                                </div>
+                                                <span wire:loading.remove
+                                                    wire:target="openAssignDriverModal({{ $request->id }})">تعيين
+                                                    سائق</span>
+                                                <span wire:loading
+                                                    wire:target="openAssignDriverModal({{ $request->id }})">جاري...</span>
+                                            </button>
+                                        @else
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium text-gray-500 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-gray-400">
+                                                لم يتم التعيين
+                                            </span>
+                                        @endif
+                                    @endif
+                                </td>
+                                <td class="py-3">
+                                    @if ($request->user)
+                                        @php
+                                            $customerPhone = preg_replace(
+                                                '/_deleted_\d+$/',
+                                                '',
+                                                $request->user->phone ?? '',
+                                            );
+                                        @endphp
+                                        <div class="flex gap-3 items-center">
+                                            <div>
+                                                <div class="flex gap-1.5 items-center">
+                                                    <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                                        {{ $request->user->name }}
+                                                    </p>
+                                                    @if ($request->user->trashed())
+                                                        <span
+                                                            class="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600 dark:bg-red-500/15 dark:text-red-400">
+                                                            محذوف
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <span class="text-gray-500 text-theme-xs dark:text-gray-400">
+                                                    {{ $customerPhone }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <span class="text-gray-500 text-theme-sm dark:text-gray-400">مستخدم محذوف</span>
+                                    @endif
+                                </td>
+                                <td class="py-3">
+                                    <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
+                                        {{ $request->final_price }}</p>
+                                </td>
+                                <td class="py-3">
+                                    <p
+                                        class="rounded-full text-center px-2 py-0.5 text-theme-xs font-medium {{ $request->status_class }}">
+                                        {{ $request->status_text }}
+                                    </p>
+                                </td>
+                                <td class="py-3 text-center">
+                                    @if ($request->canAssignDriver())
+                                        <select
+                                            x-on:change="
                                             const newId = $event.target.value;
                                             const newText = $event.target.options[$event.target.selectedIndex].text.trim();
                                             $event.target.value = '{{ $request->vehicle_id ?? '' }}';
@@ -256,137 +265,142 @@
                                                 });
                                             }
                                         "
-                                        wire:loading.attr="disabled"
-                                        wire:target="changeRequestVehicle"
-                                        class="px-2.5 py-1 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-200 cursor-pointer shadow-theme-xs hover:border-brand-500 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                                        @if (! $request->vehicle_id)
-                                            <option value="">غير محدد</option>
-                                        @endif
-                                        @foreach ($this->vehicles as $vehicleOption)
-                                            <option value="{{ $vehicleOption->id }}" @selected((int) $request->vehicle_id === (int) $vehicleOption->id)>
-                                                {{ $vehicleOption->type }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @elseif ($request->vehicle)
-                                    <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
-                                        {{ $request->vehicle->type }}</p>
-                                @else
-                                    <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
-                                        غير محدد
-                                    </p>
-                                @endif
-                            </td>
-                            <td class="py-3">
-                                <div class="flex justify-center items-center space-x-2">
-                                    <p
-                                        class="px-2 py-0.5 font-medium rounded-full bg-warning-50 text-theme-xs text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
-                                        {{ $request->start_address }}</p>
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                    </svg>
-                                    <p
-                                        class="px-2 py-0.5 font-medium rounded-full text-theme-xs bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
-                                        {{ $request->end_address }}</p>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
-                                <div class="flex relative justify-center items-center">
-                                    <button @click="openOptions = !openOptions" @click.away="openOptions = false"
-                                        class="actions-trigger-btn">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                            <circle cx="12" cy="5" r="2"></circle>
-                                            <circle cx="12" cy="12" r="2"></circle>
-                                            <circle cx="12" cy="19" r="2"></circle>
+                                            wire:loading.attr="disabled" wire:target="changeRequestVehicle"
+                                            class="px-2.5 py-1 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-200 cursor-pointer shadow-theme-xs hover:border-brand-500 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                            @if (!$request->vehicle_id)
+                                                <option value="">غير محدد</option>
+                                            @endif
+                                            @foreach ($this->vehicles as $vehicleOption)
+                                                <option value="{{ $vehicleOption->id }}" @selected((int) $request->vehicle_id === (int) $vehicleOption->id)>
+                                                    {{ $vehicleOption->type }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    @elseif ($request->vehicle)
+                                        <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
+                                            {{ $request->vehicle->type }}</p>
+                                    @else
+                                        <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
+                                            غير محدد
+                                        </p>
+                                    @endif
+                                </td>
+                                <td class="py-3">
+                                    <div class="flex justify-center items-center space-x-2">
+                                        <p
+                                            class="px-2 py-0.5 font-medium rounded-full bg-warning-50 text-theme-xs text-warning-600 dark:bg-warning-500/15 dark:text-orange-400">
+                                            {{ $request->start_address }}</p>
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                         </svg>
-                                    </button>
-
-                                    <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
-                                        class="actions-dropdown-menu">
-
-                                        <!-- عرض التفاصيل -->
-                                        <a href="{{ route('request.show', $request->id) }}"
-                                            class="actions-dropdown-item">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                stroke-width="2" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                            عرض التفاصيل
-                                        </a>
-
-                                        <!-- محادثة مع العميل -->
-                                        <button wire:click="startChatWithCustomer({{ $request->id }})"
-                                            class="actions-dropdown-item text-brand-600 dark:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/20">
-                                            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                            </svg>
-                                            محادثة مع العميل
-                                        </button>
-
-                                        @if($request->driver_id)
-                                        <!-- محادثة السائق -->
-                                        <button wire:click="startChatWithDriver({{ $request->id }})"
-                                            class="actions-dropdown-item text-blue-light-600 dark:text-blue-light-500 hover:bg-blue-light-50 dark:hover:bg-blue-light-950/20">
-                                            <svg class="w-4 h-4 text-blue-light-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                            </svg>
-                                            محادثة السائق
-                                        </button>
-
-                                        @if ($request->canAssignDriver())
-                                        <!-- إعادة تعيين سائق -->
-                                        <button wire:click="openAssignDriverModal({{ $request->id }})"
-                                            @click="openOptions = false"
-                                            class="actions-dropdown-item text-warning-600 dark:text-warning-500 hover:bg-warning-50 dark:hover:bg-warning-950/20">
-                                            <svg class="w-4 h-4 text-warning-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                            </svg>
-                                            إعادة تعيين سائق
-                                        </button>
-                                        @endif
-                                        @endif
-
+                                        <p
+                                            class="px-2 py-0.5 font-medium rounded-full text-theme-xs bg-blue-light-50 text-blue-light-500 dark:bg-blue-light-500/15 dark:text-blue-light-500">
+                                            {{ $request->end_address }}</p>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="p-4 text-center text-gray-500 dark:text-gray-400">
-                                لا توجد طلبات تطابق البحث أو الفلتر الحالي.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                                </td>
+                                <td class="px-6 py-4 text-center align-middle" x-data="{ openOptions: false }">
+                                    <div class="flex relative justify-center items-center">
+                                        <button @click="openOptions = !openOptions" @click.away="openOptions = false"
+                                            class="actions-trigger-btn">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="5" r="2"></circle>
+                                                <circle cx="12" cy="12" r="2"></circle>
+                                                <circle cx="12" cy="19" r="2"></circle>
+                                            </svg>
+                                        </button>
 
-        {{-- 3. روابط التنقل بين الصفحات --}}
-        @if (! $dashboardMode && $this->requests->hasPages())
-            <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-                {{ $this->requests->links() }}
+                                        <div x-show="openOptions" x-transition.opacity.duration.200ms x-cloak
+                                            class="actions-dropdown-menu">
+
+                                            <!-- عرض التفاصيل -->
+                                            <a href="{{ route('request.show', $request->id) }}"
+                                                class="actions-dropdown-item">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                عرض التفاصيل
+                                            </a>
+
+                                            <!-- محادثة مع العميل -->
+                                            <button wire:click="startChatWithCustomer({{ $request->id }})"
+                                                class="actions-dropdown-item text-brand-600 dark:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-950/20">
+                                                <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                                </svg>
+                                                محادثة مع العميل
+                                            </button>
+
+                                            @if ($request->driver_id)
+                                                <!-- محادثة السائق -->
+                                                <button wire:click="startChatWithDriver({{ $request->id }})"
+                                                    class="actions-dropdown-item text-blue-light-600 dark:text-blue-light-500 hover:bg-blue-light-50 dark:hover:bg-blue-light-950/20">
+                                                    <svg class="w-4 h-4 text-blue-light-500" fill="none"
+                                                        stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                                    </svg>
+                                                    محادثة السائق
+                                                </button>
+
+                                                @if ($request->canAssignDriver())
+                                                    <!-- إعادة تعيين سائق -->
+                                                    <button wire:click="openAssignDriverModal({{ $request->id }})"
+                                                        @click="openOptions = false"
+                                                        class="actions-dropdown-item text-warning-600 dark:text-warning-500 hover:bg-warning-50 dark:hover:bg-warning-950/20">
+                                                        <svg class="w-4 h-4 text-warning-500" fill="none"
+                                                            stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                        </svg>
+                                                        إعادة تعيين سائق
+                                                    </button>
+                                                @endif
+                                            @endif
+
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="p-4 text-center text-gray-500 dark:text-gray-400">
+                                    لا توجد طلبات تطابق البحث أو الفلتر الحالي.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-        @endif
-    </div>
+
+            {{-- 3. روابط التنقل بين الصفحات --}}
+            @if (!$dashboardMode && $this->requests->hasPages())
+                <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                    {{ $this->requests->links() }}
+                </div>
+            @endif
+        </div>
     @endunless
 
-     @include('livewire.request.assign-driver-modal')
+    @include('livewire.request.assign-driver-modal')
 
-     {{-- موديل تأكيد تغيير نوع المركبة مع مؤشر التحميل وتحديث الصفحة --}}
-     <div x-data="{
-            open: false,
-            isSaving: false,
-            requestId: null,
-            oldVehicleType: '',
-            newVehicleId: null,
-            newVehicleType: ''
-         }"
-         x-on:confirm-vehicle-change.window="
+    {{-- موديل تأكيد تغيير نوع المركبة مع مؤشر التحميل وتحديث الصفحة --}}
+    <div x-data="{
+        open: false,
+        isSaving: false,
+        requestId: null,
+        oldVehicleType: '',
+        newVehicleId: null,
+        newVehicleType: ''
+    }"
+        x-on:confirm-vehicle-change.window="
             requestId = $event.detail.requestId;
             oldVehicleType = $event.detail.oldVehicleType;
             newVehicleId = $event.detail.newVehicleId;
@@ -394,72 +408,76 @@
             isSaving = false;
             open = true;
          "
-         x-on:vehicle-changed.window="
+        x-on:vehicle-changed.window="
             isSaving = true;
             setTimeout(() => { window.location.reload(); }, 400);
          "
-         x-on:open-error-modal.window="
+        x-on:open-error-modal.window="
             isSaving = false;
             open = false;
          ">
-         <div x-show="open"
-              x-transition.opacity.duration.200ms
-              class="flex fixed inset-0 justify-center items-center p-5 z-99999"
-              style="display: none;">
-             <div class="fixed inset-0 w-full h-full bg-gray-400/50 backdrop-blur-[32px]"
-                  @click="if (!isSaving) open = false"></div>
+        <div x-show="open" x-transition.opacity.duration.200ms
+            class="flex fixed inset-0 justify-center items-center p-5 z-99999" style="display: none;">
+            <div class="fixed inset-0 w-full h-full bg-gray-400/50 backdrop-blur-[32px]"
+                @click="if (!isSaving) open = false"></div>
 
-             <div class="overflow-hidden relative p-6 w-full max-w-md bg-white rounded-2xl shadow-xl dark:bg-gray-900" dir="rtl">
-                 {{-- Loading Overlay أثناء التغيير وإعادة احتساب السعر --}}
-                 <div x-show="isSaving"
-                      class="flex absolute inset-0 z-50 flex-col justify-center items-center rounded-2xl bg-white/95 dark:bg-gray-900/95">
-                     <div class="mb-3 w-11 h-11 rounded-full border-4 border-solid animate-spin border-brand-500 border-t-transparent"></div>
-                     <p class="text-sm font-bold text-gray-800 dark:text-white">جاري تغيير نوع المركبة وإعادة احتساب السعر...</p>
-                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">يرجى الانتظار، سيتم تحديث الصفحة تلقائياً</p>
-                 </div>
+            <div class="overflow-hidden relative p-6 w-full max-w-md bg-white rounded-2xl shadow-xl dark:bg-gray-900"
+                dir="rtl">
+                {{-- Loading Overlay أثناء التغيير وإعادة احتساب السعر --}}
+                <div x-show="isSaving"
+                    class="flex absolute inset-0 z-50 flex-col justify-center items-center rounded-2xl bg-white/95 dark:bg-gray-900/95">
+                    <div
+                        class="mb-3 w-11 h-11 rounded-full border-4 border-solid animate-spin border-brand-500 border-t-transparent">
+                    </div>
+                    <p class="text-sm font-bold text-gray-800 dark:text-white">جاري تغيير نوع المركبة وإعادة احتساب
+                        السعر...</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">يرجى الانتظار، سيتم تحديث الصفحة تلقائياً
+                    </p>
+                </div>
 
-                 <div class="py-2 text-center">
-                     <div class="flex relative justify-center items-center mb-5 z-1">
-                         <div class="flex justify-center items-center w-16 h-16 rounded-full bg-warning-50 text-warning-500 dark:bg-warning-500/15">
-                             <svg class="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                             </svg>
-                         </div>
-                     </div>
+                <div class="py-2 text-center">
+                    <div class="flex relative justify-center items-center mb-5 z-1">
+                        <div
+                            class="flex justify-center items-center w-16 h-16 rounded-full bg-warning-50 text-warning-500 dark:bg-warning-500/15">
+                            <svg class="w-8 h-8 text-brand-500" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                            </svg>
+                        </div>
+                    </div>
 
-                     <h4 class="mb-2 text-xl font-bold text-gray-800 dark:text-white/90">
-                         تأكيد تغيير نوع المركبة
-                     </h4>
-                     <p class="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                         هل أنت متأكد من تغيير نوع المركبة في الطلب رقم
-                         <span class="font-bold text-gray-800 dark:text-white" x-text="'#' + requestId"></span>
-                         من
-                         (<span class="font-bold text-gray-800 dark:text-white" x-text="oldVehicleType"></span>)
-                         إلى
-                         (<span class="font-bold text-brand-500" x-text="newVehicleType"></span>)؟
-                     </p>
-                     <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                         سيتم إعادة احتساب تسعيرة الرحلة تلقائياً وإرسال إشعار للعميل.
-                     </p>
+                    <h4 class="mb-2 text-xl font-bold text-gray-800 dark:text-white/90">
+                        تأكيد تغيير نوع المركبة
+                    </h4>
+                    <p class="text-sm leading-6 text-gray-500 dark:text-gray-400">
+                        هل أنت متأكد من تغيير نوع المركبة في الطلب رقم
+                        <span class="font-bold text-gray-800 dark:text-white" x-text="'#' + requestId"></span>
+                        من
+                        (<span class="font-bold text-gray-800 dark:text-white" x-text="oldVehicleType"></span>)
+                        إلى
+                        (<span class="font-bold text-brand-500" x-text="newVehicleType"></span>)؟
+                    </p>
+                    <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                        سيتم إعادة احتساب تسعيرة الرحلة تلقائياً وإرسال إشعار للعميل.
+                    </p>
 
-                     <div class="flex gap-3 justify-center mt-6">
-                         <button type="button"
-                                 @click="if (!isSaving) open = false"
-                                 :disabled="isSaving"
-                                 class="px-6 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 transition-colors duration-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50">
-                             إلغاء
-                         </button>
+                    <div class="flex gap-3 justify-center mt-6">
+                        <button type="button" @click="if (!isSaving) open = false" :disabled="isSaving"
+                            class="px-6 py-2 text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 transition-colors duration-200 dark:bg-gray-800 dark:text-white dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50">
+                            إلغاء
+                        </button>
 
-                         <button type="button"
-                                 @click="isSaving = true; $wire.changeRequestVehicle(newVehicleId, requestId)"
-                                 :disabled="isSaving"
-                                 class="inline-flex gap-2 justify-center items-center px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors duration-200 bg-brand-500 hover:bg-brand-600 disabled:opacity-50">
-                             <span>موافق</span>
-                         </button>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
+                        <button type="button"
+                            @click="isSaving = true; $wire.changeRequestVehicle(newVehicleId, requestId)"
+                            :disabled="isSaving"
+                            class="inline-flex gap-2 justify-center items-center px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors duration-200 bg-brand-500 hover:bg-brand-600 disabled:opacity-50">
+                            <span>موافق</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>

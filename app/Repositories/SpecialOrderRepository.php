@@ -53,4 +53,14 @@ class SpecialOrderRepository implements RepositoriesInterface
     {
         return SpecialOrder::whereIn('status', ['in_progress', 'pending', 'searching_driver', 'paused'])->get();
     }
+
+    public function count(): int
+    {
+        return SpecialOrder::count();
+    }
+
+    public function countPending(): int
+    {
+        return SpecialOrder::whereIn('status', ['pending', 'in_progress', 'searching_driver', 'paused'])->count();
+    }
 }

@@ -3,9 +3,9 @@
 @section('Breadcrumb', 'إنشاء طلب خاص جديد')
 
 @section('addButton')
-  <div class="flex items-center gap-2">
+  <div class="flex gap-2 items-center">
     <a href="{{ route('specialOrder.index') }}"
-       class="bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 h-10 rounded-lg px-4 py-2 text-sm font-medium inline-flex items-center gap-1.5 transition">
+       class="inline-flex gap-1.5 items-center px-4 py-2 h-10 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg transition hover:bg-gray-200 dark:bg-brand-500 dark:text-white dark:hover:bg-gray-800">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
@@ -17,12 +17,12 @@
 @endsection
 
 @section('content')
-<div class="p-6 w-full bg-white rounded-3xl dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm" dir="rtl">
+<div class="p-6 w-full bg-white rounded-3xl border border-gray-100 shadow-sm dark:bg-gray-900 dark:border-gray-800" dir="rtl">
     <form method="POST" action="{{ route('specialOrder.store') }}">
         @csrf
 
         {{-- حقول المسار الأساسية --}}
-        <div class="grid grid-cols-1 gap-y-5 gap-x-6 sm:grid-cols-2 mb-5">
+        <div class="grid grid-cols-1 gap-y-5 gap-x-6 mb-5 sm:grid-cols-2">
             <div>
                 <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
                     نقطة البداية / الانطلاق <span class="text-xs text-warning-500">*</span>
@@ -75,13 +75,13 @@
         {{-- تفاصيل العميل ونوع المركبة والكوبون عبر مكون Livewire --}}
         <livewire:special-orders.create />
 
-        <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-100 dark:border-gray-800">
+        <div class="flex gap-3 justify-end pt-5 mt-6 border-t border-gray-100 dark:border-gray-800">
             <a href="{{ route('specialOrder.index') }}"
-                class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg dark:bg-gray-800 dark:text-gray-300">
+                class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400">
                 إلغاء
             </a>
             <button type="submit"
-                class="px-6 py-2.5 text-sm font-medium text-white rounded-lg bg-brand-500 hover:bg-brand-600 shadow-xs transition">
+                class="px-6 py-2.5 text-sm font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 shadow-xs">
                 حفظ وإنشاء الطلب
             </button>
         </div>

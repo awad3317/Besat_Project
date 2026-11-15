@@ -227,11 +227,11 @@
 @endsection
 @section('content')
 
-  <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
+  <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
 
     <div
       class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+      <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M21 19.9999C21 18.2583 19.3304 16.7767 17 16.2275M15 20C15 17.7909 12.3137 16 9 16C5.68629 16 3 17.7909 3 20M15 13C17.2091 13 19 11.2091 19 9C19 6.79086 17.2091 5 15 5M9 13C6.79086 13 5 11.2091 5 9C5 6.79086 6.79086 5 9 5C11.2091 5 13 6.79086 13 9C13 11.2091 11.2091 13 9 13Z"
@@ -247,7 +247,7 @@
 
     <div
       class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+      <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
         <svg fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
           <rect x="27" y="11" width="2" height="4"></rect>
           <rect x="3" y="11" width="2" height="4"></rect>
@@ -266,7 +266,7 @@
 
     <div
       class="flex flex-col items-start justify-between rounded-xl  bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+      <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
         <svg fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
           <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
         </svg>
@@ -279,7 +279,7 @@
 
     <div
       class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500  dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
-      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+      <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
         <svg fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
           <polygon points="23.586 13 21 10.414 21 6 23 6 23 9.586 25 11.586 23.586 13"></polygon>
           <path d="M22,18a8,8,0,1,1,8-8A8.0092,8.0092,0,0,1,22,18ZM22,4a6,6,0,1,0,6,6A6.0066,6.0066,0,0,0,22,4Z">
@@ -297,11 +297,11 @@
 
   <!-- ====== Chart One Start -->
 
-  <div class="flex flex-col lg:flex-row gap-4 mb-4">
+  <div class="flex flex-col gap-4 mb-4 lg:flex-row">
     <div class="chart-container">
       <div
         class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 h-full">
-        <div class="flex items-center justify-between">
+        <div class="flex justify-between items-center">
           <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
             الطلبات العامه خلال <span class="text-warning-500 dark:text-warning/90"> سنة</span>
           </h3>
@@ -317,7 +317,7 @@
     <div class="ratings-container">
       <div
         class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-5 sm:pt-5 h-full">
-        <div class="flex items-center justify-between">
+        <div class="flex justify-between items-center">
           <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
             أعلى تقييمات
           </h3>
@@ -325,27 +325,27 @@
 
         <div class="mt-4 space-y-3">
           <!-- المستخدم 1 -->
-          <div class="flex gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <div class="flex gap-3 p-3 rounded-lg transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
             <div
-              class="relative w-12 h-12 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 flex-shrink-0">
+              class="overflow-hidden relative flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 dark:border-gray-800">
               <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="user"
                 class="object-cover w-full h-full" />
             </div>
             <div class="flex-1 min-w-0">
-              <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 truncate">
+              <h4 class="text-sm font-semibold text-gray-800 truncate dark:text-white/90">
                 أحمد شرجبي (<span class="text-warning-500 dark:text-warning/90">نوها</span>)
               </h4>
-              <div class="flex items-center gap-2 mt-1">
-                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+              <div class="flex gap-2 items-center mt-1">
+                <p class="text-xs text-gray-500 truncate dark:text-gray-400">
                   +967780236552
                 </p>
-                <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
+                <div class="w-px h-3 bg-gray-300 dark:bg-gray-700"></div>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
                   عدن
                 </p>
               </div>
 
-              <div class="flex items-center gap-1 mt-1">
+              <div class="flex gap-1 items-center mt-1">
                 <div class="flex">
                   <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
                     <path
@@ -374,27 +374,27 @@
           </div>
 
           <!-- المستخدم 2 -->
-          <div class="flex gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <div class="flex gap-3 p-3 rounded-lg transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
             <div
-              class="relative w-12 h-12 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 flex-shrink-0">
+              class="overflow-hidden relative flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 dark:border-gray-800">
               <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="user"
                 class="object-cover w-full h-full" />
             </div>
             <div class="flex-1 min-w-0">
-              <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 truncate">
+              <h4 class="text-sm font-semibold text-gray-800 truncate dark:text-white/90">
                 محمد العبد (<span class="text-warning-500 dark:text-warning/90">فوكسي</span>)
               </h4>
-              <div class="flex items-center gap-2 mt-1">
-                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+              <div class="flex gap-2 items-center mt-1">
+                <p class="text-xs text-gray-500 truncate dark:text-gray-400">
                   +967712345678
                 </p>
-                <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
+                <div class="w-px h-3 bg-gray-300 dark:bg-gray-700"></div>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
                   صنعاء
                 </p>
               </div>
               <!-- التقييم -->
-              <div class="flex items-center gap-1 mt-1">
+              <div class="flex gap-1 items-center mt-1">
                 <div class="flex">
                   <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
                     <path
@@ -423,27 +423,27 @@
           </div>
 
           <!-- المستخدم 3 -->
-          <div class="flex gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <div class="flex gap-3 p-3 rounded-lg transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
             <div
-              class="relative w-12 h-12 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 flex-shrink-0">
+              class="overflow-hidden relative flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 dark:border-gray-800">
               <img src="{{ asset('tailadmin/build/src/images/user/SO.jpg') }}" alt="user"
                 class="object-cover w-full h-full" />
             </div>
             <div class="flex-1 min-w-0">
-              <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 truncate">
+              <h4 class="text-sm font-semibold text-gray-800 truncate dark:text-white/90">
                 فاطمة قاسم (<span class="text-warning-500 dark:text-warning/90">باص</span>)
               </h4>
-              <div class="flex items-center gap-2 mt-1">
-                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+              <div class="flex gap-2 items-center mt-1">
+                <p class="text-xs text-gray-500 truncate dark:text-gray-400">
                   +967798765432
                 </p>
-                <div class="h-3 w-px bg-gray-300 dark:bg-gray-700"></div>
+                <div class="w-px h-3 bg-gray-300 dark:bg-gray-700"></div>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
                   تعز
                 </p>
               </div>
               <!-- التقييم -->
-              <div class="flex items-center gap-1 mt-1">
+              <div class="flex gap-1 items-center mt-1">
                 <div class="flex">
                   <svg class="w-3 h-3" fill="#dc6803" viewBox="0 0 20 20">
                     <path
@@ -773,7 +773,7 @@
                   html: '<div class="flex flex-col items-center cursor-pointer">' +
                           distBadge +
                           '<div class="relative">' +
-                            '<img src="' + avatarSrc + '" class="w-10 h-10 rounded-full object-cover border-2 shadow-lg ' + onlineRing + '" onerror="this.onerror=null;this.src=\'' + DEFAULT_DRIVER_AVATAR + '\';" />' +
+                            '<img src="' + avatarSrc + '" class="object-cover w-10 h-10 rounded-full border-2 shadow-lg' + onlineRing + '" onerror="this.onerror=null;this.src=\'' + DEFAULT_DRIVER_AVATAR + '\';" />' +
                             onlineDot +
                           '</div>' +
                         '</div>',

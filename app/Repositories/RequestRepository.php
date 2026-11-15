@@ -74,4 +74,18 @@ class RequestRepository implements RepositoriesInterface
             ->first();
     }
 
+    public function count(): int
+    {
+        return Request::count();
+    }
+
+    public function countCompleted(): int
+    {
+        return Request::where('status', 'completed')->count();
+    }
+
+    public function countActive(): int
+    {
+        return Request::whereIn('status', ['pending', 'accepted', 'in_transit', 'arrived'])->count();
+    }
 }

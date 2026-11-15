@@ -122,7 +122,16 @@ class SpecialOrderController extends Controller
      */
     public function edit(string $id)
     {
-        return redirect()->route('specialOrder.show', $id);
+        try {
+            $order = ServiceBooking::with(['user', 'vehicle', 'stops'])->findOrFail($id);
+            $vehicles = $this->vehicleRepository->index();
+            return redirect()->back()
+                ->with('openModalEdit', true)
+                ->with('order', $order)
+                ->with('vehicles', $vehicles);
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
     }
 
     /**
@@ -131,17 +140,18 @@ class SpecialOrderController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'title'              => ['required', 'string', 'max:255'],
-            'customer_name'      => ['nullable', 'string', 'max:255'],
-            'customer_phone'     => ['nullable', 'string', 'max:30'],
-            'customer_whatsapp'  => ['nullable', 'string', 'max:30'],
-            'driver_id'          => ['nullable', Rule::exists('drivers', 'id')],
-            'start_address'      => ['required', 'string', 'max:255'],
-            'end_address'        => ['required', 'string', 'max:255'],
-            'price'              => ['nullable', 'numeric', 'min:0'],
-            'description'        => ['nullable', 'string'],
-            'status'             => ['required', 'in:pending,searching_driver,paused,in_progress,completed,cancelled'],
-            'cancellation_reason'=> ['nullable', 'string'],
+            'service_type'    => ['required', 'in:events,zafona,rehla,safety_airport,dawam,moshwarana'],
+            'client_name'     => ['required', 'string', 'max:255'],
+            'vehicle_id'      => ['nullable', Rule::exists(Vehicle::class, 'id')],
+            'start_address'   => ['required', 'string', 'max:255'],
+            'end_address'     => ['required', 'string', 'max:255'],
+            'total_price'     => ['nullable', 'numeric', 'min:0'],
+            'payment_status'  => ['required', 'in:unpaid,partially_paid,paid'],
+            'status'          => ['required', 'in:pending,approved,rejected,in_progress,completed,cancelled'],
+            'passenger_count' => ['required', 'integer', 'min:1'],
+            'vehicles_count'  => ['required', 'integer', 'min:1'],
+            'wants_ac'        => ['nullable'],
+            'notes'           => ['nullable', 'string', 'max:1000'],
         ]);
 
         if ($validator->fails()) {
@@ -149,16 +159,21 @@ class SpecialOrderController extends Controller
         }
 
         try {
+            $booking = ServiceBooking::findOrFail($id);
             $data = $validator->validated();
+            $data['wants_ac'] = $request->boolean('wants_ac');
+
             if ($data['status'] === 'cancelled') {
-                $data['cancelled_by'] = auth()->id();
+                $serviceDetails = is_array($booking->service_details) ? $booking->service_details : [];
+                $serviceDetails['cancelled_by'] = auth()->id();
+                $booking->service_details = $serviceDetails;
             }
 
-            $order = $this->specialOrderRepository->update($data, $id);
+            $booking->update($data);
 
-            ActivityLog::log('update', 'SpecialOrder', "تم تعديل بيانات الطلب الخاص #{$order->id}");
+            ActivityLog::log('update', 'ServiceBooking', "تم تعديل بيانات حجز الخدمة #{$booking->id} ({$booking->service_type_text})");
 
-            return WebResponseClass::sendResponse('تم التحديث!', 'تم تحديث بيانات الطلب بنجاح', 'حسناً', 'specialOrder.index');
+            return WebResponseClass::sendResponse('تم التحديث!', 'تم تحديث بيانات حجز الخدمة بنجاح', 'حسناً', 'specialOrder.index');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
         }

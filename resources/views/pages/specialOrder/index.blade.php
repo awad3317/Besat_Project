@@ -12,6 +12,7 @@
         <span>إنشاء طلب خاص</span>
     </a>
   </div>
+  @include('pages.specialOrder.edit-special-order-modal')
   <x-modals.success-modal />
   <x-modals.error-modal />
 @endsection

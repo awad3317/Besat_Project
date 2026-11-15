@@ -24,20 +24,6 @@ class Index extends Component
     public $cancellingOrderId = null;
     public $cancellationReason = '';
 
-    // ── خصائص نافذة تعديل الحجز والتسعيرة ──
-    public $editingOrderId = null;
-    public $editServiceType = 'events';
-    public $editClientName = '';
-    public $editPassengerCount = 1;
-    public $editVehiclesCount = 1;
-    public bool $editWantsAc = false;
-    public $editStartAddress = '';
-    public $editEndAddress = '';
-    public $editTotalPrice = null;
-    public $editPaymentStatus = 'unpaid';
-    public $editStatus = 'pending';
-    public $editNotes = '';
-
     protected $queryString = [
         'search' => ['except' => '', 'as' => 'q'],
         'activeFilter' => ['except' => 'all', 'as' => 'filter'],
@@ -227,80 +213,7 @@ class Index extends Component
     // ═══════════════════════════════════════════
     public function openEditModal($orderId)
     {
-        $order = ServiceBooking::with(['user' => fn ($q) => $q->withTrashed()])->find($orderId);
-        if (! $order) {
-            return;
-        }
-
-        $this->editingOrderId = $order->id;
-        $this->editServiceType = $order->service_type ?? 'events';
-        $this->editClientName = $order->client_name ?? ($order->user?->name ?? '');
-        $this->editPassengerCount = $order->passenger_count ?? 1;
-        $this->editVehiclesCount = $order->vehicles_count ?? 1;
-        $this->editWantsAc = (bool) $order->wants_ac;
-        $this->editStartAddress = $order->start_address ?? '';
-        $this->editEndAddress = $order->end_address ?? '';
-        $this->editTotalPrice = $order->total_price;
-        $this->editPaymentStatus = $order->payment_status ?? 'unpaid';
-        $this->editStatus = $order->status ?? 'pending';
-        $this->editNotes = $order->notes ?? '';
-
-        $this->resetValidation();
-        $this->dispatch('open-modal', 'edit-special-order-modal');
-    }
-
-    public function updateOrder()
-    {
-        $validated = $this->validate([
-            'editServiceType'    => ['required', 'in:events,zafona,rehla,safety_airport,dawam,moshwarana'],
-            'editClientName'     => ['required', 'string', 'max:255'],
-            'editPassengerCount' => ['required', 'integer', 'min:1'],
-            'editVehiclesCount'  => ['required', 'integer', 'min:1'],
-            'editWantsAc'        => ['boolean'],
-            'editStartAddress'   => ['required', 'string', 'max:255'],
-            'editEndAddress'     => ['required', 'string', 'max:255'],
-            'editTotalPrice'     => ['nullable', 'numeric', 'min:0'],
-            'editPaymentStatus'  => ['required', 'in:unpaid,partially_paid,paid'],
-            'editStatus'         => ['required', 'in:pending,approved,rejected,in_progress,completed,cancelled'],
-            'editNotes'          => ['nullable', 'string', 'max:1000'],
-        ], [
-            'editClientName.required'   => 'اسم العميل مطلوب.',
-            'editStartAddress.required' => 'نقطة الانطلاق مطلوبة.',
-            'editEndAddress.required'   => 'نقطة الوصول مطلوبة.',
-            'editTotalPrice.numeric'    => 'السعر يجب أن يكون رقماً صحيحاً.',
-        ]);
-
-        $order = ServiceBooking::find($this->editingOrderId);
-        if (! $order) {
-            $this->dispatch('close-modal', 'edit-special-order-modal');
-            return;
-        }
-
-        $order->update([
-            'service_type'    => $validated['editServiceType'],
-            'client_name'     => $validated['editClientName'],
-            'passenger_count' => (int) $validated['editPassengerCount'],
-            'vehicles_count'  => (int) $validated['editVehiclesCount'],
-            'wants_ac'        => (bool) $validated['editWantsAc'],
-            'start_address'   => $validated['editStartAddress'],
-            'end_address'     => $validated['editEndAddress'],
-            'total_price'     => $validated['editTotalPrice'] !== '' && $validated['editTotalPrice'] !== null ? (float) $validated['editTotalPrice'] : null,
-            'payment_status'  => $validated['editPaymentStatus'],
-            'status'          => $validated['editStatus'],
-            'notes'           => $validated['editNotes'],
-        ]);
-
-        ActivityLog::log(
-            'update',
-            'ServiceBooking',
-            "تم تحديث بيانات حجز الخدمة #{$order->id}",
-            $order->id
-        );
-
-        $this->editingOrderId = null;
-        unset($this->stats, $this->orders);
-
-        $this->dispatch('close-modal', 'edit-special-order-modal');
+        return redirect()->route('specialOrder.edit', $orderId);
     }
 
     // ═══════════════════════════════════════════

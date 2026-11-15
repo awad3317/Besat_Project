@@ -313,7 +313,7 @@
                                                                 title="متصل"></span>
                                                         @else
                                                             <span
-                                                                class="absolute rounded-full border-2 border-white bg-gray-400 dark:border-gray-900"
+                                                                class="absolute bg-gray-400 rounded-full border-2 border-white dark:border-gray-900"
                                                                 style="width: 12px; height: 12px; bottom: -1px; right: -1px;"
                                                                 title="غير متصل"></span>
                                                         @endif
@@ -394,7 +394,7 @@
                                                     </span>
                                                 @elseif ($driver->net_balance > 0)
                                                     <span
-                                                        class="px-2.5 py-0.5 font-medium rounded-full text-theme-xs bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-500">
+                                                        class="px-2.5 py-0.5 font-medium rounded-full text-theme-xs bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-white">
                                                         له {{ number_format($driver->net_balance, 2) }}
                                                     </span>
                                                 @else
