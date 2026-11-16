@@ -311,6 +311,153 @@
                 </div>
 
             </div>
+
+            {{-- جدول تقييمات السائق --}}
+            <div class="p-5 rounded-2xl border border-gray-200 dark:border-gray-800 lg:p-6">
+                <div class="mb-6 text-center">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                        <span class="text-warning-500 dark:text-warning/90">تقييمات السائق</span>
+                    </h3>
+                </div>
+                <div class="overflow-x-auto w-full">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="border-gray-100 border-y dark:border-gray-800">
+                                <th class="py-3">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            رقم التقييم
+                                        </p>
+                                    </div>
+                                </th>
+                                <th class="py-3">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            اسم العميل
+                                        </p>
+                                    </div>
+                                </th>
+                                <th class="py-3">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            التقييم
+                                        </p>
+                                    </div>
+                                </th>
+                                <th class="py-3">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            رقم الرحلة
+                                        </p>
+                                    </div>
+                                </th>
+                                <th class="py-3">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                            وقت التقييم
+                                        </p>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                            @forelse ($driver->ratings as $rating)
+                                <tr>
+                                    <td class="py-3">
+                                        <div class="flex items-center">
+                                            <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                                #{{ $rating->id }}
+                                            </p>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <div class="flex gap-3 items-center">
+                                            @if ($rating->user)
+                                                @php
+                                                    $raterPhone = preg_replace('/_deleted_\d+$/', '', $rating->user->phone ?? '');
+                                                @endphp
+                                                <div>
+                                                    <div class="flex gap-1.5 items-center">
+                                                        <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                                            {{ $rating->user->name }}
+                                                        </p>
+                                                        @if ($rating->user->trashed())
+                                                            <span class="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600 dark:bg-red-500/15 dark:text-red-400">
+                                                                محذوف
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                    @if ($raterPhone)
+                                                        <span class="text-gray-500 text-theme-xs dark:text-gray-400">
+                                                            {{ $raterPhone }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <p class="font-medium text-gray-500 text-theme-sm dark:text-gray-400">
+                                                    مستخدم محذوف
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <div class="flex flex-col gap-1">
+                                            <div class="flex gap-1.5 items-center">
+                                                <div class="flex items-center">
+                                                    @for ($star = 1; $star <= 5; $star++)
+                                                        <svg class="w-4 h-4"
+                                                            fill="{{ $star <= (int) $rating->rating_value ? '#dc6803' : '#e5e7eb' }}"
+                                                            viewBox="0 0 20 20">
+                                                            <path
+                                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                        </svg>
+                                                    @endfor
+                                                </div>
+                                                <span class="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                                    ({{ (int) $rating->rating_value }}/5)
+                                                </span>
+                                            </div>
+                                            @if (!empty($rating->comment))
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ $rating->comment }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <div class="flex items-center">
+                                            @if ($rating->request_id)
+                                                <a href="{{ route('request.show', $rating->request_id) }}"
+                                                    class="inline-flex gap-1 items-center px-2.5 py-1 font-medium rounded-full transition bg-warning-50 text-theme-xs text-warning-600 hover:bg-warning-100 dark:bg-warning-500/15 dark:text-orange-400">
+                                                    #{{ $rating->request_id }}
+                                                </a>
+                                            @else
+                                                <span class="text-gray-400 text-theme-xs">—</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <div class="flex items-center">
+                                            <p class="px-2 py-0.5 font-medium rounded-full bg-gray-100 text-theme-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400" dir="ltr">
+                                                {{ $rating->created_at ? $rating->created_at->format('Y/m/d h:i A') : '—' }}
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="p-4 text-center">
+                                        <p class="font-medium text-gray-500 text-theme-sm dark:text-gray-400">
+                                            لا توجد تقييمات لهذا السائق حتى الآن
+                                        </p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
