@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Driver;
+use App\Models\Rating;
+use App\Models\Request as RequestModel;
 use App\Repositories\DriverRepository;
 use App\Services\RatingService;
+use Illuminate\Http\Request;
 
 class DriverController extends Controller
 {
@@ -42,28 +45,57 @@ class DriverController extends Controller
      */
     public function show($id)
     {
-        $driver=$this->driverRepository->getById($id);
-        $driver->load([
-            'requests.user' => fn ($query) => $query->withTrashed(),
-            'ratings' => fn ($query) => $query->with([
-                'user' => fn ($userQuery) => $userQuery->withTrashed(),
-                'request',
-            ])->latest(),
-        ]);
-        $ratings = $driver->ratings;
-        $ratingsCount = $ratings->count();
-        $averageRating = 0;
-        $fullStars = 0;
-        $hasHalfStar = false;
-        if ($ratingsCount > 0) {
-        $averageRating = $ratings->avg('rating_value');
-        $fullStars = floor($averageRating);
+        $driver = Driver::with('vehicle:id,type')->findOrFail($id);
+
+        $ratingStats = Rating::where('driver_id', $driver->id)
+            ->selectRaw('COUNT(*) as total_count, COALESCE(AVG(rating_value), 0) as avg_rating')
+            ->first();
+
+        $ratingsCount = (int) ($ratingStats->total_count ?? 0);
+        $averageRating = $ratingsCount > 0 ? (float) $ratingStats->avg_rating : 0;
+        $fullStars = (int) floor($averageRating);
         $hasHalfStar = ($averageRating - $fullStars) >= 0.5;
-        }
-        return view('pages.drivers.show',compact('driver','averageRating',
-        'ratingsCount',
-        'fullStars',
-        'hasHalfStar'));
+
+        $requests = RequestModel::select([
+            'id',
+            'user_id',
+            'driver_id',
+            'final_price',
+            'status',
+            'start_address',
+            'end_address',
+            'created_at',
+        ])
+            ->where('driver_id', $driver->id)
+            ->with(['user' => fn ($query) => $query->withTrashed()->select('id', 'name', 'phone', 'deleted_at')])
+            ->orderByDesc('id')
+            ->paginate(10, ['*'], 'requests_page')
+            ->withQueryString();
+
+        $ratings = Rating::select([
+            'id',
+            'request_id',
+            'driver_id',
+            'user_id',
+            'rating_value',
+            'comment',
+            'created_at',
+        ])
+            ->where('driver_id', $driver->id)
+            ->with(['user' => fn ($query) => $query->withTrashed()->select('id', 'name', 'phone', 'deleted_at')])
+            ->orderByDesc('id')
+            ->paginate(10, ['*'], 'ratings_page')
+            ->withQueryString();
+
+        return view('pages.drivers.show', compact(
+            'driver',
+            'requests',
+            'ratings',
+            'averageRating',
+            'ratingsCount',
+            'fullStars',
+            'hasHalfStar'
+        ));
     }
 
     /**

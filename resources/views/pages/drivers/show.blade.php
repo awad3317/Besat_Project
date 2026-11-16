@@ -167,12 +167,12 @@
                         <!-- table header end -->
 
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                            @forelse ($driver->requests as $request)
+                            @forelse ($requests as $request)
                                 <tr>
                                     <td class="py-3">
                                         <div class="flex items-center">
                                             <p class="text-gray-500 text-theme-sm dark:text-gray-400">
-                                                {{ $loop->iteration }}
+                                                {{ ($requests->firstItem() ?? 0) + $loop->index }}
                                             </p>
                                         </div>
                                     </td>
@@ -310,6 +310,12 @@
 
                 </div>
 
+                @if ($requests->hasPages())
+                    <div class="px-4 py-3 mt-4 border-t border-gray-200 dark:border-gray-700">
+                        {{ $requests->links() }}
+                    </div>
+                @endif
+
             </div>
 
             {{-- جدول تقييمات السائق --}}
@@ -362,7 +368,7 @@
                         </thead>
 
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                            @forelse ($driver->ratings as $rating)
+                            @forelse ($ratings as $rating)
                                 <tr>
                                     <td class="py-3">
                                         <div class="flex items-center">
@@ -457,6 +463,12 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if ($ratings->hasPages())
+                    <div class="px-4 py-3 mt-4 border-t border-gray-200 dark:border-gray-700">
+                        {{ $ratings->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>
