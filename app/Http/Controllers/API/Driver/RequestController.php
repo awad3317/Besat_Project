@@ -29,6 +29,134 @@ class RequestController extends Controller
         private ChatRepository $chatRepository,
         private LoyaltyWalletService $loyaltyWalletService) 
     {}
+
+    /**
+     * قبول الطلب من قِبل السائق (أول سائق يضغط موافق يأخذ الطلب والبقية يظهر لهم أنه تم قبوله من سائق آخر).
+     */
+    public function acceptTrip(Request $request, $id)
+    {
+        $request->merge(['request_id' => $id]);
+
+        $fields = $request->validate([
+            'request_id' => ['required', Rule::exists('requests', 'id')],
+        ], [
+            'request_id.required' => 'رقم الرحلة مطلوب.',
+            'request_id.exists'   => 'الرحلة المحددة غير موجودة.',
+        ]);
+
+        $driver = auth('sanctum')->user();
+        $requestId = (int) $fields['request_id'];
+        $acceptedTrip = null;
+        $conversationId = null;
+        $alreadyAcceptedBySameDriver = false;
+
+        try {
+            $errorResponse = DB::transaction(function () use (
+                $driver,
+                $requestId,
+                &$acceptedTrip,
+                &$conversationId,
+                &$alreadyAcceptedBySameDriver
+            ) {
+                $trip = TripRequest::where('id', $requestId)->lockForUpdate()->first();
+
+                if (!$trip) {
+                    return ApiResponseClass::sendError('الرحلة غير موجودة.', null, 404);
+                }
+
+                if (!is_null($trip->driver_id) && (int) $trip->driver_id !== (int) $driver->id) {
+                    return ApiResponseClass::sendError('تم قبول الرحلة من قبل سائق آخر قبلك.', null, 400);
+                }
+
+                if (!is_null($trip->driver_id) && (int) $trip->driver_id === (int) $driver->id && $trip->status === 'accepted') {
+                    $conversation = $this->chatRepository->getOrCreateOrderConversation(
+                        $trip->id,
+                        $trip->user_id,
+                        $driver->id
+                    );
+                    $acceptedTrip = $trip;
+                    $conversationId = $conversation->id;
+                    $alreadyAcceptedBySameDriver = true;
+                    return null;
+                }
+
+                if ($trip->status === 'cancelled') {
+                    return ApiResponseClass::sendError('عذراً، تم إلغاء هذه الرحلة.', null, 400);
+                }
+
+                if ($trip->status === 'completed') {
+                    return ApiResponseClass::sendError('هذه الرحلة مكتملة بالفعل.', null, 400);
+                }
+
+                if (!in_array($trip->status, ['searching_driver', 'pending'], true)) {
+                    return ApiResponseClass::sendError('تم قبول الرحلة من قبل سائق آخر قبلك.', null, 400);
+                }
+
+                $conversation = $this->chatRepository->getOrCreateOrderConversation(
+                    $trip->id,
+                    $trip->user_id,
+                    $driver->id
+                );
+
+                $trip->update([
+                    'driver_id' => $driver->id,
+                    'status'    => 'accepted',
+                ]);
+
+                $acceptedTrip = $trip;
+                $conversationId = $conversation->id;
+
+                return null;
+            });
+
+            if ($errorResponse !== null) {
+                return $errorResponse;
+            }
+
+            if ($acceptedTrip && !$alreadyAcceptedBySameDriver) {
+                $acceptedTrip->load(['user.devices', 'driver']);
+
+                if ($acceptedTrip->user && $acceptedTrip->user->is_notifications_enabled) {
+                    try {
+                        $acceptedTrip->user->notify(new TripAcceptedNotification($acceptedTrip, $conversationId));
+                    } catch (\Throwable $e) {
+                        Log::error("Database TripAcceptedNotification error: " . $e->getMessage());
+                    }
+
+                    $deviceTokens = $acceptedTrip->user->devices->pluck('device_token')->filter()->toArray();
+                    foreach ($deviceTokens as $token) {
+                        try {
+                            $this->firebaseService->sendNotification(
+                                $token,
+                                'تم قبول الرحلة!',
+                                'الكابتن ' . $driver->name . ' في طريقه إليك الآن.',
+                                [
+                                    'type' =>'accept_trip',
+                                    'new_request' => 'false',
+                                    'new_message'=> 'false',
+                                    'request_id' => (string) $acceptedTrip->id,
+                                    'driver_id'  => (string) $driver->id,
+                                    'conversation_id' => (string) $conversationId,
+                                    'status' => 'accepted',
+                                    'click_action'=> 'FLUTTER_NOTIFICATION_CLICK',
+                                ]
+                            );
+                        } catch (Exception $e) {
+                            Log::error("FCM Driver accept trip Error: " . $e->getMessage());
+                        }
+                    }
+                }
+            }
+
+            $responseData = $acceptedTrip->fresh(['user:id,name,phone', 'vehicle:id,type', 'stops'])->toArray();
+            $responseData['conversation_id'] = $conversationId;
+
+            return ApiResponseClass::sendResponse($responseData, 'تم قبول الرحلة بنجاح.');
+        } catch (Exception $e) {
+            Log::error('Error accepting trip: ' . $e->getMessage());
+            return ApiResponseClass::sendError('حدث خطأ أثناء قبول الرحلة.', $e->getMessage(), 500);
+        }
+    }
     public function updateTripStatus(Request $request)
     {
         $fields = $request->validate([
@@ -55,11 +183,11 @@ class RequestController extends Controller
                 }
                 
                 if ($targetStatus === 'accepted'){
+                    if (!is_null($trip->driver_id) && (int) $trip->driver_id !== (int) $driver->id) {
+                        return ApiResponseClass::sendError('تم قبول الرحلة من قبل سائق آخر قبلك.', null, 400);
+                    }
                     if (!in_array($trip->status, ['searching_driver', 'pending'])) {
                         return ApiResponseClass::sendError('لا يمكن قبول هذه الرحلة لأنها ليست قيد البحث عن سائق.', null, 400);
-                    }
-                    if (!is_null($trip->driver_id) && $trip->driver_id !== $driver->id) {
-                        return ApiResponseClass::sendError('تم قبول هذه الرحلة بالفعل من قِبل سائق آخر.', null, 400);
                     }
                     $conversation = $this->chatRepository->getOrCreateOrderConversation(
                         $trip->id,

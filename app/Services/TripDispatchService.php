@@ -47,12 +47,12 @@ class TripDispatchService
                 $title = 'طلب جديد';
                 $body  = 'يوجد طلب جديد في منطقتك، اضغط لقبول الطلب';
                 $data  = [
-                    'new_request'     => 'true',
-                    'new_message'     => 'false',
-                    'request_id'      => (string) $tripRequest->id,
-                    'start_latitude'  => (string) $tripRequest->start_latitude,
+                    'new_request' => 'true',
+                    'new_message' => 'false',
+                    'request_id' => (string) $tripRequest->id,
+                    'start_latitude' => (string) $tripRequest->start_latitude,
                     'start_longitude' => (string) $tripRequest->start_longitude,
-                    'start_address'   => (string) $tripRequest->start_address,
+                    'start_address'=> (string) $tripRequest->start_address,
                 ];
 
                 foreach ($nearestDrivers as $driver) {

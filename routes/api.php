@@ -83,6 +83,7 @@ Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
         Route::post('/driver/updateOnlineStatus', [DriverController::class, 'updateOnlineStatus']);
         Route::get('/driver/requests', [DriverController::class, 'allRequest']);
         Route::get('/driver/requests/history', [DriverController::class, 'requestHistory']);
+        Route::post('/driver/requests/{id}/accept', [DriverRequestController::class, 'acceptTrip']);
         Route::post('/driver/requests/update-status', [DriverRequestController::class, 'updateTripStatus']);
         Route::get('/driver/financial-summary', [DriverController::class, 'getFinancialSummary']);
         Route::get('/driver/statistics', [DriverController::class, 'getDriverStats']);
