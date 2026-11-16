@@ -12,6 +12,7 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\FirebaseController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\SpecialOrderController;
 use App\Http\Controllers\SystemSettingsController;
@@ -30,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::post('users/{id}/add-balance', [UserController::class, 'addBalance'])->name('users.add-balance');
     Route::resource('drivers', DriverController::class);
     Route::resource('request', RequestController::class);
+    Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
     Route::resource('Coupon', CouponController::class);
     Route::resource('Vehicle', VehicleController::class);
     Route::resource('vehiclePricing', vehiclePricingController::class);
