@@ -266,7 +266,7 @@
                                     </p>
                                 </td>
                                 <td class="py-3 text-center">
-                                    @if ($request->canAssignDriver())
+                                    @if ($request->canChangeVehicle())
                                         <select
                                             x-on:change="
                                             const newId = $event.target.value;

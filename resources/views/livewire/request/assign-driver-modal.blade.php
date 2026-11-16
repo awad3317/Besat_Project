@@ -65,7 +65,7 @@
                         <h4 class="text-lg font-bold text-gray-800 dark:text-white/90">
                             تعيين سائق للطلب #{{ $selectedRequestId }}
                         </h4>
-                        @if ($req && $canAssign)
+                        @if ($req && $req->canChangeVehicle())
                             <div class="inline-flex gap-1.5 items-center">
                                 <span class="text-xs text-gray-500 dark:text-gray-400">نوع المركبة:</span>
                                 <select

@@ -512,8 +512,10 @@ class Index extends Component
                 return;
             }
 
-            if (! $request->canAssignDriver()) {
-                $errorMessage = 'لا يمكن تغيير نوع المركبة لرحلة مكتملة أو ملغية.';
+            if (! $request->canChangeVehicle()) {
+                $errorMessage = ! $request->canAssignDriver()
+                    ? 'لا يمكن تغيير نوع المركبة لرحلة مكتملة أو ملغية.'
+                    : 'لا يمكن تغيير نوع المركبة بعد قبول الرحلة أو تعيين سائق لها.';
                 return;
             }
 

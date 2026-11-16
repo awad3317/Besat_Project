@@ -97,6 +97,16 @@ class Request extends Model
         return ! in_array($this->status, ['completed', 'cancelled'], true);
     }
 
+    /**
+     * التحقق مما إذا كان يمكن تغيير نوع المركبة في الطلب (فقط قبل قبول الرحلة أو تعيين سائق لها).
+     */
+    public function canChangeVehicle(): bool
+    {
+        return $this->canAssignDriver()
+            && is_null($this->driver_id)
+            && ! in_array($this->status, ['accepted', 'on_trip', 'in_progress'], true);
+    }
+
     public static function statusConfig()
     {
         return [
