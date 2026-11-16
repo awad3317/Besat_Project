@@ -247,7 +247,7 @@
                                             default => $request->payment_method ?: 'غير محدد',
                                         };
                                         $paymentClass = match ($request->payment_method) {
-                                            'wallet' => 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400',
+                                            'wallet' => 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-gray-400',
                                             'digital_payment', 'deposit' => 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400',
                                             'cash' => 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400',
                                             default => 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',

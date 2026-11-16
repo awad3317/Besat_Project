@@ -174,7 +174,7 @@
               $hasHalfStar = ($avgRating - $fullStars) >= 0.5;
             @endphp
             <a href="{{ route('drivers.show', $topDriver->id) }}"
-              class="flex gap-3 p-3.5 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50 dark:border-gray-800/80 dark:hover:bg-gray-800/60">
+              class="flex gap-3 p-2.5 mt-2 rounded-xl border transition-colors dark:border-gray-800 dark:hover:bg-gray-800">
               <div
                 class="overflow-hidden relative flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 dark:border-gray-800">
                 <img src="{{ $driverAvatar }}" alt="{{ $topDriver->name }}"

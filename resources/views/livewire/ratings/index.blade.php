@@ -95,19 +95,19 @@
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
                         سجل <span class="text-warning-500 dark:text-warning/90">تقييمات العملاء</span>
                     </h3>
-                    <div class="inline-flex gap-2 items-center self-start px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
+                    {{-- <div class="inline-flex gap-2 items-center self-start px-3 py-1.5 bg-gray-100 rounded-lg dark:bg-gray-800">
                         <svg class="w-4 h-4" fill="#dc6803" viewBox="0 0 20 20">
                             <path
                                 d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
-                        <span class="text-xs font-medium text-gray-600 dark:text-gray-300">
+                        {{-- <span class="text-xs font-medium text-gray-600 dark:text-gray-300">
                             المتوسط العام:
                             <strong class="font-bold text-gray-800 dark:text-white/90">
                                 {{ number_format($this->stats['average'] ?? 0, 1) }}
                             </strong>
                             / 5
-                        </span>
-                    </div>
+                        </span> --}}
+                    {{-- </div>  --}}
                 </div>
 
                 <div class="flex flex-col gap-4 items-end sm:flex-row">
@@ -129,20 +129,7 @@
                         </div>
                     </div>
 
-                    <div class="w-full sm:w-52">
-                        <label class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
-                            تصفية بعدد النجوم
-                        </label>
-                        <select wire:model.live="starFilter"
-                            class="mt-1 px-3 py-2 w-full h-10 text-sm text-gray-800 bg-transparent rounded-lg border border-gray-300 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                            <option value="">جميع النجوم</option>
-                            <option value="5">5 نجوم (ممتاز)</option>
-                            <option value="4">4 نجوم (جيد جداً)</option>
-                            <option value="3">3 نجوم (متوسط)</option>
-                            <option value="2">نجمتان (ضعيف)</option>
-                            <option value="1">نجمة واحدة (سيئ)</option>
-                        </select>
-                    </div>
+                  
                 </div>
             </div>
 
@@ -290,7 +277,7 @@
                                         {{-- التعليق --}}
                                         <td class="px-5 py-4 max-w-xs sm:px-6">
                                             @if (!empty(trim((string) $rating->comment)))
-                                                <p class="leading-relaxed text-gray-700 break-words whitespace-normal text-theme-sm dark:text-gray-300">
+                                                <p class="leading-relaxed text-gray-700 whitespace-normal break-words text-theme-sm dark:text-gray-300">
                                                     {{ $rating->comment }}
                                                 </p>
                                             @else

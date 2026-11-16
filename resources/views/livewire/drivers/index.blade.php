@@ -111,7 +111,7 @@
 
         <!-- أعلى سائق عليه مديونية -->
         <div
-            class="relative flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+            class="relative flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-white dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
             <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
                 <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -131,7 +131,7 @@
 
         <!-- أكثر سائق له مستحقات -->
         <div
-            class="relative flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+            class="relative flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-white dark:border-gray-800 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
             <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
                 <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -140,7 +140,7 @@
             </div>
             <div class="mt-3 w-full">
                 <span class="text-xs text-gray-500 dark:text-gray-400">أكثر سائق له مستحقات</span>
-                <h4 class="mt-1 text-lg font-bold text-gray-800 truncate dark:text-white/90">
+                <h4 class="mt-1 text-lg font-bold text-gray-800 truncate dark:text-white">
                     {{ $this->stats['highest_dues_name'] }}
                 </h4>
                 <p class="mt-1 text-sm font-medium text-brand-500">
@@ -396,7 +396,7 @@
                                                     @if ($driver->is_active)
                                                         <!-- شارة حالة "نشط" -->
                                                         <span
-                                                            class="inline-flex gap-1.5 items-center px-3 py-1 text-sm font-medium rounded-full border bg-success-50 text-success-700 hover:bg-success-100 dark:bg-success-500/15 dark:text-success-400 dark:hover:bg-success-500/25 border-success-200 dark:border-success-500/20">
+                                                            class="inline-flex gap-1.5 items-center px-3 py-1 text-sm font-medium rounded-full border bg-success-50 text-success-700 hover:bg-success-500 dark:bg-success-500/15 dark:text-success-400 dark:hover:bg-success-500/25 border-success-200 dark:border-gray-800">
                                                             <svg class="w-4 h-4 text-success-600 dark:text-success-400"
                                                                 fill="none" stroke="currentColor"
                                                                 stroke-width="2.5" viewBox="0 0 24 24">
@@ -408,7 +408,7 @@
                                                     @else
                                                         <!-- شارة حالة "غير نشط" -->
                                                         <span
-                                                            class="inline-flex gap-1.5 items-center px-3 py-1 text-sm font-medium rounded-full border bg-error-50 text-error-700 hover:bg-error-100 dark:bg-error-500/15 dark:text-error-400 dark:hover:bg-error-500/25 border-error-200 dark:border-error-500/20">
+                                                            class="inline-flex gap-1.5 items-center px-3 py-1 text-sm font-medium rounded-full border bg-error-50 text-error-700 hover:bg-error-100 dark:bg-error-500/15 dark:text-error-400 dark:hover:bg-error-500/25 border-error-200 dark:border-gray-800">
                                                             <svg class="w-4 h-4 text-error-600 dark:text-error-400"
                                                                 fill="none" stroke="currentColor"
                                                                 stroke-width="2.5" viewBox="0 0 24 24">

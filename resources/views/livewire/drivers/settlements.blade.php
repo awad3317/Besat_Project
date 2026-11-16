@@ -85,7 +85,7 @@
         <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
             
             <div class="flex gap-3 items-center">
-                <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-brand-50 dark:bg-brand-500 text-brand-500">
+                <div class="flex justify-center items-center w-10 h-10 bg-gray-200 rounded-lg text-brand-500 dark:bg-brand-500 dark:text-white">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="2" y="4" width="20" height="16" rx="2" />
                         <line x1="2" y1="10" x2="22" y2="10" />
@@ -132,7 +132,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     @forelse($this->settlements as $settlement)
-                    <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                    <tr class="transition hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td class="px-4 py-4">
                             <span class="text-sm font-bold text-gray-800 dark:text-white/90">#{{ $settlement->id }}</span>
                         </td>
