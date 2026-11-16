@@ -24,44 +24,69 @@
 <div class="mx-auto max-w-(--breakpoint-2xl) space-y-6" dir="rtl">
 
     {{-- بطاقات النظرة العامة العلوية --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
         {{-- حالة الحجز --}}
-        <div class="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900 shadow-sm flex flex-col justify-between">
-            <span class="text-xs text-gray-500 dark:text-gray-400">حالة الحجز</span>
-            <div class="mt-2 flex items-center gap-2 flex-wrap">
-                <span class="inline-flex rounded-full px-3 py-1 text-sm font-semibold {{ $order->status_class }}">
-                    {{ $order->status_text }}
-                </span>
-                <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $order->payment_status_class }}">
-                    {{ $order->payment_status_text }}
-                </span>
+        <div class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">حالة الحجز</span>
+                <div class="mt-1.5 flex items-center gap-2 flex-wrap">
+                    <span class="inline-flex rounded-full px-2.5 py-0.5 text-sm font-medium {{ $order->status_class }}">
+                        {{ $order->status_text }}
+                    </span>
+                    <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $order->payment_status_class }}">
+                        {{ $order->payment_status_text }}
+                    </span>
+                </div>
             </div>
         </div>
 
         {{-- نوع الخدمة --}}
-        <div class="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900 shadow-sm flex flex-col justify-between">
-            <span class="text-xs text-gray-500 dark:text-gray-400">نوع الخدمة</span>
-            <h4 class="mt-2 text-base font-bold text-brand-600 dark:text-brand-400">
-                {{ $order->service_type_text }}
-            </h4>
+        <div class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+            </div>
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">نوع الخدمة</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                    {{ $order->service_type_text }}
+                </h4>
+            </div>
         </div>
 
         {{-- تاريخ الحجز --}}
-        <div class="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900 shadow-sm flex flex-col justify-between">
-            <span class="text-xs text-gray-500 dark:text-gray-400">تاريخ الإنشاء</span>
-            <h4 class="mt-2 text-base font-bold text-gray-900 dark:text-white" dir="ltr">
-                {{ $order->created_at?->format('Y-m-d H:i') }}
-            </h4>
+        <div class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">تاريخ الإنشاء</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90" dir="ltr">
+                    {{ $order->created_at?->format('Y-m-d H:i') }}
+                </h4>
+            </div>
         </div>
 
         {{-- السعر الإجمالي --}}
-        <div class="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900 shadow-sm flex flex-col justify-between">
-            <span class="text-xs text-gray-500 dark:text-gray-400">السعر الإجمالي</span>
-            <div class="mt-2 flex items-baseline gap-1">
-                <span class="text-2xl font-black text-brand-500">
-                    {{ $order->total_price !== null ? number_format($order->total_price) : 'لم يحدد' }}
-                </span>
-                <span class="text-xs font-bold text-gray-400">{{ config('app.currency_symbol', 'ر.ي') }}</span>
+        <div class="flex flex-col items-start justify-between rounded-xl bg-white p-4 border border-brand-500 dark:border-brand-500 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="mt-3 w-full">
+                <span class="text-xs text-gray-500 dark:text-gray-400">السعر الإجمالي</span>
+                <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
+                    {{ $order->total_price !== null ? number_format($order->total_price) . ' ' . config('app.currency_symbol', 'ر.ي') : 'لم يحدد' }}
+                </h4>
             </div>
         </div>
     </div>

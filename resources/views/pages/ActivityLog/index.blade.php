@@ -32,15 +32,15 @@
             this.loadingFilter = filter;
             setTimeout(() => { window.location.href = url; }, 380);
         }
-    }" class="flex flex-col flex-wrap gap-4 mb-6 sm:flex-row md:gap-6">
+    }" class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
         {{-- إجمالي النشاطات --}}
         <div @click="selectFilter('all', '{{ route('log.index') }}')"
             :class="loadingFilter && loadingFilter !== 'all' ? 'border-gray-200 dark:border-gray-800' : ''"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <span x-show="loadingFilter === 'all'" x-cloak
                 class="card-border-loader pointer-events-none absolute inset-[-1px] z-10 rounded-xl border-2 border-brand-500 dark:border-brand-500"></span>
-            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
-                <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" stroke-width="2.5"
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -56,12 +56,12 @@
         {{-- نشاطات اليوم --}}
         <div @click="selectFilter('today', '{{ route('log.index', ['filter' => 'today']) }}')"
             :class="loadingFilter && loadingFilter !== 'today' ? 'border-gray-200 dark:border-gray-800' : ''"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'today') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'today') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <span x-show="loadingFilter === 'today'" x-cloak
                 class="card-border-loader pointer-events-none absolute inset-[-1px] z-10 rounded-xl border-2 border-brand-500 dark:border-brand-500"></span>
-            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
-                <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor"
-                    stroke-width="2.5" viewBox="0 0 24 24">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="24" height="24" fill="none" stroke="#dc6803"
+                    stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -76,13 +76,13 @@
         {{-- نشاطات أمس --}}
         <div @click="selectFilter('yesterday', '{{ route('log.index', ['filter' => 'yesterday']) }}')"
             :class="loadingFilter && loadingFilter !== 'yesterday' ? 'border-gray-200 dark:border-gray-800' : ''"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'yesterday') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'yesterday') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <span x-show="loadingFilter === 'yesterday'" x-cloak
                 class="card-border-loader pointer-events-none absolute inset-[-1px] z-10 rounded-xl border-2 border-brand-500 dark:border-brand-500"></span>
-            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
-                <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor"
-                    stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="24" height="24" fill="none" stroke="#dc6803"
+                    stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 103.05-6.75L3 8m0 0V3m0 5h5m4-1v5l3 2" />
                 </svg>
             </div>
             <div class="mt-3 w-full text-right">
@@ -95,12 +95,12 @@
         {{-- نشاطات الأسبوع الماضي --}}
         <div @click="selectFilter('last_week', '{{ route('log.index', ['filter' => 'last_week']) }}')"
             :class="loadingFilter && loadingFilter !== 'last_week' ? 'border-gray-200 dark:border-gray-800' : ''"
-            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md hover:border-brand-500 dark:hover:border-brand-500 flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'last_week') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if ($currentFilter === 'last_week') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
             <span x-show="loadingFilter === 'last_week'" x-cloak
                 class="card-border-loader pointer-events-none absolute inset-[-1px] z-10 rounded-xl border-2 border-brand-500 dark:border-brand-500"></span>
-            <div class="flex justify-center items-center w-10 h-10 rounded-lg bg-warning-50 dark:bg-gray-800">
-                <svg class="w-5 h-5 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor"
-                    stroke-width="2.5" viewBox="0 0 24 24">
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="24" height="24" fill="none" stroke="#dc6803"
+                    stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                 </svg>

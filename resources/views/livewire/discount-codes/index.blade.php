@@ -1,15 +1,5 @@
 <div class="p-4 md:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen font-outfit" dir="rtl">
     <style>
-        .stats-three-cols {
-            display: grid;
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-            gap: 1.25rem;
-        }
-        @media (min-width: 640px) {
-            .stats-three-cols {
-                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-            }
-        }
         .coupons-three-cols {
             display: grid;
             grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -29,13 +19,13 @@
 
     <div class="max-w-[1400px] mx-auto space-y-6">
 
-        <!-- Top Stats Cards (صف من 3 أعمدة) -->
-        <div class="stats-three-cols mb-6">
+        <!-- Top Stats Cards -->
+        <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
 
             <!-- Total Coupons Card -->
             <div wire:click="applyFilter('all')" wire:loading.class="opacity-50"
-                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-5 dark:bg-white/[0.03] transition hover:shadow-md
-                @if($filter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
+                @if($filter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
 
                 {{-- Loading Spinner --}}
                 <div wire:loading wire:target="applyFilter('all')"
@@ -44,25 +34,24 @@
                 </div>
 
                 {{-- Icon --}}
-                <div
-                    class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
-                    <svg width="26" height="26" fill="none" stroke="#dc6803" stroke-width="1.5" viewBox="0 0 24 24">
+                <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                    <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="1.8" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
                     </svg>
                 </div>
 
                 {{-- Content --}}
-                <div class="mt-4 w-full">
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">إجمالي الكوبونات</span>
-                    <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">{{ $this->stats['total'] }}</h4>
+                <div class="mt-3 w-full">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي الكوبونات</span>
+                    <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['total'] }}</h4>
                 </div>
             </div>
 
             <!-- Active Coupons Card -->
             <div wire:click="applyFilter('active')" wire:loading.class="opacity-50"
-                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-5 dark:bg-white/[0.03] transition hover:shadow-md
-                @if($filter == 'active') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
+                @if($filter == 'active') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
 
                 {{-- Loading Spinner --}}
                 <div wire:loading wire:target="applyFilter('active')"
@@ -70,24 +59,24 @@
                     <div class="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
                 </div>
 
-                <div
-                    class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
-                    <svg fill="#dc6803" height="26" width="26" viewBox="0 0 24 24" stroke="#dc6803" stroke-width="0.5">
-                        <path d="M8.6,20.1l-7.8-8l1.4-1.4l6.4,6.5L21.8,3.9l1.4,1.4L8.6,20.1z"></path>
+                <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                    <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
 
                 {{-- Content --}}
-                <div class="mt-4 w-full">
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">الكوبونات النشطة</span>
-                    <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">{{ $this->stats['active'] }}</h4>
+                <div class="mt-3 w-full">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">الكوبونات النشطة</span>
+                    <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['active'] }}</h4>
                 </div>
             </div>
 
             <!-- Inactive Coupons Card -->
             <div wire:click="applyFilter('inactive')" wire:loading.class="opacity-50"
-                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-5 dark:bg-white/[0.03] transition hover:shadow-md
-                @if($filter == 'inactive') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
+                @if($filter == 'inactive') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
 
                 {{-- Loading Spinner --}}
                 <div wire:loading wire:target="applyFilter('inactive')"
@@ -96,17 +85,17 @@
                 </div>
 
                 {{-- Icon --}}
-                <div
-                    class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-gray-100 dark:border-gray-700 shadow-theme-xs bg-gray-50 dark:bg-gray-800 text-brand-500">
-                    <svg width="26" height="26" viewBox="0 0 512 512" fill="#dc6803">
-                        <path d="M256,48C141.1,48,48,141.1,48,256s93.1,208,208,208,208-93.1,208-208S370.9,48,256,48Zm0,374.4c-91.8,0-166.4-74.6-166.4-166.4,0-38.6,13.2-74.2,35.2-102.5l233.7,233.7c-28.3,22-63.9,35.2-102.5,35.2Zm131.2-63.9L153.5,124.8c28.3-22,63.9-35.2,102.5-35.2,91.8,0,166.4,74.6,166.4,166.4,0,38.6-13.2,74.2-35.2,102.3Z" />
+                <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc6803" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <line x1="5.64" y1="5.64" x2="18.36" y2="18.36"></line>
                     </svg>
                 </div>
 
                 {{-- Content --}}
-                <div class="mt-4 w-full">
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">الكوبونات المنتهية</span>
-                    <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">{{ $this->stats['inactive'] }}</h4>
+                <div class="mt-3 w-full">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">الكوبونات المنتهية</span>
+                    <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['inactive'] }}</h4>
                 </div>
             </div>
 

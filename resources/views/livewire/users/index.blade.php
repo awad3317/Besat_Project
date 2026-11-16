@@ -7,7 +7,7 @@
          wire:loading.class="opacity-50"
          wire:target="applyFilter('all')"
          class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] 
-                @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+                @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
         
         <div wire:loading wire:target="applyFilter('all')" 
              class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
@@ -15,8 +15,9 @@
         </div>
         
         <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-            <svg fill="#dc6803" width="30" height="30" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path d="M26,26V4H18v6H12v6H6V26H2v2H30V26ZM8,26V18h4v8Zm6,0V12h4V26Zm6,0V6h4V26Z"></path>
+            <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
         </div>
         <div class="mt-3 w-full">
@@ -32,7 +33,7 @@
          wire:loading.class="opacity-50"
          wire:target="applyFilter('banned')"
          class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] 
-                @if ($activeFilter == 'banned') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+                @if ($activeFilter == 'banned') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
         
         <div wire:loading wire:target="applyFilter('banned')" 
              class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70 rounded-xl z-10">
@@ -40,8 +41,9 @@
         </div>
         
         <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-            <svg width="30" height="30" viewBox="0 0 512 512" fill="#dc6803">
-                <path d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z"></path>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc6803" stroke-width="2">
+                <circle cx="12" cy="12" r="9"></circle>
+                <line x1="5.64" y1="5.64" x2="18.36" y2="18.36"></line>
             </svg>
         </div>
         <div class="mt-3 w-full">

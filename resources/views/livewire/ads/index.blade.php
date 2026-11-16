@@ -2,69 +2,59 @@
     <div class="max-w-[1400px] mx-auto space-y-6">
 
         {{-- Stats Cards --}}
-        <div class="flex flex-col flex-wrap gap-4 mb-1 sm:flex-row md:gap-6">
+        <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
 
             {{-- Total Ads Card --}}
             <div wire:click="applyFilter('all')" wire:loading.class="opacity-50"
-                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-5 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
-                @if ($filter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
+                @if ($filter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
 
                 <div wire:loading wire:target="applyFilter('all')"
                     class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                     <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
                 </div>
 
-                <div
-                    class="flex flex-shrink-0 justify-center items-center w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 dark:border-gray-700 shadow-theme-xs dark:bg-gray-800 text-brand-500">
-                    <svg width="26" height="26" fill="none" stroke="#dc6803" stroke-width="1.5"
+                <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                    <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="1.8"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                     </svg>
                 </div>
-                <div class="mt-4 w-full">
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">إجمالي الإعلانات</span>
-                    <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">{{ $this->stats['total'] }}
+                <div class="mt-3 w-full">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">إجمالي الإعلانات</span>
+                    <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['total'] }}
                     </h4>
                 </div>
             </div>
 
             {{-- Active Ads Card --}}
             <div wire:click="applyFilter('active')" wire:loading.class="opacity-50"
-                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-5 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
-                @if ($filter == 'active') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
+                @if ($filter == 'active') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
 
                 <div wire:loading wire:target="applyFilter('active')"
                     class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
                     <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
                 </div>
 
-                <div
-                    class="flex flex-shrink-0 justify-center items-center w-10 h-10 bg-gray-50 rounded-lg border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs dark:bg-gray-800 text-brand-500">
-                    <svg fill="#dc6803" height="30" width="30" version="1.1"
-                        xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" xml:space="preserve"
-                        stroke="#dc6803" stroke-width="0.00024000000000000003">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                        <g id="SVGRepo_iconCarrier">
-                            <g id="active">
-                                <path d="M8.6,20.1l-7.8-8l1.4-1.4l6.4,6.5L21.8,3.9l1.4,1.4L8.6,20.1z"></path>
-                            </g>
-                        </g>
+                <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                    <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <div class="mt-4 w-full">
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">الإعلانات النشطة</span>
-                    <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">{{ $this->stats['active'] }}
+                <div class="mt-3 w-full">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">الإعلانات النشطة</span>
+                    <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['active'] }}
                     </h4>
                 </div>
             </div>
 
             {{-- Inactive Ads Card --}}
             <div wire:click="applyFilter('inactive')" wire:loading.class="opacity-50"
-                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-5 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
-                @if ($filter == 'inactive') border border-brand-500 dark:border-brand-500 @else border border-gray-100 dark:border-gray-800 @endif">
+                class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
+                @if ($filter == 'inactive') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
 
                 <div wire:loading wire:target="applyFilter('inactive')"
                     class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
@@ -72,34 +62,21 @@
                 </div>
 
                 {{-- Icon --}}
-                <div
-                    class="flex flex-shrink-0 justify-center items-center w-10 h-10 bg-gray-50 rounded-lg border-2 border-gray-100 dark:border-gray-700 shadow-theme-xs dark:bg-gray-800 text-brand-500">
-                    <svg width="30" height="30" viewBox="0 0 512 512" version="1.1"
-                        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#dc6803"
-                        stroke="#dc6803">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                        <g id="SVGRepo_iconCarrier">
-                            <title>cancelled</title>
-                            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                <g id="add" fill="#dc6803" transform="translate(42.666667, 42.666667)">
-                                    <path
-                                        d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z"
-                                        id="Combined-Shape"> </path>
-                                </g>
-                            </g>
-                        </g>
+                <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc6803" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <line x1="5.64" y1="5.64" x2="18.36" y2="18.36"></line>
                     </svg>
                 </div>
-                <div class="mt-4 w-full">
-                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400">الإعلانات المتوقفة</span>
-                    <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">{{ $this->stats['inactive'] }}
+                <div class="mt-3 w-full">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">الإعلانات المتوقفة</span>
+                    <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['inactive'] }}
                     </h4>
                 </div>
             </div>
 
             <div
-                class="flex m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+                class="hidden sm:flex flex-col items-start justify-between rounded-xl flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
 
             </div>
 

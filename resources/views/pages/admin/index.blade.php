@@ -14,18 +14,13 @@
 @section('content')
     <div class=" mx-auto max-w-(--breakpoint-2xl)">
         <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
-            <div class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if(!request('is_banned') == 1) border border-brand-500 dark:border-brand-500 @endif"
+            <div class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if(!request('is_banned')) border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif"
                 onclick="window.location.href='{{ route('admins.index') }}'">
 
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                    <svg fill="#dc6803" width="24" height="24" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="27" y="11" width="2" height="4"></rect>
-                        <rect x="3" y="11" width="2" height="4"></rect>
-                        <rect x="20" y="20" width="2" height="2"></rect>
-                        <rect x="10" y="20" width="2" height="2"></rect>
-                        <path
-                            d="M21,4H11A5.0059,5.0059,0,0,0,6,9V23a2.0023,2.0023,0,0,0,2,2v3h2V25H22v3h2V25a2.0027,2.0027,0,0,0,2-2V9A5.0059,5.0059,0,0,0,21,4Zm3,6,.0009,6H8V10ZM11,6H21a2.995,2.995,0,0,1,2.8157,2H8.1843A2.995,2.995,0,0,1,11,6ZM8,23V18H24.0012l.0008,5Z"
-                            transform="translate(0 0)"></path>
+                    <svg width="24" height="24" fill="none" stroke="#dc6803" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                     </svg>
                 </div>
                 <div class="mt-3 w-full">
@@ -35,23 +30,12 @@
 
             </div>
 
-            <div class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if(request('is_banned') == 1) border border-brand-500 dark:border-brand-500 @endif"
+            <div class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] @if(request('is_banned') == 1) border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif"
                 onclick="window.location.href='{{ route('admins.index') }}?is_banned=1'">
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                    <svg width="30" height="30" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink" fill="#dc6803" stroke="#dc6803">
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                        <g id="SVGRepo_iconCarrier">
-                            <title>cancelled</title>
-                            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                <g id="add" fill="#dc6803" transform="translate(42.666667, 42.666667)">
-                                    <path
-                                        d="M213.333333,1.42108547e-14 C331.15408,1.42108547e-14 426.666667,95.5125867 426.666667,213.333333 C426.666667,331.15408 331.15408,426.666667 213.333333,426.666667 C95.5125867,426.666667 4.26325641e-14,331.15408 4.26325641e-14,213.333333 C4.26325641e-14,95.5125867 95.5125867,1.42108547e-14 213.333333,1.42108547e-14 Z M42.6666667,213.333333 C42.6666667,307.589931 119.076736,384 213.333333,384 C252.77254,384 289.087204,370.622239 317.987133,348.156908 L78.5096363,108.679691 C56.044379,137.579595 42.6666667,173.894198 42.6666667,213.333333 Z M213.333333,42.6666667 C173.894198,42.6666667 137.579595,56.044379 108.679691,78.5096363 L348.156908,317.987133 C370.622239,289.087204 384,252.77254 384,213.333333 C384,119.076736 307.589931,42.6666667 213.333333,42.6666667 Z"
-                                        id="Combined-Shape"> </path>
-                                </g>
-                            </g>
-                        </g>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc6803" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <line x1="5.64" y1="5.64" x2="18.36" y2="18.36"></line>
                     </svg>
                 </div>
                 <div class="mt-3 w-full">
@@ -63,12 +47,12 @@
             </div>
 
             <div
-                class="flex m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+                class="hidden sm:flex flex-col items-start justify-between rounded-xl flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
 
             </div>
 
             <div
-                class="flex  m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+                class="hidden sm:flex flex-col items-start justify-between rounded-xl flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
 
             </div>
         </div>

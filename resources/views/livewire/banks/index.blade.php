@@ -1,10 +1,14 @@
 <div>
     <!-- الكروت العلوية (الإحصائيات) -->
     <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
-        <div wire:click.debounce.150ms="applyFilter('all')"
-             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px]
-                    @if ($activeFilter == 'all') border border-brand-500 @endif">
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+        <div wire:click.debounce.150ms="applyFilter('all')" wire:loading.class="opacity-50" wire:target="applyFilter"
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
+                    @if ($activeFilter == 'all') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            <div wire:loading wire:target="applyFilter('all')"
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+            </div>
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
                 <svg fill="#dc6803" width="24" height="24" viewBox="0 0 24 24">
                     <path d="M4 10h3v7H4zm6.5 0h3v7h-3zM17 10h3v7h-3zm-15 8h20v2H2zm10-17L1 6v2h22V6z"/>
                 </svg>
@@ -15,21 +19,25 @@
             </div>
         </div>
 
-        <div wire:click.debounce.150ms="applyFilter('stopped')"
-             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px]
-                    @if ($activeFilter == 'stopped') border border-brand-500 @endif">
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc6803" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+        <div wire:click.debounce.150ms="applyFilter('stopped')" wire:loading.class="opacity-50" wire:target="applyFilter"
+             class="relative flex cursor-pointer flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]
+                    @if ($activeFilter == 'stopped') border border-brand-500 dark:border-brand-500 @else border border-gray-200 dark:border-gray-800 @endif">
+            <div wire:loading wire:target="applyFilter('stopped')"
+                class="flex absolute inset-0 z-10 justify-center items-center rounded-xl bg-white/70 dark:bg-gray-900/70">
+                <div class="w-6 h-6 rounded-full border-2 animate-spin border-brand-500 border-t-transparent"></div>
+            </div>
+            <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc6803" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><line x1="5.64" y1="5.64" x2="18.36" y2="18.36"></line></svg>
             </div>
             <div class="mt-3 w-full">
                 <span class="text-xs text-gray-500 dark:text-gray-400">الطرق المتوقفة</span>
                 <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">{{ $this->stats['stopped'] ?? 0 }}</h4>
             </div>
         </div>
-         <div class="flex m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+         <div class="hidden sm:flex flex-col items-start justify-between rounded-xl flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
 
         </div>
-        <div class="flex m:hidden flex-col items-start justify-between rounded-xl transition hover:shadow-md flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
+        <div class="hidden sm:flex flex-col items-start justify-between rounded-xl flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px]">
 
         </div>
 

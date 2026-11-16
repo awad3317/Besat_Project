@@ -61,66 +61,35 @@
         {{-- =========================================================
     كروت اختيار المستلمين
 ========================================================= --}}
-        <div class="flex gap-5 w-full">
+        <div class="flex flex-col flex-wrap gap-4 mb-4 sm:flex-row md:gap-6">
 
             {{-- ================= جميع المستلمين ================= --}}
-            <label class="block flex-1 cursor-pointer group">
+            <label class="block flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] cursor-pointer group">
 
                 <input type="radio" wire:model.live="target" value="all" class="sr-only">
 
                 <div
-                    class="flex flex-col justify-between w-full h-36 p-5
-                   bg-white border rounded-2xl
-                   dark:bg-gray-900
-                   transition-all duration-200
-
+                    class="flex flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md
                    {{ $target === 'all'
-                       ? 'border-brand-500 shadow-sm'
-                       : 'border-gray-200 dark:border-gray-800 hover:border-brand-300' }}">
+                       ? 'border border-brand-500 dark:border-brand-500'
+                       : 'border border-gray-200 dark:border-gray-800' }}">
 
                     {{-- الأيقونة --}}
-                    <div class="flex justify-end">
-
-                        <div
-                            class="flex items-center justify-center w-10 h-10
-                           rounded-xl bg-gray-100 dark:bg-gray-800
-                           transition-colors
-
-                           {{ $target === 'all' ? 'text-brand-500' : 'text-gray-500 dark:text-gray-400 group-hover:text-brand-500' }}">
-
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857
-                               M17 20H7
-                               m10 0v-2
-                               c0-.656-.126-1.283-.356-1.857
-                               M7 20H2v-2
-                               a3 3 0 015.356-1.857
-                               M7 20v-2
-                               c0-.656.126-1.283.356-1.857
-                               m0 0a5.002 5.002 0 019.288 0
-                               M15 7a3 3 0 11-6 0
-                               3 3 0 016 0">
-                                </path>
-
-                            </svg>
-
-                        </div>
-
+                    <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#dc6803" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
                     </div>
 
-
                     {{-- النص والعدد --}}
-                    <div class="text-right">
-
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <div class="mt-3 w-full text-right">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
                             جميع المستلمين
-                        </p>
-
-                        <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+                        </span>
+                        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
                             {{ $this->allCount }}
-                        </p>
-
+                        </h4>
                     </div>
 
                 </div>
@@ -130,63 +99,32 @@
 
 
             {{-- ================= السائقين ================= --}}
-            <label class="block flex-1 cursor-pointer group">
+            <label class="block flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] cursor-pointer group">
 
                 <input type="radio" wire:model.live="target" value="drivers" class="sr-only">
 
                 <div
-                    class="flex flex-col justify-between w-full h-36 p-5
-                   bg-white border rounded-2xl
-                   dark:bg-gray-900
-                   transition-all duration-200
-
+                    class="flex flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md
                    {{ $target === 'drivers'
-                       ? 'border-brand-500 shadow-sm'
-                       : 'border-gray-200 dark:border-gray-800 hover:border-brand-300' }}">
+                       ? 'border border-brand-500 dark:border-brand-500'
+                       : 'border border-gray-200 dark:border-gray-800' }}">
 
                     {{-- الأيقونة --}}
-                    <div class="flex justify-end">
-
-                        <div
-                            class="flex items-center justify-center w-10 h-10
-                           rounded-xl bg-gray-100 dark:bg-gray-800
-                           transition-colors
-
-                           {{ $target === 'drivers' ? 'text-brand-500' : 'text-gray-500 dark:text-gray-400 group-hover:text-brand-500' }}">
-
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.25 18.75a1.5 1.5 0 01-3 0
-                               m3 0a1.5 1.5 0 00-3 0
-                               m3 0h6
-                               m-9 0H3.375
-                               a1.125 1.125 0 01-1.125-1.125V14.25
-                               m17.25 4.5a1.5 1.5 0 01-3 0
-                               m3 0a1.5 1.5 0 00-3 0
-                               m3 0h1.125
-                               c.621 0 1.129-.504 1.09-1.124
-                               a17.902 17.902 0 00-3.213-9.193
-                               2.056 2.056 0 00-1.58-.86H14.25">
-                                </path>
-
-                            </svg>
-
-                        </div>
-
+                    <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                        <svg width="24" height="24" fill="#dc6803" viewBox="0 0 24 24">
+                            <path
+                                d="M18.92 6.01A1.5 1.5 0 0 0 17.5 5h-11a1.5 1.5 0 0 0-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99ZM6.5 16A1.5 1.5 0 1 1 6.5 13a1.5 1.5 0 0 1 0 3Zm11 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM5 11l1.5-4.5h11L19 11H5Z" />
+                        </svg>
                     </div>
 
-
                     {{-- النص والعدد --}}
-                    <div class="text-right">
-
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <div class="mt-3 w-full text-right">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
                             السائقين
-                        </p>
-
-                        <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+                        </span>
+                        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
                             {{ $this->driversCount }}
-                        </p>
-
+                        </h4>
                     </div>
 
                 </div>
@@ -196,59 +134,31 @@
 
 
             {{-- ================= العملاء ================= --}}
-            <label class="block flex-1 cursor-pointer group">
+            <label class="block flex-1 min-w-[150px] sm:min-w-[180px] lg:min-w-[200px] cursor-pointer group">
 
                 <input type="radio" wire:model.live="target" value="users" class="sr-only">
 
                 <div
-                    class="flex flex-col justify-between w-full h-36 p-5
-                   bg-white border rounded-2xl
-                   dark:bg-gray-900
-                   transition-all duration-200
-
+                    class="flex flex-col items-start justify-between rounded-xl bg-white p-4 dark:bg-white/[0.03] transition hover:shadow-md
                    {{ $target === 'users'
-                       ? 'border-brand-500 shadow-sm'
-                       : 'border-gray-200 dark:border-gray-800 hover:border-brand-300' }}">
+                       ? 'border border-brand-500 dark:border-brand-500'
+                       : 'border border-gray-200 dark:border-gray-800' }}">
 
                     {{-- الأيقونة --}}
-                    <div class="flex justify-end">
-
-                        <div
-                            class="flex items-center justify-center w-10 h-10
-                           rounded-xl bg-gray-100 dark:bg-gray-800
-                           transition-colors
-
-                           {{ $target === 'users' ? 'text-brand-500' : 'text-gray-500 dark:text-gray-400 group-hover:text-brand-500' }}">
-
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.75 6
-                               a3.75 3.75 0 11-7.5 0
-                               3.75 3.75 0 017.5 0z
-                               M4.501 20.118
-                               a7.5 7.5 0 0114.998 0
-                               A17.933 17.933 0 0112 21.75
-                               c-2.676 0-5.216-.584-7.499-1.632z">
-                                </path>
-
-                            </svg>
-
-                        </div>
-
+                    <div class="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg dark:bg-gray-800">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#dc6803" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
                     </div>
 
-
                     {{-- النص والعدد --}}
-                    <div class="text-right">
-
-                        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    <div class="mt-3 w-full text-right">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
                             العملاء
-                        </p>
-
-                        <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+                        </span>
+                        <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
                             {{ $this->usersCount }}
-                        </p>
-
+                        </h4>
                     </div>
 
                 </div>
