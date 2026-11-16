@@ -142,7 +142,7 @@ class Index extends Component
                 ->where('is_active', true)
                 ->with('vehicle:id,type')
                 ->when($this->onlineDriversOnly, fn ($q) => $q->where('is_online', true))
-                ->when($request->vehicle_id, fn ($q) => $q->where('vehicle_id', $request->vehicle_id))
+                ->when($this->matchVehicleOnly && $request->vehicle_id, fn ($q) => $q->where('vehicle_id', $request->vehicle_id))
                 ->when($this->driverSearch, function ($q) {
                     $q->where(function ($sub) {
                         $sub->where('name', 'like', "%{$this->driverSearch}%")
@@ -162,7 +162,7 @@ class Index extends Component
             longitude: (float) $lng,
             search: $this->driverSearch,
             onlineOnly: $this->onlineDriversOnly,
-            vehicleId: $request->vehicle_id ? (int) $request->vehicle_id : null,
+            vehicleId: ($this->matchVehicleOnly && $request->vehicle_id) ? (int) $request->vehicle_id : null,
             limit: 30,
         );
     }
@@ -220,6 +220,7 @@ class Index extends Component
                 'name' => $driver->name,
                 'phone' => $driver->phone,
                 'plate_number' => $driver->plate_number,
+                'vehicle_id' => $driver->vehicle_id,
                 'vehicle_type' => $driver->vehicle?->type ?? 'غير محدد',
                 'driver_image' => $driver->driver_image ? url($driver->driver_image) : asset('tailadmin/build/src/images/user/SO.jpg'),
                 'is_online' => (bool) $driver->is_online,
@@ -268,7 +269,6 @@ class Index extends Component
 
     public function updatedMatchVehicleOnly()
     {
-        $this->matchVehicleOnly = true;
         unset($this->drivers);
         $this->dispatchMapUpdate();
     }
@@ -303,10 +303,21 @@ class Index extends Component
 
         $errorMessage = null;
         $assigned = false;
+        $vehicleMismatch = false;
+        $driverVehicleType = 'غير محدد';
+        $requestVehicleType = 'غير محدد';
 
-        DB::transaction(function () use ($driverId, $chatRepository, &$errorMessage, &$assigned) {
+        DB::transaction(function () use (
+            $driverId,
+            $chatRepository,
+            &$errorMessage,
+            &$assigned,
+            &$vehicleMismatch,
+            &$driverVehicleType,
+            &$requestVehicleType
+        ) {
             // Lock the request row to prevent race conditions
-            $request = RequestModel::where('id', $this->selectedRequestId)->lockForUpdate()->first();
+            $request = RequestModel::with('vehicle:id,type')->where('id', $this->selectedRequestId)->lockForUpdate()->first();
 
             if (! $request) {
                 $errorMessage = 'الطلب غير موجود.';
@@ -318,13 +329,16 @@ class Index extends Component
                 return;
             }
 
-            $driver = Driver::find($driverId);
+            $driver = Driver::with('vehicle:id,type')->find($driverId);
             if (! $driver) {
                 $errorMessage = 'السائق غير موجود.';
                 return;
             }
 
             if ($request->vehicle_id && (int) $driver->vehicle_id !== (int) $request->vehicle_id) {
+                $vehicleMismatch = true;
+                $driverVehicleType = $driver->vehicle?->type ?? 'غير محدد';
+                $requestVehicleType = $request->vehicle?->type ?? 'غير محدد';
                 $errorMessage = 'لا يمكن تعيين سائق بمركبة تختلف عن نوع المركبة التي اختارها العميل في الطلب.';
                 return;
             }
@@ -354,6 +368,15 @@ class Index extends Component
         });
 
         if (! $assigned) {
+            if ($vehicleMismatch) {
+                $this->dispatch(
+                    'vehicle-mismatch-blocked',
+                    driverVehicle: $driverVehicleType,
+                    requestVehicle: $requestVehicleType
+                );
+                return;
+            }
+
             $this->clearSelectedRequest();
             unset($this->selectedRequest, $this->drivers);
             $this->dispatch('close-modal', 'assign-driver-modal');

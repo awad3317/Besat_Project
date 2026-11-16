@@ -160,16 +160,13 @@
                             <span class="w-2 h-2 rounded-full bg-success-500" style="flex-shrink: 0;"></span>
                             <span class="dark:text-white">المتصلون فقط</span>
                         </label>
-                        <div
-                            class="flex flex-1 gap-1.5 justify-center items-center px-3 py-2 text-xs font-semibold rounded-lg border select-none border-brand-500/30 bg-brand-50 text-brand-600 dark:border-brand-500/30 dark:bg-brand-500/15 dark:text-brand-400">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span class="truncate">نفس
-                                المركبة{{ $req?->vehicle?->type ? ' (' . $req->vehicle->type . ')' : '' }}</span>
-                        </div>
+                        <label
+                            class="flex flex-1 gap-2 justify-center items-center px-3 py-2 text-xs font-medium text-gray-700 bg-white rounded-lg border border-gray-200 cursor-pointer select-none shadow-theme-xs hover:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                            <input type="checkbox" wire:model.live="matchVehicleOnly"
+                                class="w-4 h-4 rounded border-gray-300 cursor-pointer"
+                                style="accent-color: #f79009; outline: none;" />
+                            <span class="truncate dark:text-white">نفس المركبة{{ $req?->vehicle?->type ? ' (' . $req->vehicle->type . ')' : '' }}</span>
+                        </label>
                     </div>
 
                     {{-- Counter Bar --}}
@@ -192,12 +189,14 @@
                                     ? asset('tailadmin/build/src/images/user/SO.jpg')
                                     : url($driverImg);
                             $vehicleTypeName = $driver->vehicle?->type ?? 'غير محدد';
+                            $isSameVehicle = !$req?->vehicle_id || (int) $driver->vehicle_id === (int) $req->vehicle_id;
                         @endphp
                         <div @click="flyToDriver({{ $driver->latitude ?? 'null' }}, {{ $driver->longitude ?? 'null' }}, {{ $driver->id }}, {
                                 id: {{ $driver->id }},
                                 name: '{{ addslashes($driver->name) }}',
                                 phone: '{{ $driver->phone }}',
                                 plate_number: '{{ $driver->plate_number }}',
+                                vehicle_id: {{ $driver->vehicle_id ?? 'null' }},
                                 vehicle_type: '{{ addslashes($vehicleTypeName) }}',
                                 driver_image: '{{ $driverImage }}',
                                 is_online: {{ $driver->is_online ? 'true' : 'false' }},
@@ -283,12 +282,25 @@
                             </div>
 
                             @if ($canAssign)
-                                <button @click.stop="isLoading = true" wire:click="assignDriver({{ $driver->id }})"
-                                    wire:loading.attr="disabled"
-                                    class="px-4 py-2 mr-2 text-xs font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 shadow-theme-xs"
-                                    style="flex-shrink: 0;">
-                                    <span>تعيين</span>
-                                </button>
+                                @if ($isSameVehicle)
+                                    <button @click.stop="isLoading = true" wire:click="assignDriver({{ $driver->id }})"
+                                        wire:loading.attr="disabled"
+                                        class="px-4 py-2 mr-2 text-xs font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 shadow-theme-xs"
+                                        style="flex-shrink: 0;">
+                                        <span>تعيين</span>
+                                    </button>
+                                @else
+                                    <button type="button"
+                                        @click.stop="$dispatch('vehicle-mismatch-blocked', {
+                                            driverName: '{{ addslashes($driver->name) }}',
+                                            driverVehicle: '{{ addslashes($vehicleTypeName) }}',
+                                            requestVehicle: '{{ addslashes($req?->vehicle?->type ?? 'غير محدد') }}'
+                                        })"
+                                        class="px-4 py-2 mr-2 text-xs font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 shadow-theme-xs"
+                                        style="flex-shrink: 0;">
+                                        <span>تعيين</span>
+                                    </button>
+                                @endif
                             @else
                                 <span
                                     class="px-3 py-1.5 mr-2 text-xs font-medium text-gray-400 bg-gray-100 rounded-lg dark:bg-gray-700 dark:text-gray-400"
@@ -400,7 +412,19 @@
 
                         <div class="pt-3 mt-3 border-t border-gray-100 dark:border-gray-800">
                             @if ($canAssign)
-                                <button @click="isLoading = true" x-on:click="$wire.assignDriver(selectedDriverId)"
+                                <button type="button"
+                                    x-on:click="
+                                        if ({{ $req?->vehicle_id ? 'true' : 'false' }} && Number(selectedDriver?.vehicle_id) !== Number({{ $req?->vehicle_id ?? 0 }})) {
+                                            $dispatch('vehicle-mismatch-blocked', {
+                                                driverName: selectedDriver?.name || '',
+                                                driverVehicle: selectedDriver?.vehicle_type || 'غير محدد',
+                                                requestVehicle: '{{ addslashes($req?->vehicle?->type ?? 'غير محدد') }}'
+                                            });
+                                        } else {
+                                            isLoading = true;
+                                            $wire.assignDriver(selectedDriverId);
+                                        }
+                                    "
                                     wire:loading.attr="disabled"
                                     class="flex gap-2 justify-center items-center w-full h-10 text-xs font-medium text-white rounded-lg transition bg-brand-500 shadow-theme-xs hover:bg-brand-600">
                                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
@@ -418,6 +442,62 @@
                             @endif
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ════════════ دايلوق منع تعيين سائق بمركبة مختلفة ════════════ --}}
+        <div x-data="{
+                mismatchOpen: false,
+                driverName: '',
+                driverVehicle: '',
+                requestVehicle: ''
+             }"
+             x-on:vehicle-mismatch-blocked.window="
+                isLoading = false;
+                driverName = $event.detail?.driverName || '';
+                driverVehicle = $event.detail?.driverVehicle || 'غير محدد';
+                requestVehicle = $event.detail?.requestVehicle || '{{ addslashes($req?->vehicle?->type ?? 'غير محدد') }}';
+                mismatchOpen = true;
+             "
+             x-show="mismatchOpen"
+             x-transition.opacity.duration.200ms
+             class="flex absolute inset-0 z-50 justify-center items-center p-4 bg-gray-900/50 backdrop-blur-xs rounded-3xl"
+             style="display: none;">
+            <div @click.outside="mismatchOpen = false"
+                 class="p-6 w-full max-w-md text-center bg-white rounded-2xl border border-gray-200 shadow-2xl dark:bg-gray-900 dark:border-gray-800"
+                 dir="rtl">
+                <div class="flex justify-center items-center mx-auto mb-4 w-16 h-16 rounded-full bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-400">
+                    <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zm9-3.75a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+
+                <h4 class="mb-2 text-lg font-bold text-gray-800 dark:text-white">
+                    لا يمكن تعيين هذا السائق!
+                </h4>
+
+                <p class="text-sm leading-6 text-gray-600 dark:text-gray-300">
+                    مركبة السائق
+                    <template x-if="driverName">
+                        <span class="font-bold text-gray-800 dark:text-white" x-text="'(' + driverName + ')'"></span>
+                    </template>
+                    هي
+                    <span class="px-2 py-0.5 font-bold rounded-md bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-400" x-text="driverVehicle"></span>
+                    بينما نوع المركبة المطلوبة في الطلب هو
+                    <span class="px-2 py-0.5 font-bold rounded-md bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400" x-text="requestVehicle"></span>.
+                </p>
+
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    يجب اختيار سائق يمتلك نفس نوع المركبة المطلوبة، أو تغيير نوع المركبة في الطلب أولاً من أعلى النافذة.
+                </p>
+
+                <div class="flex justify-center mt-5">
+                    <button type="button"
+                            @click="mismatchOpen = false"
+                            class="px-6 py-2 text-sm font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 shadow-theme-xs">
+                        حسناً، فهمت
+                    </button>
                 </div>
             </div>
         </div>
