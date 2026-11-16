@@ -2,69 +2,95 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Repositories\UserRepository;
-use App\Repositories\DriverRepository;
-use App\Repositories\RequestRepository;
-use App\Repositories\SpecialOrderRepository;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function __construct(
-        private UserRepository $userRepository,
-        private DriverRepository $driverRepository, 
-        private SpecialOrderRepository $specialOrderRepository,
-        private RequestRepository $requestRepository
-        )
-    {
-        
-    }
-
-    
     public function index()
     {
-        $salesData = $this->getRealSalesData();
-        $totalUsers=$this->userRepository->getUsers()->count();
-        $totalDrivers=$this->driverRepository->index()->count();
-        $totalSpecialOrders = $this->specialOrderRepository->index()->count();
-        $totalRequests= $this->requestRepository->index()->count();
-        
-        $recentRequests = \App\Models\Request::with(['user', 'driver'])->latest()->take(5)->get();
+        // استعلام واحد سريع جداً لجلب جميع إحصائيات الكروت العلوية من قاعدة البيانات الفعلية
+        $counts = DB::selectOne("
+            SELECT
+                (SELECT COUNT(*) FROM users WHERE type = 'user' AND deleted_at IS NULL) AS total_users,
+                (SELECT COUNT(*) FROM drivers) AS total_drivers,
+                (SELECT COUNT(*) FROM requests WHERE (payment_method NOT IN ('digital_payment', 'deposit') OR payment_status = 'paid')) AS total_requests,
+                (SELECT COUNT(*) FROM service_bookings) AS total_special_orders
+        ");
+
+        $salesData = $this->getMonthlyRequestsData();
+        $topRatedDrivers = $this->getTopRatedDrivers();
 
         return view('pages.dashboard.index', [
-            'monthlySales' => $salesData,
-            'chartTitle' => 'المبيعات الشهرية الحقيقية',
-            'totalUsers' => $totalUsers,
-            'totalDrivers' => $totalDrivers,
-            'totalSpecialOrders' => $totalSpecialOrders,
-            'totalRequests' => $totalRequests,
-            'recentRequests' => $recentRequests
+            'monthlySales'       => $salesData,
+            'chartTitle'         => 'إحصائيات الطلبات الشهرية الفعلية',
+            'totalUsers'         => (int) ($counts->total_users ?? 0),
+            'totalDrivers'       => (int) ($counts->total_drivers ?? 0),
+            'totalSpecialOrders' => (int) ($counts->total_special_orders ?? 0),
+            'totalRequests'      => (int) ($counts->total_requests ?? 0),
+            'topRatedDrivers'    => $topRatedDrivers,
         ]);
     }
-    private function getRealSalesData()
-    {
-        // هنا تجلب البيانات الحقيقية من قاعدة البيانات
-        // مثال:
-        return [
-            'january' => 1250,
-            'february' => 1320,
-            'march' => 1180,
-            'april' => 1400,
-            'may' => 1350,
-            'june' => 1280,
-            'july' => 1450,
-            'august' => 1380,
-            'september' => 1420,
-            'october' => 1500,
-            'november' => 1480,
-            'december' => 1600
-        ];
 
-        // أو من قاعدة البيانات:
-        // return Sale::selectRaw('MONTH(sale_date) as month, SUM(amount) as total')
-        //     ->whereYear('sale_date', date('Y'))
-        //     ->groupBy('month')
-        //     ->pluck('total', 'month')
-        //     ->toArray();
+    /**
+     * جلب عدد الطلبات الفعلية خلال أشهر السنة الحالية في استعلام تجميعي واحد.
+     */
+    private function getMonthlyRequestsData(): array
+    {
+        $monthlyCounts = DB::table('requests')
+            ->selectRaw('MONTH(created_at) as month_num, COUNT(*) as total')
+            ->whereYear('created_at', now()->year)
+            ->where(function ($q) {
+                $q->whereNotIn('payment_method', ['digital_payment', 'deposit'])
+                    ->orWhere('payment_status', 'paid');
+            })
+            ->groupByRaw('MONTH(created_at)')
+            ->pluck('total', 'month_num');
+
+        return [
+            'january'   => (int) ($monthlyCounts[1] ?? 0),
+            'february'  => (int) ($monthlyCounts[2] ?? 0),
+            'march'     => (int) ($monthlyCounts[3] ?? 0),
+            'april'     => (int) ($monthlyCounts[4] ?? 0),
+            'may'       => (int) ($monthlyCounts[5] ?? 0),
+            'june'      => (int) ($monthlyCounts[6] ?? 0),
+            'july'      => (int) ($monthlyCounts[7] ?? 0),
+            'august'    => (int) ($monthlyCounts[8] ?? 0),
+            'september' => (int) ($monthlyCounts[9] ?? 0),
+            'october'   => (int) ($monthlyCounts[10] ?? 0),
+            'november'  => (int) ($monthlyCounts[11] ?? 0),
+            'december'  => (int) ($monthlyCounts[12] ?? 0),
+        ];
+    }
+
+    /**
+     * جلب أعلى 3 سائقين تقييماً من قاعدة البيانات مباشرة عبر استعلام واحد خفيف بدون N+1.
+     */
+    private function getTopRatedDrivers()
+    {
+        return DB::table('ratings')
+            ->join('drivers', 'ratings.driver_id', '=', 'drivers.id')
+            ->leftJoin('vehicles', 'drivers.vehicle_id', '=', 'vehicles.id')
+            ->select([
+                'drivers.id',
+                'drivers.name',
+                'drivers.phone',
+                'drivers.city',
+                'drivers.driver_image',
+                'vehicles.type as vehicle_type',
+                DB::raw('AVG(ratings.rating_value) as avg_rating'),
+                DB::raw('COUNT(ratings.id) as ratings_count'),
+            ])
+            ->groupBy([
+                'drivers.id',
+                'drivers.name',
+                'drivers.phone',
+                'drivers.city',
+                'drivers.driver_image',
+                'vehicles.type',
+            ])
+            ->orderByDesc('avg_rating')
+            ->orderByDesc('ratings_count')
+            ->limit(3)
+            ->get();
     }
 }
