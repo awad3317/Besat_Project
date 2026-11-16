@@ -110,7 +110,7 @@
                     <div class="relative">
                         <input wire:model.live.debounce.300ms="search" type="text"
                             class="px-4 py-2.5 w-full h-10 text-sm text-right text-gray-800 bg-transparent rounded-lg border border-gray-300 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
-                            placeholder="ابحث باسم العميل، الهاتف، السائق..." />
+                            placeholder="ابحث برقم الطلب، اسم العميل، الهاتف، السائق..." />
                         <div class="flex absolute top-0 bottom-0 left-0 items-center px-3">
                             <div wire:loading wire:target="search" class="mt-2">
                                 <div

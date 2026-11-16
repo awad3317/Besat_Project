@@ -82,13 +82,22 @@ class Index extends Component
             'vehicle',
         ])
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('start_address', 'like', '%' . $this->search . '%')
-                        ->orWhere('end_address', 'like', '%' . $this->search . '%')
-                        ->orWhereHas('driver', fn ($driverQuery) => $driverQuery->where('name', 'like', '%' . $this->search . '%'))
-                        ->orWhereHas('user', function ($userQuery) {
-                            $userQuery->where('name', 'like', '%' . $this->search . '%')
-                                ->orWhere('phone', 'like', '%' . $this->search . '%');
+                $searchTerm = trim($this->search);
+                $numericId = ltrim($searchTerm, '#');
+
+                $query->where(function ($q) use ($searchTerm, $numericId) {
+                    if ($numericId !== '' && ctype_digit($numericId)) {
+                        $q->where('id', (int) $numericId)
+                            ->orWhere('start_address', 'like', '%' . $searchTerm . '%');
+                    } else {
+                        $q->where('start_address', 'like', '%' . $searchTerm . '%');
+                    }
+
+                    $q->orWhere('end_address', 'like', '%' . $searchTerm . '%')
+                        ->orWhereHas('driver', fn ($driverQuery) => $driverQuery->where('name', 'like', '%' . $searchTerm . '%'))
+                        ->orWhereHas('user', function ($userQuery) use ($searchTerm) {
+                            $userQuery->where('name', 'like', '%' . $searchTerm . '%')
+                                ->orWhere('phone', 'like', '%' . $searchTerm . '%');
                         });
                 });
             })
