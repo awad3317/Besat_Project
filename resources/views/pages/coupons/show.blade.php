@@ -148,50 +148,7 @@
 
 
             <!-- Users Table -->
-            <div
-                class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
-                <div class="p-5 sm:p-6 border-b border-gray-100 dark:border-gray-800">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">سجل استخدام الكوبون</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-sm">
-                        <thead class="bg-gray-50 dark:bg-white/5">
-                            <tr class="border-b border-gray-100 dark:border-gray-800">
-                                <th class="p-4 text-right font-bold text-gray-600 dark:text-gray-300">#</th>
-                                <th class="p-4 text-right font-bold text-gray-600 dark:text-gray-300">اسم المستخدم</th>
-                                <th class="p-4 text-right font-bold text-gray-600 dark:text-gray-300">رقم الهاتف</th>
-                                <th class="p-4 text-right font-bold text-gray-600 dark:text-gray-300">تاريخ الاستخدام</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                            @forelse ($users as $user)
-                                <tr>
-                                    <td class="p-4 font-mono text-gray-500">{{ $user->id }}</td>
-                                    <td class="p-4 font-medium text-gray-800 dark:text-gray-200">{{ $user->name }}</td>
-                                    <td class="p-4 text-gray-600 dark:text-gray-400">{{ $user->phone }}</td>
-                                    <td class="p-4 text-gray-600 dark:text-gray-400">
-                                        {{ $user->pivot->created_at->format('Y-m-d H:i A') }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-12 text-gray-500">
-                                        لم يتم استخدام هذا الكوبون من قبل أي مستخدم حتى الآن.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                {{-- Pagination Links --}}
-                @if ($users->hasPages())
-                    <div class="p-5 border-t border-gray-100 dark:border-gray-800">
-                        {{-- هذا سيستخدم تلقائيًا ملف الترقيم المعدل الذي أنشأناه سابقًا --}}
-                        {{ $users->links() }}
-                    </div>
-                @endif
-            </div>
+            <livewire:discount-codes.usage-users :coupon-id="$coupon->id" />
         </div>
     </div>
 @endsection

@@ -71,8 +71,7 @@ class CouponController extends Controller
     public function show($id)
     {
         $coupon = DiscountCode::findOrFail($id);
-        $users = $coupon->users()->paginate(10);
-        return view('pages.coupons.show', compact('coupon','users'));
+        return view('pages.coupons.show', compact('coupon'));
     }
 
     /**

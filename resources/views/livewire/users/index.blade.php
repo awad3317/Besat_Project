@@ -89,6 +89,13 @@
                             <thead>
                                 <tr class="border-b border-gray-100 dark:border-gray-800">
                                     <th class="px-5 py-3 sm:px-6">
+                                        <div class="flex items-center justify-center">
+                                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
+                                                رقم المستخدم
+                                            </p>
+                                        </div>
+                                    </th>
+                                    <th class="px-5 py-3 sm:px-6">
                                         <div class="flex items-center">
                                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">
                                                 الأسم
@@ -131,6 +138,15 @@
                             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                                 @forelse ($this->users as $user)
                                     <tr wire:key="user-{{ $user->id }}">
+                                        <!-- رقم المستخدم -->
+                                        <td class="px-5 py-4 sm:px-6">
+                                            <div class="flex items-center justify-center">
+                                                <p class="text-gray-500 text-theme-sm dark:text-gray-400">
+                                                    {{ $user->id }}
+                                                </p>
+                                            </div>
+                                        </td>
+
                                         <!-- الاسم -->
                                         <td class="px-5 py-4 sm:px-6">
                                             <div class="flex items-center">

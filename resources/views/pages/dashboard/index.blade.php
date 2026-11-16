@@ -149,7 +149,7 @@
 
     <div class="ratings-container">
       <div
-        class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-5 sm:pt-5 h-full">
+        class="overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6 h-full">
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
             أعلى تقييمات
@@ -174,7 +174,7 @@
               $hasHalfStar = ($avgRating - $fullStars) >= 0.5;
             @endphp
             <a href="{{ route('drivers.show', $topDriver->id) }}"
-              class="flex gap-3 p-3 rounded-lg transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+              class="flex gap-3 p-3.5 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50 dark:border-gray-800/80 dark:hover:bg-gray-800/60">
               <div
                 class="overflow-hidden relative flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 dark:border-gray-800">
                 <img src="{{ $driverAvatar }}" alt="{{ $topDriver->name }}"
