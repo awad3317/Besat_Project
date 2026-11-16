@@ -140,6 +140,9 @@
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">السعر النهائي</p>
                             </th>
                             <th class="py-3 text-center">
+                                <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">طريقة الدفع</p>
+                            </th>
+                            <th class="py-3 text-center">
                                 <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">حالة الطلب</p>
                             </th>
                             <th class="py-3 text-center">
@@ -242,6 +245,25 @@
                                 <td class="py-3">
                                     <p class="text-center text-gray-500 text-theme-sm dark:text-gray-400">
                                         {{ $request->final_price }}</p>
+                                </td>
+                                <td class="py-3 text-center">
+                                    @php
+                                        $paymentLabel = match ($request->payment_method) {
+                                            'wallet' => 'المحفظة',
+                                            'digital_payment', 'deposit' => $request->bank?->name ? 'بنك (' . $request->bank->name . ')' : 'بنك',
+                                            'cash' => 'كاش',
+                                            default => $request->payment_method ?: 'غير محدد',
+                                        };
+                                        $paymentClass = match ($request->payment_method) {
+                                            'wallet' => 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400',
+                                            'digital_payment', 'deposit' => 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400',
+                                            'cash' => 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400',
+                                            default => 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+                                        };
+                                    @endphp
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-theme-xs font-medium {{ $paymentClass }}">
+                                        {{ $paymentLabel }}
+                                    </span>
                                 </td>
                                 <td class="py-3">
                                     <p
@@ -371,7 +393,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="p-4 text-center text-gray-500 dark:text-gray-400">
+                                <td colspan="9" class="p-4 text-center text-gray-500 dark:text-gray-400">
                                     لا توجد طلبات تطابق البحث أو الفلتر الحالي.
                                 </td>
                             </tr>

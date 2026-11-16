@@ -70,6 +70,7 @@ class Index extends Component
                 'driver',
                 'user' => fn ($query) => $query->withTrashed(),
                 'vehicle',
+                'bank:id,name',
             ])
                 ->orderBy('created_at', 'desc')
                 ->take(5)
@@ -80,6 +81,7 @@ class Index extends Component
             'driver',
             'user' => fn ($query) => $query->withTrashed(),
             'vehicle',
+            'bank:id,name',
         ])
             ->when($this->search, function ($query) {
                 $searchTerm = trim($this->search);
