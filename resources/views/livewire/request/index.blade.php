@@ -226,12 +226,6 @@
                                                     <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                                         {{ $request->user->name }}
                                                     </p>
-                                                    @if ($request->user->trashed())
-                                                        <span
-                                                            class="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600 dark:bg-red-500/15 dark:text-red-400">
-                                                            محذوف
-                                                        </span>
-                                                    @endif
                                                 </div>
                                                 <span class="text-gray-500 text-theme-xs dark:text-gray-400">
                                                     {{ $customerPhone }}
