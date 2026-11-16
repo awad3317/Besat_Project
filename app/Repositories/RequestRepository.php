@@ -58,6 +58,10 @@ class RequestRepository implements RepositoriesInterface
         
         $query = Request::select($selectedColumns)
             ->where('user_id', $userId)
+            ->where(function ($q) {
+                $q->whereNotIn('payment_method', ['digital_payment', 'deposit'])
+                    ->orWhere('payment_status', 'paid');
+            })
             ->with($relations)
             ->orderBy('id', 'desc');
         if ($perPage === 'all' || empty($perPage) || $perPage <= 0) {
