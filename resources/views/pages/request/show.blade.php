@@ -367,8 +367,22 @@
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">السائق</h3>
                             @if ($request->driver_id)
-                                <a href="{{ route('drivers.show', $request->driver_id) }}"
-                                    class="text-xs text-brand-500 hover:text-brand-600">عرض الملف</a>
+                                <div class="flex gap-3 items-center">
+                                    @if ($request->canAssignDriver())
+                                        <button type="button"
+                                            x-data="{ loading: false }"
+                                            @click="loading = true; Livewire.dispatch('open-assign-driver-modal', { requestId: {{ $request->id }} })"
+                                            @open-modal.window="loading = false"
+                                            @open-error-modal.window="loading = false"
+                                            :disabled="loading"
+                                            class="inline-flex gap-1 items-center px-3 py-1 text-xs font-medium rounded-full transition text-warning-600 bg-warning-50 hover:bg-warning-100 dark:bg-warning-500/15 dark:text-warning-400 disabled:opacity-50 disabled:cursor-wait">
+                                            <span x-show="!loading">إعادة تعيين سائق</span>
+                                            <span x-show="loading" x-cloak>جاري...</span>
+                                        </button>
+                                    @endif
+                                    <a href="{{ route('drivers.show', $request->driver_id) }}"
+                                        class="text-xs text-brand-500 hover:text-brand-600">عرض الملف</a>
+                                </div>
                             @endif
                         </div>
                         @if ($request->driver)
@@ -399,7 +413,7 @@
                                     class="flex justify-between items-center pt-4 mt-4 text-sm border-t border-gray-100 dark:border-gray-800">
                                     <span class="text-gray-500">المركبة</span>
                                     <span
-                                        class="font-medium text-gray-800 dark:text-white">{{ $request->vehicle->name }}</span>
+                                        class="font-medium text-gray-800 dark:text-white">{{ $request->vehicle->type ?? $request->vehicle->name }}</span>
                                 </div>
                             @endif
                         @else
@@ -411,6 +425,30 @@
                                     </svg>
                                 </div>
                                 <p class="text-sm text-gray-500">لم يتم تعيين سائق بعد</p>
+
+                                @if ($request->canAssignDriver())
+                                    <button type="button"
+                                        x-data="{ loading: false }"
+                                        @click="loading = true; Livewire.dispatch('open-assign-driver-modal', { requestId: {{ $request->id }} })"
+                                        @open-modal.window="loading = false"
+                                        @open-error-modal.window="loading = false"
+                                        :disabled="loading"
+                                        class="inline-flex gap-1.5 items-center px-4 py-2 mt-3 text-xs font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 shadow-theme-xs disabled:opacity-50 disabled:cursor-wait">
+                                        <svg x-show="!loading" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="8.5" cy="7" r="4"></circle>
+                                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                                        </svg>
+                                        <div x-show="loading" x-cloak
+                                            class="w-3.5 h-3.5 rounded-full border-2 border-white animate-spin border-t-transparent">
+                                        </div>
+                                        <span x-show="!loading">تعيين سائق</span>
+                                        <span x-show="loading" x-cloak>جاري...</span>
+                                    </button>
+                                @endif
                             </div>
                         @endif
                     </div>
@@ -560,6 +598,8 @@
                 </div>
             </div>
         </div>
+
+        <livewire:request.index :modal-only="true" />
 
     </div>
 
