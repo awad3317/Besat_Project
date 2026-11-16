@@ -45,17 +45,27 @@ class Index extends Component
         'page' => ['except' => 1],
     ];
 
+    private function visibleRequestsQuery()
+    {
+        return RequestModel::where(function ($q) {
+            $q->whereNotIn('payment_method', ['digital_payment', 'deposit'])
+                ->orWhere('payment_status', 'paid');
+        });
+    }
+
     // ═══════════════════════════════════════════
     //  COMPUTED: Stats Cards
     // ═══════════════════════════════════════════
     #[Computed]
     public function stats()
     {
+        $baseQuery = $this->visibleRequestsQuery();
+
         return [
-            'total' => RequestModel::count(),
-            'in_progress' => RequestModel::whereIn('status', ['pending', 'searching_driver', 'paused', 'in_progress', 'accepted', 'on_trip'])->count(),
-            'completed' => RequestModel::where('status', 'completed')->count(),
-            'cancelled' => RequestModel::where('status', 'cancelled')->count(),
+            'total' => (clone $baseQuery)->count(),
+            'in_progress' => (clone $baseQuery)->whereIn('status', ['pending', 'searching_driver', 'paused', 'in_progress', 'accepted', 'on_trip'])->count(),
+            'completed' => (clone $baseQuery)->where('status', 'completed')->count(),
+            'cancelled' => (clone $baseQuery)->where('status', 'cancelled')->count(),
         ];
     }
 
@@ -66,23 +76,25 @@ class Index extends Component
     public function requests()
     {
         if ($this->dashboardMode) {
-            return RequestModel::with([
-                'driver',
-                'user' => fn ($query) => $query->withTrashed(),
-                'vehicle',
-                'bank:id,name',
-            ])
+            return $this->visibleRequestsQuery()
+                ->with([
+                    'driver',
+                    'user' => fn ($query) => $query->withTrashed(),
+                    'vehicle',
+                    'bank:id,name',
+                ])
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();
         }
 
-        return RequestModel::with([
-            'driver',
-            'user' => fn ($query) => $query->withTrashed(),
-            'vehicle',
-            'bank:id,name',
-        ])
+        return $this->visibleRequestsQuery()
+            ->with([
+                'driver',
+                'user' => fn ($query) => $query->withTrashed(),
+                'vehicle',
+                'bank:id,name',
+            ])
             ->when($this->search, function ($query) {
                 $searchTerm = trim($this->search);
                 $numericId = ltrim($searchTerm, '#');
