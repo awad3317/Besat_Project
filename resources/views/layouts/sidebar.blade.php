@@ -49,35 +49,22 @@
         <ul class="flex flex-col gap-4 mb-6">
           <!-- Menu Item Dashboard -->
           <li>
-            <a href="{{ route('dashboard.index') }}" class="menu-item group" :class="window.location.href.includes('{{ route('dashboard.index') }}') ?
+            <a href="{{ route('dashboard.index') }}" @click="selected = 'Dashboard'"
+              class="menu-item group" :class="window.location.href.includes('{{ route('dashboard.index') }}') ?
                                 'menu-item-active' : 'menu-item-inactive'">
-              <svg :class="window.location.href.includes('{{ route('dashboard.index') }}') ?
-                                'menu-item-icon-active' : 'menu-item-icon-inactive'" width="24" height="24"
-                viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd"
-                  d="M5.5 3.25C4.25736 3.25 3.25 4.25736 3.25 5.5V8.99998C3.25 10.2426 4.25736 11.25 5.5 11.25H9C10.2426 11.25 11.25 10.2426 11.25 8.99998V5.5C11.25 4.25736 10.2426 3.25 9 3.25H5.5ZM4.75 5.5C4.75 5.08579 5.08579 4.75 5.5 4.75H9C9.41421 4.75 9.75 5.08579 9.75 5.5V8.99998C9.75 9.41419 9.41421 9.74998 9 9.74998H5.5C5.08579 9.74998 4.75 9.41419 4.75 8.99998V5.5ZM5.5 12.75C4.25736 12.75 3.25 13.7574 3.25 15V18.5C3.25 19.7426 4.25736 20.75 5.5 20.75H9C10.2426 20.75 11.25 19.7427 11.25 18.5V15C11.25 13.7574 10.2426 12.75 9 12.75H5.5ZM4.75 15C4.75 14.5858 5.08579 14.25 5.5 14.25H9C9.41421 14.25 9.75 14.5858 9.75 15V18.5C9.75 18.9142 9.41421 19.25 9 19.25H5.5C5.08579 19.25 4.75 18.9142 4.75 18.5V15ZM12.75 5.5C12.75 4.25736 13.7574 3.25 15 3.25H18.5C19.7426 3.25 20.75 4.25736 20.75 5.5V8.99998C20.75 10.2426 19.7426 11.25 18.5 11.25H15C13.7574 11.25 12.75 10.2426 12.75 8.99998V5.5ZM15 4.75C14.5858 4.75 14.25 5.08579 14.25 5.5V8.99998C14.25 9.41419 14.5858 9.74998 15 9.74998H18.5C18.9142 9.74998 19.25 9.41419 19.25 8.99998V5.5C19.25 5.08579 18.9142 4.75 18.5 4.75H15ZM15 12.75C13.7574 12.75 12.75 13.7574 12.75 15V18.5C12.75 19.7426 13.7574 20.75 15 20.75H18.5C19.7426 20.75 20.75 19.7427 20.75 18.5V15C20.75 13.7574 19.7426 12.75 18.5 12.75H15ZM14.25 15C14.25 14.5858 14.5858 14.25 15 14.25H18.5C18.9142 14.25 19.25 14.5858 19.25 15V18.5C19.25 18.9142 18.9142 19.25 18.5 19.25H15C14.5858 19.25 14.25 18.9142 14.25 18.5V15Z"
-                  fill="" />
+              <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                xmlns="http://www.w3.org/2000/svg">
+                <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
+                <rect x="13.5" y="3.5" width="7" height="7" rx="1.5" />
+                <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" />
+                <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
               </svg>
 
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                 الصفحة الرئيسية
               </span>
             </a>
-
-            <!-- Dropdown Menu Start -->
-            {{-- <div class="overflow-hidden transform translate"
-              :class="(selected === 'Dashboard') ? 'block' :'hidden'">
-              <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 pl-9 mt-2 menu-dropdown">
-                <li>
-                  <a href="index.html" class="menu-dropdown-item group"
-                    :class="page === 'ecommerce' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                    eCommerce
-                  </a>
-                </li>
-              </ul>
-            </div> --}}
-            <!-- Dropdown Menu End -->
-
           </li>
 
           <!-- Menu Item users -->
@@ -85,18 +72,20 @@
             <a href="{{ route('users.index') }}" @click="selected = (selected === 'users' ? '':'users')"
               class="menu-item group" :class="window.location.href.includes('{{ route('users.index') }}') ? 'menu-item-active' :
                                 'menu-item-inactive'">
-              <svg :class="window.location.href.includes('{{ route('users.index') }}') ? 'menu-item-icon-active' :
-                                'menu-item-icon-inactive'" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
                 xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd"
-                  d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z"
-                  fill="" />
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                 ادارة المستخدمين
               </span>
             </a>
           </li>
+
           <!-- Menu Item Chat -->
           @php
             $unreadChatMessagesCount = (int) \App\Models\Conversation::sum('participant_unread_count');
@@ -119,11 +108,11 @@
               class="menu-item group relative" :class="window.location.href.includes('{{ route('chats.index') }}') ? 'menu-item-active' :
                                 'menu-item-inactive'">
 
-              <div style="position: relative; display: inline-flex; align-items: center; justify-content: center;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div class="relative inline-flex items-center justify-center w-6 h-6 shrink-0">
+                <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2.5 21.5L7 20.6622C8.47087 21.513 10.1786 22 12 22Z"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
                   <path d="M8 12H8.01M12 12H12.01M16 12H16.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round" />
                 </svg>
@@ -146,34 +135,17 @@
 
           <!-- Menu Item drivers -->
           <li>
-            <a href="{{ route('drivers.index') }}" @click="selected = (selected === 'Profile' ? '':'Profile')"
+            <a href="{{ route('drivers.index') }}" @click="selected = (selected === 'Drivers' ? '':'Drivers')"
               class="menu-item group" :class="window.location.href.includes('{{ route('drivers.index') }}') ? 'menu-item-active' :
                                 'menu-item-inactive'">
-              <svg :class="window.location.href.includes('{{ route('drivers.index') }}') ? 'menu-item-icon-active' :
-                                'menu-item-icon-inactive'" fill="#dc6803" width="30" height="30" viewBox="0 0 32 32"
-                id="icon" xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <defs>
-                    <style>
-                      .cls-1 {
-                        fill: none;
-                      }
-                    </style>
-                  </defs>
-                  <title>bus</title>
-                  <rect x="27" y="11" width="2" height="4"></rect>
-                  <rect x="3" y="11" width="2" height="4"></rect>
-                  <rect x="20" y="20" width="2" height="2"></rect>
-                  <rect x="10" y="20" width="2" height="2"></rect>
-                  <path
-                    d="M21,4H11A5.0059,5.0059,0,0,0,6,9V23a2.0023,2.0023,0,0,0,2,2v3h2V25H22v3h2V25a2.0027,2.0027,0,0,0,2-2V9A5.0059,5.0059,0,0,0,21,4Zm3,6,.0009,6H8V10ZM11,6H21a2.995,2.995,0,0,1,2.8157,2H8.1843A2.995,2.995,0,0,1,11,6ZM8,23V18H24.0012l.0008,5Z"
-                    transform="translate(0 0)"></path>
-                  <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32"
-                    height="32">
-                  </rect>
-                </g>
+              <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" />
+                <circle cx="12" cy="12" r="2.25" />
+                <path d="M12 14.25V21" />
+                <path d="M9.83 11.42L3.31 9.67" />
+                <path d="M14.17 11.42L20.69 9.67" />
               </svg>
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                 إدارة السائقين
@@ -190,42 +162,24 @@
 
               <!-- السهم المطلق في أقصى اليسار -->
               <svg class="absolute left-4 transition-transform duration-300"
-                :class="(selected === 'Requests') ? 'rotate-180' : ''" width="20" height="20" viewBox="0 0 20 20"
+                :class="[(selected === 'Requests') ? 'rotate-180' : '', sidebarToggle ? 'lg:hidden' : '']" width="20" height="20" viewBox="0 0 20 20"
                 fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="currentColor" stroke-width="1.5"
                   stroke-linecap="round" stroke-linejoin="round" />
               </svg>
 
-              <!-- الأيقونة مع هامش لترك مساحة للسهم -->
-              <svg :class="(selected === 'Requests') || window.location.href.includes(
-                                    '{{ route('request.index') }}') || window.location.href.includes(
-                                    '{{ route('specialOrder.index') }}') ? 'menu-item-icon-active' :
-                                'menu-item-icon-inactive'" class="ml-10" fill="#dc6803" width="30" height="30"
-                viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <defs>
-                    <style>
-                      .cls-1 {
-                        fill: none;
-                      }
-                    </style>
-                  </defs>
-                  <title>request</title>
-                  <path d="M22,22v6H6V4H16V2H6A2,2,0,0,0,4,4V28a2,2,0,0,0,2,2H22a2,2,0,0,0,2-2V22Z"
-                    transform="translate(0)"></path>
-                  <path
-                    d="M29.54,5.76l-3.3-3.3a1.6,1.6,0,0,0-2.24,0l-14,14V22h5.53l14-14a1.6,1.6,0,0,0,0-2.24ZM14.7,20H12V17.3l9.44-9.45,2.71,2.71ZM25.56,9.15,22.85,6.44l2.27-2.27,2.71,2.71Z"
-                    transform="translate(0)"></path>
-                  <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32"
-                    height="32">
-                  </rect>
-                </g>
+              <!-- الأيقونة -->
+              <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                <rect x="9" y="3" width="6" height="4" rx="1" />
+                <path d="M9 12h6" />
+                <path d="M9 16h4" />
               </svg>
 
               <!-- النص -->
-              <span class="flex-1 ml-2 menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+              <span class="flex-1 menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                 إدارة الطلبات
               </span>
             </a>
@@ -256,10 +210,11 @@
               class="menu-item group" :class="window.location.href.includes('{{ route('ratings.index') }}') ? 'menu-item-active' :
                                 'menu-item-inactive'">
 
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
 
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
@@ -270,16 +225,15 @@
 
           <!-- Menu Item Coupon -->
           <li>
-            <a href="{{ route('Coupon.index') }}" @click="selected = (selected === 'Profile' ? '':'Profile')"
+            <a href="{{ route('Coupon.index') }}" @click="selected = (selected === 'Coupons' ? '':'Coupons')"
               class="menu-item group" :class="window.location.href.includes('{{ route('Coupon.index') }}') ? 'menu-item-active' :
                                 'menu-item-inactive'">
 
-              <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                xmlns="http://www.w3.org/2000/svg">
                 <path
-                  d="M20 6H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 10H5c-.55 0-1-.45-1-1V9c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v6c0 .55-.45 1-1 1z" />
-                <circle cx="8.5" cy="11.5" r="1.5" />
-                <circle cx="15.5" cy="11.5" r="1.5" />
-                <path d="M8 15h8v1.5c0 .83-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5V15z" />
+                  d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
               </svg>
 
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
@@ -294,8 +248,17 @@
                 class="menu-item group" :class="window.location.href.includes('{{ route('Bank.index') }}') ? 'menu-item-active' :
               'menu-item-inactive'">
 
-                <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 10h3v7H4zm6.5 0h3v7h-3zM17 10h3v7h-3zm-15 8h20v2H2zm10-17L1 6v2h22V6z" />
+                <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 21h18" />
+                  <path d="M3 10h18" />
+                  <path d="M5 6l7-3 7 3" />
+                  <path d="M4 10v11" />
+                  <path d="M20 10v11" />
+                  <path d="M8 14v3" />
+                  <path d="M12 14v3" />
+                  <path d="M16 14v3" />
                 </svg>
 
                 <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
@@ -307,33 +270,17 @@
 
           <!-- Menu Item Vehicle -->
           <li>
-            <a href="{{ route('Vehicle.index') }}" @click="selected = (selected === 'Profile' ? '':'Profile')"
+            <a href="{{ route('Vehicle.index') }}" @click="selected = (selected === 'Vehicles' ? '':'Vehicles')"
               class="menu-item group" :class="window.location.href.includes('{{ route('Vehicle.index') }}') ? 'menu-item-active' :
                                 'menu-item-inactive'">
 
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    d="M22.875 8.625L21.75 9L21 10.5L19.1776 4.4253C18.9238 3.57933 18.1452 3 17.2619 3H6.73806C5.85484 3 5.0762 3.57934 4.82241 4.4253L3 10.5L2.25 9L1.125 8.625"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M1.5 19.468V21C1.5 21.3978 1.65804 21.7794 1.93934 22.0607C2.22064 22.342 2.60218 22.5 3 22.5C3.39782 22.5 3.77936 22.342 4.06066 22.0607C4.34196 21.7794 4.5 21.3978 4.5 21V19.555"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M22.5 19.468V21C22.5 21.3978 22.342 21.7794 22.0607 22.0607C21.7794 22.342 21.3978 22.5 21 22.5C20.6022 22.5 20.2206 22.342 19.9393 22.0607C19.658 21.7794 19.5 21.3978 19.5 21V19.5766"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path
-                    d="M2.75 10.5H12H21.25C21.7804 10.5 22.2891 10.7299 22.6642 11.139C23.0393 11.5482 23.25 12.1032 23.25 12.6818V18.4091C23.25 18.6984 23.1446 18.9759 22.9571 19.1805C22.7696 19.3851 22.5152 19.5 22.25 19.5H1.75C1.48478 19.5 1.23043 19.3851 1.04289 19.1805C0.855357 18.9759 0.75 18.6984 0.75 18.4091V12.6818C0.75 12.1032 0.960714 11.5482 1.33579 11.139C1.71086 10.7299 2.21957 10.5 2.75 10.5Z"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                  <path d="M0.75 14.25H5L6.125 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M14.25 16.5H9.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                  <path d="M23.25 14.25H19L17.875 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round"></path>
-                </g>
+              <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+                <circle cx="7" cy="17" r="2" />
+                <path d="M9 17h6" />
+                <circle cx="17" cy="17" r="2" />
               </svg>
 
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
@@ -343,7 +290,6 @@
           </li>
 
           <!-- Menu Item setting -->
-
           <li>
             <a href="#" @click.prevent="selected = (selected === 'setting' ? '' : 'setting')"
               class="flex relative items-center menu-item group" :class="(selected === 'setting') 
@@ -351,36 +297,28 @@
                             || window.location.href.includes('{{ route('notifications.index') }}')
                             || window.location.href.includes('{{ route('admins.index') }}')
                             || window.location.href.includes('{{ route('log.index') }}')
+                            || window.location.href.includes('{{ route('ads.index') }}')
                              ? 'menu-item-active' : 'menu-item-inactive'">
 
               <!-- السهم المطلق في أقصى اليسار -->
               <svg class="absolute left-4 transition-transform duration-300"
-                :class="(selected === 'setting') ? 'rotate-180' : ''" width="20" height="20" viewBox="0 0 20 20"
+                :class="[(selected === 'setting') ? 'rotate-180' : '', sidebarToggle ? 'lg:hidden' : '']" width="20" height="20" viewBox="0 0 20 20"
                 fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4.79175 7.39584L10.0001 12.6042L15.2084 7.39585" stroke="currentColor" stroke-width="1.5"
                   stroke-linecap="round" stroke-linejoin="round" />
               </svg>
 
-              <!-- الأيقونة مع هامش لترك مساحة للسهم -->
-              <svg :class="
-                                window.location.href.includes('{{ route('systems.index') }}')
-                             || window.location.href.includes('{{ route('systems.index') }}') 
-                             || window.location.href.includes('{{ route('admins.index') }}')
-                             || window.location.href.includes('{{ route('log.index') }}')
-                             || window.location.href.includes('{{ route('ads.index') }}')
-                             ?  'menu-item-icon-active' :'menu-item-icon-inactive'" width="24" height="24"
-                viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC"
-                  stroke-width="0.32"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    d="M11.078035,0 C11.3724371,0 11.6350302,0.183056678 11.7339285,0.457230801 L12.4396543,2.41370379 C12.6930786,2.47650967 12.9108093,2.54030436 13.0942558,2.60592238 C13.2952001,2.67779926 13.5540423,2.78741449 13.8746747,2.93586046 L15.5184936,2.06596774 C15.794148,1.92009416 16.1343396,1.97375545 16.3504064,2.19719235 L17.7960017,3.69209722 C17.98787,3.8905102 18.0422042,4.18265582 17.9342767,4.43557836 L17.162857,6.24336136 C17.2913496,6.47797752 17.3939318,6.67854463 17.4711247,6.84658462 C17.5553742,7.02998593 17.6588292,7.28241713 17.7829588,7.60671302 L19.580333,8.37623211 C19.8497082,8.4915611 20.0170118,8.76152727 19.9986241,9.05119919 L19.8669066,11.126215 C19.8494975,11.4004703 19.668825,11.6382294 19.4072566,11.7310995 L17.7049419,12.3355083 C17.6562729,12.5705675 17.6053791,12.772402 17.551477,12.9424906 C17.4883274,13.1417599 17.389065,13.3979932 17.2526724,13.7155635 L18.1084613,15.6068822 C18.2316885,15.879218 18.1635045,16.1990386 17.9395819,16.3990196 L16.3138559,17.8509252 C16.0957241,18.0457347 15.7773686,18.084139 15.5182641,17.9469002 L13.8421792,17.0591354 C13.5477413,17.2124998 13.2783109,17.3348831 13.0324612,17.4263047 C12.8127426,17.5080092 12.5685018,17.5992352 12.2997543,17.6999771 L11.6499659,19.5002547 C11.5529743,19.7689756 11.2984077,19.9507082 11.0099151,19.9571805 L9.10927684,20 C8.81300029,20.0064684 8.54492708,19.8269822 8.44118272,19.5525044 L7.6751041,17.5256808 C7.3232066,17.4026533 7.06612795,17.3070148 6.89898146,17.2366139 C6.74058527,17.1698987 6.53544077,17.0722593 6.28058727,16.9426265 L4.38190658,17.7549437 C4.12577479,17.8645252 3.82821583,17.812324 3.62584584,17.6223069 L2.22106797,16.3032781 C2.00593124,16.1012735 1.94386481,15.7866753 2.0664447,15.519534 L2.88322205,13.7395109 C2.76017205,13.4979963 2.65957084,13.2838441 2.58116863,13.0959926 C2.49857708,12.8981035 2.39862152,12.628586 2.28009144,12.2848943 L0.491710371,11.7412063 C0.190471763,11.6496264 -0.0110085834,11.3694211 0.000465944291,11.0580168 L0.071249487,9.13703967 C0.0806273232,8.88253689 0.2313194,8.65393727 0.463026654,8.5427144 L2.34096885,7.64127468 C2.42759746,7.32228988 2.50386559,7.07419005 2.57165467,6.89274074 C2.63878533,6.7130538 2.74293335,6.47740464 2.8854431,6.18143219 L2.06997455,4.45996626 C1.94312228,4.19217928 2.00336838,3.87420996 2.21965377,3.66998322 L3.62443163,2.34352648 C3.82439931,2.15470767 4.11840992,2.10075785 4.37358276,2.20606012 L6.27210909,2.98952564 C6.4823493,2.85093927 6.67247185,2.73658268 6.84371422,2.6461118 C7.04934485,2.53747289 7.3225817,2.42318736 7.66837893,2.29976859 L8.32789678,0.458652854 C8.42637398,0.183743082 8.68933933,0 8.98430143,0 L11.078035,0 Z M10.5870708,1.37705446 L9.47640909,1.37705446 L8.86948809,3.07134033 C8.79801391,3.27086827 8.63769115,3.42680114 8.43474473,3.49417973 C7.99915007,3.63879796 7.68401915,3.76347045 7.50006723,3.86065605 C7.30479682,3.96382144 7.05649639,4.12077045 6.75923344,4.33037214 C6.56321164,4.46858816 6.30888789,4.49688254 6.08670302,4.40519344 L4.25716409,3.65019697 L3.54351334,4.32405928 L4.2874951,5.89461557 C4.37724721,6.08408357 4.375001,6.30362324 4.2813906,6.49125715 C4.08134734,6.89222649 3.94589193,7.18842613 3.87809235,7.36990353 C3.8103478,7.55123365 3.71917424,7.8615808 3.60874921,8.29154274 C3.55823748,8.48822027 3.42255355,8.65285199 3.23793163,8.74147321 L1.44780841,9.60075854 L1.41171745,10.5802222 L3.03130231,11.0725942 C3.24698647,11.1381646 3.41716675,11.3030041 3.48790571,11.5148681 C3.64831871,11.9953067 3.7761118,12.3491471 3.86857839,12.5706968 C3.95934025,12.788162 4.09417527,13.0648832 4.27239921,13.3979523 C4.37321509,13.5863595 4.38009307,13.810311 4.29102495,14.0044194 L3.53951667,15.6421999 L4.25118794,16.3104301 L6.03251181,15.5483219 C6.22679544,15.465201 6.44877026,15.4739754 6.6357229,15.5721659 C7.00102332,15.7640277 7.27322021,15.8974495 7.44479999,15.9697176 C7.61953128,16.0433131 7.9548478,16.1653796 8.44065086,16.3314709 C8.63693275,16.3985778 8.7926767,16.548807 8.86538101,16.7411617 L9.57250939,18.6120199 L10.4993142,18.591227 L11.0961476,16.9376646 C11.1646975,16.747743 11.3140075,16.5970812 11.5046571,16.5254566 C11.8958011,16.3785088 12.2416349,16.2491584 12.5421977,16.1373911 C12.8039897,16.0400412 13.1223034,15.8867935 13.4934399,15.6776981 C13.7015148,15.5604703 13.9559143,15.5571841 14.1670155,15.6689972 L15.7439676,16.5042547 L16.6305025,15.7125069 L15.8561342,14.0011301 C15.7756691,13.8232999 15.7751619,13.6200892 15.8547382,13.4418685 C16.0370606,13.0335353 16.160351,12.7267619 16.2224704,12.5307434 C16.2832183,12.3390526 16.3456807,12.0622192 16.407072,11.7055024 C16.4492368,11.4605022 16.6216614,11.2569821 16.8582214,11.1729911 L18.5056035,10.5880863 L18.5779926,9.44770174 L16.9575114,8.75391676 C16.7827815,8.67910873 16.6466533,8.53682007 16.5808114,8.36016907 C16.4198441,7.92830106 16.2929314,7.61166725 16.2030747,7.41605965 C16.1143251,7.22286224 15.9738341,6.95669259 15.7830295,6.62172026 C15.677285,6.43607749 15.6644194,6.21248859 15.7481863,6.01618508 L16.4733058,4.31690418 L15.7093237,3.52686246 L14.2211258,4.31440213 C14.0242762,4.41857298 13.7888454,4.4230994 13.5880489,4.32657373 C13.1546705,4.11824271 12.829188,3.97550384 12.6204677,3.90084548 C12.4166956,3.82795707 12.1292655,3.75057315 11.7626377,3.671335 C11.5278825,3.62059807 11.3361711,3.45377367 11.2554479,3.22998614 L10.5870708,1.37705446 Z M10.0237083,5.64149212 C12.459442,5.64149212 14.4339942,7.59383168 14.4339942,10.0021646 C14.4339942,12.4104975 12.459442,14.362837 10.0237083,14.362837 C7.58797468,14.362837 5.61342244,12.4104975 5.61342244,10.0021646 C5.61342244,7.59383168 7.58797468,5.64149212 10.0237083,5.64149212 Z M10.0237083,7.01854658 C8.35715373,7.01854658 7.00614429,8.35435786 7.00614429,10.0021646 C7.00614429,11.6499713 8.35715373,12.9857826 10.0237083,12.9857826 C11.6902629,12.9857826 13.0412723,11.6499713 13.0412723,10.0021646 C13.0412723,8.35435786 11.6902629,7.01854658 10.0237083,7.01854658 Z"
-                    fill="currentColor" />
-                </g>
+              <!-- الأيقونة -->
+              <svg class="w-6 h-6 shrink-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <circle cx="12" cy="12" r="3" />
               </svg>
+
               <!-- النص -->
-              <span class="flex-1 ml-2 menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+              <span class="flex-1 menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
                 الأعدادات
               </span>
             </a>
@@ -392,7 +330,7 @@
                     النظام
                   </a>
                 </li>
-                @if (Auth::user()->type == 'superAdmin')
+                @if (Auth::user()?->type === 'superAdmin')
                   <li>
                     <a href="{{ route('admins.index') }}" class="menu-dropdown-item group" :class="window.location.href.includes('{{ route('admins.index') }}') ?
                                               'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
@@ -609,6 +547,4 @@
     </nav>
     <!-- Sidebar Menu -->
   </div>
-</aside>
-
 </aside>
