@@ -288,20 +288,22 @@
             </a>
           </li>
 
-          <li>
-            <a href="{{ route('Bank.index') }}" @click="selected = (selected === 'Banks' ? '':'Banks')"
-              class="menu-item group" :class="window.location.href.includes('{{ route('Bank.index') }}') ? 'menu-item-active' :
-            'menu-item-inactive'">
+          @if (Auth::user()?->type === 'superAdmin')
+            <li>
+              <a href="{{ route('Bank.index') }}" @click="selected = (selected === 'Banks' ? '':'Banks')"
+                class="menu-item group" :class="window.location.href.includes('{{ route('Bank.index') }}') ? 'menu-item-active' :
+              'menu-item-inactive'">
 
-              <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 10h3v7H4zm6.5 0h3v7h-3zM17 10h3v7h-3zm-15 8h20v2H2zm10-17L1 6v2h22V6z" />
-              </svg>
+                <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 10h3v7H4zm6.5 0h3v7h-3zM17 10h3v7h-3zm-15 8h20v2H2zm10-17L1 6v2h22V6z" />
+                </svg>
 
-              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
-                إدارة البنوك
-              </span>
-            </a>
-          </li>
+                <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">
+                  إدارة البنوك
+                </span>
+              </a>
+            </li>
+          @endif
 
           <!-- Menu Item Vehicle -->
           <li>

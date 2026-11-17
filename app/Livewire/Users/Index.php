@@ -4,11 +4,12 @@ namespace App\Livewire\Users;
 
 use App\Models\User;
 use App\Services\ActivityLog;
-use Livewire\Component;
-use Livewire\Attributes\On;
-use Livewire\WithPagination;
-use Livewire\Attributes\Computed;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class Index extends Component
 {
@@ -17,6 +18,12 @@ class Index extends Component
     public $activeFilter = 'all';
     public $search = '';
     public $perPage = 10;
+
+    public $passwordModalUserId = null;
+    public $passwordModalUserName = '';
+    public $newPassword = '';
+    public $newPasswordConfirmation = '';
+    public $passwordSuccessMessage = '';
     
     protected $queryString = [
         'search' => ['except' => '', 'as' => 'search'],
@@ -59,6 +66,55 @@ class Index extends Component
             $user->is_banned ? "تم حظر العميل {$user->name}" : "تم فك حظر العميل {$user->name}",
             $user->id
         );
+    }
+
+    public function openPasswordModal($userId): void
+    {
+        abort_unless(Auth::user()?->type === 'superAdmin', 403);
+
+        $user = User::findOrFail($userId);
+        if ($user->type === 'superAdmin') {
+            return;
+        }
+
+        $this->resetValidation();
+        $this->passwordSuccessMessage = '';
+        $this->passwordModalUserId = $user->id;
+        $this->passwordModalUserName = $user->name;
+        $this->newPassword = '';
+        $this->newPasswordConfirmation = '';
+
+        $this->dispatch('open-user-password-modal');
+    }
+
+    public function updatePassword(): void
+    {
+        abort_unless(Auth::user()?->type === 'superAdmin', 403);
+
+        $this->validate([
+            'newPassword' => ['required', 'string', 'min:8'],
+            'newPasswordConfirmation' => ['required', 'same:newPassword'],
+        ], [
+            'newPassword.required' => 'كلمة المرور الجديدة مطلوبة.',
+            'newPassword.min' => 'يجب أن تكون كلمة المرور 8 أحرف على الأقل.',
+            'newPasswordConfirmation.required' => 'تأكيد كلمة المرور مطلوب.',
+            'newPasswordConfirmation.same' => 'تأكيد كلمة المرور غير مطابق.',
+        ]);
+
+        $user = User::findOrFail($this->passwordModalUserId);
+        if ($user->type === 'superAdmin') {
+            return;
+        }
+
+        $user->update([
+            'password' => $this->newPassword,
+        ]);
+
+        ActivityLog::log('update', 'User', "تم تغيير كلمة مرور المستخدم {$user->name}", $user->id);
+
+        $this->passwordSuccessMessage = "تم تغيير كلمة مرور {$user->name} بنجاح.";
+        $this->reset(['passwordModalUserId', 'passwordModalUserName', 'newPassword', 'newPasswordConfirmation']);
+        $this->dispatch('close-user-password-modal');
     }
     
     #[Computed]

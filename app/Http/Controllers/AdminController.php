@@ -8,7 +8,9 @@ use App\Services\ActivityLog;
 use App\Services\ImageService;
 use Illuminate\Validation\Rule;
 use App\Classes\WebResponseClass;
+use App\Models\User;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
@@ -138,6 +140,40 @@ class AdminController extends Controller
             ], $id);
             ActivityLog::log('update', 'User', 'تم تغيير حالة حظر المسؤول ' . $admin->name);
             return WebResponseClass::sendResponse('تم تعديل الحالة!', 'تم تغيير حالة حظر المسؤول بنجاح');
+        } catch (Exception $e) {
+            return WebResponseClass::sendExceptionError($e);
+        }
+    }
+
+    public function changePassword(Request $request, $id)
+    {
+        abort_unless(Auth::user()?->type === 'superAdmin', 403);
+
+        $validator = Validator::make($request->all(), [
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'password.required' => 'كلمة المرور الجديدة مطلوبة.',
+            'password.min' => 'يجب أن تكون كلمة المرور 8 أحرف على الأقل.',
+            'password.confirmed' => 'تأكيد كلمة المرور غير مطابق.',
+        ]);
+
+        if ($validator->fails()) {
+            return WebResponseClass::sendValidationError($validator);
+        }
+
+        try {
+            $admin = User::findOrFail($id);
+            if ($admin->type === 'superAdmin') {
+                return WebResponseClass::sendError('لا يمكن تعديل كلمة مرور هذا الحساب');
+            }
+
+            $admin->update([
+                'password' => $validator->validated()['password'],
+            ]);
+
+            ActivityLog::log('update', 'User', "تم تغيير كلمة مرور المسؤول {$admin->name}", $admin->id);
+
+            return WebResponseClass::sendResponse('تم التحديث!', "تم تغيير كلمة مرور المسؤول {$admin->name} بنجاح");
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
         }

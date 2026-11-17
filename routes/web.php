@@ -39,10 +39,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('systems', SystemSettingsController::class);
     Route::resource('notifications', NotificationController::class);
     Route::post('admins/{id}/toggle-ban', [AdminController::class, 'toggleBan'])->name('admins.toggle-ban')->middleware(['superAdmin']);
+    Route::post('admins/{id}/change-password', [AdminController::class, 'changePassword'])->name('admins.change-password')->middleware(['superAdmin']);
     Route::resource('admins', AdminController::class)->middleware(['superAdmin']);
     Route::resource('log', ActivityLogController::class)->only(['index']);
     Route::resource('ads', AdController::class);
-    Route::resource('Bank', BankController::class);
+    Route::resource('Bank', BankController::class)->middleware(['superAdmin']);
     Route::post('/Vehicle/{id}/restore', [VehicleController::class, 'restore'])->name('Vehicle.restore');
     Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
 

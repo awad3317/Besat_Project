@@ -4,10 +4,11 @@ namespace App\Livewire\Banks;
 
 use App\Models\Bank;
 use App\Services\ActivityLog;
-use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class Index extends Component
 {
@@ -43,8 +44,15 @@ class Index extends Component
         $this->resetPage();
     }
     
+    public function mount(): void
+    {
+        abort_unless(Auth::user()?->type === 'superAdmin', 403);
+    }
+
     public function toggleStatus($bankId)
     {
+        abort_unless(Auth::user()?->type === 'superAdmin', 403);
+
         $bank = Bank::findOrFail($bankId);
         $bank->is_active = !$bank->is_active;
         $bank->save();

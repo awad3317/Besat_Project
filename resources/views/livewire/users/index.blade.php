@@ -1,5 +1,23 @@
 <div>
 
+   @if ($passwordSuccessMessage)
+       <div class="flex gap-3 justify-between items-center p-4 mb-4 rounded-xl border shadow-sm bg-success-50 border-success-200 dark:bg-success-500/10 dark:border-success-500/20">
+           <div class="flex gap-3 items-center">
+               <svg class="w-5 h-5 text-success-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+               </svg>
+               <span class="text-sm font-semibold text-success-800 dark:text-success-400">
+                   {{ $passwordSuccessMessage }}
+               </span>
+           </div>
+           <button type="button" wire:click="$set('passwordSuccessMessage', '')"
+               class="text-xs font-medium text-success-700 hover:underline dark:text-success-400">
+               إغلاق
+           </button>
+       </div>
+   @endif
+
    <div class="flex flex-col sm:flex-row gap-4 md:gap-6 flex-wrap mb-4">
         
     {{-- كارت إجمالي المستخدمين --}}
@@ -225,6 +243,20 @@
                                                         عرض التفاصيل
                                                     </a>
 
+                                                    @if (Auth::user()?->type === 'superAdmin')
+                                                        <!-- تغيير كلمة المرور -->
+                                                        <button type="button"
+                                                            wire:click="openPasswordModal({{ $user->id }})"
+                                                            @click="openOptions = false"
+                                                            class="actions-dropdown-item">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                                                            </svg>
+                                                            تغيير كلمة المرور
+                                                        </button>
+                                                    @endif
+
                                                     <!-- الحظر / فك الحظر -->
                                                     @if($user->is_banned)
                                                         <button type="button" wire:click="toggleBan({{ $user->id }})"
@@ -333,4 +365,78 @@
             </div>
         </div>
     </div>
+
+    @if (Auth::user()?->type === 'superAdmin')
+        {{-- مودال تغيير كلمة المرور (للسوبر أدمن فقط) --}}
+        <div x-data="{ isOpen: false, showPassword: false }"
+            x-on:open-user-password-modal.window="showPassword = false; isOpen = true"
+            x-on:close-user-password-modal.window="isOpen = false"
+            x-show="isOpen"
+            class="flex overflow-y-auto fixed inset-0 justify-center items-center p-5 modal z-99999"
+            style="display: none;">
+            <div class="fixed inset-0 w-full h-full bg-gray-400/50 backdrop-blur-[32px]"
+                @click="isOpen = false"></div>
+
+            <div class="relative w-full max-w-md rounded-3xl bg-white p-6 dark:bg-gray-900 lg:p-8 shadow-xl" dir="rtl">
+                <form wire:submit.prevent="updatePassword">
+                    <h4 class="mb-2 text-lg font-semibold text-gray-800 dark:text-white/90">
+                        تغيير كلمة المرور
+                    </h4>
+                    <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
+                        تعيين كلمة مرور جديدة للحساب: <span class="font-semibold text-gray-800 dark:text-white/90">{{ $passwordModalUserName }}</span>
+                    </p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
+                                كلمة المرور الجديدة <span class="text-xs text-warning-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input :type="showPassword ? 'text' : 'password'" wire:model="newPassword"
+                                    autocomplete="new-password" placeholder="أدخل 8 أحرف على الأقل"
+                                    class="px-4 py-2.5 w-full h-11 text-sm text-gray-800 bg-transparent rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-900 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white" />
+                                <button type="button" @click="showPassword = !showPassword"
+                                    class="flex absolute inset-y-0 left-0 items-center px-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            @error('newPassword')
+                                <p class="mt-1 text-xs text-error-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-400">
+                                تأكيد كلمة المرور <span class="text-xs text-warning-500">*</span>
+                            </label>
+                            <input :type="showPassword ? 'text' : 'password'" wire:model="newPasswordConfirmation"
+                                autocomplete="new-password" placeholder="أعد كتابة كلمة المرور"
+                                class="px-4 py-2.5 w-full h-11 text-sm text-gray-800 bg-transparent rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-dark-900 shadow-theme-xs focus:border-brand-500 focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:text-white" />
+                            @error('newPasswordConfirmation')
+                                <p class="mt-1 text-xs text-error-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 justify-end items-center mt-6 w-full">
+                        <button @click="isOpen = false" type="button"
+                            class="flex justify-center px-4 py-3 w-full text-sm font-medium text-gray-700 bg-white rounded-lg border border-gray-300 hover:border-brand-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 sm:w-auto">
+                            إغلاق
+                        </button>
+                        <button type="submit" wire:loading.attr="disabled" wire:target="updatePassword"
+                            class="flex gap-2 justify-center items-center px-4 py-3 w-full text-sm font-medium text-white rounded-lg transition-all hover:bg-brand-600 bg-brand-500 disabled:opacity-75 disabled:cursor-not-allowed sm:w-auto">
+                            <span wire:loading wire:target="updatePassword"
+                                class="w-4 h-4 rounded-full border-2 border-white animate-spin border-t-transparent"></span>
+                            <span>حفظ كلمة المرور</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 </div>
