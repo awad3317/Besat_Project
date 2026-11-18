@@ -92,9 +92,6 @@
             {{-- شريط العنوان والبحث والفلترة --}}
             <div class="px-5 py-4 sm:px-6 sm:py-5">
                 <div class="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        سجل <span class="text-warning-500 dark:text-warning/90">تقييمات العملاء</span>
-                    </h3>
                     {{-- <div class="inline-flex gap-2 items-center self-start px-3 py-1.5 bg-gray-100 rounded-lg dark:bg-gray-800">
                         <svg class="w-4 h-4" fill="#dc6803" viewBox="0 0 20 20">
                             <path
