@@ -379,6 +379,20 @@
                                                 @endif
                                             @endif
 
+                                            @if (!in_array($request->status, ['cancelled', 'completed'], true))
+                                                <!-- إلغاء الرحلة -->
+                                                <button wire:click="openCancelModal({{ $request->id }})"
+                                                    @click="openOptions = false"
+                                                    class="actions-dropdown-item text-error-600 dark:text-error-500 hover:bg-error-50 dark:hover:bg-error-950/20">
+                                                    <svg class="w-4 h-4 text-error-500" fill="none"
+                                                        stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                    </svg>
+                                                    إلغاء الرحلة
+                                                </button>
+                                            @endif
+
                                         </div>
                                     </div>
                                 </td>
@@ -404,6 +418,7 @@
     @endunless
 
     @include('livewire.request.assign-driver-modal')
+    @include('livewire.request.cancel-request-modal')
 
     {{-- موديل تأكيد تغيير نوع المركبة مع مؤشر التحميل وتحديث الصفحة --}}
     <div x-data="{

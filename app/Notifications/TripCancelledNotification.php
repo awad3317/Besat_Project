@@ -13,13 +13,20 @@ class TripCancelledNotification extends Notification
     use Queueable;
 
     protected $tripRequest;
+    protected ?string $reason;
+    protected ?string $cancelledByRole;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(TripRequest $tripRequest)
-    {
+    public function __construct(
+        TripRequest $tripRequest,
+        ?string $reason = null,
+        ?string $cancelledByRole = null
+    ) {
         $this->tripRequest = $tripRequest;
+        $this->reason = $reason;
+        $this->cancelledByRole = $cancelledByRole;
     }
 
     /**
@@ -38,14 +45,28 @@ class TripCancelledNotification extends Notification
      * @return array<string, mixed>
      */
     public function toArray($notifiable): array
-    {   
+    {
+        if ($this->cancelledByRole === 'ADMIN') {
+            $body = "تم إلغاء الرحلة رقم #{$this->tripRequest->id} من قبل الإدارة.";
+            if (! empty($this->reason)) {
+                $body .= " السبب: {$this->reason}";
+            }
+        } else {
+            $body = 'تم إلغاء طلب الرحلة الخاص بك بنجاح.';
+            if (! empty($this->reason)) {
+                $body .= " السبب: {$this->reason}";
+            }
+        }
+
         return [
-            'request_id'   => $this->tripRequest->id,
-            'driver_id'    => $this->tripRequest->driver_id,
-            'title'        => 'تم إلغاء الرحلة!',
-            'body'         => 'تم إلغاء طلب الرحلة الخاص بك بنجاح.',
-            'status'       => 'cancelled',
-            'cancelled_by' => $this->tripRequest->cancelled_by,
+            'request_id'        => $this->tripRequest->id,
+            'driver_id'         => $this->tripRequest->driver_id,
+            'title'             => 'تم إلغاء الرحلة!',
+            'body'              => $body,
+            'status'            => 'cancelled',
+            'cancelled_by'      => $this->tripRequest->cancelled_by,
+            'cancelled_by_role' => $this->cancelledByRole ?? 'USER',
+            'reason'            => $this->reason,
         ];
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Request as RequestModel;
 use App\Models\Vehicle;
 use App\Notifications\DriverAssignedNotification;
 use App\Notifications\RequestVehicleChangedNotification;
+use App\Notifications\TripCancelledNotification;
 use App\Repositories\ChatRepository;
 use App\Services\ActivityLog;
 use App\Services\DriverLocationService;
@@ -38,6 +39,10 @@ class Index extends Component
     public $driverSearch = '';
     public bool $onlineDriversOnly = true;
     public bool $matchVehicleOnly = true;
+
+    // ── Cancel Request Modal ──
+    public $cancellingRequestId = null;
+    public $cancellationReason = '';
 
     protected $queryString = [
         'search' => ['except' => '', 'as' => 'q'],
@@ -797,6 +802,157 @@ class Index extends Component
         }
 
         $this->dispatch('vehicle-changed');
+    }
+
+    // ═══════════════════════════════════════════
+    //  Cancel Request Modal & Action
+    // ═══════════════════════════════════════════
+    public function openCancelModal($requestId)
+    {
+        $request = RequestModel::find($requestId);
+        if (! $request) {
+            $this->dispatchError('الطلب غير موجود.');
+            return;
+        }
+
+        if (in_array($request->status, ['completed', 'cancelled'], true)) {
+            $this->dispatchError('لا يمكن إلغاء رحلة مكتملة أو ملغية بالفعل.', 'غير مسموح!');
+            return;
+        }
+
+        $this->cancellingRequestId = $requestId;
+        $this->cancellationReason = '';
+        $this->resetValidation('cancellationReason');
+
+        $this->dispatch('open-modal', 'cancel-request-modal');
+    }
+
+    public function cancelRequest(?FirebaseService $firebaseService = null)
+    {
+        $this->validate([
+            'cancellationReason' => ['required', 'string', 'min:3', 'max:500'],
+        ], [
+            'cancellationReason.required' => 'يرجى إدخال سبب إلغاء الرحلة.',
+            'cancellationReason.min'      => 'سبب الإلغاء يجب أن لا يقل عن 3 أحرف.',
+            'cancellationReason.max'      => 'سبب الإلغاء يجب أن لا يتجاوز 500 حرف.',
+        ]);
+
+        if (! $this->cancellingRequestId) {
+            $this->dispatch('close-modal', 'cancel-request-modal');
+            $this->dispatchError('لم يتم تحديد أي رحلة.');
+            return;
+        }
+
+        $adminUser = Auth::user() ?? auth()->user() ?? auth('web')->user();
+        $adminId = $adminUser?->id;
+        $adminName = $adminUser?->name ?? 'المسؤول';
+        $reason = trim($this->cancellationReason);
+        $errorMessage = null;
+        $errorTitle = 'خطأ!';
+        $cancelledRequestId = null;
+
+        DB::transaction(function () use ($adminId, $adminName, $reason, &$errorMessage, &$errorTitle, &$cancelledRequestId) {
+            $lockedRequest = RequestModel::where('id', $this->cancellingRequestId)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $lockedRequest) {
+                $errorMessage = 'الطلب غير موجود.';
+                return;
+            }
+
+            if (in_array($lockedRequest->status, ['completed', 'cancelled'], true)) {
+                $errorTitle = 'غير مسموح!';
+                $errorMessage = 'لا يمكن إلغاء هذه الرحلة لأنها مكتملة أو ملغية بالفعل.';
+                return;
+            }
+
+            $lockedRequest->update([
+                'status'       => 'cancelled',
+                'cancelled_by' => $adminId,
+            ]);
+
+            ActivityLog::log(
+                'update',
+                'Request',
+                "تم إلغاء الرحلة #{$lockedRequest->id} بواسطة ({$adminName}) - السبب: {$reason}",
+                $lockedRequest->id
+            );
+
+            $cancelledRequestId = $lockedRequest->id;
+        });
+
+        if ($errorMessage) {
+            $this->dispatch('close-modal', 'cancel-request-modal');
+            $this->dispatchError($errorMessage, $errorTitle);
+            return;
+        }
+
+        // إشعار العميل والسائق إن وجد بعد الإلغاء (قاعدة البيانات + Firebase FCM) مع السبب
+        $request = RequestModel::with(['user.devices', 'driver'])->find($cancelledRequestId);
+        $firebaseService = $firebaseService ?? app(FirebaseService::class);
+        $notificationTitle = 'تم إلغاء الرحلة!';
+        $notificationData = [
+            'new_request'  => 'false',
+            'new_message'  => 'false',
+            'request_id'   => (string) ($request?->id ?? $cancelledRequestId),
+            'status'       => 'cancelled',
+            'cancelled_by' => 'ADMIN',
+            'reason'       => $reason,
+            'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+        ];
+
+        // 1. إشعار العميل (Database + Firebase FCM)
+        if ($request && $request->user) {
+            try {
+                $request->user->notify(new TripCancelledNotification($request, $reason, 'ADMIN'));
+            } catch (\Throwable $e) {
+                \Log::error("Failed to store cancellation notification for user {$request->user_id}: " . $e->getMessage());
+            }
+
+            if ($request->user->is_notifications_enabled ?? true) {
+                $deviceTokens = $request->user->devices?->pluck('device_token')->filter()->unique()->values()->toArray() ?? [];
+                if (! empty($deviceTokens)) {
+                    $customerBody = "تم إلغاء طلب الرحلة رقم #{$request->id} من قبل الإدارة. السبب: {$reason}";
+                    foreach ($deviceTokens as $token) {
+                        try {
+                            $firebaseService->sendNotification($token, $notificationTitle, $customerBody, $notificationData);
+                        } catch (\Throwable $e) {
+                            \Log::error("Failed to send cancellation FCM to customer token {$token}: " . $e->getMessage());
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. إشعار السائق إن كان معيّناً (Database + Firebase FCM) مع السبب
+        if ($request && $request->driver) {
+            try {
+                $request->driver->notify(new TripCancelledNotification($request, $reason, 'ADMIN'));
+            } catch (\Throwable $e) {
+                \Log::error("Failed to store cancellation notification for driver {$request->driver->id}: " . $e->getMessage());
+            }
+
+            if (! empty($request->driver->device_token)) {
+                $driverBody = "تم إلغاء الرحلة رقم #{$request->id} من قبل الإدارة. السبب: {$reason}";
+                try {
+                    $firebaseService->sendNotification(
+                        $request->driver->device_token,
+                        $notificationTitle,
+                        $driverBody,
+                        $notificationData
+                    );
+                } catch (\Throwable $e) {
+                    \Log::error("Failed to send cancellation FCM to driver {$request->driver->id}: " . $e->getMessage());
+                }
+            }
+        }
+
+        $this->cancellingRequestId = null;
+        $this->cancellationReason = '';
+        unset($this->stats, $this->requests, $this->selectedRequest);
+
+        $this->dispatch('close-modal', 'cancel-request-modal');
     }
 
     private function driverAssignmentBlockedMessage(RequestModel $request): string
