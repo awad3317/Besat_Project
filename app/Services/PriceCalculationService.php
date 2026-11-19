@@ -63,6 +63,9 @@ class PriceCalculationService
         }
         return (float) ($totalDistanceMeters / 1000);
     }
+    /**
+     * @deprecated استخدم calculateTieredDistancePrice أو calculatePrice بدلاً منها لحساب السعر التراكمي بالقطاعات.
+     */
     public function getPricePerKmByDistanceAndVehicle($distanceKm, $vehicle): float
     {
         if ($vehicle->pricing->isEmpty()) {
@@ -79,6 +82,107 @@ class PriceCalculationService
     }
 
     /**
+     * حساب تفصيل تكلفة المسافة بنظام القطاعات (الشرائح التراكمية) مع إرجاع تفاصيل كل قطاع
+     */
+    public function getTieredDistanceBreakdown(float $distanceKm, $vehicle): array
+    {
+        $pricings = ($vehicle->pricing ?? collect())->sortBy('max_distance_km')->values();
+        $minPrice = (float) ($vehicle->min_price ?? 0);
+
+        if ($pricings->isEmpty() || $distanceKm <= 0) {
+            return [
+                'raw_distance_price'         => $minPrice,
+                'min_price_applied'          => true,
+                'base_price_before_rounding' => $minPrice,
+                'base_price'                 => $this->roundPrice($minPrice),
+                'effective_avg_price_per_km' => 0.0,
+                'tiers_breakdown'            => [],
+            ];
+        }
+
+        $totalPrice = 0.0;
+        $previousMax = 0.0;
+        $tiersBreakdown = [];
+        $tierNumber = 1;
+
+        foreach ($pricings as $pricing) {
+            if ($distanceKm <= $previousMax) {
+                break;
+            }
+
+            $tierEnd = (float) $pricing->max_distance_km;
+            $kmInTier = min($distanceKm, $tierEnd) - $previousMax;
+
+            if ($kmInTier > 0) {
+                $rate = (float) $pricing->base_price;
+                $subtotal = $kmInTier * $rate;
+                $totalPrice += $subtotal;
+
+                $tiersBreakdown[] = [
+                    'tier_number'         => $tierNumber++,
+                    'pricing_tier_id'     => $pricing->id ?? null,
+                    'from_km'             => round($previousMax, 2),
+                    'to_km'               => round($tierEnd, 2),
+                    'db_min_distance_km'  => (float) $pricing->min_distance_km,
+                    'db_max_distance_km'  => (float) $pricing->max_distance_km,
+                    'distance_in_tier_km' => round($kmInTier, 2),
+                    'price_per_km'        => $rate,
+                    'subtotal'            => round($subtotal, 2),
+                    'formula'             => round($kmInTier, 2) . ' km × ' . $rate . ' = ' . round($subtotal, 2),
+                    'is_overflow'         => false,
+                ];
+            }
+
+            $previousMax = $tierEnd;
+        }
+
+        if ($distanceKm > $previousMax) {
+            $lastPricing = $pricings->last();
+            $remainingKm = $distanceKm - $previousMax;
+            $rate = (float) $lastPricing->base_price;
+            $subtotal = $remainingKm * $rate;
+            $totalPrice += $subtotal;
+
+            $tiersBreakdown[] = [
+                'tier_number'         => $tierNumber++,
+                'pricing_tier_id'     => $lastPricing->id ?? null,
+                'from_km'             => round($previousMax, 2),
+                'to_km'               => null,
+                'db_min_distance_km'  => (float) $lastPricing->min_distance_km,
+                'db_max_distance_km'  => (float) $lastPricing->max_distance_km,
+                'distance_in_tier_km' => round($remainingKm, 2),
+                'price_per_km'        => $rate,
+                'subtotal'            => round($subtotal, 2),
+                'formula'             => round($remainingKm, 2) . ' km × ' . $rate . ' = ' . round($subtotal, 2),
+                'is_overflow'         => true,
+            ];
+        }
+
+        $minPriceApplied = $totalPrice < $minPrice;
+        $basePriceBeforeRounding = max($totalPrice, $minPrice);
+        $roundedBasePrice = $this->roundPrice($basePriceBeforeRounding);
+        $effectiveAvgPricePerKm = $distanceKm > 0 ? round($totalPrice / $distanceKm, 2) : 0.0;
+
+        return [
+            'raw_distance_price'         => (float) $totalPrice,
+            'min_price_applied'          => $minPriceApplied,
+            'base_price_before_rounding' => (float) $basePriceBeforeRounding,
+            'base_price'                 => $roundedBasePrice,
+            'effective_avg_price_per_km' => $effectiveAvgPricePerKm,
+            'tiers_breakdown'            => $tiersBreakdown,
+        ];
+    }
+
+    /**
+     * حساب تكلفة المسافة بنظام القطاعات (الشرائح التراكمية) لكل كيلومتر داخل شريحته
+     */
+    public function calculateTieredDistancePrice(float $distanceKm, $vehicle): float
+    {
+        $breakdown = $this->getTieredDistanceBreakdown($distanceKm, $vehicle);
+        return (float) $breakdown['raw_distance_price'];
+    }
+
+    /**
      * تقريب السعر لأقرب 100 ريال لأعلى وبدون فواصل عشرية (مثال: 7825 تصبح 7900)
      */
     public function roundPrice($amount): int
@@ -86,9 +190,10 @@ class PriceCalculationService
         return (int) (ceil((float) $amount / 100) * 100);
     }
 
-    public function calculatePrice($distanceKm, $price_per_km, $min_price)
+    public function calculatePrice($distanceKm, $vehicle, $min_price = null)
     {
-        $total_price = $distanceKm * $price_per_km;
+        $min_price = $min_price ?? ($vehicle->min_price ?? 0);
+        $total_price = $this->calculateTieredDistancePrice((float) $distanceKm, $vehicle);
         $price = max($total_price, $min_price);
         return $this->roundPrice($price);
     }
@@ -177,15 +282,18 @@ class PriceCalculationService
             throw new \Exception("فشل في حساب المسافة الدقيقة من خرائط جوجل.");
         }
         $price_per_km = $this->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
-        $base_price = $this->calculatePrice($distanceInKm, $price_per_km, $vehicle->min_price);
+        $distanceBreakdown = $this->getTieredDistanceBreakdown((float) $distanceInKm, $vehicle);
+        $base_price = $this->calculatePrice($distanceInKm, $vehicle, $vehicle->min_price);
 
         $surcharges_details = [];
         $ac_cost = 0;
+        $raw_ac_cost = 0.0;
         $ac_applied = false;
         $wants_ac = $validatedData['wants_ac'] ?? false;
 
         if ($wants_ac && $vehicle->has_ac_option) {
-            $ac_cost = $this->roundPrice($distanceInKm * $vehicle->ac_price_per_km);
+            $raw_ac_cost = (float) $distanceInKm * (float) $vehicle->ac_price_per_km;
+            $ac_cost = $this->roundPrice($raw_ac_cost);
             $ac_applied = true;
 
             $surcharges_details[] = [
@@ -209,15 +317,20 @@ class PriceCalculationService
 
         $discount_amount = 0;
         $coupon_for_response = null;
+        $coupon_details = null;
 
         if ($couponObject) {
             $minTripFare = !is_null($couponObject->min_trip_fare) ? (float) $couponObject->min_trip_fare : null;
+            $coupon_rate = (float) $couponObject->discount_rate;
+            $rounded_calculated_discount = 0;
+            $was_capped = false;
+            $was_rejected_by_min_fare = false;
 
             if ($minTripFare !== null && $minTripFare > 0 && $original_price < $minTripFare) {
                 // إذا كان السعر الأصلي للرحلة أقل من الحد الأدنى لا يُطبق الخصم نهائياً
                 $discount_amount = 0;
+                $was_rejected_by_min_fare = true;
             } else {
-                $coupon_rate = (float) $couponObject->discount_rate;
                 $coupon_for_response = number_format($coupon_rate * 100, 2) . '%';
 
                 // 1. تطبيق دالة التقريب الحالية على الخصم المحسوب بالنسبة أولاً
@@ -225,6 +338,7 @@ class PriceCalculationService
 
                 // 2. تطبيق شرط السقف الأعلى بعد التقريب لضمان عدم تجاوز السقف الأقصى المحدد بالريال
                 if (!is_null($couponObject->max_discount_amount) && (float) $couponObject->max_discount_amount > 0) {
+                    $was_capped = $rounded_calculated_discount > (float) $couponObject->max_discount_amount;
                     $discount_amount = (int) min($rounded_calculated_discount, (float) $couponObject->max_discount_amount);
                 } else {
                     $discount_amount = (int) $rounded_calculated_discount;
@@ -242,9 +356,23 @@ class PriceCalculationService
                     ];
                 }
             }
+
+            $coupon_details = [
+                'id'                          => $couponObject->id ?? null,
+                'code'                        => $couponObject->code ?? null,
+                'discount_rate'               => $coupon_rate,
+                'discount_percentage'         => number_format($coupon_rate * 100, 2) . '%',
+                'min_trip_fare'               => $minTripFare,
+                'max_discount_amount'         => !is_null($couponObject->max_discount_amount) ? (float) $couponObject->max_discount_amount : null,
+                'calculated_discount_rounded' => (int) $rounded_calculated_discount,
+                'applied_discount_amount'     => (int) $discount_amount,
+                'was_capped_by_max_discount'  => $was_capped,
+                'was_rejected_by_min_fare'    => $was_rejected_by_min_fare,
+            ];
         }
 
         // 2. حساب عمولة التطبيق من أصل السعر (original_price) لضمان عدم نقص عمولة المنصة
+        $app_commission_rate = (float) ($this->appSettingRepository->getSetting()->commission_rate ?? 0);
         $app_commission_amount = $this->calculateCommission($original_price);
 
         // 3. صافي مستحقات السائق: حقه من السعر الأصلي بعد اقتطاع عمولة التطبيق دون تحميله أي خصم
@@ -254,21 +382,29 @@ class PriceCalculationService
         $company_net_revenue = $app_commission_amount - $discount_amount;
 
         return [
-            'distance_in_km'        => round((float) $distanceInKm, 2),
-            'price_per_km'          => round((float) $price_per_km, 2),
-            'base_price'            => (int) $base_price,
-            'original_price'        => (int) $original_price,
-            'final_price'           => (int) $final_price,
-            'vehicle'               => $vehicle->type,
-            'coupon'                => $coupon_for_response,
-            'ac_applied'            => $ac_applied,
-            'ac_cost'               => (int) $ac_cost,
-            'total_surcharges'      => (int) $total_surcharge_amount,
-            'discount_amount'       => (int) $discount_amount,
-            'app_commission_amount' => (int) $app_commission_amount,
-            'driver_amount'         => (int) $driver_amount,
-            'company_net_revenue'   => (int) $company_net_revenue,
-            'surcharges_details'    => $surcharges_details
+            'distance_in_km'             => round((float) $distanceInKm, 2),
+            'price_per_km'               => round((float) $price_per_km, 2),
+            'effective_avg_price_per_km' => (float) $distanceBreakdown['effective_avg_price_per_km'],
+            'raw_distance_price'         => (float) $distanceBreakdown['raw_distance_price'],
+            'min_price_applied'          => (bool) $distanceBreakdown['min_price_applied'],
+            'base_price_before_rounding' => (float) $distanceBreakdown['base_price_before_rounding'],
+            'tiers_breakdown'            => $distanceBreakdown['tiers_breakdown'],
+            'base_price'                 => (int) $base_price,
+            'original_price'             => (int) $original_price,
+            'final_price'                => (int) $final_price,
+            'vehicle'                    => $vehicle->type,
+            'coupon'                     => $coupon_for_response,
+            'coupon_details'             => $coupon_details,
+            'ac_applied'                 => $ac_applied,
+            'raw_ac_cost'                => round($raw_ac_cost, 2),
+            'ac_cost'                    => (int) $ac_cost,
+            'total_surcharges'           => (int) $total_surcharge_amount,
+            'discount_amount'            => (int) $discount_amount,
+            'app_commission_rate'        => $app_commission_rate,
+            'app_commission_amount'      => (int) $app_commission_amount,
+            'driver_amount'              => (int) $driver_amount,
+            'company_net_revenue'        => (int) $company_net_revenue,
+            'surcharges_details'         => $surcharges_details
         ];
     }
 }

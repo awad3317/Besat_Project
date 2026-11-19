@@ -566,14 +566,17 @@ class Index extends Component
                 }
 
                 $pricePerKm = $priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $newVehicle);
-                $basePrice = $priceCalculationService->calculatePrice($distanceInKm, $pricePerKm, $newVehicle->min_price);
+                $distanceBreakdown = $priceCalculationService->getTieredDistanceBreakdown($distanceInKm, $newVehicle);
+                $basePrice = $priceCalculationService->calculatePrice($distanceInKm, $newVehicle, $newVehicle->min_price);
 
                 $surchargesDetails = [];
                 $acCost = 0;
+                $rawAcCost = 0.0;
                 $acApplied = false;
 
                 if ($request->wants_ac && $newVehicle->has_ac_option) {
-                    $acCost = $priceCalculationService->roundPrice($distanceInKm * $newVehicle->ac_price_per_km);
+                    $rawAcCost = $distanceInKm * (float) $newVehicle->ac_price_per_km;
+                    $acCost = $priceCalculationService->roundPrice($rawAcCost);
                     $acApplied = true;
                     $surchargesDetails[] = [
                         'id'     => 'ac_cost',
@@ -593,16 +596,22 @@ class Index extends Component
                 $finalPrice = $originalPrice;
                 $discountAmount = 0;
                 $couponForResponse = null;
+                $couponDetails = null;
                 $couponObject = $request->discountCode;
 
                 if ($couponObject) {
                     $minTripFare = ! is_null($couponObject->min_trip_fare) ? (float) $couponObject->min_trip_fare : null;
+                    $couponRate = (float) $couponObject->discount_rate;
+                    $roundedDiscount = 0;
+                    $wasCapped = false;
+                    $wasRejectedByMinFare = false;
+
                     if ($minTripFare === null || $minTripFare <= 0 || $originalPrice >= $minTripFare) {
-                        $couponRate = (float) $couponObject->discount_rate;
                         $couponForResponse = number_format($couponRate * 100, 2) . '%';
                         $roundedDiscount = $priceCalculationService->roundPrice($originalPrice * $couponRate);
 
                         if (! is_null($couponObject->max_discount_amount) && (float) $couponObject->max_discount_amount > 0) {
+                            $wasCapped = $roundedDiscount > (float) $couponObject->max_discount_amount;
                             $discountAmount = (int) min($roundedDiscount, (float) $couponObject->max_discount_amount);
                         } else {
                             $discountAmount = (int) $roundedDiscount;
@@ -618,7 +627,22 @@ class Index extends Component
                                 'amount' => -$discountAmount,
                             ];
                         }
+                    } else {
+                        $wasRejectedByMinFare = true;
                     }
+
+                    $couponDetails = [
+                        'id'                          => $couponObject->id ?? null,
+                        'code'                        => $couponObject->code ?? null,
+                        'discount_rate'               => $couponRate,
+                        'discount_percentage'         => number_format($couponRate * 100, 2) . '%',
+                        'min_trip_fare'               => $minTripFare,
+                        'max_discount_amount'         => ! is_null($couponObject->max_discount_amount) ? (float) $couponObject->max_discount_amount : null,
+                        'calculated_discount_rounded' => (int) $roundedDiscount,
+                        'applied_discount_amount'     => (int) $discountAmount,
+                        'was_capped_by_max_discount'  => $wasCapped,
+                        'was_rejected_by_min_fare'    => $wasRejectedByMinFare,
+                    ];
                 }
 
                 $appCommissionAmount = $priceCalculationService->calculateCommission($originalPrice);
@@ -626,21 +650,28 @@ class Index extends Component
                 $companyNetRevenue = $appCommissionAmount - $discountAmount;
 
                 $priceDetails = [
-                    'distance_in_km'        => round($distanceInKm, 2),
-                    'price_per_km'          => round((float) $pricePerKm, 2),
-                    'base_price'            => (int) $basePrice,
-                    'original_price'        => (int) $originalPrice,
-                    'final_price'           => (int) $finalPrice,
-                    'vehicle'               => $newVehicle->type,
-                    'coupon'                => $couponForResponse,
-                    'ac_applied'            => $acApplied,
-                    'ac_cost'               => (int) $acCost,
-                    'total_surcharges'      => (int) $totalSurchargeAmount,
-                    'discount_amount'       => (int) $discountAmount,
-                    'app_commission_amount' => (int) $appCommissionAmount,
-                    'driver_amount'         => (int) $driverAmount,
-                    'company_net_revenue'   => (int) $companyNetRevenue,
-                    'surcharges_details'    => $surchargesDetails,
+                    'distance_in_km'             => round($distanceInKm, 2),
+                    'price_per_km'               => round((float) $pricePerKm, 2),
+                    'effective_avg_price_per_km' => (float) $distanceBreakdown['effective_avg_price_per_km'],
+                    'raw_distance_price'         => (float) $distanceBreakdown['raw_distance_price'],
+                    'min_price_applied'          => (bool) $distanceBreakdown['min_price_applied'],
+                    'base_price_before_rounding' => (float) $distanceBreakdown['base_price_before_rounding'],
+                    'tiers_breakdown'            => $distanceBreakdown['tiers_breakdown'],
+                    'base_price'                 => (int) $basePrice,
+                    'original_price'             => (int) $originalPrice,
+                    'final_price'                => (int) $finalPrice,
+                    'vehicle'                    => $newVehicle->type,
+                    'coupon'                     => $couponForResponse,
+                    'coupon_details'             => $couponDetails,
+                    'ac_applied'                 => $acApplied,
+                    'raw_ac_cost'                => round($rawAcCost, 2),
+                    'ac_cost'                    => (int) $acCost,
+                    'total_surcharges'           => (int) $totalSurchargeAmount,
+                    'discount_amount'            => (int) $discountAmount,
+                    'app_commission_amount'      => (int) $appCommissionAmount,
+                    'driver_amount'              => (int) $driverAmount,
+                    'company_net_revenue'        => (int) $companyNetRevenue,
+                    'surcharges_details'         => $surchargesDetails,
                 ];
             }
 
@@ -659,22 +690,34 @@ class Index extends Component
                 'ac_cost'               => $priceDetails['ac_cost'],
                 'app_commission_amount' => $priceDetails['app_commission_amount'],
                 'pricing_snapshot'      => [
-                    'vehicle_id'            => $newVehicle->id,
-                    'vehicle_type'          => $newVehicle->type,
-                    'vehicle_min_price'     => (float) $newVehicle->min_price,
-                    'applied_price_per_km'  => (float) ($priceDetails['price_per_km'] ?? 0),
-                    'ac_price_per_km'       => (float) ($newVehicle->ac_price_per_km ?? 0),
-                    'calculated_ac_cost'    => (float) $priceDetails['ac_cost'],
-                    'distance_km'           => (float) $priceDetails['distance_in_km'],
-                    'base_price'            => (float) $priceDetails['base_price'],
-                    'original_price'        => (float) $priceDetails['original_price'],
-                    'discount_amount'       => (float) $priceDetails['discount_amount'],
-                    'surcharge_amount'      => (float) $priceDetails['total_surcharges'],
-                    'driver_amount'         => (float) $priceDetails['driver_amount'],
-                    'company_net_revenue'   => (float) $priceDetails['company_net_revenue'],
-                    'surcharges_breakdown'  => $priceDetails['surcharges_details'] ?? [],
-                    'app_commission_amount' => (float) $priceDetails['app_commission_amount'],
-                    'final_price'           => (float) $priceDetails['final_price'],
+                    'calculation_method'         => 'cumulative_tiered_segments',
+                    'calculated_at'              => now()->format('Y-m-d H:i:s'),
+                    'trip_datetime'              => $tripDatetime,
+                    'vehicle_id'                 => $newVehicle->id,
+                    'vehicle_type'               => $newVehicle->type,
+                    'vehicle_min_price'          => (float) $newVehicle->min_price,
+                    'distance_km'                => (float) $priceDetails['distance_in_km'],
+                    'applied_price_per_km'       => (float) ($priceDetails['price_per_km'] ?? 0),
+                    'effective_avg_price_per_km' => (float) ($priceDetails['effective_avg_price_per_km'] ?? 0),
+                    'tiers_breakdown'            => $priceDetails['tiers_breakdown'] ?? [],
+                    'raw_tiers_total_price'      => (float) ($priceDetails['raw_distance_price'] ?? $priceDetails['base_price']),
+                    'min_price_applied'          => (bool) ($priceDetails['min_price_applied'] ?? false),
+                    'base_price_before_rounding' => (float) ($priceDetails['base_price_before_rounding'] ?? $priceDetails['base_price']),
+                    'base_price'                 => (float) $priceDetails['base_price'],
+                    'wants_ac'                   => (bool) ($priceDetails['ac_applied'] ?? false),
+                    'ac_price_per_km'            => (float) ($newVehicle->ac_price_per_km ?? 0),
+                    'raw_ac_cost'                => (float) ($priceDetails['raw_ac_cost'] ?? 0),
+                    'calculated_ac_cost'         => (float) $priceDetails['ac_cost'],
+                    'surcharge_amount'           => (float) $priceDetails['total_surcharges'],
+                    'surcharges_breakdown'       => $priceDetails['surcharges_details'] ?? [],
+                    'original_price'             => (float) $priceDetails['original_price'],
+                    'coupon_details'             => $priceDetails['coupon_details'] ?? null,
+                    'discount_amount'            => (float) $priceDetails['discount_amount'],
+                    'app_commission_rate'        => (float) ($priceDetails['app_commission_rate'] ?? 0),
+                    'app_commission_amount'      => (float) $priceDetails['app_commission_amount'],
+                    'driver_amount'              => (float) $priceDetails['driver_amount'],
+                    'company_net_revenue'        => (float) $priceDetails['company_net_revenue'],
+                    'final_price'                => (float) $priceDetails['final_price'],
                 ],
             ]);
 

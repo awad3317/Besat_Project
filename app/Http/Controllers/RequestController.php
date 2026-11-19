@@ -116,6 +116,8 @@ class RequestController extends Controller
             $discount_code_id = null;
             $discount_amount = 0;
 
+            $activePriceDetails = $priceDetails;
+
             if(isset($validatData['discount_code']) && !empty($validatData['discount_code'])){
                 $coupon_object  = $this->discountCodeService->getDiscountCode($validatData['discount_code']);
                 if (!$coupon_object) {
@@ -140,6 +142,7 @@ class RequestController extends Controller
                 
                 // Recalculate with coupon applied
                 $priceDetailsWithCoupon = $this->priceCalculationService->getFullPriceDetails($validatData, $vehicle, $coupon_object);
+                $activePriceDetails = $priceDetailsWithCoupon;
                 $final_price = $priceDetailsWithCoupon['final_price'];
                 $discount_amount = $priceDetailsWithCoupon['discount_amount'];
                 $discount_code_id = $coupon_object->id;
@@ -147,14 +150,44 @@ class RequestController extends Controller
                 $this->discountCodeService->recordCouponUsage($coupon_object,$validatData['user_id']);
             }
 
-            $validatData['app_commission_amount'] = $priceDetails['app_commission_amount'];
+            $validatData['app_commission_amount'] = $activePriceDetails['app_commission_amount'];
             $validatData['final_price'] = $final_price;
             $validatData['discount_code_id']= $discount_code_id;
             $validatData['discount_amount']= $discount_amount;
             $validatData['original_price'] = $orginal_price;
             $validatData['distance_km'] = $distanceInKm;
             $validatData['surcharge_amount'] = $totalSurcharge;
-            $validatData['ac_cost'] = $priceDetails['ac_cost'] ?? 0;
+            $validatData['ac_cost'] = $activePriceDetails['ac_cost'] ?? 0;
+            $validatData['pricing_snapshot'] = [
+                'calculation_method'         => 'cumulative_tiered_segments',
+                'calculated_at'              => now()->format('Y-m-d H:i:s'),
+                'trip_datetime'              => $validatData['trip_datetime'] ?? null,
+                'vehicle_id'                 => $vehicle->id,
+                'vehicle_type'               => $vehicle->type,
+                'vehicle_min_price'          => (float) $vehicle->min_price,
+                'distance_km'                => (float) $activePriceDetails['distance_in_km'],
+                'applied_price_per_km'       => (float) ($activePriceDetails['price_per_km'] ?? 0),
+                'effective_avg_price_per_km' => (float) ($activePriceDetails['effective_avg_price_per_km'] ?? 0),
+                'tiers_breakdown'            => $activePriceDetails['tiers_breakdown'] ?? [],
+                'raw_tiers_total_price'      => (float) ($activePriceDetails['raw_distance_price'] ?? $activePriceDetails['base_price']),
+                'min_price_applied'          => (bool) ($activePriceDetails['min_price_applied'] ?? false),
+                'base_price_before_rounding' => (float) ($activePriceDetails['base_price_before_rounding'] ?? $activePriceDetails['base_price']),
+                'base_price'                 => (float) $activePriceDetails['base_price'],
+                'wants_ac'                   => (bool) ($activePriceDetails['ac_applied'] ?? false),
+                'ac_price_per_km'            => (float) ($vehicle->ac_price_per_km ?? 0),
+                'raw_ac_cost'                => (float) ($activePriceDetails['raw_ac_cost'] ?? 0),
+                'calculated_ac_cost'         => (float) $activePriceDetails['ac_cost'],
+                'surcharge_amount'           => (float) $activePriceDetails['total_surcharges'],
+                'surcharges_breakdown'       => $activePriceDetails['surcharges_details'] ?? [],
+                'original_price'             => (float) $activePriceDetails['original_price'],
+                'coupon_details'             => $activePriceDetails['coupon_details'] ?? null,
+                'discount_amount'            => (float) $activePriceDetails['discount_amount'],
+                'app_commission_rate'        => (float) ($activePriceDetails['app_commission_rate'] ?? 0),
+                'app_commission_amount'      => (float) $activePriceDetails['app_commission_amount'],
+                'driver_amount'              => (float) $activePriceDetails['driver_amount'],
+                'company_net_revenue'        => (float) $activePriceDetails['company_net_revenue'],
+                'final_price'                => (float) $activePriceDetails['final_price'],
+            ];
             $validatData['created_by_user'] = auth()->user()->id;
             $validatData['created_by']='Web';
             $validatData['status'] = 'searching_driver';

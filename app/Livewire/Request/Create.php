@@ -212,7 +212,7 @@ class Create extends Component
             if (!$vehicle) return;
 
             $price_per_km = $priceService->getPricePerKmByDistanceAndVehicle($this->distance_km, $vehicle);
-            $base_price = $priceService->calculatePrice($this->distance_km, $price_per_km, $vehicle->min_price);
+            $base_price = $priceService->calculatePrice($this->distance_km, $vehicle, $vehicle->min_price);
 
             $surcharges_details = [];
             $ac_cost = 0;

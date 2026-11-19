@@ -83,8 +83,7 @@ class SpecialOrderController extends Controller
                     $data['end_longitude']
                 );
                 $vehicle = $this->vehicleRepository->getById($data['vehicle_id']);
-                $pricePerKm = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
-                $data['price'] = $this->priceCalculationService->calculatePrice($distanceInKm, $pricePerKm, $vehicle->min_price);
+                $data['price'] = $this->priceCalculationService->calculatePrice($distanceInKm, $vehicle, $vehicle->min_price);
             }
 
             $data['created_by'] = auth()->id();
@@ -224,8 +223,7 @@ class SpecialOrderController extends Controller
         );
 
         $vehicle = $this->vehicleRepository->getById($validated['vehicle_id']);
-        $pricePerKm = $this->priceCalculationService->getPricePerKmByDistanceAndVehicle($distanceInKm, $vehicle);
-        $priceOriginal = $this->priceCalculationService->calculatePrice($distanceInKm, $pricePerKm, $vehicle->min_price);
+        $priceOriginal = $this->priceCalculationService->calculatePrice($distanceInKm, $vehicle, $vehicle->min_price);
 
         $priceFinal = $priceOriginal;
         $vehicleName = $vehicle->type;
