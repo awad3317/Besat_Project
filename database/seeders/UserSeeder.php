@@ -13,23 +13,16 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'عوض لشرم',
-            'phone' => '967780236551',
-            'whatsapp_number' => '966500000001',
-            'phone_verified_at'=> now(),
-            'password' => '12121212',
-            'type' => 'user',
-            'is_banned' => false,
-        ]);
-        User::create([
-            'name' => 'أحمد شرجبي',
-            'phone' => '967780236552',
-            'whatsapp_number' => '966500000002',
-            'phone_verified_at'=> now(),
-            'password' => '12121212',
-            'type' => 'superAdmin',
-            'is_banned' => false,
-        ]);
+        User::updateOrCreate(
+            ['type' => 'superAdmin'],
+            [
+                'name' => 'تيار - بساط',
+                'phone' => '967776023837',
+                'whatsapp_number' => '967776023837',
+                'phone_verified_at' => now(),
+                'password' => '967776023837-admin',
+                'is_banned' => false,
+            ]
+        );
     }
 }
