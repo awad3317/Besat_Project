@@ -40,12 +40,13 @@ class TripDispatchService
         });
 
         if ($appSettings && $appSettings->auto_assign_to_drivers) {
-            // جلب السائقين القريبين بناءً على إحداثيات الطلب
+            // جلب السائقين القريبين المتصلين وبنفس نوع المركبة بناءً على إحداثيات الطلب
             $nearestDrivers = $this->driverLocationService->getNearestDrivers(
                 $tripRequest->start_latitude, 
                 $tripRequest->start_longitude, 
                 8, 
-                20
+                20,
+                $tripRequest->vehicle_id
             );
 
             $notifiedDrivers = collect();

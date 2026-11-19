@@ -11,7 +11,7 @@ class DriverLocationService
     /**
      * Get nearest drivers using expanding-radius search (for push notifications / auto-dispatch).
      */
-    public function getNearestDrivers($latitude, $longitude, $limit = 8, $maxRadiusKm = 50)
+    public function getNearestDrivers($latitude, $longitude, $limit = 8, $maxRadiusKm = 50, $vehicleId = null)
     {
         $foundDrivers = collect();
         $currentRadius = 2;
@@ -21,11 +21,13 @@ class DriverLocationService
 
             $driversInRadius = Driver::select('drivers.*')
                 ->selectRaw(
-                    '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance',
+                    '(6371 * acos(LEAST(1.0, GREATEST(-1.0, cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))))) AS distance',
                     [$latitude, $longitude, $latitude]
                 )
+                ->where('is_banned', false)
                 ->where('is_active', true)
                 ->where('is_online', true)
+                ->when(!is_null($vehicleId), fn ($q) => $q->where('vehicle_id', $vehicleId))
                 ->whereNotNull('latitude')
                 ->whereNotNull('longitude')
                 ->whereNotNull('device_token')
