@@ -63,5 +63,15 @@ return [
         'encrypted_customer_no' => env('ALQUTAIBIBANK_CUSTOMER_NO', 'Batwy3YPl8D2ZVoucGQmkw=='),
     ],
 
+    'evolution' => [
+        'base_url' => env('EVOLUTION_API_BASE_URL'),
+        'api_key' => env('EVOLUTION_API_KEY'),
+        'default_instance' => env('EVOLUTION_API_DEFAULT_INSTANCE'),
+    ],
+
+    'customer_service' => [
+        'whatsapp' => env('CUSTOMER_SERVICE_WHATSAPP', '+967776947168'),
+    ],
+
 
 ];
