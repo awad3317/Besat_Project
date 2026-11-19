@@ -90,22 +90,22 @@ Route::middleware(['auth.sanctum.api', 'driver'])->group(function () {
         
 });
         //           Auth Route For User          //
-Route::post('/user/register',[UserAuthController::class,'register']);
-Route::post('/user/login',[UserAuthController::class,'login']);
-Route::post('/user/verifyOtpAndLogin',[UserOtpController::class,'verifyOtpAndLogin']);
-Route::post('/user/resendOTP',[UserOtpController::class,'resendOTP']);
-Route::post('/user/check-existence', [UserAuthController::class, 'checkUserExistence']);
+Route::post('/user/register', [UserAuthController::class, 'register'])->middleware('otp.rate.limit');
+Route::post('/user/login', [UserAuthController::class, 'login'])->middleware('otp.rate.limit');
+Route::post('/user/verifyOtpAndLogin', [UserOtpController::class, 'verifyOtpAndLogin'])->middleware('throttle:otp-verify');
+Route::post('/user/resendOTP', [UserOtpController::class, 'resendOTP'])->middleware('otp.rate.limit');
+Route::post('/user/check-existence', [UserAuthController::class, 'checkUserExistence'])->middleware('throttle:check-existence');
         //           Auth Route For Driver         //
-Route::post('/driver/register',[DriverAuthController::class,'register']);
-Route::post('/driver/login',[DriverAuthController::class,'login']);
-Route::post('/driver/verifyOtpAndLogin',[DriverOtpController::class,'verifyOtpAndLogin']);
-Route::post('/driver/resendOTP',[DriverOtpController::class,'resendOTP']);
+Route::post('/driver/register', [DriverAuthController::class, 'register']);
+Route::post('/driver/login', [DriverAuthController::class, 'login']);
+Route::post('/driver/verifyOtpAndLogin', [DriverOtpController::class, 'verifyOtpAndLogin'])->middleware('throttle:otp-verify');
+Route::post('/driver/resendOTP', [DriverOtpController::class, 'resendOTP'])->middleware('otp.rate.limit');
         //       Forget Password Route For User       //
-Route::post('/user/forgetPassword', [UserForgetPasswordController::class,'forgetPassword']);
-Route::post('/user/resetPassword', [UserForgetPasswordController::class,'resetPassword']);
+Route::post('/user/forgetPassword', [UserForgetPasswordController::class, 'forgetPassword'])->middleware('otp.rate.limit');
+Route::post('/user/resetPassword', [UserForgetPasswordController::class, 'resetPassword'])->middleware('throttle:otp-verify');
         //       Forget Password Route For Driver       //
-Route::post('/driver/forgetPassword', [DriverForgetPasswordController::class,'forgetPassword']);
-Route::post('/driver/resetPassword', [DriverForgetPasswordController::class,'resetPassword']);
+Route::post('/driver/forgetPassword', [DriverForgetPasswordController::class, 'forgetPassword'])->middleware('otp.rate.limit');
+Route::post('/driver/resetPassword', [DriverForgetPasswordController::class, 'resetPassword'])->middleware('throttle:otp-verify');
         //       App Settings Route    //  
 Route::get('/appSettings', [AppSettingController::class, 'index']);
 Route::get('/driver/appSettings', [AppSettingController::class, 'driverSettings']);

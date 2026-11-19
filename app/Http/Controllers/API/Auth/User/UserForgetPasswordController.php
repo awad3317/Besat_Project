@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\AppSettingRepository;
 use App\Repositories\UserRepository;
 use App\Services\Evolution\OTPService;
+use App\Services\OtpRateLimiterService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
@@ -76,6 +77,8 @@ class UserForgetPasswordController extends Controller
         $this->UserRepository->update([
             'password' => $fields['password']
         ], $user->id);
+
+        app(OtpRateLimiterService::class)->clearCooldownOnSuccess($request, $fields['phone']);
 
         $user->tokens()->delete();
         return ApiResponseClass::sendResponse(null, 'Password has been updated successfully');

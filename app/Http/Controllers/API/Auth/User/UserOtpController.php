@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\AppSettingRepository;
 use App\Repositories\UserRepository;
 use App\Services\Evolution\OTPService;
+use App\Services\OtpRateLimiterService;
 use Illuminate\Support\Facades\Cache; 
 use Exception;
 use Illuminate\Http\Request;
@@ -62,6 +63,8 @@ class UserOtpController extends Controller
             $user->update([
                 'phone_verified_at' => now()
             ]);
+
+            app(OtpRateLimiterService::class)->clearCooldownOnSuccess($request, $fields['phone']);
 
             $token = $user->createToken($user->name . '-AuthToken')->plainTextToken;
 

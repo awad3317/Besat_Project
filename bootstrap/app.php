@@ -5,6 +5,7 @@ use App\Http\Middleware\FirebaseCors;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\DriverMiddleware;
+use App\Http\Middleware\OtpRateLimitMiddleware;
 use App\Http\Middleware\SanctumApiAuthMiddleware;
 use App\Http\Middleware\VerifyAppAccessMiddleware;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,11 +20,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        if ($trustedProxies = env('TRUSTED_PROXIES')) {
+            $middleware->trustProxies(at: $trustedProxies);
+        }
+
         $middleware->alias([
             "user"=>  UserMiddleware::class,
             "driver" => DriverMiddleware::class,
             "auth.sanctum.api" => SanctumApiAuthMiddleware::class,
             "verify.app.access" => VerifyAppAccessMiddleware::class,
+            "otp.rate.limit" => OtpRateLimitMiddleware::class,
             "superAdmin"=> superAdmin::class,
             // "awad" => FirebaseCors::class,
         ]);

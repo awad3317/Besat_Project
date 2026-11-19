@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Auth\Driver;
 
 use Exception;
 use App\Services\Evolution\OTPService;
+use App\Services\OtpRateLimiterService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Classes\ApiResponseClass;
@@ -43,6 +44,7 @@ class DriverForgetPasswordController extends Controller
 
             $driver = $this->driverRepository->findByPhone($fields['phone']);
             $this->driverRepository->update(['password' =>$fields['new_password']], $driver->id);
+            app(OtpRateLimiterService::class)->clearCooldownOnSuccess($request, $fields['phone']);
             return ApiResponseClass::sendResponse(null, 'Password has been updated successfully');
             
         } catch (Exception $e) {

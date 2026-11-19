@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Auth\Driver;
 
 use Exception;
 use App\Services\OtpService;
+use App\Services\OtpRateLimiterService;
 use Illuminate\Http\Request;
 use App\Services\TwilioService;
 use Illuminate\Validation\Rule;
@@ -63,6 +64,7 @@ class DriverOtpController extends Controller
 
             $fields['phone_verified_at'] = now(); 
             $driver=$this->driverRepository->store($fields);
+            app(OtpRateLimiterService::class)->clearCooldownOnSuccess($request, $fields['phone']);
             // Create a new authentication token for the user
             $token = $driver->createToken($driver->name . '-AuthToken')->plainTextToken;
             return ApiResponseClass::sendResponse([
