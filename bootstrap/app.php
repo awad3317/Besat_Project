@@ -20,9 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        if ($trustedProxies = env('TRUSTED_PROXIES')) {
-            $middleware->trustProxies(at: $trustedProxies);
-        }
+        $middleware->trustProxies(at: '*');
 
         $middleware->alias([
             "user"=>  UserMiddleware::class,
