@@ -28,13 +28,18 @@ class Request extends Model
 
     protected $casts = [
         'wants_ac'      => 'boolean',
-        'trip_datetime' => 'datetime',
+        'trip_datetime' => 'datetime:Y-m-d H:i:s',
         'original_price'=> 'float',
         'final_price'   => 'float',
         'distance_km'   => 'float',
         'ac_cost'       => 'float', 
         'pricing_snapshot'  => 'array',
     ];
+
+    protected function serializeDate(\DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 
     protected $hidden = [
         'created_by_user','created_by','pricing_snapshot'

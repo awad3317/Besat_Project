@@ -35,12 +35,17 @@ class ServiceBooking extends Model
     protected $casts = [
         'service_details' => 'array',
         'wants_ac'        => 'boolean',
-        'trip_datetime'   => 'datetime',
+        'trip_datetime'   => 'datetime:Y-m-d H:i:s',
         'start_latitude'  => 'float',
         'start_longitude' => 'float',
         'end_latitude'    => 'float',
         'end_longitude'   => 'float',
     ];
+
+    protected function serializeDate(\DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 
     public function user(): BelongsTo
     {
