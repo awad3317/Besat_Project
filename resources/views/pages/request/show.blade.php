@@ -71,7 +71,8 @@
                             </path>
                         </svg>
                     @elseif($request->status == 'cancelled')
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc6803" stroke-width="2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc6803"
+                            stroke-width="2">
                             <circle cx="12" cy="12" r="9"></circle>
                             <line x1="5.64" y1="5.64" x2="18.36" y2="18.36"></line>
                         </svg>
@@ -108,7 +109,11 @@
                 <div class="mt-3 w-full">
                     <span class="text-xs text-gray-500 dark:text-gray-400">تاريخ الطلب</span>
                     <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
-                        {{ $request->created_at->format('Y-m-d H:i') }}
+                        <span class="block">{{ $request->created_at->format('Y-m-d') }}</span>
+                        <span class="block text-sm font-medium text-gray-500 dark:text-gray-400">
+                            {{ $request->created_at->format('h:i') }}
+                            {{ $request->created_at->format('A') == 'AM' ? 'صباحاً' : 'مساءً' }}
+                        </span>
                     </h4>
                 </div>
             </div>
@@ -126,7 +131,15 @@
                 <div class="mt-3 w-full">
                     <span class="text-xs text-gray-500 dark:text-gray-400">وقت الرحلة</span>
                     <h4 class="mt-1 text-lg font-bold text-gray-800 dark:text-white/90">
-                        {{ $request->trip_datetime ? $request->trip_datetime->format('Y-m-d H:i') : 'غير محدد' }}
+                        @if ($request->trip_datetime)
+                            <span class="block">{{ $request->trip_datetime->format('Y-m-d') }}</span>
+                            <span class="block text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {{ $request->trip_datetime->format('h:i') }}
+                                {{ $request->trip_datetime->format('A') == 'AM' ? 'صباحاً' : 'مساءً' }}
+                            </span>
+                        @else
+                            <span class="block text-sm text-gray-400">غير محدد</span>
+                        @endif
                     </h4>
                 </div>
             </div>
@@ -222,14 +235,20 @@
                     }
                 @endphp
                 <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
-                    <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
+                    <div class="flex flex-wrap gap-2 justify-between items-center mb-6">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">مسار الرحلة</h3>
                         @if ($request->trip_datetime)
-                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400 text-xs font-medium border border-warning-200 dark:border-warning-500/30">
+                            <div
+                                class="inline-flex gap-1.5 items-center px-3 py-1 text-xs font-medium rounded-full border bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400 border-warning-200 dark:border-warning-500/30">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>وقت الانطلاق: <span dir="ltr">{{ $request->trip_datetime->format('Y-m-d h:i A') }}</span></span>
+                                <span>
+                                    وقت الانطلاق:
+                                    {{-- <span dir="ltr">{{ $request->trip_datetime->format('Y-m-d h:i') }}</span> --}}
+                                    {{ $request->trip_datetime->format('A') == 'AM' ? 'صباحاً' : 'مساءً' }}
+                                </span>
                             </div>
                         @endif
                     </div>
@@ -263,12 +282,14 @@
                                     <div class="border-blue-500 timeline-dot"></div>
                                     <div class="flex flex-col">
                                         <span class="mb-1 text-xs text-gray-500">نقطة توقف {{ $index + 1 }}</span>
-                                        <p class="font-medium text-gray-800 dark:text-white">خط عرض: {{ $stop->latitude }}،
+                                        <p class="font-medium text-gray-800 dark:text-white">خط عرض:
+                                            {{ $stop->latitude }}،
                                             خط طول: {{ $stop->longitude }}</p>
                                         <a href="https://maps.google.com/?q={{ $stop->latitude }},{{ $stop->longitude }}"
                                             target="_blank"
                                             class="flex gap-1 items-center mt-1 text-xs text-brand-500 hover:underline">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -312,11 +333,11 @@
                     <!-- Customer Info -->
                     <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
                         <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center gap-2">
+                            <div class="flex gap-2 items-center">
                                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">العميل</h3>
                                 @if ($request->user && $request->user->trashed())
                                     <span
-                                        class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-600 dark:bg-red-500/15 dark:text-red-400">
+                                        class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium text-red-600 bg-red-50 rounded-full dark:bg-red-500/15 dark:text-red-400">
                                         حساب محذوف
                                     </span>
                                 @endif
@@ -347,7 +368,8 @@
                                     @endif
                                 </div>
                                 <div>
-                                    <h4 class="text-base font-medium text-gray-800 dark:text-white">{{ $request->user->name }}
+                                    <h4 class="text-base font-medium text-gray-800 dark:text-white">
+                                        {{ $request->user->name }}
                                     </h4>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ $customerPhone }}</p>
                                 </div>
@@ -367,12 +389,10 @@
                             @if ($request->driver_id)
                                 <div class="flex gap-3 items-center">
                                     @if ($request->canAssignDriver())
-                                        <button type="button"
-                                            x-data="{ loading: false }"
+                                        <button type="button" x-data="{ loading: false }"
                                             @click="loading = true; Livewire.dispatch('open-assign-driver-modal', { requestId: {{ $request->id }} })"
                                             @open-modal.window="loading = false"
-                                            @open-error-modal.window="loading = false"
-                                            :disabled="loading"
+                                            @open-error-modal.window="loading = false" :disabled="loading"
                                             class="inline-flex gap-1 items-center px-3 py-1 text-xs font-medium rounded-full transition text-warning-600 bg-warning-50 hover:bg-warning-100 dark:bg-warning-500/15 dark:text-warning-400 disabled:opacity-50 disabled:cursor-wait">
                                             <span x-show="!loading">إعادة تعيين سائق</span>
                                             <span x-show="loading" x-cloak>جاري...</span>
@@ -425,15 +445,13 @@
                                 <p class="text-sm text-gray-500">لم يتم تعيين سائق بعد</p>
 
                                 @if ($request->canAssignDriver())
-                                    <button type="button"
-                                        x-data="{ loading: false }"
+                                    <button type="button" x-data="{ loading: false }"
                                         @click="loading = true; Livewire.dispatch('open-assign-driver-modal', { requestId: {{ $request->id }} })"
-                                        @open-modal.window="loading = false"
-                                        @open-error-modal.window="loading = false"
+                                        @open-modal.window="loading = false" @open-error-modal.window="loading = false"
                                         :disabled="loading"
                                         class="inline-flex gap-1.5 items-center px-4 py-2 mt-3 text-xs font-medium text-white rounded-lg transition bg-brand-500 hover:bg-brand-600 shadow-theme-xs disabled:opacity-50 disabled:cursor-wait">
-                                        <svg x-show="!loading" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        <svg x-show="!loading" xmlns="http://www.w3.org/2000/svg" width="14"
+                                            height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="8.5" cy="7" r="4"></circle>
