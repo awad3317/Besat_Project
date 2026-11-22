@@ -55,6 +55,7 @@ class TripDispatchService
                 $title = 'طلب جديد';
                 $body  = 'يوجد طلب جديد في منطقتك، اضغط لقبول الطلب';
                 $data  = [
+                    'type'            => 'auto_dispatch_request',
                     'new_request'     => 'true',
                     'new_message'     => 'false',
                     'request_id'      => (string) $tripRequest->id,
