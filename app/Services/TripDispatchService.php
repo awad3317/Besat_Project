@@ -51,19 +51,17 @@ class TripDispatchService
 
             $notifiedDrivers = collect();
 
-           if ($nearestDrivers) {
+            if ($nearestDrivers) {
                 $title = 'طلب جديد';
                 $body  = 'يوجد طلب جديد في منطقتك، اضغط لقبول الطلب';
                 $data  = [
-                    'type'  => 'auto_dispatch_request', 
-                    'new_request'  => 'true',
-                    'new_message' => 'false',
-                    'request_id' => (string) $tripRequest->id,
+                    'new_request'     => 'true',
+                    'new_message'     => 'false',
+                    'request_id'      => (string) $tripRequest->id,
                     'start_latitude'  => (string) $tripRequest->start_latitude,
                     'start_longitude' => (string) $tripRequest->start_longitude,
-                    'start_address' => (string) $tripRequest->start_address,
+                    'start_address'   => (string) $tripRequest->start_address,
                 ];
-            }
 
                 foreach ($nearestDrivers as $driver) {
                     if (!empty($driver->device_token)) {
