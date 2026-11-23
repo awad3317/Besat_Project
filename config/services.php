@@ -68,6 +68,23 @@ return [
         'api_key' => env('EVOLUTION_API_KEY'),
         'default_instance' => env('EVOLUTION_API_DEFAULT_INSTANCE'),
     ],
+    
+    'whatsapp_otp' => [
+        'driver' => env('WHATSAPP_OTP_DRIVER', 'evolution'),
+        'fallback_to_evolution' => filter_var(env('WHATSAPP_OTP_FALLBACK_TO_EVOLUTION', true), FILTER_VALIDATE_BOOLEAN),
+        'meta_test_numbers' => array_values(array_filter(
+            array_map('trim', explode(',', (string) env('WHATSAPP_META_TEST_NUMBERS', '')))
+        )),
+        'meta' => [
+            'token' => env('WHATSAPP_META_TOKEN'),
+            'phone_id' => env('WHATSAPP_META_PHONE_ID'),
+            'version' => env('WHATSAPP_META_API_VERSION', 'v21.0'),
+            'template_name' => env('WHATSAPP_META_TEMPLATE_NAME', 'busat_otp_autofill'),
+            'template_lang' => env('WHATSAPP_META_TEMPLATE_LANG', 'ar'),
+            'timeout' => (int) env('WHATSAPP_META_TIMEOUT', 6),
+            'default_country_code' => env('WHATSAPP_META_DEFAULT_COUNTRY_CODE', '967'),
+        ],
+    ],
 
     'customer_service' => [
         'whatsapp' => env('CUSTOMER_SERVICE_WHATSAPP', '+967776947168'),
