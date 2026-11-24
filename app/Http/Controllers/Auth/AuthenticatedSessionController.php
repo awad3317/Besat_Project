@@ -28,7 +28,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        ActivityLog::log('login','user','تم تسجيل الدخول');
+        if ($request->user()?->type !== 'superAdmin') {
+            ActivityLog::log('login', 'user', 'تم تسجيل الدخول');
+        }
+       
 
         return redirect()->intended(route('dashboard.index', absolute: false));
     }
@@ -38,14 +41,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        ActivityLog::log('logout','user','تم تسجيل الخروج');
+        if ($request->user()?->type !== 'superAdmin') {
+            ActivityLog::log('login', 'user', 'تم تسجيل الدخول');
+        }
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
-        
-
+    
         return redirect('/login');
     }
 }

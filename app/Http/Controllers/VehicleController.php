@@ -72,7 +72,7 @@ class VehicleController extends Controller
         }        
         $vehicleData = $this->vehicleRepository->store($validatData);
         Cache::forget('vehicles_list');
-        ActivityLog::log('create','Vehicle','تمت إضافة مركبه جديده');
+        ActivityLog::log('create', 'Vehicle', "تمت إضافة مركبة جديدة #{$vehicleData->id} ({$vehicleData->type})", $vehicleData->id);
         return WebResponseClass::sendResponse('تم الإضافة!','تم إضافة المركبة بنجاح');
         }
     catch (Exception $e) {
@@ -142,7 +142,7 @@ class VehicleController extends Controller
             }
             $this->vehicleRepository->update($data,$id);
             Cache::forget('vehicles_list');
-            ActivityLog::log('update','Vehicle','تم تحديث مركبة ');
+            ActivityLog::log('update', 'Vehicle', "تم تحديث بيانات المركبة #{$id} ({$data['type']})", $id);
             return WebResponseClass::sendResponse( 'تم التحديث!', 'تم تحديث بيانات المركبة بنجاح');
 
         } catch (Exception $e) {
@@ -158,7 +158,7 @@ class VehicleController extends Controller
         try {
             $this->vehicleRepository->delete($id);
             Cache::forget('vehicles_list');
-            ActivityLog::log('delete', 'Vehicle', 'تم حذف مركبة');
+            ActivityLog::log('delete', 'Vehicle', "تم حذف المركبة #{$id}", $id);
             return WebResponseClass::sendResponse('تم الحذف!', 'تم حذف المركبة بنجاح');
 
         } catch (Exception $e) {
@@ -171,7 +171,7 @@ class VehicleController extends Controller
         try {
             $this->vehicleRepository->restore($id);
             Cache::forget('vehicles_list');
-            ActivityLog::log('restore', 'Vehicle', 'تم استعادة مركبة');
+            ActivityLog::log('restore', 'Vehicle', "تم استعادة المركبة #{$id}", $id);
             return WebResponseClass::sendResponse('تم الاستعادة!', 'تم استعادة المركبة للعمل بنجاح');
         } catch (Exception $e) {
             return WebResponseClass::sendExceptionError($e);
